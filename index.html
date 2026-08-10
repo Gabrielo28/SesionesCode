@@ -260,10 +260,10 @@
 
   /* Contenido / Reels */
   #contenido{background:var(--paper)}
-  .reel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin-top:10px}
-  .reel-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(18,149,156,.1);min-height:420px;display:flex;align-items:center;justify-content:center}
+  .reel-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;margin-top:10px}
+  .reel-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(18,149,156,.1);min-height:420px;display:flex;align-items:center;justify-content:center;flex:0 1 320px}
   .reel-card iframe,.reel-card blockquote{width:100% !important;margin:0 !important}
-  .reel-empty{grid-column:1/-1;text-align:center;padding:60px 30px;background:#fff;border-radius:24px;border:2px dashed rgba(18,149,156,.25)}
+  .reel-empty{flex:1 1 100%;text-align:center;padding:60px 30px;background:#fff;border-radius:24px;border:2px dashed rgba(18,149,156,.25)}
   .reel-empty .ic{width:64px;height:64px;border-radius:18px;background:rgba(51,199,206,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
   .reel-empty h3{font-size:1.15rem;color:var(--teal-dark);text-transform:none;letter-spacing:0;margin-bottom:8px}
   .reel-empty p{color:var(--muted);font-weight:500;font-size:.95rem;max-width:440px;margin:0 auto}
@@ -856,7 +856,13 @@
   // Reels de contenido producido para clientes de la agencia
   // Pega aquí las URLs (4 a 8 recomendado) — mismo formato que arriba
   const CLIENT_REEL_URLS = [
-    // "https://www.instagram.com/reel/XXXXXXXXXXX/",
+    "https://www.instagram.com/reel/Da1LzsfiS0J/",
+    "https://www.instagram.com/reel/DZyT601iuCd/",
+    "https://www.instagram.com/reel/DZ5_eHdC4lu/",
+    "https://www.instagram.com/reel/Da8o5iBPGuz/",
+    "https://www.instagram.com/reel/DZaVrHPh_5l/",
+    "https://www.instagram.com/p/DZXtuHfE4oG/",
+    "https://www.instagram.com/reel/DZaef8SuxkV/",
   ];
   function loadReelGrid(gridId, urls, emptyMsg){
     const grid = document.getElementById(gridId);
