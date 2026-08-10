@@ -1,0 +1,49 @@
+{
+  "empresa": "Clínica Dental CEOS",
+  "contacto": "Carolina Pérez",
+  "cargo": "Directora",
+  "rubro": "Odontología",
+  "instagram": "@clinicaceos",
+  "ciudad": "Providencia, Santiago",
+
+  "objetivo": "Aumentar las solicitudes de hora para tratamientos de estética dental, que son los de mayor margen, y dejar de depender de la derivación por convenio.",
+
+  "diagnostico": [
+    {
+      "titulo": "Publican poco y sin constancia",
+      "detalle": "4 publicaciones en los últimos 30 días, con brechas de hasta 11 días. El algoritmo de Instagram castiga la irregularidad: cada pausa larga baja el alcance de lo siguiente que publican.",
+      "impacto": "Alcance estancado pese a tener 3.400 seguidores"
+    },
+    {
+      "titulo": "Cero contenido de resultados",
+      "detalle": "En odontología estética el formato que más convierte es el antes-después con el relato del paciente. No hay ninguno en el feed.",
+      "impacto": "El tratamiento de mayor margen es invisible en sus redes"
+    },
+    {
+      "titulo": "No hay camino a la reserva de hora",
+      "detalle": "El link de la bio va al home del sitio. Ningún posteo indica cómo agendar. Los comentarios preguntando precio quedan sin responder.",
+      "impacto": "Interés que llega y se pierde antes de convertirse en hora agendada"
+    }
+  ],
+
+  "competencia": [
+    { "nombre": "Ustedes hoy", "seguidores": "3.400", "posts_mes": "4", "reels_mes": "0", "pauta": "No" },
+    { "nombre": "Competidor A", "seguidores": "18.200", "posts_mes": "14", "reels_mes": "8", "pauta": "Sí, activa" },
+    { "nombre": "Competidor B", "seguidores": "9.700", "posts_mes": "11", "reels_mes": "5", "pauta": "Sí, activa" }
+  ],
+
+  "plan_recomendado": "crecimiento",
+
+  "porque_este_plan": "Necesitan volumen de contenido para recuperar constancia, y pauta para acelerar mientras la comunidad crece. El plan Presencia les daría orden pero no velocidad; Autoridad tiene capacidad de producción que hoy todavía no van a aprovechar.",
+
+  "addons": ["contenido"],
+
+  "roadmap": [
+    { "periodo": "Semana 1-2", "hitos": ["Auditoría profunda y definición de pilares de contenido", "Sesión de fotos y video en la clínica", "Rediseño de bio, destacadas y link de agendamiento"] },
+    { "periodo": "Mes 1", "hitos": ["12 publicaciones (4 reels, 4 carruseles, 4 estáticas)", "Historias diarias con la rutina de la clínica", "Primera campaña de captación de horas"] },
+    { "periodo": "Mes 2", "hitos": ["Serie de antes-después con pacientes reales", "Optimización de pauta según el costo por hora agendada", "Reporte con métricas y ajuste de estrategia"] },
+    { "periodo": "Mes 3", "hitos": ["Campaña con 2 micro-influencers del rubro salud/belleza", "Consolidación del formato que mejor convirtió", "Reporte trimestral y proyección"] }
+  ],
+
+  "presupuesto_pauta": "$200.000 mensuales sugeridos, pagados directamente a Meta"
+}

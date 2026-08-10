@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sé Colaborador — Curacaví FC</title>
+<meta name="description" content="Súmate como Sponsor Pyme o Main Sponsor de Curacaví FC. Completa el formulario y reserva tu espacio en la camiseta oficial 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner wrap" style="padding-left:0; padding-right:0;">
+    <a class="brand" href="index.html">
+      <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+      <span>
+        <span class="brand-name">Curacaví FC</span>
+        <span class="brand-tag">Plan de Salvataje 2026</span>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="colaborador.html" class="active">Sé Colaborador</a>
+      <a href="album.html">Álbum</a>
+      <a href="marcas.html">Marcas Sponsors</a>
+    </nav>
+    <a href="index.html#precios" class="btn btn-primary nav-cta">Ver planes</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="index.html">Inicio</a>
+    <a href="colaborador.html" class="active">Sé Colaborador</a>
+    <a href="album.html">Álbum</a>
+    <a href="marcas.html">Marcas Sponsors</a>
+    <a href="index.html#precios" class="btn btn-primary btn-block">Ver planes</a>
+  </div>
+</header>
+<script>
+  document.getElementById('navToggle').addEventListener('click', function(){
+    var m = document.getElementById('navMobile');
+    var open = m.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">Formulario de colaborador</span>
+    <h1 class="titular">Súmate al Plan de Salvataje</h1>
+    <p>Completa tus datos y nos pondremos en contacto para coordinar el pago, tu logo y tu espacio en la camiseta oficial.</p>
+  </div>
+</section>
+
+<section class="form-section">
+  <div class="wrap">
+
+    <div class="payment-box">
+      <div>
+        <span class="eyebrow" style="color:var(--dorado);">Pago directo y seguro</span>
+        <h3>Sponsor Pyme — $100.000 CLP</h3>
+        <p>Paga tu espacio con Mercado Pago. Después completa el formulario de abajo para coordinar tu logo y datos de facturación.</p>
+      </div>
+      <a href="https://link.mercadopago.cl/sponsorclub" target="_blank" rel="noopener" class="btn btn-primary">Pagar con Mercado Pago →</a>
+    </div>
+    <p class="payment-note">¿Vas por el plan Main Sponsor? El monto se define según objetivos — completa el formulario y coordinamos el pago directamente contigo.</p>
+
+    <div class="form-card">
+
+      <form id="colabForm">
+        <div class="form-grid">
+          <div class="field full">
+            <label>¿Qué plan te interesa? <span class="req">*</span></label>
+            <div class="plan-choice">
+              <label>
+                <input type="radio" name="plan" value="Sponsor Pyme ($100.000 CLP)" required>
+                <span>Sponsor Pyme<br><small>$100.000 CLP</small></span>
+              </label>
+              <label>
+                <input type="radio" name="plan" value="Main Sponsor (desde $1.000.000 CLP)" required>
+                <span>Main Sponsor<br><small>Desde $1.000.000</small></span>
+              </label>
+              <label>
+                <input type="radio" name="plan" value="Aún no estoy seguro" required>
+                <span>No estoy seguro<br><small>Quiero más info</small></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nombre del negocio <span class="req">*</span></label>
+            <input type="text" name="negocio" required placeholder="Ej: Panadería El Trigal">
+          </div>
+          <div class="field">
+            <label>Rubro</label>
+            <input type="text" name="rubro" placeholder="Ej: Gastronomía, ferretería, agrícola...">
+          </div>
+
+          <div class="field">
+            <label>Nombre de contacto <span class="req">*</span></label>
+            <input type="text" name="contacto" required placeholder="Tu nombre">
+          </div>
+          <div class="field">
+            <label>Teléfono / WhatsApp <span class="req">*</span></label>
+            <input type="tel" name="telefono" required placeholder="+56 9 1234 5678">
+          </div>
+
+          <div class="field full">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="tucorreo@negocio.cl">
+          </div>
+
+          <div class="field full">
+            <label>Mensaje (opcional)</label>
+            <textarea name="mensaje" placeholder="Cuéntanos algo más sobre tu negocio o tu consulta..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Enviar solicitud →</button>
+        <p class="form-note">Al enviar, copiaremos tu solicitud y abriremos nuestro Instagram para que la envíes por mensaje directo — así la directiva la recibe de inmediato. Si eres Sponsor Pyme, recuerda pagar también con el botón de Mercado Pago de arriba.</p>
+      </form>
+
+      <div class="form-success" id="formSuccess">
+        <div class="icon">🟠⚫️</div>
+        <h3>¡Solicitud lista!</h3>
+        <p>Copiamos tu mensaje al portapapeles. Pégalo en el chat de Instagram que se abrió (o ábrelo manualmente) y la directiva de Curacaví FC te responderá a la brevedad.</p>
+        <div class="copy-box" id="copyBox"></div>
+        <div class="success-ctas">
+          <button class="btn btn-primary" id="copyAgainBtn" type="button">Copiar mensaje de nuevo</button>
+          <a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener" class="btn btn-dark">Abrir Instagram</a>
+          <a href="https://link.mercadopago.cl/sponsorclub" target="_blank" rel="noopener" class="btn btn-outline">Pagar con Mercado Pago</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+          <strong>Curacaví FC</strong>
+        </div>
+        <p>Tercera División B · ANFA<br>Curacaví, Región Metropolitana<br>Estadio Olímpico Municipal Julio Riesco</p>
+      </div>
+      <div>
+        <h4>Campaña</h4>
+        <ul>
+          <li><a href="colaborador.html">Sé Colaborador</a></li>
+          <li><a href="marcas.html">Marcas Sponsors</a></li>
+          <li><a href="album.html">Álbum de fotos</a></li>
+          <li><a href="index.html#faq">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener">@curacavi.fcoficial</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Curacaví FC — Plan de Salvataje</span>
+      <span>#PlanDeSalvataje #JuntosSomosMás</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Preselecciona el plan si viene ?plan=pyme o ?plan=main desde otra página
+  const params = new URLSearchParams(window.location.search);
+  const planParam = params.get('plan');
+  if (planParam === 'pyme') {
+    document.querySelector('input[value^="Sponsor Pyme"]').checked = true;
+  } else if (planParam === 'main') {
+    document.querySelector('input[value^="Main Sponsor"]').checked = true;
+  }
+
+  const form = document.getElementById('colabForm');
+  const success = document.getElementById('formSuccess');
+  const copyBox = document.getElementById('copyBox');
+
+  function buildMessage(data){
+    return `Hola Curacaví FC 🟠⚫️ Quiero ser colaborador del Plan de Salvataje\n\n`
+      + `Plan de interés: ${data.get('plan') || '-'}\n`
+      + `Negocio: ${data.get('negocio') || '-'}\n`
+      + `Rubro: ${data.get('rubro') || '-'}\n`
+      + `Contacto: ${data.get('contacto') || '-'}\n`
+      + `Teléfono: ${data.get('telefono') || '-'}\n`
+      + `Email: ${data.get('email') || '-'}\n`
+      + `Mensaje: ${data.get('mensaje') || '-'}`;
+  }
+
+  async function copyText(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  let lastMessage = '';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    lastMessage = buildMessage(data);
+    copyBox.textContent = lastMessage;
+    await copyText(lastMessage);
+
+    form.style.display = 'none';
+    success.classList.add('visible');
+
+    window.open('https://www.instagram.com/curacavi.fcoficial', '_blank', 'noopener');
+  });
+
+  document.getElementById('copyAgainBtn').addEventListener('click', () => copyText(lastMessage));
+</script>
+
+</body>
+</html>

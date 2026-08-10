@@ -1,0 +1,18 @@
+# Proyectos con su propio repositorio git — no se anidan aquí
+/colchones-yole/
+/web-influence/
+
+# Dependencias
+node_modules/
+
+# Config local de Claude Code (específica de esta máquina)
+.claude/settings.local.json
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Entornos
+.env
+.env.local

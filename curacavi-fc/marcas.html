@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marcas Sponsors — Curacaví FC</title>
+<meta name="description" content="Conoce a las empresas y negocios locales que apoyan a Curacaví FC como Sponsor Pyme o Main Sponsor en la temporada 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner wrap" style="padding-left:0; padding-right:0;">
+    <a class="brand" href="index.html">
+      <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+      <span>
+        <span class="brand-name">Curacaví FC</span>
+        <span class="brand-tag">Plan de Salvataje 2026</span>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="colaborador.html">Sé Colaborador</a>
+      <a href="album.html">Álbum</a>
+      <a href="marcas.html" class="active">Marcas Sponsors</a>
+    </nav>
+    <a href="colaborador.html" class="btn btn-primary nav-cta">Sé Sponsor</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="index.html">Inicio</a>
+    <a href="colaborador.html">Sé Colaborador</a>
+    <a href="album.html">Álbum</a>
+    <a href="marcas.html" class="active">Marcas Sponsors</a>
+    <a href="colaborador.html" class="btn btn-primary btn-block">Sé Sponsor</a>
+  </div>
+</header>
+<script>
+  document.getElementById('navToggle').addEventListener('click', function(){
+    var m = document.getElementById('navMobile');
+    var open = m.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">Marcas Sponsors</span>
+    <h1 class="titular">Las empresas que sostienen a Curacaví FC</h1>
+    <p>Cada logo en esta página representa a un negocio local que decidió ser parte del Plan de Salvataje.</p>
+  </div>
+</section>
+
+<section class="sponsors-section">
+  <div class="wrap">
+
+    <div class="progress-block">
+      <span class="num" id="progNum">0 / 500</span>
+      <div class="progress-bar-lg"><i id="progBar"></i></div>
+      <p style="color:var(--gris); font-size:.85rem;">espacios ocupados en la camiseta oficial 2026</p>
+    </div>
+
+    <h3 class="sponsors-tier-title" id="mainTitle" style="display:none;">Main Sponsor</h3>
+    <div class="sponsors-grid" id="mainGrid" style="display:none;"></div>
+
+    <h3 class="sponsors-tier-title" id="pymeTitle" style="display:none;">Sponsors Pyme</h3>
+    <div class="sponsors-grid" id="pymeGrid"></div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="icon">🟠⚫️</div>
+      <h3>Todavía no hay marcas aquí... ¡podría ser la tuya!</h3>
+      <p>El Plan de Salvataje recién comienza. Sé de los primeros 500 negocios en aparecer en la camiseta oficial de Curacaví FC durante toda la temporada 2026.</p>
+      <a href="colaborador.html" class="btn btn-primary">Quiero ser el primer sponsor →</a>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+          <strong>Curacaví FC</strong>
+        </div>
+        <p>Tercera División B · ANFA<br>Curacaví, Región Metropolitana<br>Estadio Olímpico Municipal Julio Riesco</p>
+      </div>
+      <div>
+        <h4>Campaña</h4>
+        <ul>
+          <li><a href="colaborador.html">Sé Colaborador</a></li>
+          <li><a href="marcas.html">Marcas Sponsors</a></li>
+          <li><a href="album.html">Álbum de fotos</a></li>
+          <li><a href="index.html#faq">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener">@curacavi.fcoficial</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Curacaví FC — Plan de Salvataje</span>
+      <span>#PlanDeSalvataje #JuntosSomosMás</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ==========================================================================
+     LISTA DE SPONSORS — edita este array a medida que se sumen empresas.
+     logo: ruta a un archivo en assets/sponsors/ (opcional). Si no hay logo,
+     se muestran automáticamente las iniciales del negocio.
+     tier: "main" (espacio central) o "pyme" (mosaico $100.000).
+     Ejemplo:
+     { nombre:"Panadería El Trigal", rubro:"Gastronomía", tier:"pyme", logo:"assets/sponsors/el-trigal.png" }
+     ========================================================================== */
+  const SPONSORS = [
+    // Agrega aquí los sponsors confirmados.
+  ];
+
+  const CUPOS_TOTAL = 500;
+
+  const mainSponsors = SPONSORS.filter(s => s.tier === 'main');
+  const pymeSponsors = SPONSORS.filter(s => s.tier !== 'main');
+
+  document.getElementById('progNum').textContent = pymeSponsors.length + ' / ' + CUPOS_TOTAL;
+  document.getElementById('progBar').style.width = Math.min(100, (pymeSponsors.length / CUPOS_TOTAL) * 100) + '%';
+
+  function initials(name){
+    return name.split(' ').filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join('');
+  }
+
+  function renderCard(s, isMain){
+    const card = document.createElement('div');
+    card.className = 'sponsor-card' + (isMain ? ' main-card' : '');
+    const logo = s.logo
+      ? `<img src="${s.logo}" alt="Logo de ${s.nombre}">`
+      : `<div class="placeholder-logo">${initials(s.nombre)}</div>`;
+    card.innerHTML = `${logo}<div><strong>${s.nombre}</strong><br><span>${s.rubro || ''}</span></div>`;
+    return card;
+  }
+
+  if (SPONSORS.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+  } else {
+    document.getElementById('emptyState').style.display = 'none';
+
+    if (mainSponsors.length){
+      document.getElementById('mainTitle').style.display = 'flex';
+      const mg = document.getElementById('mainGrid');
+      mg.style.display = 'grid';
+      mainSponsors.forEach(s => mg.appendChild(renderCard(s, true)));
+    }
+    if (pymeSponsors.length){
+      document.getElementById('pymeTitle').style.display = 'flex';
+      const pg = document.getElementById('pymeGrid');
+      pymeSponsors.forEach(s => pg.appendChild(renderCard(s, false)));
+    }
+  }
+</script>
+
+</body>
+</html>

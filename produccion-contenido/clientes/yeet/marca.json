@@ -1,0 +1,49 @@
+{
+  "cliente": "YEET PowerDrink",
+  "instagram": "@yeetpowerdrink_cl",
+  "web": "yeetpowerdrink.cl",
+  "tagline": "Epic Like You",
+
+  "colores": {
+    "magenta": "#FF069C",
+    "lima": "#B4E61D",
+    "negro": "#000000",
+    "blanco": "#FFFFFF",
+    "gris_texto": "#1A1A1A"
+  },
+  "_nota_colores": "El magenta está muestreado del PNG real (TRABAJO/Yeet Epic Like You fuxia.png). El lima está estimado desde la imagen del logo — confirmar con el manual de marca o mandar el PNG en lima para muestrearlo.",
+
+  "logos": {
+    "fuxia_fondo_claro": "C:/Users/mezma/OneDrive/Escritorio/TRABAJO/Yeet Epic Like You fuxia.png",
+    "_faltan": "Falta el PNG en lima sobre negro y el negro sobre blanco, con fondo transparente"
+  },
+
+  "tipografia": {
+    "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
+    "cuerpo": "Montserrat Medium",
+    "nota": "El logo usa una tipografía de pincel irregular propia — no intentar recrearla con fuentes, siempre usar el PNG"
+  },
+
+  "productos": [
+    { "nombre": "Epic Punch", "tipo": "sabor" },
+    { "nombre": "Epic Power Classic", "tipo": "sabor" }
+  ],
+
+  "packs": [
+    { "nombre": "Pack Epic Party", "unidades": 48, "precio_clp": 40000 },
+    { "nombre": "Pack 12", "unidades": 12 }
+  ],
+
+  "merchandising": ["Gorro Jockey Snapback R168", "Beanie"],
+
+  "posicionamiento": "PowerDrink, NO energética. Sin estimulantes, con vitaminas B, C, D y prebióticos. Sin sellos.",
+  "publico": "Jóvenes desde 8 años. Comprador real: los padres (B2B2C).",
+  "promo_vigente": "15% dcto primera compra dejando datos en la web (captura de leads)",
+
+  "tono": [
+    "Juvenil, directo, con códigos de gaming y deporte",
+    "Nunca condescendiente con los jóvenes",
+    "Con los padres: tranquilizador y concreto, sin tecnicismos",
+    "Evitar prometer efectos de salud — ver advertencias legales en el plan"
+  ]
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum de fotos — Curacaví FC</title>
+<meta name="description" content="Álbum de fotos de Curacaví FC: partidos, entrenamientos y momentos de la temporada 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner wrap" style="padding-left:0; padding-right:0;">
+    <a class="brand" href="index.html">
+      <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+      <span>
+        <span class="brand-name">Curacaví FC</span>
+        <span class="brand-tag">Plan de Salvataje 2026</span>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="colaborador.html">Sé Colaborador</a>
+      <a href="album.html" class="active">Álbum</a>
+      <a href="marcas.html">Marcas Sponsors</a>
+    </nav>
+    <a href="colaborador.html" class="btn btn-primary nav-cta">Sé Sponsor</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="index.html">Inicio</a>
+    <a href="colaborador.html">Sé Colaborador</a>
+    <a href="album.html" class="active">Álbum</a>
+    <a href="marcas.html">Marcas Sponsors</a>
+    <a href="colaborador.html" class="btn btn-primary btn-block">Sé Sponsor</a>
+  </div>
+</header>
+<script>
+  document.getElementById('navToggle').addEventListener('click', function(){
+    var m = document.getElementById('navMobile');
+    var open = m.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">Álbum</span>
+    <h1 class="titular">Curacaví FC, temporada 2026</h1>
+    <p>Partidos, entrenamientos y momentos del equipo en la Tercera División B. Haz clic en una foto para ampliarla.</p>
+  </div>
+</section>
+
+<section class="album-section">
+  <div class="wrap">
+    <p class="album-count" id="albumCount"></p>
+    <div class="album-grid" id="albumGrid"></div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose">&times;</button>
+  <button class="lightbox-nav lightbox-prev" id="lbPrev">&#8249;</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" id="lbNext">&#8250;</button>
+  <div class="lightbox-counter" id="lbCounter"></div>
+</div>
+
+<section style="padding:60px 0; text-align:center; background:var(--hueso);">
+  <p style="color:var(--gris); margin-bottom:20px;">¿Quieres ver más contenido del club en tiempo real?</p>
+  <a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener" class="btn btn-outline">Síguenos en Instagram @curacavi.fcoficial</a>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+          <strong>Curacaví FC</strong>
+        </div>
+        <p>Tercera División B · ANFA<br>Curacaví, Región Metropolitana<br>Estadio Olímpico Municipal Julio Riesco</p>
+      </div>
+      <div>
+        <h4>Campaña</h4>
+        <ul>
+          <li><a href="colaborador.html">Sé Colaborador</a></li>
+          <li><a href="marcas.html">Marcas Sponsors</a></li>
+          <li><a href="album.html">Álbum de fotos</a></li>
+          <li><a href="index.html#faq">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener">@curacavi.fcoficial</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Curacaví FC — Plan de Salvataje</span>
+      <span>#PlanDeSalvataje #JuntosSomosMás</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Para agregar más fotos: copia el archivo a assets/album/ y añade su nombre a esta lista.
+  const FOTOS = ["foto-001.jpg","foto-002.jpg","foto-003.jpg","foto-004.jpg","foto-005.jpg","foto-006.jpg","foto-007.jpg","foto-008.jpg","foto-009.jpg","foto-010.jpg","foto-011.jpg","foto-012.jpg","foto-013.jpg","foto-014.jpg","foto-015.jpg","foto-016.jpg","foto-017.jpg","foto-018.jpg","foto-019.jpg","foto-020.jpg","foto-021.jpg","foto-022.jpg","foto-023.jpg","foto-024.jpg","foto-025.jpg","foto-026.jpg","foto-027.jpg","foto-028.jpg","foto-029.jpg","foto-030.jpg","foto-031.jpg","foto-032.jpg","foto-033.jpg","foto-034.jpg","foto-035.jpg","foto-036.jpg","foto-037.jpg","foto-038.jpg","foto-039.jpg","foto-040.jpg","foto-041.jpg","foto-042.jpg","foto-043.jpg","foto-044.jpg","foto-045.jpg","foto-046.jpg","foto-047.jpg"];
+
+  const grid = document.getElementById('albumGrid');
+  document.getElementById('albumCount').textContent = FOTOS.length + ' fotos';
+
+  FOTOS.forEach((file, i) => {
+    const fig = document.createElement('figure');
+    fig.dataset.index = i;
+    const img = document.createElement('img');
+    img.src = 'assets/album/' + file;
+    img.alt = 'Curacaví FC — foto ' + (i + 1);
+    img.loading = 'lazy';
+    img.addEventListener('load', () => img.classList.add('loaded'));
+    fig.appendChild(img);
+    fig.addEventListener('click', () => openLightbox(i));
+    grid.appendChild(fig);
+  });
+
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCounter = document.getElementById('lbCounter');
+  let current = 0;
+
+  function openLightbox(i){
+    current = i;
+    updateLightbox();
+    lightbox.classList.add('visible');
+  }
+  function updateLightbox(){
+    lbImg.src = 'assets/album/' + FOTOS[current];
+    lbCounter.textContent = (current + 1) + ' / ' + FOTOS.length;
+  }
+  function closeLightbox(){ lightbox.classList.remove('visible'); }
+  function next(){ current = (current + 1) % FOTOS.length; updateLightbox(); }
+  function prev(){ current = (current - 1 + FOTOS.length) % FOTOS.length; updateLightbox(); }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbNext').addEventListener('click', next);
+  document.getElementById('lbPrev').addEventListener('click', prev);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('visible')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+
+</body>
+</html>

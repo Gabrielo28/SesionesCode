@@ -1,0 +1,612 @@
+<title>Sistema de captación y calificación de leads · Influence Chile</title>
+<style>
+  :root {
+    --paper:#FBF9F6; --surface:#FFFFFF; --surface-2:#F4F1EB;
+    --ink:#1B1822; --muted:#6B6577; --faint:#948DA0;
+    --hairline:#E7E2DA; --hairline-strong:#D8D2C7;
+    --accent:#E23E6B; --accent-ink:#B12851; --accent-wash:#FBE9EF;
+    --c-lead:#7A4FD0; --c-email:#2F6FED; --c-wa:#1B9E58; --c-cal:#C87A18;
+    --c-lead-wash:#EFEAFB; --c-email-wash:#E7EFFE; --c-wa-wash:#E4F5EC; --c-cal-wash:#FBF0DE;
+    --shadow:0 1px 2px rgba(27,24,34,.04), 0 8px 24px rgba(27,24,34,.05);
+    --font-sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:"Cascadia Code",ui-monospace,Consolas,"SF Mono",Menlo,monospace;
+    --measure:730px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#15131A; --surface:#1E1B25; --surface-2:#26222F;
+      --ink:#F2EEE8; --muted:#A79FB2; --faint:#7C7488;
+      --hairline:#2E2A38; --hairline-strong:#3A3547;
+      --accent:#FF6088; --accent-ink:#FF83A2; --accent-wash:#2A1720;
+      --c-lead:#B79BF0; --c-email:#79A6FF; --c-wa:#54C98A; --c-cal:#EEB25C;
+      --c-lead-wash:#221B33; --c-email-wash:#141F32; --c-wa-wash:#122A1E; --c-cal-wash:#2A2213;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#FBF9F6; --surface:#FFFFFF; --surface-2:#F4F1EB;
+    --ink:#1B1822; --muted:#6B6577; --faint:#948DA0;
+    --hairline:#E7E2DA; --hairline-strong:#D8D2C7;
+    --accent:#E23E6B; --accent-ink:#B12851; --accent-wash:#FBE9EF;
+    --c-lead:#7A4FD0; --c-email:#2F6FED; --c-wa:#1B9E58; --c-cal:#C87A18;
+    --c-lead-wash:#EFEAFB; --c-email-wash:#E7EFFE; --c-wa-wash:#E4F5EC; --c-cal-wash:#FBF0DE;
+    --shadow:0 1px 2px rgba(27,24,34,.04), 0 8px 24px rgba(27,24,34,.05);
+  }
+  :root[data-theme="dark"] {
+    --paper:#15131A; --surface:#1E1B25; --surface-2:#26222F;
+    --ink:#F2EEE8; --muted:#A79FB2; --faint:#7C7488;
+    --hairline:#2E2A38; --hairline-strong:#3A3547;
+    --accent:#FF6088; --accent-ink:#FF83A2; --accent-wash:#2A1720;
+    --c-lead:#B79BF0; --c-email:#79A6FF; --c-wa:#54C98A; --c-cal:#EEB25C;
+    --c-lead-wash:#221B33; --c-email-wash:#141F32; --c-wa-wash:#122A1E; --c-cal-wash:#2A2213;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--font-sans); line-height:1.65; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:var(--measure); margin:0 auto; padding:0 24px 96px; }
+
+  /* ---- header ---- */
+  header { padding:64px 0 40px; border-bottom:1px solid var(--hairline); }
+  .eyebrow { font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent-ink); margin:0 0 18px; font-weight:600; }
+  h1 { font-size:clamp(30px,5vw,46px); line-height:1.08; letter-spacing:-.02em;
+    font-weight:800; margin:0; text-wrap:balance; }
+  .lede { font-size:19px; color:var(--muted); margin:18px 0 0; max-width:56ch; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:26px;
+    font-family:var(--font-mono); font-size:12.5px; color:var(--faint); letter-spacing:.02em; }
+  .meta span { display:inline-flex; align-items:center; gap:7px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; }
+
+  /* ---- toc ---- */
+  nav.toc { margin:34px 0 0; }
+  nav.toc ol { list-style:none; margin:0; padding:0; counter-reset:toc;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2px 26px; }
+  nav.toc a { counter-increment:toc; display:flex; gap:12px; align-items:baseline;
+    text-decoration:none; color:var(--ink); padding:8px 0; border-bottom:1px solid transparent;
+    font-size:15px; transition:color .15s; }
+  nav.toc a::before { content:counter(toc,decimal-leading-zero);
+    font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  nav.toc a:hover { color:var(--accent-ink); }
+
+  /* ---- sections ---- */
+  section { padding-top:60px; scroll-margin-top:24px; }
+  .kicker { font-family:var(--font-mono); font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--faint); margin:0 0 10px; }
+  h2 { font-size:clamp(23px,3.4vw,30px); line-height:1.15; letter-spacing:-.015em;
+    font-weight:750; margin:0 0 8px; text-wrap:balance; }
+  h2 .num { color:var(--accent); font-family:var(--font-mono); font-size:.62em;
+    font-weight:600; margin-right:12px; vertical-align:2px; }
+  .intro { color:var(--muted); font-size:17px; margin:0 0 26px; max-width:62ch; }
+  h3 { font-size:17px; font-weight:700; margin:30px 0 10px; letter-spacing:-.01em; }
+  p { margin:0 0 14px; }
+  a.inline { color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px;
+    text-decoration-thickness:1px; text-decoration-color:var(--hairline-strong); }
+
+  /* ---- flow summary ---- */
+  .flow { display:flex; flex-direction:column; gap:0; margin:0; }
+  .flow-step { display:grid; grid-template-columns:34px 1fr; gap:16px; padding:14px 0;
+    position:relative; }
+  .flow-step:not(:last-child)::after { content:""; position:absolute; left:16px; top:40px;
+    bottom:-6px; width:2px; background:var(--hairline); }
+  .flow-num { width:33px; height:33px; border-radius:50%; display:grid; place-items:center;
+    font-family:var(--font-mono); font-size:14px; font-weight:600; z-index:1;
+    background:var(--surface); border:2px solid var(--accent); color:var(--accent-ink); }
+  .flow-body strong { display:block; font-size:16px; }
+  .flow-body span { color:var(--muted); font-size:14.5px; }
+
+  /* ---- chips ---- */
+  .chip { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono);
+    font-size:11.5px; font-weight:600; letter-spacing:.02em; padding:3px 9px; border-radius:999px;
+    border:1px solid; white-space:nowrap; }
+  .chip::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .chip.lead  { color:var(--c-lead);  background:var(--c-lead-wash);  border-color:var(--c-lead); }
+  .chip.email { color:var(--c-email); background:var(--c-email-wash); border-color:var(--c-email); }
+  .chip.wa    { color:var(--c-wa);    background:var(--c-wa-wash);    border-color:var(--c-wa); }
+  .chip.cal   { color:var(--c-cal);   background:var(--c-cal-wash);   border-color:var(--c-cal); }
+  .chip.rec   { color:var(--accent-ink); background:var(--accent-wash); border-color:var(--accent); }
+
+  /* ---- cards ---- */
+  .cards { display:grid; grid-template-columns:1fr; gap:16px; }
+  .card { background:var(--surface); border:1px solid var(--hairline); border-radius:14px;
+    padding:22px 22px 24px; box-shadow:var(--shadow); }
+  .card h3 { margin:0 0 4px; font-size:18px; }
+  .card .tag { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--faint); }
+  .card ul { margin:14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .card li { display:flex; gap:10px; font-size:14.5px; color:var(--muted); }
+  .card li b { color:var(--ink); font-weight:600; }
+  .prc { font-family:var(--font-mono); font-size:13px; color:var(--ink); }
+  .best { margin-top:16px; padding-top:14px; border-top:1px dashed var(--hairline-strong);
+    font-size:14px; }
+  .best b { color:var(--accent-ink); }
+  .rec-flag { display:inline-block; font-family:var(--font-mono); font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase; font-weight:700; color:#fff;
+    background:var(--accent); padding:2px 8px; border-radius:6px; margin-left:8px; vertical-align:2px; }
+
+  /* ---- timeline (detailed steps) ---- */
+  .step { display:grid; grid-template-columns:1fr; gap:6px; padding:20px 0;
+    border-bottom:1px solid var(--hairline); }
+  .step-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .step-head .n { font-family:var(--font-mono); font-weight:700; color:var(--accent);
+    font-size:15px; }
+  .step-head h3 { margin:0; font-size:17px; }
+  .step p { margin:2px 0 0; color:var(--muted); font-size:15px; }
+  .state { font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .state b { color:var(--ink); background:var(--surface-2); padding:1px 7px; border-radius:5px;
+    font-weight:600; border:1px solid var(--hairline); }
+
+  /* ---- tables ---- */
+  .tbl-wrap { overflow-x:auto; margin:6px 0 4px; border:1px solid var(--hairline);
+    border-radius:12px; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; min-width:480px; }
+  th, td { text-align:left; padding:12px 16px; border-bottom:1px solid var(--hairline);
+    vertical-align:top; }
+  th { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; background:var(--surface-2); }
+  tr:last-child td { border-bottom:none; }
+  td .t { font-family:var(--font-mono); color:var(--accent-ink); font-weight:600;
+    font-variant-numeric:tabular-nums; }
+
+  /* ---- copy blocks ---- */
+  .copy { background:var(--surface); border:1px solid var(--hairline); border-radius:12px;
+    padding:0; overflow:hidden; box-shadow:var(--shadow); }
+  .copy + .copy { margin-top:16px; }
+  .copy-head { display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:12px 18px; background:var(--surface-2); border-bottom:1px solid var(--hairline); }
+  .copy-head .lbl { font-weight:700; font-size:14.5px; }
+  .copy-body { padding:18px; font-size:15px; }
+  .copy-body .subj { font-family:var(--font-mono); font-size:13px; color:var(--muted);
+    margin:0 0 12px; padding-bottom:12px; border-bottom:1px dashed var(--hairline-strong); }
+  .copy-body .subj b { color:var(--ink); }
+  .qlist { margin:0; padding:0; list-style:none; counter-reset:q; display:flex;
+    flex-direction:column; gap:10px; }
+  .qlist li { counter-increment:q; display:grid; grid-template-columns:26px 1fr; gap:10px; }
+  .qlist li::before { content:counter(q); font-family:var(--font-mono); font-weight:700;
+    color:var(--c-wa); font-size:14px; }
+  .tmpl { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:12px; }
+  .tmpl li { display:grid; grid-template-columns:70px 1fr; gap:14px; align-items:start; }
+  .tmpl .when { font-family:var(--font-mono); font-weight:700; color:var(--accent-ink);
+    font-size:13px; padding-top:2px; }
+  .tmpl .msg { background:var(--c-wa-wash); border:1px solid var(--c-wa); color:var(--ink);
+    border-radius:12px 12px 12px 3px; padding:9px 13px; font-size:14px; }
+
+  /* ---- form fields ---- */
+  .fields { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px;
+    margin:0 0 20px; padding:0; list-style:none; }
+  .fields li { background:var(--surface); border:1px solid var(--hairline); border-radius:10px;
+    padding:11px 14px; font-size:14.5px; display:flex; flex-direction:column; gap:2px; }
+  .fields .fl { font-weight:600; }
+  .fields .fh { font-size:12.5px; color:var(--faint); font-family:var(--font-mono); }
+  .req { color:var(--accent); }
+  .consent { background:var(--accent-wash); border:1px solid var(--accent);
+    border-radius:12px; padding:16px 18px; font-size:14.5px; }
+  .consent .lbl { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent-ink); font-weight:700; display:block; margin-bottom:8px; }
+
+  /* ---- callout ---- */
+  .note { display:grid; grid-template-columns:auto 1fr; gap:14px; background:var(--surface-2);
+    border:1px solid var(--hairline); border-left:3px solid var(--accent); border-radius:10px;
+    padding:16px 18px; margin:20px 0; font-size:14.5px; }
+  .note .ic { font-family:var(--font-mono); font-weight:800; color:var(--accent);
+    font-size:16px; line-height:1.5; }
+  .note b { color:var(--ink); }
+
+  /* ---- checklist ---- */
+  .check { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .check li { display:grid; grid-template-columns:24px 1fr; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--hairline); font-size:15px; align-items:baseline; }
+  .check li:last-child { border-bottom:none; }
+  .check .box { width:17px; height:17px; border:2px solid var(--hairline-strong);
+    border-radius:5px; margin-top:3px; }
+  .check li b { font-weight:600; }
+  .check li span { color:var(--muted); font-size:13.5px; display:block; }
+
+  footer { margin-top:64px; padding-top:24px; border-top:1px solid var(--hairline);
+    font-size:13px; color:var(--faint); display:flex; justify-content:space-between;
+    flex-wrap:wrap; gap:8px; font-family:var(--font-mono); letter-spacing:.02em; }
+
+  a:focus-visible, nav.toc a:focus-visible { outline:2px solid var(--accent); outline-offset:3px;
+    border-radius:4px; }
+  @media (max-width:560px){
+    .tmpl li{ grid-template-columns:1fr; gap:4px; }
+    header{ padding-top:48px; }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Propuesta de automatización · Marketing &amp; Influencers</p>
+    <h1>Sistema de captación y calificación de leads</h1>
+    <p class="lede">Un embudo que recibe a cada interesado, lo confirma, lo califica por WhatsApp con un agente de IA, agenda la reunión solo — y persigue a quien no responde para que ningún lead se pierda.</p>
+    <div class="meta">
+      <span><i class="dot"></i>Influence Chile</span>
+      <span>Documento de proceso v1</span>
+      <span>16 jul 2026</span>
+    </div>
+
+    <nav class="toc" aria-label="Contenido">
+      <ol>
+        <li><a href="#resumen">Cómo funciona, en resumen</a></li>
+        <li><a href="#plataformas">Con qué plataforma montarlo</a></li>
+        <li><a href="#flujo">El flujo, paso a paso</a></li>
+        <li><a href="#recontacto">Lógica de re-contacto</a></li>
+        <li><a href="#textos">Los textos del agente IA</a></li>
+        <li><a href="#formulario">Formulario y consentimiento</a></li>
+        <li><a href="#legal">Reglas técnicas y legales</a></li>
+        <li><a href="#checklist">Checklist de puesta en marcha</a></li>
+        <li><a href="#montaje">Guía de montaje en SendPulse</a></li>
+      </ol>
+    </nav>
+  </header>
+
+  <section id="resumen">
+    <p class="kicker">Vista general</p>
+    <h2><span class="num">01</span>Cómo funciona, en resumen</h2>
+    <p class="intro">Seis pasos encadenados. Cada uno cambia el estado del lead en el CRM y dispara el siguiente de forma automática. Los canales van marcados por color: <span class="chip lead">lead</span> <span class="chip email">correo</span> <span class="chip wa">whatsApp</span> <span class="chip cal">calendario</span></p>
+
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-body"><strong>Llega el lead</strong><span>Completa el formulario de la web, escribe por WhatsApp o deja sus datos por DM.</span></div></div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-body"><strong>Correo de confirmación automático</strong><span>El agente IA confirma que recibimos los datos y anuncia que el equipo lo contactará.</span></div></div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-body"><strong>Calificación por WhatsApp</strong><span>El agente pregunta rubro, objetivo, servicio, presupuesto y empresa. Guarda todo en el CRM.</span></div></div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-body"><strong>Agenda en Google Calendar</strong><span>Ofrece horarios libres y crea el evento con link de videollamada, sin intervención manual.</span></div></div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-body"><strong>Correo de confirmación de la reunión</strong><span>Con fecha, hora y enlace. Recordatorio automático el día previo.</span></div></div>
+      <div class="flow-step"><div class="flow-num">6</div><div class="flow-body"><strong>Reunión con el equipo</strong><span>Llega a la videollamada un lead ya calificado y con contexto.</span></div></div>
+    </div>
+
+    <div class="note">
+      <div class="ic">↻</div>
+      <div>En paralelo corre el <b>motor de re-contacto</b>: si el lead no responde el WhatsApp o no agenda, se le vuelve a escribir automáticamente a las <b>24 h, 72 h y 7 días</b> por WhatsApp y correo. También recupera a quien no asiste a la reunión. El detalle está en la sección 4.</div>
+    </div>
+  </section>
+
+  <section id="plataformas">
+    <p class="kicker">Decisión de herramienta</p>
+    <h2><span class="num">02</span>Con qué plataforma montarlo</h2>
+    <p class="intro">Hay dos familias de herramientas y conviene no confundirlas: las <b>todo-en-uno</b> (SendPulse, ManyChat, Wati) hacen correo, WhatsApp y secuencias por sí mismas; los <b>orquestadores</b> (Zapier, Make.com, n8n) no envían nada, solo conectan otras apps entre sí. Para tu caso, lo más simple es apoyarse en una todo-en-uno y sumar el calendario aparte.</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Ruta A · Todo-en-uno</span>
+        <h3>SendPulse<span class="rec-flag">Recomendada para empezar</span></h3>
+        <ul>
+          <li><b>Facilidad</b> — Muy alta, sin código y en español, con soporte en español.</li>
+          <li><b>Costo</b> — <span class="prc">Plan gratis · desde ≈ US$8/mes + WhatsApp por conversación (a Meta)</span></li>
+          <li><b>Cubre</b> — Correo + chatbot de WhatsApp (API oficial) + secuencias con esperas + CRM básico, todo en una.</li>
+          <li><b>Punto débil</b> — No agenda en Google Calendar por sí sola: se resuelve enviando un link de Cal.com/Calendly.</li>
+        </ul>
+        <p class="best"><b>Mejor si:</b> quieres lanzar rápido, barato y sin depender de un desarrollador. <b>Es tu punto de partida ideal.</b></p>
+      </div>
+
+      <div class="card">
+        <span class="tag">Ruta B · Orquestador + WhatsApp</span>
+        <h3>Make.com + Wati</h3>
+        <ul>
+          <li><b>Facilidad</b> — Alta. Se arma arrastrando bloques.</li>
+          <li><b>Costo</b> — <span class="prc">Make ≈ US$9–29/mes · Wati ≈ US$39/mes</span></li>
+          <li><b>Cuándo</b> — Cuando necesitas conectar varias apps distintas con lógica fina (mejor que Zapier en esperas y ramas, y más barato).</li>
+          <li><b>Límite</b> — Se cobra por volumen de operaciones.</li>
+        </ul>
+        <p class="best"><b>Mejor si:</b> el sistema crece y necesitas «pegar» herramientas especializadas entre sí.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">Ruta C · Máxima flexibilidad</span>
+        <h3>n8n + Meta Cloud API</h3>
+        <ul>
+          <li><b>Facilidad</b> — Media. Visual, pero pide algo de perfil técnico.</li>
+          <li><b>Costo</b> — <span class="prc">Autohospedado ≈ US$5–10/mes · o n8n Cloud ≈ US$20/mes</span></li>
+          <li><b>IA</b> — El más cómodo para conectar la API de Claude y lógica avanzada.</li>
+          <li><b>Escala</b> — Sin tope de operaciones si lo autohospedas.</li>
+        </ul>
+        <p class="best"><b>Mejor si:</b> buscas control total y costo bajo con muchos leads. Ideal como «paso 2».</p>
+      </div>
+    </div>
+
+    <h3>Todas las opciones que preguntaste, comparadas</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Herramienta</th><th>Familia</th><th>Costo aprox.</th><th>Veredicto para ti</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>SendPulse</b></td><td>Todo-en-uno</td><td><span class="t">Gratis → US$8+/mes</span></td><td>✅ La mejor base: barata, en español, cubre correo + WhatsApp + seguimiento.</td></tr>
+          <tr><td><b>Make.com</b></td><td>Orquestador</td><td><span class="t">US$9–29/mes</span></td><td>👍 El mejor pegamento si necesitas unir varias apps. Mejor que Zapier.</td></tr>
+          <tr><td><b>Zapier</b></td><td>Orquestador</td><td><span class="t">US$20–50+/mes</span></td><td>⚠️ Funciona, pero más caro y con peor manejo de esperas/ramas. Solo si ya lo usas.</td></tr>
+          <tr><td><b>n8n</b></td><td>Orquestador</td><td><span class="t">US$5–20/mes</span></td><td>👍 Ideal al escalar; requiere perfil técnico.</td></tr>
+          <tr><td><b>ManyChat / Wati</b></td><td>Todo-en-uno</td><td><span class="t">US$15–49/mes</span></td><td>➖ Muy buenos para WhatsApp, más flojos en correo y calendario.</td></tr>
+          <tr><td><b>Brevo</b></td><td>Todo-en-uno</td><td><span class="t">Gratis → US$9+/mes</span></td><td>➖ Fuerte en correo; su WhatsApp es más limitado que el de SendPulse.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div class="ic">→</div>
+      <div><b>Recomendación costo/beneficio:</b> arma el núcleo con <b>SendPulse</b> (correo + WhatsApp + seguimiento + CRM) y suma <b>Cal.com</b> (gratis) para la agenda. Para calificar, usa el <b>flujo con botones</b> de SendPulse — no necesitas IA de pago para las 5 preguntas. Deja el agente IA (API de Claude o el ChatGPT nativo de SendPulse) como <b>paso opcional</b> para más adelante, cuando quieras responder dudas libres. Piezas fijas: Google Calendar y un número de WhatsApp Business verificado en Meta.</div>
+    </div>
+
+    <h3>¿Cuánto cuesta al mes?</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Pieza</th><th>Herramienta</th><th>Costo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Correo + WhatsApp + seguimiento + CRM</td><td><b>SendPulse</b></td><td><span class="t">Gratis → ~US$8/mes al crecer</span></td></tr>
+          <tr><td>Agenda en Google Calendar</td><td><b>Cal.com</b></td><td><span class="t">Gratis</span></td></tr>
+          <tr><td>Conversación de WhatsApp</td><td>API oficial vía SendPulse</td><td><span class="t">1.000 gratis/mes · luego centavos c/u</span></td></tr>
+          <tr><td>Calificación (5 preguntas)</td><td>Flujo con botones de SendPulse</td><td><span class="t">Gratis</span></td></tr>
+          <tr><td><i>Opcional:</i> agente IA para dudas libres</td><td>API de Claude (Haiku 4.5)</td><td><span class="t">Centavos por conversación</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="intro" style="margin-top:16px;">Total real para arrancar: <b>menos de US$15 al mes</b> — menos de lo que cuesta una suscripción de Zapier, y con todo tu embudo cubierto.</p>
+  </section>
+
+  <section id="flujo">
+    <p class="kicker">El recorrido del lead</p>
+    <h2><span class="num">03</span>El flujo, paso a paso</h2>
+    <p class="intro">Cada paso indica el canal, qué ocurre y en qué estado deja al lead dentro del CRM. Esos estados son los que activan el motor de re-contacto de la sección siguiente.</p>
+
+    <div class="step">
+      <div class="step-head"><span class="n">1</span><span class="chip lead">lead</span><h3>Entra el lead</h3></div>
+      <p>El formulario, WhatsApp o DM disparan al orquestador, que crea el contacto en el CRM con sus datos básicos.</p>
+      <p class="state">Estado → <b>Nuevo</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">2</span><span class="chip email">correo</span><h3>Correo de confirmación (IA)</h3></div>
+      <p>Se envía al instante: «Recibimos tus datos, pronto te contacta el equipo y te escribiremos por WhatsApp».</p>
+      <p class="state">Estado → <b>Contactado</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">3</span><span class="chip wa">whatsApp</span><h3>Calificación por WhatsApp</h3></div>
+      <p>Un flujo con botones (sin IA de pago) hace las preguntas de calificación: rubro, objetivo, servicio de interés, presupuesto y empresa. Registra cada respuesta como campo en el CRM. La IA es opcional, para dudas libres.</p>
+      <p class="state">Estado → <b>Calificado</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">4</span><span class="chip cal">calendario</span><h3>Agenda en Google Calendar</h3></div>
+      <p>El agente ofrece los horarios libres (Cal.com lee tu calendario en tiempo real) y crea el evento con link de videollamada cuando el lead elige uno.</p>
+      <p class="state">Estado → <b>Reunión agendada</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">5</span><span class="chip email">correo</span><h3>Correo de confirmación de la reunión</h3></div>
+      <p>Confirma fecha, hora y enlace. Un recordatorio automático sale el día previo por correo y WhatsApp.</p>
+      <p class="state">Estado → <b>Confirmado</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">6</span><span class="chip lead">reunión</span><h3>Reunión con el equipo</h3></div>
+      <p>Tu equipo recibe a un lead calificado, con todo el contexto ya cargado en el CRM. Tras la reunión, el estado pasa a <b>Cliente</b> o <b>Seguimiento</b> según el resultado.</p>
+      <p class="state">Estado → <b>Reunión realizada</b></p>
+    </div>
+  </section>
+
+  <section id="recontacto">
+    <p class="kicker">Que ningún lead se pierda</p>
+    <h2><span class="num">04</span>Lógica de re-contacto</h2>
+    <p class="intro">El corazón del sistema. Según en qué punto se detenga el lead, se activa una secuencia de recordatorios por WhatsApp y correo hasta lograr la reunión. Todo con temporizadores; nada manual.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Situación</th><th>Reintentos</th><th>Canal</th><th>Si sigue sin reaccionar</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>No responde el WhatsApp</b> de calificación</td>
+            <td><span class="t">+24 h → +72 h → +7 días</span></td>
+            <td>WhatsApp (plantilla) + 1 correo</td>
+            <td>Se marca <b>Frío</b> y sale de la secuencia</td>
+          </tr>
+          <tr>
+            <td><b>Calificado pero no agenda</b></td>
+            <td><span class="t">+1 día → +3 días → +7 días</span></td>
+            <td>WhatsApp + correo con link de reserva</td>
+            <td>Se marca <b>Frío</b> · re-activable en campañas</td>
+          </tr>
+          <tr>
+            <td><b>No asiste a la reunión</b> (no-show)</td>
+            <td><span class="t">+1 h → +24 h</span></td>
+            <td>WhatsApp + correo para reprogramar</td>
+            <td>Se ofrece nuevo horario una vez más</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div class="ic">!</div>
+      <div>Los mensajes de WhatsApp enviados <b>fuera de la ventana de 24 h</b> desde el último mensaje del cliente deben ser <b>plantillas pre-aprobadas por Meta</b>. Es decir: los recordatorios de +24 h, +72 h y +7 días tienen que estar aprobados antes de lanzar. Más detalle en la sección 7.</div>
+    </div>
+  </section>
+
+  <section id="textos">
+    <p class="kicker">Copys listos para usar</p>
+    <h2><span class="num">05</span>Los textos del agente IA</h2>
+    <p class="intro">Borradores que puedes cargar tal cual y ajustar al tono de Influence Chile. Reemplaza <code>[Nombre]</code> por la variable de personalización de tu plataforma.</p>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Correo de confirmación · Paso 2</span><span class="chip email">correo</span></div>
+      <div class="copy-body">
+        <p class="subj">Asunto: <b>¡Recibimos tus datos! Bienvenido a Influence Chile</b></p>
+        <p>Hola [Nombre], ¡gracias por escribirnos!</p>
+        <p>Ya tenemos tus datos y en breve una persona de nuestro equipo se pondrá en contacto contigo. Mientras tanto, te escribiremos por WhatsApp para conocer mejor tu proyecto y coordinar una reunión sin costo.</p>
+        <p>Nos vemos pronto,<br>Equipo Influence Chile</p>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Preguntas de calificación · Paso 3</span><span class="chip wa">whatsApp</span></div>
+      <div class="copy-body">
+        <ol class="qlist">
+          <li>¡Hola [Nombre]! Soy el asistente de Influence Chile. Para prepararte una propuesta a medida, ¿a qué se dedica tu empresa o marca?</li>
+          <li>¿Qué te gustaría potenciar? (ventas, comunidad, reconocimiento, un lanzamiento…)</li>
+          <li>¿Qué servicio te interesa más? Gestión de redes, creación de contenido, publicidad pagada o campañas con influencers.</li>
+          <li>¿Con qué presupuesto mensual aproximado estás trabajando?</li>
+          <li>Por último, ¿cómo se llama tu empresa y dónde te encontramos? (sitio web o redes)</li>
+        </ol>
+        <p style="margin-top:16px;color:var(--muted);font-size:14px;">Al terminar: «¡Genial! Con esto ya puedo coordinar tu reunión. Estos son los horarios disponibles… 📅»</p>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Plantillas de re-contacto · Sección 4</span><span class="chip rec">recuperación</span></div>
+      <div class="copy-body">
+        <ul class="tmpl">
+          <li><span class="when">+24 h</span><span class="msg">Hola [Nombre] 👋 Soy del equipo de Influence Chile. ¿Tienes un momento para contarnos sobre tu proyecto? Así coordinamos tu reunión sin costo.</span></li>
+          <li><span class="when">+72 h</span><span class="msg">Hola [Nombre], seguimos con un espacio para ti esta semana. ¿Te acomoda una reunión breve para ver cómo potenciar tu marca? 📈</span></li>
+          <li><span class="when">+7 días</span><span class="msg">Hola [Nombre], estamos cerrando las agendas de este mes. Si aún te interesa, respóndeme y coordinamos al instante. ¡Quedo atento!</span></li>
+        </ul>
+        <p style="margin-top:14px;color:var(--muted);font-size:13.5px;font-family:var(--font-mono);">Estas tres deben cargarse como plantillas y aprobarse en Meta antes de lanzar.</p>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Confirmación de reunión · Paso 5</span><span class="chip email">correo</span></div>
+      <div class="copy-body">
+        <p class="subj">Asunto: <b>Reunión confirmada — [fecha] a las [hora] · Influence Chile</b></p>
+        <p>¡Listo, [Nombre]! Tu reunión quedó agendada.</p>
+        <p>📅 <b>[fecha]</b> · 🕐 <b>[hora]</b> (hora de Chile)<br>🔗 Enlace de videollamada: <b>[link]</b></p>
+        <p>Te enviaremos un recordatorio el día anterior. Si necesitas reprogramar, responde este correo o escríbenos por WhatsApp.</p>
+        <p>¡Nos vemos!<br>Equipo Influence Chile</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="formulario">
+    <p class="kicker">La puerta de entrada</p>
+    <h2><span class="num">06</span>Formulario y consentimiento</h2>
+    <p class="intro">Estos son los campos a pedir en la web. Marca en <span class="req">rosa</span> los obligatorios: son los mínimos para arrancar la calificación y el contacto.</p>
+
+    <ul class="fields">
+      <li><span class="fl">Nombre y apellido <span class="req">*</span></span><span class="fh">texto</span></li>
+      <li><span class="fl">Empresa o marca <span class="req">*</span></span><span class="fh">texto</span></li>
+      <li><span class="fl">Correo <span class="req">*</span></span><span class="fh">email</span></li>
+      <li><span class="fl">WhatsApp <span class="req">*</span></span><span class="fh">+56 9 · con código país</span></li>
+      <li><span class="fl">Sitio web o redes</span><span class="fh">texto · opcional</span></li>
+      <li><span class="fl">Servicio de interés</span><span class="fh">lista desplegable</span></li>
+      <li><span class="fl">Presupuesto aproximado</span><span class="fh">lista desplegable</span></li>
+      <li><span class="fl">Mensaje</span><span class="fh">texto largo · opcional</span></li>
+    </ul>
+
+    <div class="consent">
+      <span class="lbl">Casilla de consentimiento · obligatoria</span>
+      ☑ «Autorizo a Influence Chile a contactarme por correo electrónico y WhatsApp, y a tratar mis datos personales para gestionar mi solicitud, conforme a la Ley N.º 19.628. Puedo solicitar su eliminación cuando lo desee.»
+    </div>
+  </section>
+
+  <section id="legal">
+    <p class="kicker">Antes de lanzar</p>
+    <h2><span class="num">07</span>Reglas técnicas y legales</h2>
+    <p class="intro">Tres puntos que pueden bloquear el sistema si se pasan por alto. Conviene resolverlos al inicio.</p>
+
+    <h3>1 · WhatsApp API exige plantillas y verificación</h3>
+    <p>Fuera de la ventana de 24 h desde el último mensaje del cliente, solo puedes enviar <b>plantillas aprobadas por Meta</b> — justo lo que necesitan los recordatorios de re-contacto. Además debes <a class="inline" href="https://business.facebook.com">verificar tu empresa en Meta Business</a> y usar un número dedicado exclusivo para la API.</p>
+
+    <h3>2 · Consentimiento y protección de datos</h3>
+    <p>WhatsApp exige que el lead acepte ser contactado (opt-in), y en Chile la <b>Ley N.º 19.628</b> sobre datos personales obliga a informar el uso de los datos. La casilla de la sección 6 cubre ambos requisitos; mantenla siempre visible y sin premarcar.</p>
+
+    <h3>3 · Escape a un humano</h3>
+    <p>El agente IA debe derivar a una persona cuando el lead lo pida o cuando la conversación se complique (reclamos, casos fuera de guion). Nunca lo dejes 100&nbsp;% solo en situaciones delicadas: define desde el inicio la palabra o condición que transfiere el chat a tu equipo.</p>
+  </section>
+
+  <section id="checklist">
+    <p class="kicker">Manos a la obra</p>
+    <h2><span class="num">08</span>Checklist de puesta en marcha</h2>
+    <p class="intro">El orden sugerido para construirlo. Los primeros ítems son requisitos que tardan días en aprobarse, así que conviene iniciarlos ya.</p>
+
+    <ul class="check">
+      <li><span class="box"></span><span><b>Verificar la empresa en Meta Business</b> y solicitar el número de WhatsApp Business API. <span>Puede tardar varios días; empieza por aquí.</span></span></li>
+      <li><span class="box"></span><span><b>Redactar y enviar a aprobación las plantillas de WhatsApp</b> (calificación y los tres re-contactos).</span></li>
+      <li><span class="box"></span><span><b>Crear cuenta en Cal.com y conectarla a Google Calendar</b> con los horarios disponibles del equipo.</span></li>
+      <li><span class="box"></span><span><b>Configurar el CRM de SendPulse</b> con los estados: Nuevo, Contactado, Calificado, Reunión agendada, Confirmado, Frío, Cliente.</span></li>
+      <li><span class="box"></span><span><b>Cargar los copys</b> de correo y WhatsApp de la sección 5.</span></li>
+      <li><span class="box"></span><span><b>Montar el flujo en SendPulse</b> uniendo formulario/widget → correo → WhatsApp con botones → link de Cal.com → recordatorios.</span></li>
+      <li><span class="box"></span><span><b>Publicar el formulario con la casilla de consentimiento</b> en la web.</span></li>
+      <li><span class="box"></span><span><b>Definir el «escape a humano»</b> y a quién del equipo notifica.</span></li>
+      <li><span class="box"></span><span><b>Probar con leads de prueba</b> el recorrido completo, incluidos los re-contactos, antes de abrir al público.</span></li>
+    </ul>
+  </section>
+
+  <section id="montaje">
+    <p class="kicker">Paso a paso, sin código</p>
+    <h2><span class="num">09</span>Guía de montaje en SendPulse</h2>
+    <p class="intro">El orden real para construirlo tú o delegarlo. Va en fases: primero lo que tarda días en aprobarse, después lo que armas en una tarde. Todo dentro de SendPulse + Cal.com.</p>
+
+    <h3>Fase 0 · Requisitos (empieza ya — tardan días)</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">1</span><h3>Crea tu cuenta en SendPulse</h3></div>
+      <p>Regístrate en sendpulse.com con el correo de la empresa. El plan gratis te sirve para empezar.</p>
+    </div>
+    <div class="step">
+      <div class="step-head"><span class="n">2</span><span class="chip wa">whatsApp</span><h3>Verifica tu empresa en Meta y conecta WhatsApp</h3></div>
+      <p>En SendPulse → sección <i>WhatsApp</i>, sigue el asistente para conectar la <b>API oficial de WhatsApp Business</b>. Necesitas verificar tu empresa en Meta Business y un número dedicado (que no uses en la app normal de WhatsApp). Este trámite puede tardar varios días: hazlo primero.</p>
+    </div>
+    <div class="step">
+      <div class="step-head"><span class="n">3</span><span class="chip cal">calendario</span><h3>Crea Cal.com y conéctalo a Google Calendar</h3></div>
+      <p>En cal.com, crea un tipo de reunión (ej. «Reunión Influence Chile · 30 min»), conecta tu Google Calendar y define tus horarios disponibles. Cal.com bloqueará automáticamente lo que ya tengas ocupado.</p>
+    </div>
+
+    <h3>Fase 1 · La puerta de entrada</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">4</span><span class="chip lead">lead</span><h3>Publica el widget de chat (o formulario) en tu web</h3></div>
+      <p>En SendPulse → <i>Chatbots / Live Chat</i>, genera el widget y pega el código en tu web. Añade la casilla de consentimiento de la sección 6. Reemplaza el ícono de chatbot que tenías de Zapier.</p>
+    </div>
+
+    <h3>Fase 2 · Correo de confirmación</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">5</span><span class="chip email">correo</span><h3>Arma el correo automático</h3></div>
+      <p>En SendPulse → <i>Automatizaciones (Automation 360)</i>, crea un flujo que se dispare al llegar un lead y envíe el correo de confirmación (copy del <b>Paso 2</b>, sección 5).</p>
+    </div>
+
+    <h3>Fase 3 · El bot de WhatsApp con botones</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">6</span><span class="chip wa">whatsApp</span><h3>Construye el flujo de calificación</h3></div>
+      <p>En el constructor visual del chatbot de WhatsApp, arma las 5 preguntas (sección 5) usando <b>botones de respuesta rápida</b> donde se pueda (servicio, rango de presupuesto). Es gratis y más confiable que la IA para calificar.</p>
+    </div>
+    <div class="step">
+      <div class="step-head"><span class="n">7</span><h3>Guarda cada respuesta en el CRM</h3></div>
+      <p>En cada paso del flujo, usa la acción «guardar en variable / campo del contacto» para registrar rubro, objetivo, servicio, presupuesto y empresa. Así el lead llega calificado a tu CRM.</p>
+    </div>
+
+    <h3>Fase 4 · Agendar</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">8</span><span class="chip cal">calendario</span><h3>Envía el link de Cal.com al terminar</h3></div>
+      <p>Al final del flujo, envía un mensaje con tu link de Cal.com para que el lead elija hora. Al reservar, Cal.com crea el evento en tu Google Calendar y envía el correo de confirmación (copy del <b>Paso 5</b>).</p>
+    </div>
+
+    <h3>Fase 5 · Que no se te caigan</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">9</span><span class="chip rec">recuperación</span><h3>Arma las secuencias de re-contacto</h3></div>
+      <p>Crea plantillas de WhatsApp para +24 h, +72 h y +7 días (sección 5) y <b>envíalas a aprobación en Meta</b>. En el flujo, agrega ramas con <i>tiempo de espera</i>: si el lead no responde o no agenda, dispara el siguiente recordatorio por WhatsApp y correo (lógica de la sección 4).</p>
+    </div>
+
+    <h3>Fase 6 · Probar y lanzar</h3>
+    <div class="step">
+      <div class="step-head"><span class="n">10</span><h3>Define el «escape a humano»</h3></div>
+      <p>Agrega una opción/palabra («hablar con una persona») que notifique a tu equipo y detenga el bot para ese contacto.</p>
+    </div>
+    <div class="step">
+      <div class="step-head"><span class="n">11</span><h3>Prueba de punta a punta y lanza</h3></div>
+      <p>Recorre todo el flujo con un lead de prueba (web y WhatsApp), incluidos los re-contactos. Cuando funcione, <b>recién ahí</b> elimina el bot de Zapier y cancela su suscripción.</p>
+    </div>
+
+    <div class="note">
+      <div class="ic">✓</div>
+      <div><b>Atajo:</b> SendPulse tiene <i>plantillas de flujo</i> y soporte en español. Si te trabas en la Fase 3 o 5, su centro de ayuda tiene tutoriales paso a paso del constructor de chatbots.</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Influence Chile · Documento de proceso</span>
+    <span>Borrador v1 · 16 jul 2026</span>
+  </footer>
+
+</div>
