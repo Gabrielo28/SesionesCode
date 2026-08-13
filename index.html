@@ -260,14 +260,21 @@
 
   /* Contenido / Reels */
   #contenido{background:var(--paper)}
-  .reel-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;margin-top:10px}
-  .reel-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(18,149,156,.1);min-height:420px;display:flex;align-items:center;justify-content:center;flex:0 1 320px}
+  .reel-carousel{position:relative}
+  .reel-grid{display:flex;gap:26px;margin-top:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px 4px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .reel-grid::-webkit-scrollbar{display:none}
+  .reel-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(18,149,156,.1);min-height:420px;display:flex;align-items:center;justify-content:center;flex:0 0 min(320px,82vw);scroll-snap-align:start}
   .reel-card iframe,.reel-card blockquote{width:100% !important;margin:0 !important}
-  .reel-empty{flex:1 1 100%;text-align:center;padding:60px 30px;background:#fff;border-radius:24px;border:2px dashed rgba(18,149,156,.25)}
+  .reel-empty{flex:0 0 100%;text-align:center;padding:60px 30px;background:#fff;border-radius:24px;border:2px dashed rgba(18,149,156,.25)}
   .reel-empty .ic{width:64px;height:64px;border-radius:18px;background:rgba(51,199,206,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
   .reel-empty h3{font-size:1.15rem;color:var(--teal-dark);text-transform:none;letter-spacing:0;margin-bottom:8px}
   .reel-empty p{color:var(--muted);font-weight:500;font-size:.95rem;max-width:440px;margin:0 auto}
   .reel-cta{text-align:center;margin-top:38px}
+  .rc-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid rgba(18,149,156,.2);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;color:var(--teal-dark);font-size:1.3rem;line-height:1;padding:0;transition:opacity .2s}
+  .rc-nav.prev{left:-10px}
+  .rc-nav.next{right:-10px}
+  .rc-nav:disabled{opacity:.3;cursor:default}
+  @media(max-width:900px){.rc-nav{display:none}}
   #clientes{background:#fff}
   /* Meta Ads — sección */
   #metaads{background:#fff}
@@ -302,6 +309,19 @@
   .ma-includes li::before{content:"";width:20px;height:20px;flex-shrink:0;border-radius:50%;background:rgba(51,199,206,.22) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2333C7CE' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/12px no-repeat}
   .ma-ctas{text-align:center;margin-top:36px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   @media(max-width:720px){.ma-expect-grid{grid-template-columns:1fr}.ma-banner{flex-direction:column}}
+
+  /* Reseñas */
+  #resenas{background:#fff}
+  .rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin-top:10px}
+  .rev-card{background:var(--paper);border-radius:22px;padding:32px 30px;border:1px solid rgba(18,149,156,.1);display:flex;flex-direction:column}
+  .rev-stars{letter-spacing:3px;color:var(--coral);font-size:1.05rem;margin-bottom:16px}
+  .rev-quote{font-weight:500;font-size:1rem;color:#2c4a4c;line-height:1.55;flex:1}
+  .rev-quote::before{content:"\201C";color:var(--coral);font-weight:800;font-size:1.3em}
+  .rev-who{display:flex;align-items:center;gap:13px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(18,149,156,.14)}
+  .rev-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .rev-name{font-weight:800;font-size:.95rem;color:var(--ink)}
+  .rev-biz{font-weight:500;font-size:.82rem;color:var(--muted)}
+  .rev-placeholder-tag{display:inline-block;background:rgba(255,123,123,.14);color:var(--coral);font-weight:800;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:30px;margin-bottom:16px}
 
   /* Agendar */
   #agendar{background:#fff}
@@ -365,6 +385,7 @@
       <a href="#contenido">Contenido</a>
       <a href="#clientes">Clientes</a>
       <a href="#metaads">Meta Ads</a>
+      <a href="#resenas">Reseñas</a>
       <a href="#planes">Planes</a>
       <a href="#cotizador">Cotizador</a>
       <a href="#agendar">Contacto</a>
@@ -508,7 +529,11 @@
       <h2>Así se ve el contenido <span class="coral">que creamos</span></h2>
       <p>Reels reales, directo desde Instagram: así trabajan nuestros influencers y así es el contenido que producimos para nuestros clientes.</p>
     </div>
-    <div class="reel-grid" id="reelGrid"></div>
+    <div class="reel-carousel">
+      <button type="button" class="rc-nav prev" aria-label="Reel anterior">&lsaquo;</button>
+      <div class="reel-grid" id="reelGrid"></div>
+      <button type="button" class="rc-nav next" aria-label="Reel siguiente">&rsaquo;</button>
+    </div>
     <div class="reel-cta">
       <a href="https://instagram.com/influence.chile" target="_blank" class="btn btn-teal">Ver más en @influence.chile</a>
     </div>
@@ -523,7 +548,11 @@
       <h2>Contenido que <span class="coral">producimos</span> para nuestras marcas</h2>
       <p>Esto es lo que hacemos día a día como agencia: reels, edición y estrategia de contenido creados para los negocios que gestionamos.</p>
     </div>
-    <div class="reel-grid" id="clientGrid"></div>
+    <div class="reel-carousel">
+      <button type="button" class="rc-nav prev" aria-label="Contenido anterior">&lsaquo;</button>
+      <div class="reel-grid" id="clientGrid"></div>
+      <button type="button" class="rc-nav next" aria-label="Contenido siguiente">&rsaquo;</button>
+    </div>
     <div class="reel-cta">
       <a href="#cotizador" class="btn btn-coral">Quiero contenido así para mi marca</a>
     </div>
@@ -709,6 +738,45 @@
   </div>
 </section>
 
+<!-- RESEÑAS -->
+<section id="resenas">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="rev-placeholder-tag">⚠ Ejemplo — pendiente reemplazar por reseñas reales</span>
+      <br>
+      <span class="eyebrow">Lo que dicen de nosotros</span>
+      <h2>Marcas que confían en <span class="coral">Influence Chile</span></h2>
+      <p>Esto es lo que nos dicen los negocios con los que trabajamos.</p>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-card">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">Desde que trabajamos con Influence Chile las reservas aumentaron muchísimo. El contenido se ve profesional y por fin sentimos que las redes venden de verdad, no solo se ven bonitas.</p>
+        <div class="rev-who">
+          <div class="rev-avatar">MT</div>
+          <div><div class="rev-name">María T.</div><div class="rev-biz">Negocio gastronómico</div></div>
+        </div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">Lo que más valoro es que responden rápido y con estrategia, no solo publican por publicar. La campaña con influencers nos trajo clientes que ni sabíamos que existían.</p>
+        <div class="rev-who">
+          <div class="rev-avatar">RS</div>
+          <div><div class="rev-name">Rodrigo S.</div><div class="rev-biz">Servicios profesionales</div></div>
+        </div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-quote">Los reels que nos hacen se sienten como contenido real, no como publicidad. El equipo entendió nuestra marca desde la primera reunión y los resultados hablan solos.</p>
+        <div class="rev-who">
+          <div class="rev-avatar">CP</div>
+          <div><div class="rev-name">Camila P.</div><div class="rev-biz">Retail / tienda de barrio</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- AGENDAR -->
 <section id="agendar">
   <div class="wrap">
@@ -863,6 +931,9 @@
     "https://www.instagram.com/reel/DZaVrHPh_5l/",
     "https://www.instagram.com/p/DZXtuHfE4oG/",
     "https://www.instagram.com/reel/DZaef8SuxkV/",
+    "https://www.instagram.com/p/DbmeIlzOkpM/",
+    "https://www.instagram.com/reel/DbzRRZeOxYl/",
+    "https://www.instagram.com/p/DbI47_KOocj/",
   ];
   function loadReelGrid(gridId, urls, emptyMsg){
     const grid = document.getElementById(gridId);
@@ -881,8 +952,32 @@
       </div>
     `).join('');
   }
+  function initReelCarousel(gridId){
+    const track = document.getElementById(gridId);
+    const wrap = track && track.closest('.reel-carousel');
+    const prev = wrap && wrap.querySelector('.rc-nav.prev');
+    const next = wrap && wrap.querySelector('.rc-nav.next');
+    if(!track || !prev || !next) return;
+    function update(){
+      const max = track.scrollWidth - track.clientWidth - 2;
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max;
+    }
+    function scrollByCard(dir){
+      const card = track.querySelector('.reel-card');
+      const amount = card ? card.getBoundingClientRect().width + 26 : track.clientWidth * 0.8;
+      track.scrollBy({left: dir * amount, behavior: 'smooth'});
+    }
+    prev.addEventListener('click', () => scrollByCard(-1));
+    next.addEventListener('click', () => scrollByCard(1));
+    track.addEventListener('scroll', update);
+    window.addEventListener('resize', update);
+    update();
+  }
   loadReelGrid('reelGrid', REEL_URLS, `Mientras tanto, visita <a href="https://instagram.com/influence.chile" target="_blank" style="color:var(--teal-dark);font-weight:700">@influence.chile</a> para ver nuestro contenido más reciente.`);
   loadReelGrid('clientGrid', CLIENT_REEL_URLS, `Muy pronto sumaremos ejemplos del contenido que creamos para nuestros clientes.`);
+  initReelCarousel('reelGrid');
+  initReelCarousel('clientGrid');
   if(REEL_URLS.length || CLIENT_REEL_URLS.length){
     const s = document.createElement('script');
     s.async = true;
