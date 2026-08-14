@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preventa camiseta oficial — 50% OFF — Curacaví FC</title>
+<meta name="description" content="Preventa de la camiseta oficial de Curacaví FC con 50% de descuento: $14.990 CLP en vez de $29.990 CLP. Conoce las condiciones antes de comprar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner wrap" style="padding-left:0; padding-right:0;">
+    <a class="brand" href="index.html">
+      <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+      <span>
+        <span class="brand-name">Curacaví FC</span>
+        <span class="brand-tag">Plan de Salvataje 2026</span>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="colaborador.html">Sé Colaborador</a>
+      <a href="preventa.html" class="active">Preventa Camiseta</a>
+      <a href="album.html">Álbum</a>
+      <a href="marcas.html">Marcas Sponsors</a>
+    </nav>
+    <a href="colaborador.html" class="btn btn-primary nav-cta">Sé Fundador</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="index.html">Inicio</a>
+    <a href="colaborador.html">Sé Colaborador</a>
+    <a href="preventa.html" class="active">Preventa Camiseta</a>
+    <a href="album.html">Álbum</a>
+    <a href="marcas.html">Marcas Sponsors</a>
+    <a href="colaborador.html" class="btn btn-primary btn-block">Sé Fundador</a>
+  </div>
+</header>
+<script>
+  document.getElementById('navToggle').addEventListener('click', function(){
+    var m = document.getElementById('navMobile');
+    var open = m.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="eyebrow">Preventa oficial · 50% OFF</span>
+    <h1 class="titular">Tu camiseta de la primera camiseta con 500 sponsors</h1>
+    <p>Precio preventa exclusivo, por tiempo limitado, antes de que la camiseta oficial 2026 salga a la venta regular.</p>
+  </div>
+</section>
+
+<section class="form-section">
+  <div class="wrap">
+
+    <div class="price-box">
+      <span class="off-badge">50% OFF</span>
+      <div class="precio-regular">Precio regular $29.990 CLP</div>
+      <div class="precio-preventa">$14.990 <small>CLP</small></div>
+      <p>Precio preventa válido mientras dure la campaña. Pago único, sin cuotas.</p>
+    </div>
+
+    <div class="progress-block">
+      <span class="num" id="progNum">0 / 200</span>
+      <div class="progress-bar-lg"><i id="progBar"></i></div>
+      <p style="color:var(--gris); font-size:.85rem;">sponsors confirmados — cuota mínima para producir las camisetas</p>
+    </div>
+
+    <div class="terms-box">
+      <h3>📋 Condiciones de la preventa — léelas antes de comprar</h3>
+      <ol>
+        <li>El precio preventa es de <strong>$14.990 CLP</strong> (50% de descuento sobre el precio regular de <strong>$29.990 CLP</strong>). Personalizar con nombre y número tiene un costo adicional de <strong>$4.990 CLP</strong>.</li>
+        <li>Las camisetas entran en producción una vez se alcance una <strong>cuota mínima de 200 sponsors confirmados</strong> dentro del Plan de Salvataje.</li>
+        <li>Si esa cuota no se alcanza en la fecha estimada, la producción <strong>se aplaza a una nueva fecha</strong>, que será informada por nuestros canales oficiales (Instagram).</li>
+        <li>Si en esa nueva fecha tampoco se alcanza la cuota mínima, se realizará la <strong>devolución del dinero a cada comprador</strong>. Esta devolución se coordina de forma individual y no es inmediata.</li>
+        <li>Al comprar en preventa, <strong>aceptas expresamente estas condiciones</strong>.</li>
+      </ol>
+    </div>
+
+    <div class="consent-gate">
+      <input type="checkbox" id="acceptTerms">
+      <label for="acceptTerms">He leído y acepto las condiciones de la preventa descritas arriba, incluyendo que la entrega depende de alcanzar la cuota mínima de 200 sponsors y las condiciones de devolución en caso de no cumplirse.</label>
+    </div>
+
+    <p style="text-align:center; max-width:720px; margin:0 auto 18px; font-size:.95rem;">Total a pagar: <strong id="totalMonto" style="color:var(--naranja2); font-size:1.15rem;">$14.990 CLP</strong></p>
+
+    <div class="pay-preventa-btn">
+      <a href="https://link.mercadopago.cl/sponsorclub" target="_blank" rel="noopener" class="btn btn-primary" id="payBtn" aria-disabled="true">🔒 Acepta las condiciones para pagar</a>
+    </div>
+    <p class="pay-note-small">Al hacer clic irás a Mercado Pago. Ingresa <strong id="montoNota">$14.990</strong> en el campo de monto (revisa el total de arriba si personalizas tu camiseta). Si aparece un campo de mensaje/comentario, escribe <strong>"Preventa camiseta"</strong> y tu talla. De todas formas, completa el formulario de abajo para que quede registrada tu talla y contacto.</p>
+
+    <div class="form-card">
+
+      <form id="preventaForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre completo <span class="req">*</span></label>
+            <input type="text" name="nombre" required placeholder="Tu nombre">
+          </div>
+          <div class="field">
+            <label>Talla <span class="req">*</span></label>
+            <select name="talla" required>
+              <option value="">Selecciona una talla</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+              <option value="Niño (indicar edad en mensaje)">Niño (indicar edad en mensaje)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Teléfono / WhatsApp <span class="req">*</span></label>
+            <input type="tel" name="telefono" required placeholder="+56 9 1234 5678">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="tucorreo@mail.cl">
+          </div>
+
+          <div class="field full" style="background:var(--hueso); border:1.5px dashed var(--borde); border-radius:10px; padding:16px;">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; text-transform:none; font-weight:700; color:var(--negro); font-size:.9rem;">
+              <input type="checkbox" id="personalizar" style="width:19px; height:19px; accent-color:var(--naranja);">
+              Quiero personalizarla con nombre y número (+$4.990 CLP)
+            </label>
+          </div>
+
+          <div class="field" id="campoNombrePers" style="display:none;">
+            <label>Nombre a estampar</label>
+            <input type="text" name="nombrePersonalizado" placeholder="Ej: MENESES">
+          </div>
+          <div class="field" id="campoNumeroPers" style="display:none;">
+            <label>Número</label>
+            <input type="text" name="numeroPersonalizado" placeholder="Ej: 10" maxlength="2" inputmode="numeric">
+          </div>
+
+          <div class="field full">
+            <label>Mensaje (opcional)</label>
+            <textarea name="mensaje" placeholder="Ej: edad si es talla niño, o cualquier detalle adicional..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Registrar mi preventa →</button>
+        <p class="form-note">Al enviar, copiaremos tu solicitud y abriremos nuestro Instagram para que la envíes por mensaje directo. Recuerda pagar también con el botón de Mercado Pago de arriba, una vez aceptadas las condiciones.</p>
+      </form>
+
+      <div class="form-success" id="formSuccess">
+        <div class="icon">🟠⚫️</div>
+        <h3>¡Preventa registrada!</h3>
+        <p>Copiamos tu mensaje al portapapeles. Pégalo en el chat de Instagram que se abrió (o ábrelo manualmente) y la directiva de Curacaví FC confirmará tu preventa.</p>
+        <div class="copy-box" id="copyBox"></div>
+        <div class="success-ctas">
+          <button class="btn btn-primary" id="copyAgainBtn" type="button">Copiar mensaje de nuevo</button>
+          <a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener" class="btn btn-dark">Abrir Instagram</a>
+          <a href="https://link.mercadopago.cl/sponsorclub" target="_blank" rel="noopener" class="btn btn-outline">Pagar con Mercado Pago</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="assets/escudo.jpg" alt="Escudo Curacaví FC">
+          <strong>Curacaví FC</strong>
+        </div>
+        <p>Tercera División B · ANFA<br>Curacaví, Región Metropolitana<br>Estadio Olímpico Municipal Cuyuncaví</p>
+      </div>
+      <div>
+        <h4>Campaña</h4>
+        <ul>
+          <li><a href="colaborador.html">Sé Colaborador</a></li>
+          <li><a href="preventa.html">Preventa Camiseta</a></li>
+          <li><a href="marcas.html">Marcas Sponsors</a></li>
+          <li><a href="album.html">Álbum de fotos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener">@curacavi.fcoficial</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Curacaví FC — Plan de Salvataje</span>
+      <span>#PlanDeSalvataje #JuntosSomosMás</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Editar aquí a medida que se confirmen sponsors: cambia CONFIRMADOS.
+  const CUOTA_TOTAL = 200;
+  const CONFIRMADOS = 0;
+  document.getElementById('progNum').textContent = CONFIRMADOS + ' / ' + CUOTA_TOTAL;
+  document.getElementById('progBar').style.width = Math.min(100, (CONFIRMADOS / CUOTA_TOTAL) * 100) + '%';
+
+  // Personalización (+$4.990): muestra los campos y recalcula el total a pagar.
+  const PRECIO_BASE = 14990;
+  const PRECIO_PERSONALIZACION = 4990;
+  const personalizar = document.getElementById('personalizar');
+  const campoNombrePers = document.getElementById('campoNombrePers');
+  const campoNumeroPers = document.getElementById('campoNumeroPers');
+  const nombrePersInput = document.querySelector('[name="nombrePersonalizado"]');
+  const numeroPersInput = document.querySelector('[name="numeroPersonalizado"]');
+  const totalMonto = document.getElementById('totalMonto');
+  const montoNota = document.getElementById('montoNota');
+
+  function formatCLP(n){ return '$' + n.toLocaleString('es-CL') + ' CLP'; }
+
+  function updateTotal(){
+    const conPersonalizacion = personalizar.checked;
+    campoNombrePers.style.display = conPersonalizacion ? 'flex' : 'none';
+    campoNumeroPers.style.display = conPersonalizacion ? 'flex' : 'none';
+    nombrePersInput.required = conPersonalizacion;
+    numeroPersInput.required = conPersonalizacion;
+
+    const total = conPersonalizacion ? PRECIO_BASE + PRECIO_PERSONALIZACION : PRECIO_BASE;
+    totalMonto.textContent = formatCLP(total);
+    montoNota.textContent = '$' + total.toLocaleString('es-CL');
+  }
+  personalizar.addEventListener('change', updateTotal);
+  updateTotal();
+
+  // Gatillo de aceptación: el botón de pago solo se habilita si aceptan las condiciones.
+  const checkbox = document.getElementById('acceptTerms');
+  const payBtn = document.getElementById('payBtn');
+
+  function updatePayBtn(){
+    if (checkbox.checked) {
+      payBtn.setAttribute('aria-disabled', 'false');
+      payBtn.classList.remove('btn-primary');
+      payBtn.style.background = '';
+      payBtn.textContent = 'Pagar preventa con Mercado Pago →';
+    } else {
+      payBtn.setAttribute('aria-disabled', 'true');
+      payBtn.textContent = '🔒 Acepta las condiciones para pagar';
+    }
+  }
+  checkbox.addEventListener('change', updatePayBtn);
+
+  payBtn.addEventListener('click', (e) => {
+    if (payBtn.getAttribute('aria-disabled') === 'true') {
+      e.preventDefault();
+      checkbox.scrollIntoView({behavior:'smooth', block:'center'});
+      checkbox.style.outline = '2px solid var(--naranja)';
+      setTimeout(() => checkbox.style.outline = '', 1200);
+    }
+  });
+
+  // Formulario de registro de preventa (mismo patrón que colaborador.html)
+  const form = document.getElementById('preventaForm');
+  const success = document.getElementById('formSuccess');
+  const copyBox = document.getElementById('copyBox');
+
+  function buildMessage(data){
+    const conPersonalizacion = personalizar.checked;
+    const total = conPersonalizacion ? PRECIO_BASE + PRECIO_PERSONALIZACION : PRECIO_BASE;
+    let mensaje = `Hola Curacaví FC 🟠⚫️ Quiero registrar mi preventa de camiseta\n\n`
+      + `Nombre: ${data.get('nombre') || '-'}\n`
+      + `Talla: ${data.get('talla') || '-'}\n`
+      + `Personalización (nombre y número, +$4.990): ${conPersonalizacion ? 'Sí' : 'No'}\n`;
+    if (conPersonalizacion) {
+      mensaje += `  → Nombre a estampar: ${data.get('nombrePersonalizado') || '-'}\n`
+        + `  → Número: ${data.get('numeroPersonalizado') || '-'}\n`;
+    }
+    mensaje += `Total a pagar: ${formatCLP(total)}\n`
+      + `Teléfono: ${data.get('telefono') || '-'}\n`
+      + `Email: ${data.get('email') || '-'}\n`
+      + `Mensaje: ${data.get('mensaje') || '-'}\n\n`
+      + `Acepto las condiciones de la preventa (cuota mínima de 200 sponsors, aplazamiento y devolución coordinada si no se cumple).`;
+    return mensaje;
+  }
+
+  async function copyText(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  let lastMessage = '';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!checkbox.checked) {
+      checkbox.scrollIntoView({behavior:'smooth', block:'center'});
+      checkbox.style.outline = '2px solid var(--naranja)';
+      setTimeout(() => checkbox.style.outline = '', 1200);
+      return;
+    }
+    const data = new FormData(form);
+    lastMessage = buildMessage(data);
+    copyBox.textContent = lastMessage;
+    await copyText(lastMessage);
+
+    form.style.display = 'none';
+    success.classList.add('visible');
+
+    window.open('https://www.instagram.com/curacavi.fcoficial', '_blank', 'noopener');
+  });
+
+  document.getElementById('copyAgainBtn').addEventListener('click', () => copyText(lastMessage));
+</script>
+
+</body>
+</html>
