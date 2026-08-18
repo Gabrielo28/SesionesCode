@@ -39,6 +39,8 @@ const C = M.colores;
 const b64 = f => { try { return fs.existsSync(f) ? fs.readFileSync(f).toString('base64') : null; } catch { return null; } };
 const fuente = b64(FUENTE);
 const fondo = n => b64(path.join(VISUALES, n));
+const REFS = path.join(__dirname, '..', 'referencias');
+const emblema = b64(path.join(REFS, 'logo-wk-emblema.png'));
 
 // ---------- DATOS ----------
 // Confirmados en el press kit oficial (ver ../press-kit-oficial.pdf).
@@ -58,7 +60,7 @@ const piezas = [
     id: 'post-01-llegada',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'exo-descenso.png',
+    imagen: 'exo-retrato.png',
     sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
     titulo: 'NO SOY<br><span class="oro">DE ACÁ</span>',
     texto: 'Bajé a traer algo que todavía no existe.',
@@ -86,7 +88,7 @@ const piezas = [
     id: 'post-04-gravedad',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'exo-gravedad-cero.png',
+    imagen: 'exo-descenso.png',
     sobre: 'ALLÁ ARRIBA',
     titulo: 'ACÁ NO<br><span class="oro">PESA NADA</span>',
     texto: 'Ni la gravedad, ni lo que digan.',
@@ -135,8 +137,10 @@ const css = `
   .bg{position:absolute;inset:0;background-size:cover;background-position:center}
   /* Velo fuerte abajo: el texto va ENCIMA de la foto, no al lado. */
   .veil{position:absolute;inset:0;
-        background:linear-gradient(180deg,rgba(5,9,15,.42) 0%,rgba(5,9,15,0) 26%,
-                   rgba(5,9,15,0) 40%,rgba(5,9,15,.80) 70%,rgba(5,9,15,.97) 100%)}
+        background:linear-gradient(180deg,rgba(4,7,12,.55) 0%,rgba(4,7,12,.05) 20%,
+                   rgba(4,7,12,.05) 50%,rgba(4,7,12,.72) 68%,rgba(4,7,12,.98) 82%,rgba(4,7,12,1) 100%)}
+  /* Tinte frío para amarrar cualquier foto a la paleta oscura de la marca. */
+  .tinte{position:absolute;inset:0;background:${C.azul_profundo};mix-blend-mode:color;opacity:.34}
 
   /* Grano: saca el brillo digital y ensucia la imagen. */
   .grano{position:absolute;inset:-50%;opacity:.16;pointer-events:none;
@@ -148,8 +152,9 @@ const css = `
 
   /* Fondo sin foto: resplandor sucio, sin rejilla de dashboard. */
   .humo{position:absolute;inset:0;
-        background:radial-gradient(130% 62% at 50% 118%,${C.dorado_claro}CC,transparent 58%),
-                   linear-gradient(180deg,#0E3D6B 0%,#1E6FA8 46%,#3E9BD0 74%,#0B1B2E 100%)}
+        background:radial-gradient(120% 58% at 50% 8%,${C.azul_led}22,transparent 62%),
+                   radial-gradient(130% 60% at 50% 112%,${C.ambar}2E,transparent 58%),
+                   linear-gradient(180deg,${C.azul_profundo} 0%,${C.negro} 62%,#02040A 100%)}
 
   /* Banda diagonal: el gesto de flyer de fiesta. */
   .banda{position:absolute;left:-14%;width:128%;height:120px;transform:rotate(-6deg);
@@ -183,8 +188,10 @@ const css = `
   .centro h1{transform-origin:center bottom}
 
   /* Oro metálico con degradado, no un plano amarillo. */
-  .oro{background:linear-gradient(178deg,${C.dorado_claro} 4%,${C.dorado} 42%,#8A6620 72%,${C.dorado_claro} 100%);
-       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .oro{background:linear-gradient(177deg,#FFF6D8 2%,${C.dorado_claro} 16%,${C.dorado} 40%,
+                 ${C.dorado_oscuro} 60%,${C.dorado} 78%,${C.dorado_claro} 94%,#FFF6D8 100%);
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+       filter:drop-shadow(0 3px 0 ${C.dorado_oscuro}) drop-shadow(0 7px 14px rgba(0,0,0,.85))}
   .azul{color:${C.azul_led}}
   /* El 3 en lugar de la E es el único código gráfico propio del artista. */
   .tres{font-style:italic}
@@ -193,16 +200,20 @@ const css = `
     margin-top:30px;max-width:830px;text-shadow:0 6px 24px rgba(0,0,0,.9)}
   .centro p{margin-left:auto;margin-right:auto}
 
-  .pie{margin-top:32px;line-height:1.35;font-size:23px;font-weight:900;
+  .pie{margin-top:32px;max-width:770px;line-height:1.35;font-size:23px;font-weight:900;
        letter-spacing:.16em;color:${C.dorado};text-transform:uppercase;
        text-shadow:0 4px 18px rgba(0,0,0,.95)}
+  .sello{position:absolute;bottom:56px;right:64px;width:132px;z-index:7;opacity:.96;
+         filter:drop-shadow(0 6px 18px rgba(0,0,0,.9))}
   .pie.pendiente{color:#5A6E88;font-weight:700;letter-spacing:.1em}
 
   /* --- el dato como flex --- */
   .cifra{font-size:300px;font-weight:900;line-height:.78;letter-spacing:-.06em;
          transform:scaleX(.9) skewX(-5deg);transform-origin:left bottom;margin-left:-12px;
-         background:linear-gradient(178deg,${C.dorado_claro} 4%,${C.dorado} 44%,#8A6620 74%,${C.dorado_claro} 100%);
-         -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+         background:linear-gradient(177deg,#FFF6D8 2%,${C.dorado_claro} 18%,${C.dorado} 44%,
+                    ${C.dorado_oscuro} 62%,${C.dorado} 80%,#FFF6D8 100%);
+         -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+         filter:drop-shadow(0 4px 0 ${C.dorado_oscuro}) drop-shadow(0 10px 20px rgba(0,0,0,.9))}
   .unidad{font-size:52px;font-weight:900;letter-spacing:.22em;color:${C.blanco};
           margin:-6px 0 30px 2px}
 
@@ -238,10 +249,12 @@ const render = p => {
   const cab = `
     ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div><div class="veil"></div>`
           : '<div class="humo"></div>'}
+    ${img ? '<div class="tinte"></div>' : ''}
     ${p.tipo === 'alerta' ? '<div class="scan"></div>' : ''}
     <div class="grano"></div>
     ${p.tipo === 'alerta' ? '<div class="marco"></div>' : ''}
-    <div class="handle"><span>${M.instagram}</span><span class="r">${EP}</span></div>`;
+    <div class="handle"><span>${M.instagram}</span><span class="r">${EP}</span></div>
+    ${emblema ? `<img class="sello" src="data:image/png;base64,${emblema}">` : ''}`;
 
   const sobre = p.sobre ? `<div class="sobre">${p.sobre}</div>` : '';
   let cuerpo = '';

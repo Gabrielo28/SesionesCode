@@ -6,13 +6,11 @@
   "instagram": "@worldkingoficial",
   "instagram_url": "https://www.instagram.com/worldkingoficial",
   "_faltan_datos_cuenta": "Falta el @ de TikTok y el Smart Link de biografía",
-
   "origen": {
     "nacimiento": "23 de mayo de 1994",
     "lugar": "Lo Barnechea, Cerro 18 Sur — Santiago de Chile",
     "_nota": "El barrio es material narrativo de primera: en 2019 ganó el máximo galardón de la Semana Barnecheina, el festival de su propia comuna."
   },
-
   "lanzamiento_actual": {
     "ep": "3L REYGRESO",
     "single_disponible": "CACHAY",
@@ -21,82 +19,100 @@
     "claim_oficial": "SONIDOS TR3E DIMENSIONAL",
     "_nota": "CACHAY YA ESTÁ DISPONIBLE. El contenido no puede tratarlo como estreno futuro."
   },
-
   "recurso_tipografico": {
     "regla": "El 3 reemplaza a la E en palabras clave: 3L REYGRESO, TR3E DIMENSIONAL",
     "_nota": "Es el único código gráfico propio verificable del artista. Usarlo con moderación, sólo en titulares."
   },
-
   "juego_de_palabras": "REYGRESO = REY + REGRESO. El artista es World King: no es una llegada, es el regreso de un rey. Este es el mejor anclaje entre la narrativa exosférica de la propuesta y la identidad real del artista.",
-
   "catalogo": {
-    "singles": ["Amor Bandido", "Perdiendo el Control", "Tremenda Figura", "CACHAY"],
+    "singles": [
+      "Amor Bandido",
+      "Perdiendo el Control",
+      "Tremenda Figura",
+      "CACHAY"
+    ],
     "aparicion": "Álbum de Forest «Nasty Boyz Music» (2015), con Amor Bandido",
-    "colaboraciones": ["Américo", "Chocolate Blanco", "Dash & Cangri"],
+    "colaboraciones": [
+      "Américo",
+      "Chocolate Blanco",
+      "Dash & Cangri"
+    ],
     "_discrepancia": "La propuesta de contenido menciona 'Palm Beach' y 'Corsica' como catálogo previo; el press kit oficial no los incluye. CONFIRMAR con el cliente cuál es el catálogo correcto antes de publicar."
   },
-
   "prueba_social_verificable": [
-    { "hito": "Festival de Las Condes", "anio": 2024, "dato": "+12.000 personas · telonero de Carlos Vives" },
-    { "hito": "Semana Barnecheina", "anio": 2019, "dato": "Máximo galardón" },
-    { "hito": "Gira de medios por Colombia y países vecinos", "anio": 2018, "dato": "Radios, prensa y vitrinas musicales" }
+    {
+      "hito": "Festival de Las Condes",
+      "anio": 2024,
+      "dato": "+12.000 personas · telonero de Carlos Vives"
+    },
+    {
+      "hito": "Semana Barnecheina",
+      "anio": 2019,
+      "dato": "Máximo galardón"
+    },
+    {
+      "hito": "Gira de medios por Colombia y países vecinos",
+      "anio": 2018,
+      "dato": "Radios, prensa y vitrinas musicales"
+    }
   ],
   "_nota_prueba_social": "Estos datos vienen del press kit oficial y sirven para el Post 3 sin inventar cifras de streams.",
-
   "concepto_central": {
     "quien_es": "World King es un SER DE LA EXÓSFERA. No pertenece a la Tierra: baja desde la estratosfera a traer un género nuevo a la música urbana.",
     "el_arco": "Viene de arriba y llega acá. La calle es su DESTINO, no su origen.",
-    "tono": "Jovial, juvenil y luminoso. Llega con buena onda, no a conquistar. Sonríe, flota, disfruta la bajada.",
+    "tono": "Jovial y juvenil: llega con buena onda, sonríe, flota, disfruta la bajada. Pero la ESTÉTICA es oscura y espacial, no diurna: lo jovial está en su actitud, no en la luz.",
     "_errores_a_evitar": [
       "NO es un tipo de esquina de barrio con parka y cadenas: eso lo vuelve uno más de la calle y borra que viene de afuera.",
       "NO es un rey sombrío y solemne tipo Dune: eso lo pone serio y viejo, y pierde lo jovial.",
       "NO es una empresa de tecnología: nada de rejillas de dashboard, fichas técnicas ni tablas de datos.",
-      "El barrio (Cerro 18) es dato biográfico de color, NUNCA el titular ni el concepto."
+      "El barrio (Cerro 18) es dato biográfico de color, NUNCA el titular ni el concepto.",
+      "NO usar cielo diurno claro ni fondos blancos/celestes: aplana la marca y la aleja de sus canvas."
     ],
-    "luz": "Las piezas son LUMINOSAS: cielo azul brillante, sol dorado, blanco. No nocturnas y oscuras."
+    "luz": "Las piezas son OSCURAS: negro y azul profundo de espacio. La luz entra como brillo dorado metálico, brasa ámbar y LED azul, nunca como cielo de día."
   },
-
   "sistema_visual": {
     "concepto": "Un ser de la exósfera con códigos urbanos. La corona es el elemento icónico y no negociable.",
     "elementos_obligatorios": [
       "CORONA de puntas con forma de naves de combate, metal negro con tiras LED azul eléctrico",
-      "Streetwear futurista luminoso: chaqueta oversize blanca y azul con ribetes dorados. Ropa que no es de la Tierra pero se lee juvenil y urbana",
-      "Detalles dorados: cadenas finas, ribetes, energía. El oro es el código urbano",
-      "La curvatura de la Tierra, el sol dorado y el cielo azul brillante de la alta atmósfera",
-      "Estelas y ondas de energía dorada y azul: el género que trae y reparte"
+      "Vestuario negro y DORADO barroco: armadura de cuello, ribetes ornamentados, cadenas de oro",
+      "Audífonos dorados y el logo Dolby Atmos como parte del vestuario",
+      "Espacio OSCURO: campo de asteroides con brasas ámbar, la Tierra pequeña y lejana",
+      "Estelas de energía dorada y azul: el género que trae y reparte",
+      "El emblema WK dorado como sello de la pieza"
     ],
     "encuadres_de_la_marca": "Descendiendo, flotando o suspendido sobre la ciudad. Casi nunca con los pies en el suelo: si camina por la calle como uno más, se pierde el concepto.",
     "referencia_dolby": "En una de las piezas lleva un audífono con el logo Dolby Atmos visible: la tecnología es parte del vestuario, no sólo del copy.",
-    "registro": "Épica cinematográfica tipo Denis Villeneuve / Dune. NO cyberpunk lluvioso, NO neón rosado.",
+    "registro": "Espacial oscuro y saturado, con el dorado como protagonista. El brillo viene del metal y de las brasas, no del sol. NO cyberpunk lluvioso, NO neón rosado, NO cielo de día.",
     "_fuente": "Muestreado de las referencias reales del artista en referencias/ (canvas de Spotify y arte oficial)."
   },
-
   "colores": {
     "azul_led": "#2E9BFF",
-    "azul_profundo": "#0B1B2E",
-    "dorado": "#D4A64B",
-    "dorado_claro": "#F0D488",
-    "naranja_brasa": "#FF6B1A",
-    "negro": "#05090F",
-    "negro_panel": "#0C1622",
+    "azul_profundo": "#0A1626",
+    "dorado": "#C9A24B",
+    "dorado_claro": "#F2DC9B",
+    "dorado_oscuro": "#7A5A1E",
+    "ambar": "#FF8A2B",
+    "negro": "#04070C",
+    "negro_panel": "#0A121C",
     "blanco": "#FFFFFF",
-    "gris_texto": "#A8B8C8"
+    "gris_texto": "#9FB0C4"
   },
-  "_nota_colores": "PALETA REAL, muestreada de las referencias oficiales del artista (referencias/*.png): azul dominante en 210° y naranja en 15°, con dorado en la armadura. Reemplaza la paleta violeta/cian que se había propuesto antes de ver el material: esa era una suposición y estaba equivocada.",
-
+  "_nota_colores": "PALETA REAL, muestreada de los canvas y artes oficiales del artista. Es OSCURA: negro y azul profundo de espacio, con dorado metálico como protagonista, ámbar de brasa y azul LED de acento. Nunca cielo diurno claro.",
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
     "cuerpo": "Montserrat Medium",
     "datos_tecnicos": "Monoespaciada (estética terminal / transmisión) para coordenadas, cifras y códigos",
-    "_falta": "No hay tipografía oficial definida. Montserrat se usa como base porque ya está en el repo (carrusel-5-errores/assets/Montserrat.ttf)."
+    "_falta": "No hay tipografía oficial definida. Montserrat se usa como base porque ya está en el repo (carrusel-5-errores/assets/Montserrat.ttf).",
+    "wordmark_oficial": "El wordmark del artista es tipografía 3D dorada con bisel metálico y profundidad, de aire graffiti/urbano. Las gráficas imitan ese acabado con degradado dorado y relieve, no con amarillo plano."
   },
-
   "logos": {
-    "_faltan": "No hay logo ni wordmark de World King. Necesario en PNG con fondo transparente, en versión clara sobre fondo oscuro."
+    "emblema": "referencias/logo-wk-transparente.png (fondo transparente, listo para usar)",
+    "solo_emblema": "referencias/logo-wk-emblema.png (sin el wordmark de abajo, para sello de esquina)",
+    "original": "referencias/logo-oficial-wk.jpg",
+    "wordmark_alterno": "referencias/wordmark-my-kingdom.jpg (WORLD KING / MY KINGDOM)",
+    "descripcion": "Monograma WK dorado 3D sobre un globo terráqueo con América visible, dentro de un anillo dorado con disco negro. Debajo, el wordmark WORLD KING en tipografía 3D biselada."
   },
-
   "publico": "Generación Z consumidora de música urbana en Chile y Cono Sur. Interés por futurismo, escapismo estético y streetwear/arte digital urbano.",
-
   "tono": [
     "Cinematográfico y misterioso, nunca explicativo",
     "Instala preguntas antes que respuestas",
@@ -105,11 +121,9 @@
     "El ritmo manda sobre la letra: todo debe enganchar en los primeros 3 segundos",
     "OJO con el registro: el single se llama CACHAY, un chilenismo callejero, y el sonido es afro/reggaetón cálido. La capa sci-fi es el envoltorio, no puede tragarse la calle."
   ],
-
   "assets_pendientes_cliente": [
     "Fotos del artista con el vestuario Techwear completo (rostro y cuerpo entero)",
     "Fotos en detalle del outfit: gafas iridiscentes, cierres y correas modulares del arnés",
-    "Logo / wordmark en PNG transparente",
     "Portada oficial del EP 3L REYGRESO y del single CACHAY",
     "Fecha de lanzamiento del EP (CACHAY ya está publicado)",
     "Aclarar la discrepancia de catálogo: ¿Palm Beach y Corsica son suyos?",

@@ -41,24 +41,26 @@ música urbana.** No pertenece a la Tierra: la calle es su destino, no su origen
 
 - Aparece **descendiendo, flotando o suspendido**. Casi nunca con los pies en el
   suelo: si camina por la calle como uno más, se pierde el concepto.
-- El tono es **jovial y juvenil**. Sonríe, disfruta la bajada, llega con buena
-  onda. No es un rey solemne ni un tipo duro.
-- Las piezas son **luminosas**: cielo azul brillante, sol dorado, blanco. No
-  nocturnas y oscuras.
-- Vestuario: **streetwear futurista luminoso** blanco y azul con ribetes dorados,
-  más la corona de naves con LED. Ropa que no es de la Tierra pero se lee urbana.
+- Lo **jovial está en su actitud** — sonríe, va relajado, disfruta la bajada — no
+  en la luz. La estética es **oscura**: negro y azul profundo de espacio.
+- La luz entra como **dorado metálico, brasa ámbar y LED azul**, nunca como sol
+  de día. El dorado es el protagonista.
+- Vestuario: corona de naves con LED, **armadura dorada barroca, audífonos
+  dorados y cadenas**. La tecnología Dolby es parte del vestuario.
+- Tipografía enorme e inclinada con **oro biselado en relieve**, imitando el
+  acabado 3D del wordmark oficial. Nunca amarillo plano.
 - Los copys hablan **desde su otredad**: "No soy de acá", "Bajé a traer algo que
   todavía no existe", "Ya voy bajando".
-- Tipografía enorme e inclinada sobre una base sólida abajo, con el oro metálico
-  como acento. El texto vive en la parte inferior para no tapar la figura.
+- El **emblema WK** va como sello abajo a la derecha en cada pieza.
 
-Tres direcciones que se probaron y se descartaron, y por qué:
+Cuatro direcciones que se probaron y se descartaron, y por qué:
 
 | Intento | Por qué no |
 |---|---|
-| Astronauta techwear violeta/cian | La paleta era inventada; la real es azul, dorado y naranja |
-| Rey espacial épico tipo Dune | Solemne y oscuro: perdía lo jovial y lo juvenil |
-| Esquina de barrio con parka y cadenas | Demasiado terrenal: lo volvía uno más de la calle y borraba que viene de afuera |
+| Astronauta techwear violeta/cian | La paleta era inventada; la real es dorado, ámbar y azul |
+| Rey espacial épico tipo Dune | Solemne y oscuro de más: perdía lo jovial |
+| Esquina de barrio con parka y cadenas | Demasiado terrenal: lo volvía uno más de la calle |
+| Descenso con cielo diurno y sol | Muy claro y aplanado: se alejaba de sus canvas |
 
 El barrio (Cerro 18) es dato biográfico de color, **nunca** el titular.
 
