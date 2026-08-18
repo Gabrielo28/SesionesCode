@@ -126,17 +126,17 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">Enviar solicitud →</button>
-        <p class="form-note">Al enviar, copiaremos tu solicitud y abriremos nuestro Instagram para que la envíes por mensaje directo — así la directiva la recibe de inmediato. Si eres Sponsor Pyme, recuerda pagar también con el botón de Mercado Pago de arriba.</p>
+        <p class="form-note">Al enviar, se abrirá WhatsApp con tu mensaje ya redactado para el presidente del club — solo debes confirmar el envío. Si eres Sponsor Pyme, recuerda pagar también con el botón de Mercado Pago de arriba.</p>
       </form>
 
       <div class="form-success" id="formSuccess">
         <div class="icon">🟠⚫️</div>
         <h3>¡Solicitud lista!</h3>
-        <p>Copiamos tu mensaje al portapapeles. Pégalo en el chat de Instagram que se abrió (o ábrelo manualmente) y la directiva de Curacaví FC te responderá a la brevedad.</p>
+        <p>Se abrió WhatsApp con tu mensaje ya escrito. Solo confirma el envío y la directiva de Curacaví FC te responderá a la brevedad.</p>
         <div class="copy-box" id="copyBox"></div>
         <div class="success-ctas">
-          <button class="btn btn-primary" id="copyAgainBtn" type="button">Copiar mensaje de nuevo</button>
-          <a href="https://www.instagram.com/curacavi.fcoficial" target="_blank" rel="noopener" class="btn btn-dark">Abrir Instagram</a>
+          <a href="#" id="openWhatsappBtn" target="_blank" rel="noopener" class="btn btn-primary">Abrir WhatsApp</a>
+          <button class="btn btn-dark" id="copyAgainBtn" type="button">Copiar mensaje</button>
           <a href="https://link.mercadopago.cl/sponsorclub" target="_blank" rel="noopener" class="btn btn-outline">Pagar con Mercado Pago</a>
         </div>
       </div>
@@ -213,7 +213,9 @@
     }
   }
 
+  const WHATSAPP_NUMBER = '56993931174';
   let lastMessage = '';
+  const openWhatsappBtn = document.getElementById('openWhatsappBtn');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -222,10 +224,13 @@
     copyBox.textContent = lastMessage;
     await copyText(lastMessage);
 
+    const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lastMessage)}`;
+    openWhatsappBtn.href = waLink;
+
     form.style.display = 'none';
     success.classList.add('visible');
 
-    window.open('https://www.instagram.com/curacavi.fcoficial', '_blank', 'noopener');
+    window.open(waLink, '_blank', 'noopener');
   });
 
   document.getElementById('copyAgainBtn').addEventListener('click', () => copyText(lastMessage));
