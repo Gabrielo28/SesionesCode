@@ -33,3 +33,28 @@ datos inventados. Al recibirlos, se cambian ahí y se vuelve a correr `build.js`
 
 Todo se dibuja dentro de `.frame` con tamaño explícito, no contra el `body`:
 posicionando contra el body, Chrome headless deja sin pintar la franja inferior.
+
+## Dirección de diseño
+
+**Género urbano con concepto espacial.** El espacio es el escenario; el código es
+de calle. Concretamente:
+
+- La calle es el lugar real (esquina, bodega, cables, graffiti, cancha) y el
+  planeta gigante en el cielo es lo que la vuelve épica. No al revés.
+- Tipografía **enorme**, condensada e inclinada, que sangra fuera del margen y va
+  **encima** de la foto, nunca al lado.
+- El **oro metálico con degradado** es el código del género — cadenas, corona.
+  Nada de amarillo plano.
+- El **dato es un flex**: la cifra manda la composición, no es una fila de tabla.
+- Grano, barrido de tubo y bandas diagonales tipo flyer de fiesta.
+- El **barrio va grande**: "CERRO 18 SUR" es titular, no un dato en una cajita.
+
+Lo que se evitó a propósito, porque hacía ver la marca como una empresa de
+tecnología: rejilla de fondo tipo dashboard, kickers con línea fina, tablas de
+datos ordenadas, mucho aire y copys de ficha técnica.
+
+## Nota de render
+
+Todo se dibuja dentro de `.frame` con tamaño explícito, y el pie va en el flujo
+normal del bloque de texto. Posicionar el pie contra el marco con `position:
+absolute` lo dejaba fuera del lienzo al renderizar.

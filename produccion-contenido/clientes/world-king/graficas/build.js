@@ -5,6 +5,10 @@
  *
  * Las piezas fotorrealistas (fondos generados con Higgsfield) viven en ../visuales/
  * y se embeben como base64. Este script sólo pone la capa tipográfica encima.
+ *
+ * DIRECCIÓN: género urbano con concepto espacial. El espacio es el escenario,
+ * el código es de calle. Tipografía enorme que sangra, oro metálico, grano,
+ * diagonales y texto encima de la foto — nunca ficha técnica ni tabla de datos.
  */
 
 const fs = require('fs');
@@ -41,8 +45,8 @@ const fondo = n => b64(path.join(VISUALES, n));
 const EP = '3L REYGRESO';
 const SINGLE = 'CACHAY';
 const FORMATO_AUDIO = 'DOLBY ATMOS 7.1.4';
-const COORDENADAS = '33°21\'S  70°31\'W';   // Lo Barnechea, Cerro 18 Sur — barrio del artista
-const ORIGEN = 'CERRO 18 SUR · LO BARNECHEA';
+const BARRIO = 'CERRO 18 SUR';
+const COMUNA = 'LO BARNECHEA · SANTIAGO';
 
 // PENDIENTE del cliente: se muestra como marcador visible para no publicar datos inventados.
 const FECHA_LANZAMIENTO = 'XX.XX.2026';
@@ -50,46 +54,57 @@ const FECHA_LANZAMIENTO = 'XX.XX.2026';
 // ---------- PIEZAS ----------
 const piezas = [
   {
+    // El dato es el flex, no una fila de tabla: el número manda la composición.
+    id: 'post-03-slide-01-flex',
+    w: 1080, h: 1350,
+    tipo: 'flex',
+    imagen: 'calle-cancha-barrio.png',
+    sobre: 'FESTIVAL DE LAS CONDES',
+    cifra: '12.000',
+    unidad: 'PERSONAS',
+    titulo: 'NO ES LA<br><span class="oro">PRIMERA VEZ</span>',
+    pie: 'TELONEÓ A CARLOS VIVES · 2024',
+  },
+  {
     id: 'post-02-slide-02-espectro',
     w: 1080, h: 1350,
     tipo: 'espectro',
-    kicker: 'ESPECIFICACIÓN TÉCNICA',
-    titulo: 'SONIDOS<br><span class="azul">TR3E</span> DIMENSIONAL',
-    texto: 'La mezcla se mueve alrededor tuyo, no delante. Por eso hay que escucharlo con audífonos.',
-    pie: `${FORMATO_AUDIO} · SEGUIMIENTO ESPACIAL`,
+    titulo: 'SONIDOS<br><span class="oro">TR<span class="tres">3</span>E</span><br>DIMENSIONAL',
+    texto: 'Ponte los audífonos.<br>El sonido te da la vuelta.',
+    pie: FORMATO_AUDIO,
   },
   {
-    id: 'post-02-slide-03-coordenadas',
+    // El barrio es código central del género urbano: va grande, no en una cajita.
+    id: 'post-02-slide-03-barrio',
     w: 1080, h: 1350,
-    tipo: 'coordenadas',
-    kicker: 'PUNTO DE ORIGEN',
-    coords: COORDENADAS,
-    altitud: ORIGEN,
-    titulo: EP,
-    texto: `El single <b>${SINGLE}</b> ya está sonando.<br>El EP completo aterriza el ${FECHA_LANZAMIENTO}.`,
+    tipo: 'barrio',
+    imagen: 'calle-rey-esquina.png',
+    sobre: 'DESDE',
+    titulo: BARRIO,
+    comuna: COMUNA,
+    texto: 'De acá al espacio.<br>Y de vuelta.',
+    pie: `${EP} · ${FECHA_LANZAMIENTO}`,
   },
   {
-    id: 'post-03-slide-01-terminal',
+    id: 'post-05-corona',
     w: 1080, h: 1350,
-    tipo: 'terminal',
-    kicker: 'REGISTRO VERIFICADO',
-    titulo: 'NO ES LA<br><span class="azul">PRIMERA VEZ</span>',
-    filas: [
-      ['FESTIVAL DE LAS CONDES · 2024', '+12.000'],
-      ['SEMANA BARNECHEINA · 2019', '1º LUGAR'],
-      ['GIRA DE MEDIOS · COLOMBIA', '2018'],
-    ],
-    pie: 'TELONERO DE CARLOS VIVES · SANTIAGO',
+    tipo: 'barrio',
+    imagen: 'calle-cadenas-corona.png',
+    sobre: 'EL REY',
+    titulo: 'LA CORONA<br><span class="oro">NO SE<br>PRESTA</span>',
+    comuna: `${EP} · ${SINGLE} YA DISPONIBLE`,
+    texto: '',
+    pie: 'LINK EN LA BIO',
   },
   {
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
     imagen: 'historia-01-fondo-cuenta-regresiva.png',
-    kicker: 'SEÑAL DETECTADA',
+    sobre: 'SEÑAL DETECTADA',
     titulo: 'EL REY<br><span class="oro">VUELVE</span>',
-    texto: `${EP} · cuenta regresiva activa.`,
-    hueco: true,   // deja aire abajo para el sticker nativo de cuenta regresiva
+    texto: EP,
+    hueco: true,
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
   },
   {
@@ -97,21 +112,19 @@ const piezas = [
     w: 1080, h: 1920,
     tipo: 'historia',
     imagen: 'historia-07-fondo-estrellado.png',
-    kicker: '',
     cita: true,
-    titulo: '«LA BARRA MÁS<br>CONTUNDENTE<br>DEL TEMA VA ACÁ»',
-    texto: '',
-    hueco: true,   // aire abajo para la herramienta musical nativa de Instagram
+    titulo: 'LA BARRA MÁS<br><span class="oro">CONTUNDENTE</span><br>DEL TEMA VA ACÁ',
+    hueco: true,
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE MÚSICA',
   },
   {
     id: 'historia-08-ultimo-aviso',
     w: 1080, h: 1920,
     tipo: 'alerta',
-    kicker: '⚠ TRANSMISIÓN FINAL',
-    titulo: 'ÚLTIMO<br>AVISO',
-    texto: 'El enlace está en la biografía.<br>Después de esto, la señal se corta.',
-    pie: 'LINK EN BIO',
+    sobre: 'ÚLTIMO AVISO',
+    titulo: 'SE<br>CORTA<br><span class="oro">LA SEÑAL</span>',
+    texto: 'Link en la bio.',
+    pie: SINGLE + ' · YA DISPONIBLE',
   },
 ];
 
@@ -120,157 +133,167 @@ const css = `
   @font-face { font-family:'Mont'; src:url(data:font/ttf;base64,${fuente}) format('truetype'); }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{background:${C.negro};overflow:hidden}
-  /* Todo se dibuja dentro de .frame, con tamaño explícito: si se posiciona
-     contra el body, Chrome headless deja sin pintar la franja inferior. */
   .frame{position:relative;overflow:hidden;font-family:'Mont',sans-serif;
          background:${C.negro};color:${C.blanco}}
 
-  /* fondo fotográfico generado con IA */
   .bg{position:absolute;inset:0;background-size:cover;background-position:center}
-  .veil{position:absolute;inset:0}
-  .veil.top{background:linear-gradient(180deg,rgba(5,9,15,.92) 0%,rgba(5,9,15,.45) 42%,rgba(5,9,15,.30) 62%,rgba(5,9,15,.95) 100%)}
+  /* Velo fuerte abajo: el texto va ENCIMA de la foto, no al lado. */
+  .veil{position:absolute;inset:0;
+        background:linear-gradient(180deg,rgba(5,9,15,.72) 0%,rgba(5,9,15,.30) 30%,
+                   rgba(5,9,15,.72) 62%,rgba(5,9,15,.97) 100%)}
 
-  /* rejilla técnica de fondo */
-  .grid{position:absolute;inset:0;opacity:.16;
-        background-image:linear-gradient(${C.azul_led} 1px,transparent 1px),
-                         linear-gradient(90deg,${C.azul_led} 1px,transparent 1px);
-        background-size:90px 90px}
-  .glowtop{position:absolute;top:-30%;left:50%;transform:translateX(-50%);
-           width:150%;height:70%;border-radius:50%;
-           background:radial-gradient(closest-side,${C.azul_led}66,transparent 70%);filter:blur(20px)}
-  .glowbot{position:absolute;bottom:-25%;left:50%;transform:translateX(-50%);
-           width:130%;height:55%;border-radius:50%;
-           background:radial-gradient(closest-side,${C.naranja_brasa}33,transparent 70%);filter:blur(20px)}
+  /* Grano: saca el brillo digital y ensucia la imagen. */
+  .grano{position:absolute;inset:-50%;opacity:.16;pointer-events:none;
+         background-image:radial-gradient(${C.blanco} .6px,transparent .7px);
+         background-size:3px 3px}
+  /* Barrido de tubo, más crudo que un scanline fino. */
+  .scan{position:absolute;inset:0;opacity:.22;
+        background:repeating-linear-gradient(180deg,rgba(0,0,0,.9) 0 3px,transparent 3px 9px)}
+
+  /* Fondo sin foto: resplandor sucio, sin rejilla de dashboard. */
+  .humo{position:absolute;inset:0;
+        background:radial-gradient(120% 70% at 50% 0%,${C.azul_led}30,transparent 60%),
+                   radial-gradient(100% 60% at 50% 105%,${C.naranja_brasa}30,transparent 62%),
+                   ${C.negro}}
+
+  /* Banda diagonal: el gesto de flyer de fiesta. */
+  .banda{position:absolute;left:-14%;width:128%;height:120px;transform:rotate(-6deg);
+         background:${C.dorado};opacity:.92;display:flex;align-items:center;
+         justify-content:center;gap:60px;overflow:hidden}
+  .banda span{font-size:38px;font-weight:900;letter-spacing:.16em;color:${C.negro};
+              white-space:nowrap;text-transform:uppercase}
 
   .wrap{position:absolute;inset:0;display:flex;flex-direction:column;
-        justify-content:center;padding:0 96px;z-index:5}
-  .wrap.arriba{justify-content:flex-start;padding-top:250px}
+        justify-content:flex-end;padding:0 68px 96px;z-index:5}
+  .wrap.arriba{justify-content:flex-start;padding:210px 68px 96px}
+  .wrap.centro{justify-content:center;text-align:center;align-items:center}
 
-  .handle{position:absolute;top:60px;left:96px;right:96px;z-index:6;
+  .handle{position:absolute;top:52px;left:68px;right:68px;z-index:6;
           display:flex;justify-content:space-between;align-items:center;
-          font-size:21px;font-weight:700;letter-spacing:.26em;color:${C.dorado}}
-  .handle .r{color:#4A5D72;letter-spacing:.18em}
+          font-size:20px;font-weight:800;letter-spacing:.20em;color:${C.dorado}}
+  .handle .r{color:#4A5D72;letter-spacing:.14em}
 
-  .kicker{font-size:26px;font-weight:700;letter-spacing:.30em;text-transform:uppercase;
-          color:${C.azul_led};margin-bottom:30px;display:flex;align-items:center;gap:18px}
-  .kicker::before{content:'';width:52px;height:2px;background:${C.azul_led}}
+  /* Etiqueta sólida, no kicker con línea fina corporativa. */
+  .sobre{display:inline-block;align-self:flex-start;background:${C.azul_led};color:${C.negro};
+         font-size:25px;font-weight:900;letter-spacing:.16em;padding:11px 22px;
+         margin-bottom:26px;text-transform:uppercase;transform:rotate(-2deg)}
+  .centro .sobre{align-self:center}
 
-  h1{font-size:112px;font-weight:900;line-height:.94;letter-spacing:-.035em;text-transform:uppercase}
-  h1.xl{font-size:150px}
-  h1.mono{font-family:'Mont',ui-monospace,monospace;font-size:132px;letter-spacing:-.02em}
-  h1.cita{font-size:78px;line-height:1.14;letter-spacing:-.02em;font-weight:800}
+  /* TIPOGRAFÍA: enorme, condensada e inclinada. Sangra fuera del margen. */
+  h1{font-size:158px;font-weight:900;line-height:.86;letter-spacing:-.055em;
+     text-transform:uppercase;transform:scaleX(.92) skewX(-5deg);transform-origin:left bottom;
+     margin-left:-8px;text-shadow:0 14px 44px rgba(0,0,0,.85)}
+  h1.mid{font-size:132px}
+  h1.cita{font-size:96px;line-height:.98;letter-spacing:-.04em}
+  .centro h1{transform-origin:center bottom}
+
+  /* Oro metálico con degradado, no un plano amarillo. */
+  .oro{background:linear-gradient(178deg,${C.dorado_claro} 4%,${C.dorado} 42%,#8A6620 72%,${C.dorado_claro} 100%);
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .azul{color:${C.azul_led}}
-  .oro{color:${C.dorado}}
+  /* El 3 en lugar de la E es el único código gráfico propio del artista. */
+  .tres{font-style:italic}
 
-  p{font-size:35px;font-weight:500;line-height:1.45;color:${C.gris_texto};
-    margin-top:38px;max-width:800px}
+  p{font-size:40px;font-weight:700;line-height:1.24;color:${C.blanco};
+    margin-top:30px;max-width:830px;text-shadow:0 6px 24px rgba(0,0,0,.9)}
+  .centro p{margin-left:auto;margin-right:auto}
 
-  .pie{position:absolute;bottom:78px;left:96px;right:96px;z-index:6;line-height:1.35;
-       font-size:22px;font-weight:700;letter-spacing:.22em;color:${C.dorado};
-       text-transform:uppercase}
-  .pie.pendiente{color:#5A6E88;font-weight:600;letter-spacing:.12em}
+  .pie{margin-top:32px;line-height:1.35;font-size:23px;font-weight:900;
+       letter-spacing:.16em;color:${C.dorado};text-transform:uppercase;
+       text-shadow:0 4px 18px rgba(0,0,0,.95)}
+  .pie.pendiente{color:#5A6E88;font-weight:700;letter-spacing:.1em}
 
-  /* --- espectro de audio 3D --- */
-  .barras{display:flex;align-items:flex-end;gap:11px;height:300px;margin-top:64px}
-  .barras i{flex:1;border-radius:4px 4px 0 0;
-            background:linear-gradient(180deg,${C.azul_led},${C.naranja_brasa})}
-  .orbita{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-          width:760px;height:760px;border:2px solid ${C.azul_led}44;border-radius:50%}
-  .orbita.b{width:540px;height:540px;border-color:${C.dorado}55}
-  .orbita.c{width:320px;height:320px;border-color:${C.azul_led}66}
+  /* --- el dato como flex --- */
+  .cifra{font-size:300px;font-weight:900;line-height:.78;letter-spacing:-.06em;
+         transform:scaleX(.9) skewX(-5deg);transform-origin:left bottom;margin-left:-12px;
+         background:linear-gradient(178deg,${C.dorado_claro} 4%,${C.dorado} 44%,#8A6620 74%,${C.dorado_claro} 100%);
+         -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .unidad{font-size:52px;font-weight:900;letter-spacing:.22em;color:${C.blanco};
+          margin:-6px 0 30px 2px}
 
-  /* --- coordenadas --- */
-  .coordbox{border:2px solid ${C.azul_led}55;background:${C.negro_panel}CC;
-            padding:44px 48px;margin-bottom:52px;align-self:flex-start}
-  .coordbox .l{font-size:24px;letter-spacing:.24em;color:#7A8CA4;font-weight:600;margin-bottom:12px}
-  .coordbox .v{font-size:44px;letter-spacing:.06em;font-weight:800;color:${C.azul_led}}
-  .coordbox .v+.l{margin-top:30px}
+  /* --- barrio --- */
+  .comuna{font-size:31px;font-weight:800;letter-spacing:.2em;color:${C.azul_led};
+          margin-top:20px;text-transform:uppercase}
 
-  /* --- terminal de datos --- */
-  .tabla{margin-top:60px;border-top:2px solid ${C.azul_led}55}
-  .tabla .fila{display:flex;justify-content:space-between;align-items:baseline;
-               padding:32px 4px;border-bottom:1px solid ${C.azul_led}33}
-  .tabla .k{font-size:29px;font-weight:600;letter-spacing:.14em;color:${C.gris_texto}}
-  .tabla .v{font-size:52px;font-weight:900;color:${C.azul_led};letter-spacing:-.01em}
+  /* --- espectro --- */
+  .barras{display:flex;align-items:flex-end;gap:9px;height:210px;margin-top:44px}
+  .barras i{flex:1;background:linear-gradient(180deg,${C.dorado_claro},${C.naranja_brasa} 62%,${C.azul_led})}
 
   /* --- alerta --- */
-  .scan{position:absolute;inset:0;opacity:.30;
-        background:repeating-linear-gradient(180deg,${C.azul_led}22 0 2px,transparent 2px 7px)}
-  .marco{position:absolute;inset:44px;border:3px solid ${C.azul_led};opacity:.75}
-  .marco::before,.marco::after{content:'';position:absolute;width:60px;height:60px;
-        border:5px solid ${C.azul_led}}
-  .marco::before{top:-5px;left:-5px;border-right:0;border-bottom:0}
-  .marco::after{bottom:-5px;right:-5px;border-left:0;border-top:0}
-
-  .centro{text-align:center;align-items:center}
-  .centro .kicker{justify-content:center}
-  .centro .kicker::before{display:none}
-  .centro p{margin-left:auto;margin-right:auto}
+  .marco{position:absolute;inset:36px;border:5px solid ${C.dorado};opacity:.9}
+  .marco::before,.marco::after{content:'';position:absolute;width:74px;height:74px;
+        border:9px solid ${C.azul_led}}
+  .marco::before{top:-9px;left:-9px;border-right:0;border-bottom:0}
+  .marco::after{bottom:-9px;right:-9px;border-left:0;border-top:0}
 `;
 
 // ---------- render ----------
-const barras = () => Array.from({ length: 26 }, (_, i) => {
-  // curva simétrica tipo espectro, determinista para que el build sea reproducible
-  const t = i / 25;
-  const alto = 18 + 82 * Math.pow(Math.sin(Math.PI * t), 1.5) * (0.62 + 0.38 * Math.abs(Math.sin(i * 2.1)));
+const barras = () => Array.from({ length: 30 }, (_, i) => {
+  const t = i / 29;
+  const alto = 16 + 84 * Math.pow(Math.sin(Math.PI * t), 1.3) * (0.55 + 0.45 * Math.abs(Math.sin(i * 2.7)));
   return `<i style="height:${alto.toFixed(1)}%"></i>`;
 }).join('');
 
+const cinta = (txt, top) =>
+  `<div class="banda" style="top:${top}">${Array(4).fill(`<span>${txt}</span>`).join('')}</div>`;
+
 const render = p => {
+  const pie = p.pie ? `<div class="pie ${p.pie.startsWith('DEJA') ? 'pendiente' : ''}">${p.pie}</div>` : '';
   const img = p.imagen ? fondo(p.imagen) : null;
   const cab = `
-    ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div>
-             <div class="veil top"></div>` : `<div class="grid"></div><div class="glowtop"></div><div class="glowbot"></div>`}
-    ${p.tipo === 'alerta' ? '<div class="scan"></div><div class="marco"></div>' : ''}
-    <div class="handle"><span>${M.instagram}</span><span class="r">WORLD KING · 2026</span></div>`;
+    ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div><div class="veil"></div>`
+          : '<div class="humo"></div>'}
+    ${p.tipo === 'alerta' ? '<div class="scan"></div>' : ''}
+    <div class="grano"></div>
+    ${p.tipo === 'alerta' ? '<div class="marco"></div>' : ''}
+    <div class="handle"><span>${M.instagram}</span><span class="r">${EP}</span></div>`;
 
+  const sobre = p.sobre ? `<div class="sobre">${p.sobre}</div>` : '';
   let cuerpo = '';
-  const kicker = p.kicker ? `<div class="kicker">${p.kicker}</div>` : '';
 
-  if (p.tipo === 'espectro') {
-    cuerpo = `<div class="orbita"></div><div class="orbita b"></div><div class="orbita c"></div>
+  if (p.tipo === 'flex') {
+    cuerpo = `<div class="wrap">
+        ${sobre}
+        <div class="cifra">${p.cifra}</div>
+        <div class="unidad">${p.unidad}</div>
+        <h1 class="mid">${p.titulo}</h1>
+        ${pie}
+      </div>`;
+  } else if (p.tipo === 'espectro') {
+    cuerpo = `${cinta(FORMATO_AUDIO, '138px')}
       <div class="wrap">
-        ${kicker}
         <h1>${p.titulo}</h1>
         <div class="barras">${barras()}</div>
         <p>${p.texto}</p>
+        ${pie}
       </div>`;
-  } else if (p.tipo === 'coordenadas') {
+  } else if (p.tipo === 'barrio') {
     cuerpo = `<div class="wrap">
-        ${kicker}
-        <div class="coordbox">
-          <div class="l">COORDENADAS</div><div class="v">${p.coords}</div>
-          <div class="l">ALTITUD DE ORIGEN</div><div class="v">${p.altitud}</div>
-        </div>
-        <h1 class="mono">${p.titulo}</h1>
-        <p>${p.texto}</p>
-      </div>`;
-  } else if (p.tipo === 'terminal') {
-    cuerpo = `<div class="wrap">
-        ${kicker}
+        ${sobre}
         <h1>${p.titulo}</h1>
-        <div class="tabla">
-          ${p.filas.map(([k, v]) => `<div class="fila"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('')}
-        </div>
+        <div class="comuna">${p.comuna}</div>
+        <p>${p.texto}</p>
+        ${pie}
       </div>`;
   } else if (p.tipo === 'alerta') {
-    cuerpo = `<div class="wrap centro">
-        ${kicker}
-        <h1 class="xl">${p.titulo}</h1>
+    cuerpo = `${cinta(`${SINGLE} · ${SINGLE} · ${SINGLE}`, '1230px')}
+      <div class="wrap centro">
+        ${sobre}
+        <h1>${p.titulo}</h1>
         <p>${p.texto}</p>
+        ${pie}
       </div>`;
-  } else { // historia sobre imagen
+  } else {
     cuerpo = `<div class="wrap ${p.hueco ? 'arriba' : ''}">
-        ${kicker}
+        ${sobre}
         <h1 class="${p.cita ? 'cita' : ''}">${p.titulo}</h1>
         ${p.texto ? `<p>${p.texto}</p>` : ''}
+        ${pie}
       </div>`;
   }
 
-  const pie = p.pie ? `<div class="pie ${p.pie.startsWith('DEJA') ? 'pendiente' : ''}">${p.pie}</div>` : '';
-
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"><style>${css}</style></head>
-    <body><div class="frame ${p.tipo}" style="width:${p.w}px;height:${p.h}px">${cab}${cuerpo}${pie}</div></body></html>`;
+    <body><div class="frame ${p.tipo}" style="width:${p.w}px;height:${p.h}px">${cab}${cuerpo}</div></body></html>`;
 };
 
 // ---------- build ----------
@@ -288,7 +311,7 @@ piezas.forEach(p => {
   process.stdout.write(`  ${p.id.padEnd(34)} ... `);
   try {
     execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-      '--force-device-scale-factor=1', '--default-background-color=ff050208',
+      '--force-device-scale-factor=1', '--default-background-color=ff05090F',
       `--screenshot=${png}`, `--window-size=${p.w},${p.h}`,
       'file://' + html.replace(/\\/g, '/')], { stdio: 'pipe' });
     console.log('✓');
