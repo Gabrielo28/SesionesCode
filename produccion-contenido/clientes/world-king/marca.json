@@ -1,0 +1,54 @@
+{
+  "cliente": "World King",
+  "agencia": "Influence Chile SPA",
+  "instagram": "@worldkingoficial",
+  "instagram_url": "https://www.instagram.com/worldkingoficial",
+  "_faltan_datos_cuenta": "Falta el @ de TikTok y el Smart Link de biografía",
+
+  "concepto": "Worldbuilding narrativo: World King como un ser proveniente de la exósfera. Contraste entre identidad hiper-tecnológica y sonido orgánico y nostálgico.",
+  "genero": "Reguetón old school fusionado con percusión afro en vivo",
+  "catalogo_previo": ["Palm Beach", "Corsica"],
+  "diferenciador_tecnico": "Mezcla en Dolby Atmos / audio espacial 3D — el contenido incentiva el uso de audífonos",
+
+  "colores": {
+    "violeta": "#7B2FFF",
+    "violeta_claro": "#A855F7",
+    "cian": "#00E5FF",
+    "negro": "#050208",
+    "negro_panel": "#0D0716",
+    "blanco": "#FFFFFF",
+    "gris_texto": "#B9AECD"
+  },
+  "_nota_colores": "PALETA PROPUESTA, no confirmada por el cliente. Derivada de la propuesta de contenido, que menciona explícitamente la 'estela de luz púrpura' y la estética cyberpunk. Confirmar con el artista o su manual de marca antes de publicar.",
+
+  "tipografia": {
+    "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
+    "cuerpo": "Montserrat Medium",
+    "datos_tecnicos": "Monoespaciada (estética terminal / transmisión) para coordenadas, cifras y códigos",
+    "_falta": "No hay tipografía oficial definida. Montserrat se usa como base porque ya está en el repo (carrusel-5-errores/assets/Montserrat.ttf)."
+  },
+
+  "logos": {
+    "_faltan": "No hay logo ni wordmark de World King. Necesario en PNG con fondo transparente, en versión clara sobre fondo oscuro."
+  },
+
+  "publico": "Generación Z consumidora de música urbana en Chile y Cono Sur. Interés por futurismo, escapismo estético y streetwear/arte digital urbano.",
+
+  "tono": [
+    "Cinematográfico y misterioso, nunca explicativo",
+    "Instala preguntas antes que respuestas: ¿quién es este ser y de dónde viene?",
+    "Se dirige a la audiencia como 'terrestres' — el artista habla desde fuera",
+    "Códigos de transmisión, señal, frecuencia y desclasificación",
+    "El ritmo manda sobre la letra: todo debe enganchar en los primeros 3 segundos"
+  ],
+
+  "assets_pendientes_cliente": [
+    "Fotos del artista con el vestuario Techwear completo (rostro y cuerpo entero)",
+    "Fotos en detalle del outfit: gafas iridiscentes, cierres y correas modulares del arnés",
+    "Logo / wordmark en PNG transparente",
+    "Nombre del tema y fecha exacta de lanzamiento",
+    "Cifras reales de streams para el post de prueba social",
+    "Metraje del artista cantando a cámara (Reel 2) y del BTS de percusión afro (Post 3, Historia 3)",
+    "Smart Link oficial de biografía"
+  ]
+}
