@@ -54,19 +54,28 @@ const FECHA_LANZAMIENTO = 'XX.XX.2026';
 // ---------- PIEZAS ----------
 const piezas = [
   {
-    // El dato es el flex, no una fila de tabla: el número manda la composición.
-    id: 'post-03-slide-01-flex',
+    // La llegada: quién es y de dónde viene. Es la pieza que instala el concepto.
+    id: 'post-01-llegada',
     w: 1080, h: 1350,
-    tipo: 'flex',
-    imagen: 'calle-cancha-barrio.png',
-    sobre: 'FESTIVAL DE LAS CONDES',
-    cifra: '12.000',
-    unidad: 'PERSONAS',
-    titulo: 'NO ES LA<br><span class="oro">PRIMERA VEZ</span>',
-    pie: 'TELONEÓ A CARLOS VIVES · 2024',
+    tipo: 'hero',
+    imagen: 'exo-descenso.png',
+    sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
+    titulo: 'NO SOY<br><span class="oro">DE ACÁ</span>',
+    texto: 'Bajé a traer algo que todavía no existe.',
+    pie: `${EP} · ${FECHA_LANZAMIENTO}`,
   },
   {
-    id: 'post-02-slide-02-espectro',
+    id: 'post-02-genero-nuevo',
+    w: 1080, h: 1350,
+    tipo: 'hero',
+    imagen: 'exo-ondas.png',
+    sobre: 'LO QUE TRAIGO',
+    titulo: 'UN GÉNERO<br><span class="oro">NUEVO</span>',
+    texto: 'Reguetón old school y percusión afro en vivo.<br>Nunca lo escuchaste así.',
+    pie: `${SINGLE} · YA DISPONIBLE`,
+  },
+  {
+    id: 'post-03-sonido',
     w: 1080, h: 1350,
     tipo: 'espectro',
     titulo: 'SONIDOS<br><span class="oro">TR<span class="tres">3</span>E</span><br>DIMENSIONAL',
@@ -74,35 +83,22 @@ const piezas = [
     pie: FORMATO_AUDIO,
   },
   {
-    // El barrio es código central del género urbano: va grande, no en una cajita.
-    id: 'post-02-slide-03-barrio',
+    id: 'post-04-gravedad',
     w: 1080, h: 1350,
-    tipo: 'barrio',
-    imagen: 'calle-rey-esquina.png',
-    sobre: 'DESDE',
-    titulo: BARRIO,
-    comuna: COMUNA,
-    texto: 'De acá al espacio.<br>Y de vuelta.',
-    pie: `${EP} · ${FECHA_LANZAMIENTO}`,
-  },
-  {
-    id: 'post-05-corona',
-    w: 1080, h: 1350,
-    tipo: 'barrio',
-    imagen: 'calle-cadenas-corona.png',
-    sobre: 'EL REY',
-    titulo: 'LA CORONA<br><span class="oro">NO SE<br>PRESTA</span>',
-    comuna: `${EP} · ${SINGLE} YA DISPONIBLE`,
-    texto: '',
-    pie: 'LINK EN LA BIO',
+    tipo: 'hero',
+    imagen: 'exo-gravedad-cero.png',
+    sobre: 'ALLÁ ARRIBA',
+    titulo: 'ACÁ NO<br><span class="oro">PESA NADA</span>',
+    texto: 'Ni la gravedad, ni lo que digan.',
+    pie: '@worldkingoficial',
   },
   {
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'historia-01-fondo-cuenta-regresiva.png',
-    sobre: 'SEÑAL DETECTADA',
-    titulo: 'EL REY<br><span class="oro">VUELVE</span>',
+    imagen: 'exo-llegada-cielo.png',
+    sobre: 'ENTRADA EN LA ATMÓSFERA',
+    titulo: 'YA<br><span class="oro">VOY<br>BAJANDO</span>',
     texto: EP,
     hueco: true,
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
@@ -111,7 +107,7 @@ const piezas = [
     id: 'historia-07-cita-musical',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'historia-07-fondo-estrellado.png',
+    imagen: 'exo-fondo-horizonte.png',
     cita: true,
     titulo: 'LA BARRA MÁS<br><span class="oro">CONTUNDENTE</span><br>DEL TEMA VA ACÁ',
     hueco: true,
@@ -122,9 +118,9 @@ const piezas = [
     w: 1080, h: 1920,
     tipo: 'alerta',
     sobre: 'ÚLTIMO AVISO',
-    titulo: 'SE<br>CORTA<br><span class="oro">LA SEÑAL</span>',
-    texto: 'Link en la bio.',
-    pie: SINGLE + ' · YA DISPONIBLE',
+    titulo: 'ME<br>DEVUELVO<br><span class="oro">ARRIBA</span>',
+    texto: 'El link está en la bio.<br>Después de esto, se corta la señal.',
+    pie: `${SINGLE} · YA DISPONIBLE`,
   },
 ];
 
@@ -139,8 +135,8 @@ const css = `
   .bg{position:absolute;inset:0;background-size:cover;background-position:center}
   /* Velo fuerte abajo: el texto va ENCIMA de la foto, no al lado. */
   .veil{position:absolute;inset:0;
-        background:linear-gradient(180deg,rgba(5,9,15,.72) 0%,rgba(5,9,15,.30) 30%,
-                   rgba(5,9,15,.72) 62%,rgba(5,9,15,.97) 100%)}
+        background:linear-gradient(180deg,rgba(5,9,15,.42) 0%,rgba(5,9,15,0) 26%,
+                   rgba(5,9,15,0) 40%,rgba(5,9,15,.80) 70%,rgba(5,9,15,.97) 100%)}
 
   /* Grano: saca el brillo digital y ensucia la imagen. */
   .grano{position:absolute;inset:-50%;opacity:.16;pointer-events:none;
@@ -152,9 +148,8 @@ const css = `
 
   /* Fondo sin foto: resplandor sucio, sin rejilla de dashboard. */
   .humo{position:absolute;inset:0;
-        background:radial-gradient(120% 70% at 50% 0%,${C.azul_led}30,transparent 60%),
-                   radial-gradient(100% 60% at 50% 105%,${C.naranja_brasa}30,transparent 62%),
-                   ${C.negro}}
+        background:radial-gradient(130% 62% at 50% 118%,${C.dorado_claro}CC,transparent 58%),
+                   linear-gradient(180deg,#0E3D6B 0%,#1E6FA8 46%,#3E9BD0 74%,#0B1B2E 100%)}
 
   /* Banda diagonal: el gesto de flyer de fiesta. */
   .banda{position:absolute;left:-14%;width:128%;height:120px;transform:rotate(-6deg);
@@ -174,7 +169,7 @@ const css = `
   .handle .r{color:#4A5D72;letter-spacing:.14em}
 
   /* Etiqueta sólida, no kicker con línea fina corporativa. */
-  .sobre{display:inline-block;align-self:flex-start;background:${C.azul_led};color:${C.negro};
+  .sobre{display:inline-block;align-self:flex-start;background:${C.dorado};color:${C.negro};
          font-size:25px;font-weight:900;letter-spacing:.16em;padding:11px 22px;
          margin-bottom:26px;text-transform:uppercase;transform:rotate(-2deg)}
   .centro .sobre{align-self:center}

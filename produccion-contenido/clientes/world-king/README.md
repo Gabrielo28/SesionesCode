@@ -36,22 +36,31 @@ posicionando contra el body, Chrome headless deja sin pintar la franja inferior.
 
 ## Dirección de diseño
 
-**Género urbano con concepto espacial.** El espacio es el escenario; el código es
-de calle. Concretamente:
+**World King es un ser de la exósfera que baja a traer un género nuevo a la
+música urbana.** No pertenece a la Tierra: la calle es su destino, no su origen.
 
-- La calle es el lugar real (esquina, bodega, cables, graffiti, cancha) y el
-  planeta gigante en el cielo es lo que la vuelve épica. No al revés.
-- Tipografía **enorme**, condensada e inclinada, que sangra fuera del margen y va
-  **encima** de la foto, nunca al lado.
-- El **oro metálico con degradado** es el código del género — cadenas, corona.
-  Nada de amarillo plano.
-- El **dato es un flex**: la cifra manda la composición, no es una fila de tabla.
-- Grano, barrido de tubo y bandas diagonales tipo flyer de fiesta.
-- El **barrio va grande**: "CERRO 18 SUR" es titular, no un dato en una cajita.
+- Aparece **descendiendo, flotando o suspendido**. Casi nunca con los pies en el
+  suelo: si camina por la calle como uno más, se pierde el concepto.
+- El tono es **jovial y juvenil**. Sonríe, disfruta la bajada, llega con buena
+  onda. No es un rey solemne ni un tipo duro.
+- Las piezas son **luminosas**: cielo azul brillante, sol dorado, blanco. No
+  nocturnas y oscuras.
+- Vestuario: **streetwear futurista luminoso** blanco y azul con ribetes dorados,
+  más la corona de naves con LED. Ropa que no es de la Tierra pero se lee urbana.
+- Los copys hablan **desde su otredad**: "No soy de acá", "Bajé a traer algo que
+  todavía no existe", "Ya voy bajando".
+- Tipografía enorme e inclinada sobre una base sólida abajo, con el oro metálico
+  como acento. El texto vive en la parte inferior para no tapar la figura.
 
-Lo que se evitó a propósito, porque hacía ver la marca como una empresa de
-tecnología: rejilla de fondo tipo dashboard, kickers con línea fina, tablas de
-datos ordenadas, mucho aire y copys de ficha técnica.
+Tres direcciones que se probaron y se descartaron, y por qué:
+
+| Intento | Por qué no |
+|---|---|
+| Astronauta techwear violeta/cian | La paleta era inventada; la real es azul, dorado y naranja |
+| Rey espacial épico tipo Dune | Solemne y oscuro: perdía lo jovial y lo juvenil |
+| Esquina de barrio con parka y cadenas | Demasiado terrenal: lo volvía uno más de la calle y borraba que viene de afuera |
+
+El barrio (Cerro 18) es dato biográfico de color, **nunca** el titular.
 
 ## Nota de render
 

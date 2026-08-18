@@ -43,16 +43,29 @@
   ],
   "_nota_prueba_social": "Estos datos vienen del press kit oficial y sirven para el Post 3 sin inventar cifras de streams.",
 
+  "concepto_central": {
+    "quien_es": "World King es un SER DE LA EXÓSFERA. No pertenece a la Tierra: baja desde la estratosfera a traer un género nuevo a la música urbana.",
+    "el_arco": "Viene de arriba y llega acá. La calle es su DESTINO, no su origen.",
+    "tono": "Jovial, juvenil y luminoso. Llega con buena onda, no a conquistar. Sonríe, flota, disfruta la bajada.",
+    "_errores_a_evitar": [
+      "NO es un tipo de esquina de barrio con parka y cadenas: eso lo vuelve uno más de la calle y borra que viene de afuera.",
+      "NO es un rey sombrío y solemne tipo Dune: eso lo pone serio y viejo, y pierde lo jovial.",
+      "NO es una empresa de tecnología: nada de rejillas de dashboard, fichas técnicas ni tablas de datos.",
+      "El barrio (Cerro 18) es dato biográfico de color, NUNCA el titular ni el concepto."
+    ],
+    "luz": "Las piezas son LUMINOSAS: cielo azul brillante, sol dorado, blanco. No nocturnas y oscuras."
+  },
+
   "sistema_visual": {
-    "concepto": "REALEZA ESPACIAL. No es un astronauta ni un ser alienígena: es un REY en el espacio. La corona es el elemento icónico y no negociable.",
+    "concepto": "Un ser de la exósfera con códigos urbanos. La corona es el elemento icónico y no negociable.",
     "elementos_obligatorios": [
       "CORONA de puntas con forma de naves de combate, metal negro con tiras LED azul eléctrico",
-      "Cuello / hombrera de armadura DORADA ornamental barroca",
-      "Capa o túnica negra larga",
-      "Campo de asteroides y un planeta azul con luces naranjas en su lado nocturno",
-      "Brasas y grietas de lava naranja como fuente de luz cálida"
+      "Streetwear futurista luminoso: chaqueta oversize blanca y azul con ribetes dorados. Ropa que no es de la Tierra pero se lee juvenil y urbana",
+      "Detalles dorados: cadenas finas, ribetes, energía. El oro es el código urbano",
+      "La curvatura de la Tierra, el sol dorado y el cielo azul brillante de la alta atmósfera",
+      "Estelas y ondas de energía dorada y azul: el género que trae y reparte"
     ],
-    "encuadres_de_la_marca": "El artista aparece de espaldas o de perfil, mirando hacia el planeta. Rara vez de frente.",
+    "encuadres_de_la_marca": "Descendiendo, flotando o suspendido sobre la ciudad. Casi nunca con los pies en el suelo: si camina por la calle como uno más, se pierde el concepto.",
     "referencia_dolby": "En una de las piezas lleva un audífono con el logo Dolby Atmos visible: la tecnología es parte del vestuario, no sólo del copy.",
     "registro": "Épica cinematográfica tipo Denis Villeneuve / Dune. NO cyberpunk lluvioso, NO neón rosado.",
     "_fuente": "Muestreado de las referencias reales del artista en referencias/ (canvas de Spotify y arte oficial)."
