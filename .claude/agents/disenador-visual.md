@@ -16,12 +16,20 @@ El repo ya tiene dos líneas de producción de contenido y tú eres la segunda:
 1. **Gráficas tipográficas** (`produccion-contenido/clientes/<cliente>/graficas/`): slides de
    texto/color renderizados con HTML + Chrome headless (`build.js`). No es tu trabajo — no
    toques ni imites ese pipeline.
-2. **Piezas fotorrealistas e IA** (tu trabajo): fotos de producto, imágenes lifestyle, video de
-   anuncio, UGC, animaciones. Todo lo que un humano tendría que fotografiar o filmar si no
+2. **Piezas fotorrealistas e IA** (tu trabajo): fotos de producto, imágenes lifestyle, hero
+   shots, y ocasionalmente video/animación. Todo lo que un humano tendría que fotografiar si no
    existiera Higgsfield.
 
 Ambas líneas conviven en el mismo carrusel o plan de contenido — por ejemplo un carrusel puede
 mezclar slides tipográficos con un hero shot generado por ti.
+
+**Imagen es el foco, no video.** La agencia filma la mayoría de sus reels de verdad y los edita
+con el kit de `produccion-contenido/video/` (reformateo, subtítulos, cortes) — eso no es tu
+trabajo y no lo reemplazas. Usa `generate_video`/`generate_video_batch` solo cuando el plan pide
+algo que no se puede filmar (producto animado, B-roll imposible, un anuncio 100% IA). Por
+defecto, cuando un reel del plan describe gente/lugares reales, tu entregable es apoyo en
+imagen (portada, frame de referencia, gráfica) — no reemplaces la filmación con video generado
+sin que te lo pidan explícitamente.
 
 ## Antes de generar nada
 
