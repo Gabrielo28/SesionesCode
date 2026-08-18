@@ -56,11 +56,11 @@ const FECHA_LANZAMIENTO = 'XX.XX.2026';
 // ---------- PIEZAS ----------
 const piezas = [
   {
-    // La llegada: quién es y de dónde viene. Es la pieza que instala el concepto.
+    // La llegada: instala quién es y de dónde viene.
     id: 'post-01-llegada',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'exo-retrato.png',
+    imagen: 'rey-retrato-galaxia.png',
     sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
     titulo: 'NO SOY<br><span class="oro">DE ACÁ</span>',
     texto: 'Bajé a traer algo que todavía no existe.',
@@ -85,20 +85,31 @@ const piezas = [
     pie: FORMATO_AUDIO,
   },
   {
-    id: 'post-04-gravedad',
+    // El vestuario real: corona con gemas, lamé dorado, ankh, cetro.
+    id: 'post-04-corona',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'exo-descenso.png',
-    sobre: 'ALLÁ ARRIBA',
-    titulo: 'ACÁ NO<br><span class="oro">PESA NADA</span>',
-    texto: 'Ni la gravedad, ni lo que digan.',
+    imagen: 'rey-estudio-cetro.png',
+    sobre: 'EL REY',
+    titulo: 'LA CORONA<br><span class="oro">NO SE PRESTA</span>',
+    texto: '',
     pie: '@worldkingoficial',
+  },
+  {
+    id: 'post-05-ankh',
+    w: 1080, h: 1350,
+    tipo: 'hero',
+    imagen: 'ankh-macro.png',
+    sobre: 'LA MARCA',
+    titulo: 'VIDA<br><span class="oro">ETERNA</span>',
+    texto: 'El ankh no es adorno. Es de dónde vengo.',
+    pie: `${EP}`,
   },
   {
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'exo-llegada-cielo.png',
+    imagen: 'luna-fondo.png',
     sobre: 'ENTRADA EN LA ATMÓSFERA',
     titulo: 'YA<br><span class="oro">VOY<br>BAJANDO</span>',
     texto: EP,
@@ -152,9 +163,10 @@ const css = `
 
   /* Fondo sin foto: resplandor sucio, sin rejilla de dashboard. */
   .humo{position:absolute;inset:0;
-        background:radial-gradient(120% 58% at 50% 8%,${C.azul_led}22,transparent 62%),
-                   radial-gradient(130% 60% at 50% 112%,${C.ambar}2E,transparent 58%),
-                   linear-gradient(180deg,${C.azul_profundo} 0%,${C.negro} 62%,#02040A 100%)}
+        background:radial-gradient(90% 44% at 22% 12%,${C.magenta_galaxia}30,transparent 64%),
+                   radial-gradient(95% 46% at 78% 22%,${C.azul_galaxia}33,transparent 64%),
+                   radial-gradient(130% 56% at 50% 112%,${C.ambar}26,transparent 58%),
+                   linear-gradient(180deg,${C.azul_profundo} 0%,${C.negro} 60%,#02040A 100%)}
 
   /* Banda diagonal: el gesto de flyer de fiesta. */
   .banda{position:absolute;left:-14%;width:128%;height:120px;transform:rotate(-6deg);
@@ -203,6 +215,7 @@ const css = `
   .pie{margin-top:32px;max-width:770px;line-height:1.35;font-size:23px;font-weight:900;
        letter-spacing:.16em;color:${C.dorado};text-transform:uppercase;
        text-shadow:0 4px 18px rgba(0,0,0,.95)}
+  .ankh{display:inline-block;vertical-align:-2px;margin-right:12px;color:${C.dorado}}
   .sello{position:absolute;bottom:56px;right:64px;width:132px;z-index:7;opacity:.96;
          filter:drop-shadow(0 6px 18px rgba(0,0,0,.9))}
   .pie.pendiente{color:#5A6E88;font-weight:700;letter-spacing:.1em}
@@ -244,7 +257,8 @@ const cinta = (txt, top) =>
   `<div class="banda" style="top:${top}">${Array(4).fill(`<span>${txt}</span>`).join('')}</div>`;
 
 const render = p => {
-  const pie = p.pie ? `<div class="pie ${p.pie.startsWith('DEJA') ? 'pendiente' : ''}">${p.pie}</div>` : '';
+  const ankh = '<span class="ankh">\u2625</span>';
+  const pie = p.pie ? `<div class="pie ${p.pie.startsWith('DEJA') ? 'pendiente' : ''}">${p.pie.startsWith('DEJA') ? '' : ankh}${p.pie}</div>` : '';
   const img = p.imagen ? fondo(p.imagen) : null;
   const cab = `
     ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div><div class="veil"></div>`

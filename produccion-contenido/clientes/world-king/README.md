@@ -64,6 +64,22 @@ Cuatro direcciones que se probaron y se descartaron, y por qué:
 
 El barrio (Cerro 18) es dato biográfico de color, **nunca** el titular.
 
+### Vestuario real
+
+Las fotos del artista muestran el vestuario que **existe y se puede fotografiar**:
+corona negra con glitter y gemas de colores, lentes de sol oscuros, hombreras de
+lamé dorado, camisa barroca blanco y dorado, cadena con **ankh** de pavé, guantes
+blancos y bastón con puño dorado. Y sobre todo: un **manto con una galaxia
+impresa** — literalmente lleva el espacio puesto, que es el mejor hallazgo del
+vestuario.
+
+Los canvas son la versión idealizada del mismo personaje (la corona con forma de
+naves y LED es la misma corona en otro registro). Las piezas mezclan ambos.
+
+El **ankh** pasa a ser recurso gráfico propio y firma el pie de cada pieza.
+La capa de galaxia suma **magenta y morado** a la paleta, como acento sobre el
+negro y el dorado, nunca en lugar de ellos.
+
 ## Nota de render
 
 Todo se dibuja dentro de `.frame` con tamaño explícito, y el pie va en el flujo

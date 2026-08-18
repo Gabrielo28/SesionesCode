@@ -54,6 +54,11 @@
       "hito": "Gira de medios por Colombia y países vecinos",
       "anio": 2018,
       "dato": "Radios, prensa y vitrinas musicales"
+    },
+    {
+      "hito": "Foto con Américo backstage",
+      "anio": null,
+      "dato": "El press kit ya lo cita como colaboración; ahora hay foto. Material real para el post de prueba social."
     }
   ],
   "_nota_prueba_social": "Estos datos vienen del press kit oficial y sirven para el Post 3 sin inventar cifras de streams.",
@@ -95,9 +100,11 @@
     "negro": "#04070C",
     "negro_panel": "#0A121C",
     "blanco": "#FFFFFF",
-    "gris_texto": "#9FB0C4"
+    "gris_texto": "#9FB0C4",
+    "magenta_galaxia": "#B84FD4",
+    "azul_galaxia": "#3B6BE8"
   },
-  "_nota_colores": "PALETA REAL, muestreada de los canvas y artes oficiales del artista. Es OSCURA: negro y azul profundo de espacio, con dorado metálico como protagonista, ámbar de brasa y azul LED de acento. Nunca cielo diurno claro.",
+  "_nota_colores": "PALETA REAL, muestreada de los canvas y artes oficiales del artista. Es OSCURA: negro y azul profundo de espacio, con dorado metálico como protagonista, ámbar de brasa y azul LED de acento. Nunca cielo diurno claro. La capa de galaxia del vestuario real suma magenta y morado como acento; entran sobre el negro y el dorado, nunca en lugar de ellos.",
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
     "cuerpo": "Montserrat Medium",
@@ -122,12 +129,28 @@
     "OJO con el registro: el single se llama CACHAY, un chilenismo callejero, y el sonido es afro/reggaetón cálido. La capa sci-fi es el envoltorio, no puede tragarse la calle."
   ],
   "assets_pendientes_cliente": [
-    "Fotos del artista con el vestuario Techwear completo (rostro y cuerpo entero)",
-    "Fotos en detalle del outfit: gafas iridiscentes, cierres y correas modulares del arnés",
+    "Las fotos reales del artista COMO ARCHIVO (llegaron sólo como imágenes en el chat y no se pueden componer)",
+    "Los 6 archivos .CR2 exportados a JPG o PNG",
     "Portada oficial del EP 3L REYGRESO y del single CACHAY",
     "Fecha de lanzamiento del EP (CACHAY ya está publicado)",
     "Aclarar la discrepancia de catálogo: ¿Palm Beach y Corsica son suyos?",
-    "Metraje del artista cantando a cámara (Reel 2) y del BTS de percusión afro (Post 3, Historia 3)",
+    "¿La firma va como WORLD KING o WORLD KING MUSIC?",
+    "Metraje del artista cantando a cámara (Reel 2) y del BTS de percusión afro",
     "Smart Link oficial de biografía"
-  ]
+  ],
+  "vestuario_real": {
+    "_fuente": "Fotos reales del artista enviadas por el cliente (18-08-2026). Esto es lo que EXISTE y se puede fotografiar; los canvas son la versión idealizada del mismo personaje.",
+    "corona": "Corona negra con glitter y pedrería, con gemas de colores engastadas (rojo, azul, verde). En los artes de IA se idealiza como corona de naves con LED azul: son la misma corona en dos registros.",
+    "capa": "Manto con estampado de GALAXIA / nebulosa impresa — azules, magentas y morados sobre negro. Literalmente lleva el espacio puesto: es el mejor hallazgo del vestuario.",
+    "hombreras": "Hombreras de tela dorada metálica (lamé) arrugada, sobre capa negra",
+    "camisa": "Camisa barroca blanco y dorado, estilo Versace",
+    "joya": "Cadena dorada con un ANKH (cruz egipcia) en pavé — símbolo propio, conviene usarlo como recurso gráfico",
+    "accesorios": [
+      "Lentes de sol oscuros (aviador y cuadrados)",
+      "Bastón / cetro de madera con puño dorado",
+      "Guantes blancos"
+    ],
+    "escenario_recurrente": "Superficie LUNAR con la Tierra o la Luna grande al fondo",
+    "_nota_paleta": "La capa de galaxia aporta MAGENTA y MORADO a la paleta, que no estaban en los canvas. Suman como acento sobre el negro y el dorado, sin desplazarlos."
+  }
 }
