@@ -36,13 +36,16 @@ const b64 = f => { try { return fs.existsSync(f) ? fs.readFileSync(f).toString('
 const fuente = b64(FUENTE);
 const fondo = n => b64(path.join(VISUALES, n));
 
-// ---------- DATOS PENDIENTES DEL CLIENTE ----------
-// Marcados así para que se vea en la gráfica qué falta confirmar antes de publicar.
-const TEMA = 'TÍTULO DEL TEMA';
+// ---------- DATOS ----------
+// Confirmados en el press kit oficial (ver ../press-kit-oficial.pdf).
+const EP = '3L REYGRESO';
+const SINGLE = 'CACHAY';
+const FORMATO_AUDIO = 'DOLBY ATMOS 7.1.4';
+const COORDENADAS = '33°21\'S  70°31\'W';   // Lo Barnechea, Cerro 18 Sur — barrio del artista
+const ORIGEN = 'CERRO 18 SUR · LO BARNECHEA';
+
+// PENDIENTE del cliente: se muestra como marcador visible para no publicar datos inventados.
 const FECHA_LANZAMIENTO = 'XX.XX.2026';
-const COORDENADAS = '33°26\'S  70°39\'W';   // Santiago de Chile
-const ALTITUD = '640 KM · EXÓSFERA';
-const STREAMS = { palm_beach: '—', corsica: '—', oyentes: '—' };
 
 // ---------- PIEZAS ----------
 const piezas = [
@@ -51,32 +54,32 @@ const piezas = [
     w: 1080, h: 1350,
     tipo: 'espectro',
     kicker: 'ESPECIFICACIÓN TÉCNICA',
-    titulo: 'AUDIO<br><span class="cian">ESPACIAL 3D</span>',
+    titulo: 'SONIDOS<br><span class="cian">TR3E</span> DIMENSIONAL',
     texto: 'La mezcla se mueve alrededor tuyo, no delante. Por eso hay que escucharlo con audífonos.',
-    pie: 'DOLBY ATMOS · MEZCLA ENVOLVENTE',
+    pie: `${FORMATO_AUDIO} · SEGUIMIENTO ESPACIAL`,
   },
   {
     id: 'post-02-slide-03-coordenadas',
     w: 1080, h: 1350,
     tipo: 'coordenadas',
-    kicker: 'PUNTO DE ENTRADA',
+    kicker: 'PUNTO DE ORIGEN',
     coords: COORDENADAS,
-    altitud: ALTITUD,
-    titulo: FECHA_LANZAMIENTO,
-    texto: 'Sincroniza tu frecuencia.',
+    altitud: ORIGEN,
+    titulo: EP,
+    texto: `El single <b>${SINGLE}</b> ya está sonando.<br>El EP completo aterriza el ${FECHA_LANZAMIENTO}.`,
   },
   {
     id: 'post-03-slide-01-terminal',
     w: 1080, h: 1350,
     tipo: 'terminal',
-    kicker: 'TRANSMISIÓN RECIBIDA',
-    titulo: 'REGISTRO<br><span class="cian">DE SEÑAL</span>',
+    kicker: 'REGISTRO VERIFICADO',
+    titulo: 'NO ES LA<br><span class="cian">PRIMERA VEZ</span>',
     filas: [
-      ['PALM BEACH', STREAMS.palm_beach],
-      ['CORSICA', STREAMS.corsica],
-      ['OYENTES MENSUALES', STREAMS.oyentes],
+      ['FESTIVAL DE LAS CONDES · 2024', '+12.000'],
+      ['SEMANA BARNECHEINA · 2019', '1º LUGAR'],
+      ['GIRA DE MEDIOS · COLOMBIA', '2018'],
     ],
-    pie: 'DATOS VERIFICADOS · FUENTE: SPOTIFY',
+    pie: 'TELONERO DE CARLOS VIVES · SANTIAGO',
   },
   {
     id: 'historia-01-cuenta-regresiva',
@@ -84,8 +87,8 @@ const piezas = [
     tipo: 'historia',
     imagen: 'historia-01-fondo-cuenta-regresiva.png',
     kicker: 'SEÑAL DETECTADA',
-    titulo: 'ALGO<br>ESTÁ<br><span class="violeta">BAJANDO</span>',
-    texto: 'Cuenta regresiva activa.',
+    titulo: 'EL REY<br><span class="violeta">VUELVE</span>',
+    texto: `${EP} · cuenta regresiva activa.`,
     hueco: true,   // deja aire abajo para el sticker nativo de cuenta regresiva
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
   },
@@ -152,7 +155,7 @@ const css = `
           color:${C.cian};margin-bottom:30px;display:flex;align-items:center;gap:18px}
   .kicker::before{content:'';width:52px;height:2px;background:${C.cian}}
 
-  h1{font-size:118px;font-weight:900;line-height:.94;letter-spacing:-.035em;text-transform:uppercase}
+  h1{font-size:112px;font-weight:900;line-height:.94;letter-spacing:-.035em;text-transform:uppercase}
   h1.xl{font-size:150px}
   h1.mono{font-family:'Mont',ui-monospace,monospace;font-size:132px;letter-spacing:-.02em}
   h1.cita{font-size:78px;line-height:1.14;letter-spacing:-.02em;font-weight:800}

@@ -1,14 +1,47 @@
 {
   "cliente": "World King",
+  "nombre_real": "Matías Hernán Aguilera Olivares",
+  "alias_anterior": "Mati Zoom (2009-2010, SoundCloud)",
   "agencia": "Influence Chile SPA",
   "instagram": "@worldkingoficial",
   "instagram_url": "https://www.instagram.com/worldkingoficial",
   "_faltan_datos_cuenta": "Falta el @ de TikTok y el Smart Link de biografía",
 
-  "concepto": "Worldbuilding narrativo: World King como un ser proveniente de la exósfera. Contraste entre identidad hiper-tecnológica y sonido orgánico y nostálgico.",
-  "genero": "Reguetón old school fusionado con percusión afro en vivo",
-  "catalogo_previo": ["Palm Beach", "Corsica"],
-  "diferenciador_tecnico": "Mezcla en Dolby Atmos / audio espacial 3D — el contenido incentiva el uso de audífonos",
+  "origen": {
+    "nacimiento": "23 de mayo de 1994",
+    "lugar": "Lo Barnechea, Cerro 18 Sur — Santiago de Chile",
+    "_nota": "El barrio es material narrativo de primera: en 2019 ganó el máximo galardón de la Semana Barnecheina, el festival de su propia comuna."
+  },
+
+  "lanzamiento_actual": {
+    "ep": "3L REYGRESO",
+    "single_disponible": "CACHAY",
+    "genero_single": "afro / reggaetón",
+    "tecnologia": "Dolby Atmos 7.1.4 — seguimiento espacial avanzado",
+    "claim_oficial": "SONIDOS TR3E DIMENSIONAL",
+    "_nota": "CACHAY YA ESTÁ DISPONIBLE. El contenido no puede tratarlo como estreno futuro."
+  },
+
+  "recurso_tipografico": {
+    "regla": "El 3 reemplaza a la E en palabras clave: 3L REYGRESO, TR3E DIMENSIONAL",
+    "_nota": "Es el único código gráfico propio verificable del artista. Usarlo con moderación, sólo en titulares."
+  },
+
+  "juego_de_palabras": "REYGRESO = REY + REGRESO. El artista es World King: no es una llegada, es el regreso de un rey. Este es el mejor anclaje entre la narrativa exosférica de la propuesta y la identidad real del artista.",
+
+  "catalogo": {
+    "singles": ["Amor Bandido", "Perdiendo el Control", "Tremenda Figura", "CACHAY"],
+    "aparicion": "Álbum de Forest «Nasty Boyz Music» (2015), con Amor Bandido",
+    "colaboraciones": ["Américo", "Chocolate Blanco", "Dash & Cangri"],
+    "_discrepancia": "La propuesta de contenido menciona 'Palm Beach' y 'Corsica' como catálogo previo; el press kit oficial no los incluye. CONFIRMAR con el cliente cuál es el catálogo correcto antes de publicar."
+  },
+
+  "prueba_social_verificable": [
+    { "hito": "Festival de Las Condes", "anio": 2024, "dato": "+12.000 personas · telonero de Carlos Vives" },
+    { "hito": "Semana Barnecheina", "anio": 2019, "dato": "Máximo galardón" },
+    { "hito": "Gira de medios por Colombia y países vecinos", "anio": 2018, "dato": "Radios, prensa y vitrinas musicales" }
+  ],
+  "_nota_prueba_social": "Estos datos vienen del press kit oficial y sirven para el Post 3 sin inventar cifras de streams.",
 
   "colores": {
     "violeta": "#7B2FFF",
@@ -19,7 +52,7 @@
     "blanco": "#FFFFFF",
     "gris_texto": "#B9AECD"
   },
-  "_nota_colores": "PALETA PROPUESTA, no confirmada por el cliente. Derivada de la propuesta de contenido, que menciona explícitamente la 'estela de luz púrpura' y la estética cyberpunk. Confirmar con el artista o su manual de marca antes de publicar.",
+  "_nota_colores": "PALETA PROPUESTA, no confirmada. Derivada de la propuesta de contenido, que menciona la 'estela de luz púrpura' y la estética cyberpunk. El press kit no aporta identidad visual (es un documento de texto sin gráfica). Confirmar con el artista.",
 
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
@@ -36,18 +69,20 @@
 
   "tono": [
     "Cinematográfico y misterioso, nunca explicativo",
-    "Instala preguntas antes que respuestas: ¿quién es este ser y de dónde viene?",
+    "Instala preguntas antes que respuestas",
     "Se dirige a la audiencia como 'terrestres' — el artista habla desde fuera",
     "Códigos de transmisión, señal, frecuencia y desclasificación",
-    "El ritmo manda sobre la letra: todo debe enganchar en los primeros 3 segundos"
+    "El ritmo manda sobre la letra: todo debe enganchar en los primeros 3 segundos",
+    "OJO con el registro: el single se llama CACHAY, un chilenismo callejero, y el sonido es afro/reggaetón cálido. La capa sci-fi es el envoltorio, no puede tragarse la calle."
   ],
 
   "assets_pendientes_cliente": [
     "Fotos del artista con el vestuario Techwear completo (rostro y cuerpo entero)",
     "Fotos en detalle del outfit: gafas iridiscentes, cierres y correas modulares del arnés",
     "Logo / wordmark en PNG transparente",
-    "Nombre del tema y fecha exacta de lanzamiento",
-    "Cifras reales de streams para el post de prueba social",
+    "Portada oficial del EP 3L REYGRESO y del single CACHAY",
+    "Fecha de lanzamiento del EP (CACHAY ya está publicado)",
+    "Aclarar la discrepancia de catálogo: ¿Palm Beach y Corsica son suyos?",
     "Metraje del artista cantando a cámara (Reel 2) y del BTS de percusión afro (Post 3, Historia 3)",
     "Smart Link oficial de biografía"
   ]
