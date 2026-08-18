@@ -43,16 +43,33 @@
   ],
   "_nota_prueba_social": "Estos datos vienen del press kit oficial y sirven para el Post 3 sin inventar cifras de streams.",
 
-  "colores": {
-    "violeta": "#7B2FFF",
-    "violeta_claro": "#A855F7",
-    "cian": "#00E5FF",
-    "negro": "#050208",
-    "negro_panel": "#0D0716",
-    "blanco": "#FFFFFF",
-    "gris_texto": "#B9AECD"
+  "sistema_visual": {
+    "concepto": "REALEZA ESPACIAL. No es un astronauta ni un ser alienígena: es un REY en el espacio. La corona es el elemento icónico y no negociable.",
+    "elementos_obligatorios": [
+      "CORONA de puntas con forma de naves de combate, metal negro con tiras LED azul eléctrico",
+      "Cuello / hombrera de armadura DORADA ornamental barroca",
+      "Capa o túnica negra larga",
+      "Campo de asteroides y un planeta azul con luces naranjas en su lado nocturno",
+      "Brasas y grietas de lava naranja como fuente de luz cálida"
+    ],
+    "encuadres_de_la_marca": "El artista aparece de espaldas o de perfil, mirando hacia el planeta. Rara vez de frente.",
+    "referencia_dolby": "En una de las piezas lleva un audífono con el logo Dolby Atmos visible: la tecnología es parte del vestuario, no sólo del copy.",
+    "registro": "Épica cinematográfica tipo Denis Villeneuve / Dune. NO cyberpunk lluvioso, NO neón rosado.",
+    "_fuente": "Muestreado de las referencias reales del artista en referencias/ (canvas de Spotify y arte oficial)."
   },
-  "_nota_colores": "PALETA PROPUESTA, no confirmada. Derivada de la propuesta de contenido, que menciona la 'estela de luz púrpura' y la estética cyberpunk. El press kit no aporta identidad visual (es un documento de texto sin gráfica). Confirmar con el artista.",
+
+  "colores": {
+    "azul_led": "#2E9BFF",
+    "azul_profundo": "#0B1B2E",
+    "dorado": "#D4A64B",
+    "dorado_claro": "#F0D488",
+    "naranja_brasa": "#FF6B1A",
+    "negro": "#05090F",
+    "negro_panel": "#0C1622",
+    "blanco": "#FFFFFF",
+    "gris_texto": "#A8B8C8"
+  },
+  "_nota_colores": "PALETA REAL, muestreada de las referencias oficiales del artista (referencias/*.png): azul dominante en 210° y naranja en 15°, con dorado en la armadura. Reemplaza la paleta violeta/cian que se había propuesto antes de ver el material: esa era una suposición y estaba equivocada.",
 
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",

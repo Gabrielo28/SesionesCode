@@ -54,7 +54,7 @@ const piezas = [
     w: 1080, h: 1350,
     tipo: 'espectro',
     kicker: 'ESPECIFICACIÓN TÉCNICA',
-    titulo: 'SONIDOS<br><span class="cian">TR3E</span> DIMENSIONAL',
+    titulo: 'SONIDOS<br><span class="azul">TR3E</span> DIMENSIONAL',
     texto: 'La mezcla se mueve alrededor tuyo, no delante. Por eso hay que escucharlo con audífonos.',
     pie: `${FORMATO_AUDIO} · SEGUIMIENTO ESPACIAL`,
   },
@@ -73,7 +73,7 @@ const piezas = [
     w: 1080, h: 1350,
     tipo: 'terminal',
     kicker: 'REGISTRO VERIFICADO',
-    titulo: 'NO ES LA<br><span class="cian">PRIMERA VEZ</span>',
+    titulo: 'NO ES LA<br><span class="azul">PRIMERA VEZ</span>',
     filas: [
       ['FESTIVAL DE LAS CONDES · 2024', '+12.000'],
       ['SEMANA BARNECHEINA · 2019', '1º LUGAR'],
@@ -87,7 +87,7 @@ const piezas = [
     tipo: 'historia',
     imagen: 'historia-01-fondo-cuenta-regresiva.png',
     kicker: 'SEÑAL DETECTADA',
-    titulo: 'EL REY<br><span class="violeta">VUELVE</span>',
+    titulo: 'EL REY<br><span class="oro">VUELVE</span>',
     texto: `${EP} · cuenta regresiva activa.`,
     hueco: true,   // deja aire abajo para el sticker nativo de cuenta regresiva
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
@@ -128,19 +128,19 @@ const css = `
   /* fondo fotográfico generado con IA */
   .bg{position:absolute;inset:0;background-size:cover;background-position:center}
   .veil{position:absolute;inset:0}
-  .veil.top{background:linear-gradient(180deg,rgba(5,2,8,.92) 0%,rgba(5,2,8,.45) 42%,rgba(5,2,8,.30) 62%,rgba(5,2,8,.95) 100%)}
+  .veil.top{background:linear-gradient(180deg,rgba(5,9,15,.92) 0%,rgba(5,9,15,.45) 42%,rgba(5,9,15,.30) 62%,rgba(5,9,15,.95) 100%)}
 
   /* rejilla técnica de fondo */
   .grid{position:absolute;inset:0;opacity:.16;
-        background-image:linear-gradient(${C.violeta} 1px,transparent 1px),
-                         linear-gradient(90deg,${C.violeta} 1px,transparent 1px);
+        background-image:linear-gradient(${C.azul_led} 1px,transparent 1px),
+                         linear-gradient(90deg,${C.azul_led} 1px,transparent 1px);
         background-size:90px 90px}
   .glowtop{position:absolute;top:-30%;left:50%;transform:translateX(-50%);
            width:150%;height:70%;border-radius:50%;
-           background:radial-gradient(closest-side,${C.violeta}66,transparent 70%);filter:blur(20px)}
+           background:radial-gradient(closest-side,${C.azul_led}66,transparent 70%);filter:blur(20px)}
   .glowbot{position:absolute;bottom:-25%;left:50%;transform:translateX(-50%);
            width:130%;height:55%;border-radius:50%;
-           background:radial-gradient(closest-side,${C.cian}33,transparent 70%);filter:blur(20px)}
+           background:radial-gradient(closest-side,${C.naranja_brasa}33,transparent 70%);filter:blur(20px)}
 
   .wrap{position:absolute;inset:0;display:flex;flex-direction:column;
         justify-content:center;padding:0 96px;z-index:5}
@@ -148,57 +148,57 @@ const css = `
 
   .handle{position:absolute;top:60px;left:96px;right:96px;z-index:6;
           display:flex;justify-content:space-between;align-items:center;
-          font-size:21px;font-weight:700;letter-spacing:.26em;color:${C.violeta_claro}}
-  .handle .r{color:#5B4A72;letter-spacing:.18em}
+          font-size:21px;font-weight:700;letter-spacing:.26em;color:${C.dorado}}
+  .handle .r{color:#4A5D72;letter-spacing:.18em}
 
   .kicker{font-size:26px;font-weight:700;letter-spacing:.30em;text-transform:uppercase;
-          color:${C.cian};margin-bottom:30px;display:flex;align-items:center;gap:18px}
-  .kicker::before{content:'';width:52px;height:2px;background:${C.cian}}
+          color:${C.azul_led};margin-bottom:30px;display:flex;align-items:center;gap:18px}
+  .kicker::before{content:'';width:52px;height:2px;background:${C.azul_led}}
 
   h1{font-size:112px;font-weight:900;line-height:.94;letter-spacing:-.035em;text-transform:uppercase}
   h1.xl{font-size:150px}
   h1.mono{font-family:'Mont',ui-monospace,monospace;font-size:132px;letter-spacing:-.02em}
   h1.cita{font-size:78px;line-height:1.14;letter-spacing:-.02em;font-weight:800}
-  .cian{color:${C.cian}}
-  .violeta{color:${C.violeta_claro}}
+  .azul{color:${C.azul_led}}
+  .oro{color:${C.dorado}}
 
   p{font-size:35px;font-weight:500;line-height:1.45;color:${C.gris_texto};
     margin-top:38px;max-width:800px}
 
   .pie{position:absolute;bottom:78px;left:96px;right:96px;z-index:6;line-height:1.35;
-       font-size:22px;font-weight:700;letter-spacing:.22em;color:${C.violeta_claro};
+       font-size:22px;font-weight:700;letter-spacing:.22em;color:${C.dorado};
        text-transform:uppercase}
-  .pie.pendiente{color:#6E5A88;font-weight:600;letter-spacing:.12em}
+  .pie.pendiente{color:#5A6E88;font-weight:600;letter-spacing:.12em}
 
   /* --- espectro de audio 3D --- */
   .barras{display:flex;align-items:flex-end;gap:11px;height:300px;margin-top:64px}
   .barras i{flex:1;border-radius:4px 4px 0 0;
-            background:linear-gradient(180deg,${C.cian},${C.violeta})}
+            background:linear-gradient(180deg,${C.azul_led},${C.naranja_brasa})}
   .orbita{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-          width:760px;height:760px;border:2px solid ${C.violeta}44;border-radius:50%}
-  .orbita.b{width:540px;height:540px;border-color:${C.cian}44}
-  .orbita.c{width:320px;height:320px;border-color:${C.violeta}66}
+          width:760px;height:760px;border:2px solid ${C.azul_led}44;border-radius:50%}
+  .orbita.b{width:540px;height:540px;border-color:${C.dorado}55}
+  .orbita.c{width:320px;height:320px;border-color:${C.azul_led}66}
 
   /* --- coordenadas --- */
-  .coordbox{border:2px solid ${C.violeta}55;background:${C.negro_panel}CC;
+  .coordbox{border:2px solid ${C.azul_led}55;background:${C.negro_panel}CC;
             padding:44px 48px;margin-bottom:52px;align-self:flex-start}
-  .coordbox .l{font-size:24px;letter-spacing:.24em;color:#7C6A94;font-weight:600;margin-bottom:12px}
-  .coordbox .v{font-size:44px;letter-spacing:.06em;font-weight:800;color:${C.cian}}
+  .coordbox .l{font-size:24px;letter-spacing:.24em;color:#7A8CA4;font-weight:600;margin-bottom:12px}
+  .coordbox .v{font-size:44px;letter-spacing:.06em;font-weight:800;color:${C.azul_led}}
   .coordbox .v+.l{margin-top:30px}
 
   /* --- terminal de datos --- */
-  .tabla{margin-top:60px;border-top:2px solid ${C.violeta}55}
+  .tabla{margin-top:60px;border-top:2px solid ${C.azul_led}55}
   .tabla .fila{display:flex;justify-content:space-between;align-items:baseline;
-               padding:32px 4px;border-bottom:1px solid ${C.violeta}33}
+               padding:32px 4px;border-bottom:1px solid ${C.azul_led}33}
   .tabla .k{font-size:29px;font-weight:600;letter-spacing:.14em;color:${C.gris_texto}}
-  .tabla .v{font-size:52px;font-weight:900;color:${C.cian};letter-spacing:-.01em}
+  .tabla .v{font-size:52px;font-weight:900;color:${C.azul_led};letter-spacing:-.01em}
 
   /* --- alerta --- */
   .scan{position:absolute;inset:0;opacity:.30;
-        background:repeating-linear-gradient(180deg,${C.violeta}22 0 2px,transparent 2px 7px)}
-  .marco{position:absolute;inset:44px;border:3px solid ${C.violeta};opacity:.75}
+        background:repeating-linear-gradient(180deg,${C.azul_led}22 0 2px,transparent 2px 7px)}
+  .marco{position:absolute;inset:44px;border:3px solid ${C.azul_led};opacity:.75}
   .marco::before,.marco::after{content:'';position:absolute;width:60px;height:60px;
-        border:5px solid ${C.cian}}
+        border:5px solid ${C.azul_led}}
   .marco::before{top:-5px;left:-5px;border-right:0;border-bottom:0}
   .marco::after{bottom:-5px;right:-5px;border-left:0;border-top:0}
 
