@@ -106,6 +106,25 @@ la grilla a 1:1 y ahí saltan problemas que la pieza suelta esconde — en esta
 tanda aparecieron dos: una imagen que se leía como iconografía religiosa y un
 titular que se cortaba.
 
+### Emoción: maravilla, no poder
+
+El riesgo permanente de esta marca es que **el oro sobre negro la convierta en
+estética de capo**. Pasó una vez: primeros planos cerrados, dorado, y copys de
+poder territorial ("la corona no se presta", "ando entre ustedes y no se dieron
+cuenta"). Leía como narco, no como viajero de otra galaxia.
+
+Lo que lo corrige:
+
+- **Color de nebulosa.** Turquesa, magenta y violeta entran con fuerza. El
+  espacio no es negro vacío: está vivo y saturado. El dorado sigue siendo la
+  base de marca, pero deja de ser lo único.
+- **Escala.** Planos donde lo inmenso domina y el personaje es pequeño ante la
+  galaxia. Sin escala no hay épica.
+- **Luz que estalla**, rayos, partículas, movimiento. No sólo brillo de metal.
+- **Copys de asombro y generosidad**, nunca de dominio: "Vengo de más lejos de
+  lo que te imaginas", "Allá arriba la música se ve", "No vine a mandar, vine a
+  darles". Lo que trae **se comparte**, no se cobra ni se impone.
+
 ### Los dos registros del artista
 
 El vestuario tiene **dos modos**, y conviene alternarlos:

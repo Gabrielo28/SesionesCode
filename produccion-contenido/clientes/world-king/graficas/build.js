@@ -60,19 +60,19 @@ const piezas = [
     id: 'post-01-llegada',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'real-rey-capa-espacio.png',
+    imagen: 'cosmos-rey-estallido.png',
     sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
-    titulo: 'NO SOY<br><span class="oro">DE ACÁ</span>',
-    texto: 'Bajé a traer algo que todavía no existe.',
+    titulo: 'VENGO DE<br><span class="oro">MÁS LEJOS</span>',
+    texto: 'De lo que te imaginas.<br>Y crucé todo eso por esto.',
     pie: `${EP} · ${FECHA_LANZAMIENTO}`,
   },
   {
     id: 'post-02-genero-nuevo',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'exo-ondas.png',
+    imagen: 'cosmos-ondas.png',
     sobre: 'LO QUE TRAIGO',
-    titulo: 'UN GÉNERO<br><span class="oro">NUEVO</span>',
+    titulo: 'UN SONIDO<br><span class="oro">QUE NO ES<br>DE ACÁ</span>',
     texto: 'Reguetón old school y percusión afro en vivo.<br>Nunca lo escuchaste así.',
     pie: `${SINGLE} · YA DISPONIBLE`,
   },
@@ -80,6 +80,7 @@ const piezas = [
     id: 'post-03-sonido',
     w: 1080, h: 1350,
     tipo: 'espectro',
+    imagen: 'cosmos-ondas.png',
     titulo: 'SONIDOS<br><span class="oro">TR<span class="tres">3</span>E</span><br>DIMENSIONAL',
     texto: 'Ponte los audífonos.<br>El sonido te da la vuelta.',
     pie: FORMATO_AUDIO,
@@ -89,20 +90,20 @@ const piezas = [
     id: 'post-04-corona',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'real-rey-luna.png',
+    imagen: 'cosmos-rey-galaxia.png',
     sobre: 'EL REY',
-    titulo: 'LA CORONA<br><span class="oro">NO SE PRESTA</span>',
-    texto: 'Bajé con ella puesta.',
+    titulo: 'ALLÁ ARRIBA<br><span class="oro">LA MÚSICA<br>SE VE</span>',
+    texto: 'Acá abajo apenas se escucha. Yo la vi.',
     pie: '@worldkingoficial',
   },
   {
     id: 'post-05-ankh',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'ankh-macro.png',
+    imagen: 'cosmos-galaxia.png',
     sobre: 'LA MARCA',
-    titulo: 'VIDA<br><span class="oro">ETERNA</span>',
-    texto: 'El ankh no es adorno. Es de dónde vengo.',
+    titulo: 'DONDE NACÍ<br><span class="oro">NO HAY TIEMPO</span>',
+    texto: 'Por eso el ankh. Por eso volví.',
     pie: `${EP}`,
   },
   {
@@ -114,7 +115,7 @@ const piezas = [
     sobre: 'NO ES LA PRIMERA VEZ',
     cifra: '12.000',
     unidad: 'PERSONAS',
-    titulo: 'YA<br><span class="oro">ATERRICÉ</span><br>ANTES',
+    titulo: 'YA NOS<br><span class="oro">VIMOS</span><br>ANTES',
     pie: 'FESTIVAL DE LAS CONDES 2024 · TELONERO DE CARLOS VIVES',
   },
 
@@ -125,17 +126,17 @@ const piezas = [
     id: 'post-07-entre-ustedes',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'real-terrestre-calle.png',
+    imagen: 'cosmos-estallido.png',
     sobre: 'MODO TERRESTRE',
-    titulo: 'ANDO<br><span class="oro">ENTRE USTEDES</span>',
-    texto: 'Y no se dieron cuenta.',
+    titulo: 'NO VINE A<br><span class="oro">MANDAR</span>',
+    texto: 'Vine a darles.<br>Lo que traigo se comparte.',
     pie: `${EP} · ${FECHA_LANZAMIENTO}`,
   },
   {
     id: 'historia-09-ya-es-la-hora',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'real-terrestre-story.png',
+    imagen: 'cosmos-nebulosa-story.png',
     sobre: 'CUENTA REGRESIVA',
     titulo: 'YA<br><span class="oro">ES LA<br>HORA</span>',
     texto: '',
@@ -146,7 +147,7 @@ const piezas = [
     id: 'reel-01-la-llegada',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'exo-llegada-cielo.png',
+    imagen: 'cosmos-mundo-alien.png',
     n: '01',
     sobre: 'PONTE AUDÍFONOS',
     titulo: 'LA<br><span class="oro">LLEGADA</span>',
@@ -156,7 +157,7 @@ const piezas = [
     id: 'reel-02-adaptacion',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'real-rey-story.png',
+    imagen: 'cosmos-rey-story.png',
     n: '02',
     sobre: 'PERFORMANCE',
     titulo: 'ME<br><span class="oro">ADAPTO</span>',
@@ -166,7 +167,7 @@ const piezas = [
     id: 'reel-03-frecuencias',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'exo-fondo-horizonte.png',
+    imagen: 'cosmos-nebulosa-story.png',
     n: '03',
     sobre: 'FRECUENCIAS ANÓMALAS',
     titulo: 'NO<br><span class="oro">SOY</span><br>HUMANO',
@@ -176,7 +177,7 @@ const piezas = [
     id: 'reel-04-transmision',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'exo-ondas.png',
+    imagen: 'cosmos-ondas.png',
     n: '04',
     sobre: 'TRANSMISIÓN DIRECTA',
     titulo: 'SINCRONIZA<br><span class="oro">TU FRECUENCIA</span>',
@@ -245,7 +246,7 @@ const piezas = [
     tipo: 'historia',
     imagen: 'exo-multitud.png',
     sobre: 'PRUEBA DE IMPACTO',
-    titulo: 'USTEDES<br><span class="oro">SE SIENTEN</span><br>DESDE ARRIBA',
+    titulo: 'A USTEDES<br><span class="oro">SE LES OYE</span><br>DESDE ALLÁ',
     texto: 'Etiquétame y te comparto.',
     hueco: true,
     pie: 'DEJA ESPACIO ABAJO PARA EL REPOST',
@@ -262,9 +263,9 @@ const piezas = [
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'real-rey-story.png',
+    imagen: 'cosmos-rey-story.png',
     sobre: 'ENTRADA EN LA ATMÓSFERA',
-    titulo: 'YA<br><span class="oro">VOY<br>BAJANDO</span>',
+    titulo: 'ESTOY<br><span class="oro">ENTRANDO</span><br>EN ÓRBITA',
     texto: EP,
     hueco: true,
     pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
@@ -273,7 +274,7 @@ const piezas = [
     id: 'historia-07-cita-musical',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'exo-fondo-horizonte.png',
+    imagen: 'cosmos-nebulosa-story.png',
     cita: true,
     titulo: 'LA BARRA MÁS<br><span class="oro">CONTUNDENTE</span><br>DEL TEMA VA ACÁ',
     hueco: true,
@@ -284,7 +285,7 @@ const piezas = [
     w: 1080, h: 1920,
     tipo: 'alerta',
     sobre: 'ÚLTIMO AVISO',
-    titulo: 'ME<br>DEVUELVO<br><span class="oro">ARRIBA</span>',
+    titulo: 'ME<br>ESPERAN<br><span class="oro">ALLÁ ARRIBA</span>',
     texto: 'El link está en la bio.<br>Después de esto, se corta la señal.',
     pie: `${SINGLE} · YA DISPONIBLE`,
   },
@@ -301,10 +302,15 @@ const css = `
   .bg{position:absolute;inset:0;background-size:cover;background-position:center}
   /* Velo fuerte abajo: el texto va ENCIMA de la foto, no al lado. */
   .veil{position:absolute;inset:0;
-        background:linear-gradient(180deg,rgba(4,7,12,.55) 0%,rgba(4,7,12,.05) 20%,
-                   rgba(4,7,12,.05) 50%,rgba(4,7,12,.72) 68%,rgba(4,7,12,.98) 82%,rgba(4,7,12,1) 100%)}
+        background:linear-gradient(180deg,rgba(4,7,12,.40) 0%,rgba(4,7,12,0) 22%,
+                   rgba(4,7,12,0) 52%,rgba(4,7,12,.62) 70%,rgba(4,7,12,.95) 84%,rgba(4,7,12,1) 100%)}
   /* Tinte frío para amarrar cualquier foto a la paleta oscura de la marca. */
-  .tinte{position:absolute;inset:0;background:${C.azul_profundo};mix-blend-mode:color;opacity:.34}
+  .tinte{position:absolute;inset:0;background:${C.azul_profundo};mix-blend-mode:color;opacity:.18}
+  /* Luz de nebulosa: devuelve el color del cosmos que el velo se come. */
+  .aura{position:absolute;inset:0;mix-blend-mode:screen;opacity:.5;
+        background:radial-gradient(70% 40% at 18% 16%,${C.magenta_galaxia}55,transparent 66%),
+                   radial-gradient(70% 40% at 84% 26%,${C.turquesa}4D,transparent 66%),
+                   radial-gradient(90% 40% at 50% 96%,${C.violeta}40,transparent 62%)}
 
   /* Grano: saca el brillo digital y ensucia la imagen. */
   .grano{position:absolute;inset:-50%;opacity:.16;pointer-events:none;
@@ -339,7 +345,7 @@ const css = `
   .handle .r{color:#4A5D72;letter-spacing:.14em}
 
   /* Etiqueta sólida, no kicker con línea fina corporativa. */
-  .sobre{display:inline-block;align-self:flex-start;background:${C.dorado};color:${C.negro};
+  .sobre{display:inline-block;align-self:flex-start;background:${C.turquesa};color:${C.negro};
          font-size:25px;font-weight:900;letter-spacing:.16em;padding:11px 22px;
          margin-bottom:26px;text-transform:uppercase;transform:rotate(-2deg)}
   .centro .sobre{align-self:center}
@@ -443,7 +449,7 @@ const render = p => {
   const cab = `
     ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div><div class="veil"></div>`
           : '<div class="humo"></div>'}
-    ${img ? '<div class="tinte"></div>' : ''}
+    ${img ? '<div class="tinte"></div><div class="aura"></div>' : ''}
     ${p.tipo === 'alerta' ? '<div class="scan"></div>' : ''}
     <div class="grano"></div>
     ${p.tipo === 'alerta' ? '<div class="marco"></div>' : ''}

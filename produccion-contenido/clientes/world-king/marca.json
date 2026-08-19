@@ -71,9 +71,13 @@
       "NO es un rey sombrío y solemne tipo Dune: eso lo pone serio y viejo, y pierde lo jovial.",
       "NO es una empresa de tecnología: nada de rejillas de dashboard, fichas técnicas ni tablas de datos.",
       "El barrio (Cerro 18) es dato biográfico de color, NUNCA el titular ni el concepto.",
-      "NO usar cielo diurno claro ni fondos blancos/celestes: aplana la marca y la aleja de sus canvas."
+      "NO usar cielo diurno claro ni fondos blancos/celestes: aplana la marca y la aleja de sus canvas.",
+      "NO caer en estética de mafia o capo: oro sobre negro + primeros planos cerrados + copys de poder territorial ('la corona no se presta', 'ando entre ustedes') leen como narco, no como viajero cósmico.",
+      "NO usar copys de dominio o conquista. El registro es ASOMBRO y GENEROSIDAD: viene a compartir algo que vio allá arriba, no a mandar.",
+      "NO encerrar todo en primeros planos oscuros: sin escala no hay épica. Alternar planos donde el personaje es PEQUEÑO ante lo inmenso."
     ],
-    "luz": "Las piezas son OSCURAS: negro y azul profundo de espacio. La luz entra como brillo dorado metálico, brasa ámbar y LED azul, nunca como cielo de día."
+    "luz": "Las piezas son OSCURAS: negro y azul profundo de espacio. La luz entra como brillo dorado metálico, brasa ámbar y LED azul, nunca como cielo de día.",
+    "emocion": "La emoción base es MARAVILLA, no poder. Escala enorme, luz que estalla, color de nebulosa, movimiento. El espectador tiene que sentir que está viendo algo que no cabe en la pantalla."
   },
   "sistema_visual": {
     "concepto": "Un ser de la exósfera con códigos urbanos. La corona es el elemento icónico y no negociable.",
@@ -101,10 +105,12 @@
     "negro_panel": "#0A121C",
     "blanco": "#FFFFFF",
     "gris_texto": "#9FB0C4",
-    "magenta_galaxia": "#B84FD4",
-    "azul_galaxia": "#3B6BE8"
+    "magenta_galaxia": "#FF4FD8",
+    "azul_galaxia": "#3B6BE8",
+    "turquesa": "#2FE0D0",
+    "violeta": "#8B5CF6"
   },
-  "_nota_colores": "PALETA REAL, muestreada de los canvas y artes oficiales del artista. Es OSCURA: negro y azul profundo de espacio, con dorado metálico como protagonista, ámbar de brasa y azul LED de acento. Nunca cielo diurno claro. La capa de galaxia del vestuario real suma magenta y morado como acento; entran sobre el negro y el dorado, nunca en lugar de ellos.",
+  "_nota_colores": "PALETA: el dorado y el negro siguen siendo la base de marca, pero la galaxia APORTA COLOR. Turquesa, magenta y violeta de nebulosa entran con fuerza en las piezas épicas. El espacio no es negro vacío: está vivo y saturado. Sin ese color las piezas se leen como lujo oscuro y el personaje pierde su origen.",
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
     "cuerpo": "Montserrat Medium",
