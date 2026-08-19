@@ -115,9 +115,11 @@ cuenta"). Leía como narco, no como viajero de otra galaxia.
 
 Lo que lo corrige:
 
-- **Color de nebulosa.** Turquesa, magenta y violeta entran con fuerza. El
-  espacio no es negro vacío: está vivo y saturado. El dorado sigue siendo la
-  base de marca, pero deja de ser lo único.
+- **Color contenido.** El NEGRO domina el cuadro. La nebulosa aparece sólo como
+  resplandor sutil en los bordes, en violeta y azul apagados. Llenar el cuadro de
+  color saturado se ve chillón y barato — se probó y se descartó.
+- **Luz de dos fuentes.** Rim dorado cálido por un lado, azul frío por el otro,
+  sobre negro. Esa es la firma lumínica de la marca.
 - **Escala.** Planos donde lo inmenso domina y el personaje es pequeño ante la
   galaxia. Sin escala no hay épica.
 - **Luz que estalla**, rayos, partículas, movimiento. No sólo brillo de metal.

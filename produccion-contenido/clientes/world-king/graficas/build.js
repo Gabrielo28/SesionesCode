@@ -60,7 +60,7 @@ const piezas = [
     id: 'post-01-llegada',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'cosmos-rey-estallido.png',
+    imagen: 'wk-retrato.png',
     sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
     titulo: 'VENGO DE<br><span class="oro">MÁS LEJOS</span>',
     texto: 'De lo que te imaginas.<br>Y crucé todo eso por esto.',
@@ -70,7 +70,7 @@ const piezas = [
     id: 'post-02-genero-nuevo',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'cosmos-ondas.png',
+    imagen: 'fondo-espacio.png',
     sobre: 'LO QUE TRAIGO',
     titulo: 'UN SONIDO<br><span class="oro">QUE NO ES<br>DE ACÁ</span>',
     texto: 'Reguetón old school y percusión afro en vivo.<br>Nunca lo escuchaste así.',
@@ -80,7 +80,7 @@ const piezas = [
     id: 'post-03-sonido',
     w: 1080, h: 1350,
     tipo: 'espectro',
-    imagen: 'cosmos-ondas.png',
+    imagen: 'fondo-espacio.png',
     titulo: 'SONIDOS<br><span class="oro">TR<span class="tres">3</span>E</span><br>DIMENSIONAL',
     texto: 'Ponte los audífonos.<br>El sonido te da la vuelta.',
     pie: FORMATO_AUDIO,
@@ -90,7 +90,7 @@ const piezas = [
     id: 'post-04-corona',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'cosmos-rey-galaxia.png',
+    imagen: 'wk-cetro.png',
     sobre: 'EL REY',
     titulo: 'ALLÁ ARRIBA<br><span class="oro">LA MÚSICA<br>SE VE</span>',
     texto: 'Acá abajo apenas se escucha. Yo la vi.',
@@ -100,7 +100,7 @@ const piezas = [
     id: 'post-05-ankh',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'cosmos-galaxia.png',
+    imagen: 'wk-espaldas.png',
     sobre: 'LA MARCA',
     titulo: 'DONDE NACÍ<br><span class="oro">NO HAY TIEMPO</span>',
     texto: 'Por eso el ankh. Por eso volví.',
@@ -126,7 +126,7 @@ const piezas = [
     id: 'post-07-entre-ustedes',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'cosmos-estallido.png',
+    imagen: 'wk-terrestre.png',
     sobre: 'MODO TERRESTRE',
     titulo: 'NO VINE A<br><span class="oro">MANDAR</span>',
     texto: 'Vine a darles.<br>Lo que traigo se comparte.',
@@ -136,7 +136,7 @@ const piezas = [
     id: 'historia-09-ya-es-la-hora',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'cosmos-nebulosa-story.png',
+    imagen: 'fondo-story.png',
     sobre: 'CUENTA REGRESIVA',
     titulo: 'YA<br><span class="oro">ES LA<br>HORA</span>',
     texto: '',
@@ -147,7 +147,7 @@ const piezas = [
     id: 'reel-01-la-llegada',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'cosmos-mundo-alien.png',
+    imagen: 'fondo-story.png',
     n: '01',
     sobre: 'PONTE AUDÍFONOS',
     titulo: 'LA<br><span class="oro">LLEGADA</span>',
@@ -157,7 +157,7 @@ const piezas = [
     id: 'reel-02-adaptacion',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'cosmos-rey-story.png',
+    imagen: 'wk-story.png',
     n: '02',
     sobre: 'PERFORMANCE',
     titulo: 'ME<br><span class="oro">ADAPTO</span>',
@@ -167,7 +167,7 @@ const piezas = [
     id: 'reel-03-frecuencias',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'cosmos-nebulosa-story.png',
+    imagen: 'fondo-story.png',
     n: '03',
     sobre: 'FRECUENCIAS ANÓMALAS',
     titulo: 'NO<br><span class="oro">SOY</span><br>HUMANO',
@@ -177,7 +177,7 @@ const piezas = [
     id: 'reel-04-transmision',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'cosmos-ondas.png',
+    imagen: 'fondo-espacio.png',
     n: '04',
     sobre: 'TRANSMISIÓN DIRECTA',
     titulo: 'SINCRONIZA<br><span class="oro">TU FRECUENCIA</span>',
@@ -263,7 +263,7 @@ const piezas = [
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'cosmos-rey-story.png',
+    imagen: 'wk-story.png',
     sobre: 'ENTRADA EN LA ATMÓSFERA',
     titulo: 'ESTOY<br><span class="oro">ENTRANDO</span><br>EN ÓRBITA',
     texto: EP,
@@ -274,7 +274,7 @@ const piezas = [
     id: 'historia-07-cita-musical',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'cosmos-nebulosa-story.png',
+    imagen: 'fondo-story.png',
     cita: true,
     titulo: 'LA BARRA MÁS<br><span class="oro">CONTUNDENTE</span><br>DEL TEMA VA ACÁ',
     hueco: true,
@@ -307,10 +307,13 @@ const css = `
   /* Tinte frío para amarrar cualquier foto a la paleta oscura de la marca. */
   .tinte{position:absolute;inset:0;background:${C.azul_profundo};mix-blend-mode:color;opacity:.18}
   /* Luz de nebulosa: devuelve el color del cosmos que el velo se come. */
-  .aura{position:absolute;inset:0;mix-blend-mode:screen;opacity:.5;
-        background:radial-gradient(70% 40% at 18% 16%,${C.magenta_galaxia}55,transparent 66%),
-                   radial-gradient(70% 40% at 84% 26%,${C.turquesa}4D,transparent 66%),
-                   radial-gradient(90% 40% at 50% 96%,${C.violeta}40,transparent 62%)}
+  .aura{position:absolute;inset:0;mix-blend-mode:screen;opacity:.20;
+        background:radial-gradient(46% 30% at 8% 20%,${C.dorado}4A,transparent 70%),
+                   radial-gradient(44% 30% at 94% 34%,${C.azul_led}3A,transparent 70%),
+                   radial-gradient(60% 26% at 50% 100%,${C.violeta}26,transparent 66%)}
+  /* Viñeta: cierra los bordes y deja que el negro respire, como en la referencia. */
+  .vineta{position:absolute;inset:0;pointer-events:none;
+          background:radial-gradient(78% 62% at 50% 44%,transparent 42%,rgba(4,7,12,.55) 78%,rgba(4,7,12,.9) 100%)}
 
   /* Grano: saca el brillo digital y ensucia la imagen. */
   .grano{position:absolute;inset:-50%;opacity:.16;pointer-events:none;
@@ -322,10 +325,10 @@ const css = `
 
   /* Fondo sin foto: resplandor sucio, sin rejilla de dashboard. */
   .humo{position:absolute;inset:0;
-        background:radial-gradient(90% 44% at 22% 12%,${C.magenta_galaxia}30,transparent 64%),
-                   radial-gradient(95% 46% at 78% 22%,${C.azul_galaxia}33,transparent 64%),
-                   radial-gradient(130% 56% at 50% 112%,${C.ambar}26,transparent 58%),
-                   linear-gradient(180deg,${C.azul_profundo} 0%,${C.negro} 60%,#02040A 100%)}
+        background:radial-gradient(66% 34% at 14% 14%,${C.violeta}2A,transparent 68%),
+                   radial-gradient(60% 32% at 88% 26%,${C.azul_led}24,transparent 68%),
+                   radial-gradient(90% 40% at 50% 108%,${C.dorado}1F,transparent 62%),
+                   linear-gradient(180deg,#070B14 0%,${C.negro} 58%,#02040A 100%)}
 
   /* Banda diagonal: el gesto de flyer de fiesta. */
   .banda{position:absolute;left:-14%;width:128%;height:120px;transform:rotate(-6deg);
@@ -345,7 +348,7 @@ const css = `
   .handle .r{color:#4A5D72;letter-spacing:.14em}
 
   /* Etiqueta sólida, no kicker con línea fina corporativa. */
-  .sobre{display:inline-block;align-self:flex-start;background:${C.turquesa};color:${C.negro};
+  .sobre{display:inline-block;align-self:flex-start;background:${C.dorado};color:${C.negro};
          font-size:25px;font-weight:900;letter-spacing:.16em;padding:11px 22px;
          margin-bottom:26px;text-transform:uppercase;transform:rotate(-2deg)}
   .centro .sobre{align-self:center}
@@ -449,7 +452,7 @@ const render = p => {
   const cab = `
     ${img ? `<div class="bg" style="background-image:url(data:image/png;base64,${img})"></div><div class="veil"></div>`
           : '<div class="humo"></div>'}
-    ${img ? '<div class="tinte"></div><div class="aura"></div>' : ''}
+    ${img ? '<div class="tinte"></div><div class="aura"></div><div class="vineta"></div>' : ''}
     ${p.tipo === 'alerta' ? '<div class="scan"></div>' : ''}
     <div class="grano"></div>
     ${p.tipo === 'alerta' ? '<div class="marco"></div>' : ''}

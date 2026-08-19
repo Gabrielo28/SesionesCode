@@ -74,7 +74,8 @@
       "NO usar cielo diurno claro ni fondos blancos/celestes: aplana la marca y la aleja de sus canvas.",
       "NO caer en estética de mafia o capo: oro sobre negro + primeros planos cerrados + copys de poder territorial ('la corona no se presta', 'ando entre ustedes') leen como narco, no como viajero cósmico.",
       "NO usar copys de dominio o conquista. El registro es ASOMBRO y GENEROSIDAD: viene a compartir algo que vio allá arriba, no a mandar.",
-      "NO encerrar todo en primeros planos oscuros: sin escala no hay épica. Alternar planos donde el personaje es PEQUEÑO ante lo inmenso."
+      "NO encerrar todo en primeros planos oscuros: sin escala no hay épica. Alternar planos donde el personaje es PEQUEÑO ante lo inmenso.",
+      "NO saturar: nebulosas de colores brillantes llenando el cuadro se ven chillonas y baratas. El negro tiene que respirar."
     ],
     "luz": "Las piezas son OSCURAS: negro y azul profundo de espacio. La luz entra como brillo dorado metálico, brasa ámbar y LED azul, nunca como cielo de día.",
     "emocion": "La emoción base es MARAVILLA, no poder. Escala enorme, luz que estalla, color de nebulosa, movimiento. El espectador tiene que sentir que está viendo algo que no cabe en la pantalla."
@@ -92,7 +93,8 @@
     "encuadres_de_la_marca": "Descendiendo, flotando o suspendido sobre la ciudad. Casi nunca con los pies en el suelo: si camina por la calle como uno más, se pierde el concepto.",
     "referencia_dolby": "En una de las piezas lleva un audífono con el logo Dolby Atmos visible: la tecnología es parte del vestuario, no sólo del copy.",
     "registro": "Espacial oscuro y saturado, con el dorado como protagonista. El brillo viene del metal y de las brasas, no del sol. NO cyberpunk lluvioso, NO neón rosado, NO cielo de día.",
-    "_fuente": "Muestreado de las referencias reales del artista en referencias/ (canvas de Spotify y arte oficial)."
+    "_fuente": "Muestreado de las referencias reales del artista en referencias/ (canvas de Spotify y arte oficial).",
+    "iluminacion": "Luz de estudio de dos fuentes, como en la referencia aprobada: rim DORADO cálido por un lado y AZUL frío por el otro, sobre fondo negro. Esa es la firma lumínica de la marca."
   },
   "colores": {
     "azul_led": "#2E9BFF",
@@ -110,7 +112,7 @@
     "turquesa": "#2FE0D0",
     "violeta": "#8B5CF6"
   },
-  "_nota_colores": "PALETA: el dorado y el negro siguen siendo la base de marca, pero la galaxia APORTA COLOR. Turquesa, magenta y violeta de nebulosa entran con fuerza en las piezas épicas. El espacio no es negro vacío: está vivo y saturado. Sin ese color las piezas se leen como lujo oscuro y el personaje pierde su origen.",
+  "_nota_colores": "PALETA: el NEGRO domina el cuadro. El dorado es el acento principal y la nebulosa aparece sólo como resplandor sutil y localizado en los bordes — violeta y azul apagados, nunca saturados. Ni lujo oscuro sin color, ni color chillón: el punto medio es negro con luz contenida.",
   "tipografia": {
     "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
     "cuerpo": "Montserrat Medium",
