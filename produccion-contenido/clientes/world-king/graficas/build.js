@@ -120,6 +120,29 @@ const piezas = [
 
   // ----- PORTADAS DE REEL (9:16, el frame que se ve en el perfil) -----
   {
+    // Segundo registro: cuando se mezcla entre nosotros. El gesto del reloj
+    // es cuenta regresiva sin necesidad de explicarla.
+    id: 'post-07-entre-ustedes',
+    w: 1080, h: 1350,
+    tipo: 'hero',
+    imagen: 'real-terrestre-calle.png',
+    sobre: 'MODO TERRESTRE',
+    titulo: 'ANDO<br><span class="oro">ENTRE USTEDES</span>',
+    texto: 'Y no se dieron cuenta.',
+    pie: `${EP} · ${FECHA_LANZAMIENTO}`,
+  },
+  {
+    id: 'historia-09-ya-es-la-hora',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'real-terrestre-story.png',
+    sobre: 'CUENTA REGRESIVA',
+    titulo: 'YA<br><span class="oro">ES LA<br>HORA</span>',
+    texto: '',
+    hueco: true,
+    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE CUENTA REGRESIVA',
+  },
+  {
     id: 'reel-01-la-llegada',
     w: 1080, h: 1920,
     tipo: 'reel',

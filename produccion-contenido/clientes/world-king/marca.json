@@ -149,7 +149,8 @@
       "Guantes blancos"
     ],
     "escenario_recurrente": "Superficie LUNAR con la Tierra o la Luna grande al fondo",
-    "_nota_paleta": "La capa de galaxia aporta MAGENTA y MORADO a la paleta, que no estaban en los canvas. Suman como acento sobre el negro y el dorado, sin desplazarlos."
+    "_nota_paleta": "La capa de galaxia aporta MAGENTA y MORADO a la paleta, que no estaban en los canvas. Suman como acento sobre el negro y el dorado, sin desplazarlos.",
+    "segundo_registro": "MODO TERRESTRE: sombrero panamá, lentes redondos de cristal ámbar, chaleco gris, plastrón dorado y la misma camisa barroca. Es cómo se ve cuando se mezcla entre nosotros — sin corona ni capa. Da un contraste narrativo que el plan no tenía: el ser de la exósfera camuflado de terrestre. El gesto de mirarse el reloj funciona como cuenta regresiva sin tener que explicarla."
   },
   "fotos_reales": {
     "_ubicacion": "fotos/ — fotos originales del artista, con orientación EXIF ya corregida",
@@ -159,7 +160,8 @@
     "retrato-traje.jpg / cuerpo-entero-traje.jpg": "Traje gris y negro, lentes, cruz — registro más sobrio",
     "con-americo.jpg": "Backstage con otra persona. El press kit cita a Américo como colaboración, pero NO se puede verificar la identidad desde la foto: no se usa en ninguna pieza publicable hasta que el cliente confirme quién aparece. Si confirma, es material excelente para prueba social.",
     "recorte-*.png": "Los mismos, recortados con fondo transparente para componer sobre el espacio",
-    "_nota_tecnica": "Las fotos vienen subexpuestas: al componer se levantan sombras y se les agrega una luz de borde azul y ámbar para que la figura no se vea pegada sobre el fondo. Ver el script de composición."
+    "_nota_tecnica": "Las fotos vienen subexpuestas: al componer se levantan sombras y se les agrega una luz de borde azul y ámbar para que la figura no se vea pegada sobre el fondo. Ver el script de composición.",
+    "terrestre-reloj.jpg": "Modo terrestre, mirando el reloj. La mejor foto para cuenta regresiva."
   },
   "aprendizajes_de_produccion": [
     "Revisar SIEMPRE la vista previa del feed antes de dar por cerrado un set: la grilla recorta a 1:1 y muestra problemas que la pieza suelta esconde. Ahí aparecieron dos: una imagen con lectura religiosa involuntaria y un titular cortado.",

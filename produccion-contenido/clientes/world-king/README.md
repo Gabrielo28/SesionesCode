@@ -88,13 +88,13 @@ absolute` lo dejaba fuera del lienzo al renderizar.
 
 ## Inventario de piezas
 
-**25 gráficas** listas en `graficas/PNG/`:
+**27 gráficas** listas en `graficas/PNG/`:
 
 | Bloque | Cantidad | Formato |
 |---|---|---|
-| Posts de feed | 6 | 1080×1350 |
+| Posts de feed | 7 | 1080×1350 |
 | Portadas de reel | 4 | 1080×1920 |
-| Historias | 9 | 1080×1920 |
+| Historias | 10 | 1080×1920 |
 | Portadas de destacadas | 6 | 1080×1080 |
 
 Más dos vistas previas para revisar el conjunto:
@@ -105,6 +105,19 @@ Más dos vistas previas para revisar el conjunto:
 la grilla a 1:1 y ahí saltan problemas que la pieza suelta esconde — en esta
 tanda aparecieron dos: una imagen que se leía como iconografía religiosa y un
 titular que se cortaba.
+
+### Los dos registros del artista
+
+El vestuario tiene **dos modos**, y conviene alternarlos:
+
+- **Modo rey** — corona con gemas, capa de galaxia, hombreras doradas, ankh, cetro.
+  Es el ser de la exósfera.
+- **Modo terrestre** — sombrero panamá, lentes de cristal ámbar, chaleco, plastrón
+  dorado. Es cómo se ve cuando se mezcla entre nosotros.
+
+El contraste entre ambos es material narrativo que la propuesta original no tenía:
+el visitante camuflado. El gesto de mirarse el reloj, en modo terrestre, funciona
+como cuenta regresiva sin tener que explicarla.
 
 ## Qué falta del cliente
 
