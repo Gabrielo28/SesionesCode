@@ -85,3 +85,31 @@ negro y el dorado, nunca en lugar de ellos.
 Todo se dibuja dentro de `.frame` con tamaño explícito, y el pie va en el flujo
 normal del bloque de texto. Posicionar el pie contra el marco con `position:
 absolute` lo dejaba fuera del lienzo al renderizar.
+
+## Inventario de piezas
+
+**25 gráficas** listas en `graficas/PNG/`:
+
+| Bloque | Cantidad | Formato |
+|---|---|---|
+| Posts de feed | 6 | 1080×1350 |
+| Portadas de reel | 4 | 1080×1920 |
+| Historias | 9 | 1080×1920 |
+| Portadas de destacadas | 6 | 1080×1080 |
+
+Más dos vistas previas para revisar el conjunto:
+`_preview-feed.png` (la grilla como la ve alguien que llega al perfil) y
+`_preview-destacadas.png` (la tira circular bajo la bio).
+
+**Revisar siempre `_preview-feed.png` antes de cerrar un set.** Instagram recorta
+la grilla a 1:1 y ahí saltan problemas que la pieza suelta esconde — en esta
+tanda aparecieron dos: una imagen que se leía como iconografía religiosa y un
+titular que se cortaba.
+
+## Qué falta del cliente
+
+- Fecha de lanzamiento del EP (hoy sale como `XX.XX.2026`, marcador a propósito)
+- ¿La firma va como **WORLD KING** o **WORLD KING MUSIC**?
+- ¿Palm Beach y Corsica son suyos? La propuesta los cita, el press kit no
+- Confirmar quién aparece en la foto de backstage, para poder usarla
+- La barra del tema para la historia de cita musical

@@ -157,8 +157,13 @@
     "rey-capa-frente.jpg": "De pie con capa y hombreras doradas, tres cuartos",
     "rey-espaldas-a/b.jpg": "De espaldas, se ve la capa y las hombreras",
     "retrato-traje.jpg / cuerpo-entero-traje.jpg": "Traje gris y negro, lentes, cruz — registro más sobrio",
-    "con-americo.jpg": "Backstage con Américo. Prueba social real, el press kit ya cita la colaboración.",
+    "con-americo.jpg": "Backstage con otra persona. El press kit cita a Américo como colaboración, pero NO se puede verificar la identidad desde la foto: no se usa en ninguna pieza publicable hasta que el cliente confirme quién aparece. Si confirma, es material excelente para prueba social.",
     "recorte-*.png": "Los mismos, recortados con fondo transparente para componer sobre el espacio",
     "_nota_tecnica": "Las fotos vienen subexpuestas: al componer se levantan sombras y se les agrega una luz de borde azul y ámbar para que la figura no se vea pegada sobre el fondo. Ver el script de composición."
-  }
+  },
+  "aprendizajes_de_produccion": [
+    "Revisar SIEMPRE la vista previa del feed antes de dar por cerrado un set: la grilla recorta a 1:1 y muestra problemas que la pieza suelta esconde. Ahí aparecieron dos: una imagen con lectura religiosa involuntaria y un titular cortado.",
+    "Las imágenes generadas con figura humana de brazos abiertos y halo dorado se leen como iconografía religiosa. Para las piezas de energía, pedir explícitamente que no haya figuras.",
+    "No afirmar identidades de personas en fotos que el cliente no haya rotulado."
+  ]
 }

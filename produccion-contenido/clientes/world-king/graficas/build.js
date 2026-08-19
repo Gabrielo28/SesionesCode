@@ -106,6 +106,136 @@ const piezas = [
     pie: `${EP}`,
   },
   {
+    // Prueba social: el press kit ya citaba a Américo, ahora hay foto.
+    id: 'post-06-trayectoria',
+    w: 1080, h: 1350,
+    tipo: 'flex',
+    imagen: 'exo-multitud.png',
+    sobre: 'NO ES LA PRIMERA VEZ',
+    cifra: '12.000',
+    unidad: 'PERSONAS',
+    titulo: 'YA<br><span class="oro">ATERRICÉ</span><br>ANTES',
+    pie: 'FESTIVAL DE LAS CONDES 2024 · TELONERO DE CARLOS VIVES',
+  },
+
+  // ----- PORTADAS DE REEL (9:16, el frame que se ve en el perfil) -----
+  {
+    id: 'reel-01-la-llegada',
+    w: 1080, h: 1920,
+    tipo: 'reel',
+    imagen: 'exo-llegada-cielo.png',
+    n: '01',
+    sobre: 'PONTE AUDÍFONOS',
+    titulo: 'LA<br><span class="oro">LLEGADA</span>',
+    texto: 'Experiencia 3D',
+  },
+  {
+    id: 'reel-02-adaptacion',
+    w: 1080, h: 1920,
+    tipo: 'reel',
+    imagen: 'real-rey-story.png',
+    n: '02',
+    sobre: 'PERFORMANCE',
+    titulo: 'ME<br><span class="oro">ADAPTO</span>',
+    texto: 'Reguetón old school · percusión afro',
+  },
+  {
+    id: 'reel-03-frecuencias',
+    w: 1080, h: 1920,
+    tipo: 'reel',
+    imagen: 'exo-fondo-horizonte.png',
+    n: '03',
+    sobre: 'FRECUENCIAS ANÓMALAS',
+    titulo: 'NO<br><span class="oro">SOY</span><br>HUMANO',
+    texto: 'Slowed + reverb',
+  },
+  {
+    id: 'reel-04-transmision',
+    w: 1080, h: 1920,
+    tipo: 'reel',
+    imagen: 'exo-ondas.png',
+    n: '04',
+    sobre: 'TRANSMISIÓN DIRECTA',
+    titulo: 'SINCRONIZA<br><span class="oro">TU FRECUENCIA</span>',
+    texto: 'Link en la bio',
+  },
+
+  // ----- HISTORIAS QUE FALTABAN -----
+  {
+    id: 'historia-02-pregunta',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'exo-pregunta.png',
+    sobre: 'CAJA DE INTERACCIÓN',
+    titulo: '¿QUÉ<br><span class="oro">MENSAJE</span><br>ME LLEVO?',
+    texto: 'De la Tierra a la exósfera.',
+    hueco: true,
+    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE PREGUNTAS',
+  },
+  {
+    id: 'historia-03-bts',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'exo-estudio.png',
+    sobre: 'DETRÁS DE LA SEÑAL',
+    titulo: 'ASÍ<br><span class="oro">SUENA</span><br>ADENTRO',
+    texto: `${FORMATO_AUDIO}`,
+    hueco: true,
+    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER AL SITIO',
+  },
+  {
+    id: 'historia-04-outfit',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'detalle-corona.png',
+    sobre: 'ANATOMÍA DEL EQUIPO',
+    titulo: 'LA<br><span class="oro">CORONA</span>',
+    texto: 'Equipado para la gravedad terrestre.',
+    hueco: true,
+    pie: '1 DE 3 · CORONA · HOMBRERAS · ANKH',
+  },
+  {
+    id: 'historia-04b-outfit-ankh',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'detalle-ankh.png',
+    sobre: 'ANATOMÍA DEL EQUIPO',
+    titulo: 'EL<br><span class="oro">ANKH</span>',
+    texto: 'Vida eterna. No es adorno.',
+    hueco: true,
+    pie: '3 DE 3 · CORONA · HOMBRERAS · ANKH',
+  },
+  {
+    id: 'historia-05-invocacion',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'exo-vinilo.png',
+    sobre: 'INVOCACIÓN EN VIVO',
+    titulo: 'DALE<br><span class="oro">PLAY</span>',
+    texto: `${SINGLE} · ya disponible`,
+    hueco: true,
+    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE MÚSICA',
+  },
+  {
+    id: 'historia-06-prueba-impacto',
+    w: 1080, h: 1920,
+    tipo: 'historia',
+    imagen: 'exo-multitud.png',
+    sobre: 'PRUEBA DE IMPACTO',
+    titulo: 'USTEDES<br><span class="oro">SE SIENTEN</span><br>DESDE ARRIBA',
+    texto: 'Etiquétame y te comparto.',
+    hueco: true,
+    pie: 'DEJA ESPACIO ABAJO PARA EL REPOST',
+  },
+
+  // ----- PORTADAS DE HISTORIAS DESTACADAS (1:1) -----
+  { id: 'destacada-1-el-rey',   w: 1080, h: 1080, tipo: 'destacada', icono: '\u265A', rotulo: 'EL REY' },
+  { id: 'destacada-2-musica',   w: 1080, h: 1080, tipo: 'destacada', icono: '\u266B', rotulo: 'MÚSICA' },
+  { id: 'destacada-3-senal',    w: 1080, h: 1080, tipo: 'destacada', icono: '\u25CE', rotulo: 'LA SEÑAL' },
+  { id: 'destacada-4-ankh',     w: 1080, h: 1080, tipo: 'destacada', icono: '\u2625', rotulo: 'ORIGEN' },
+  { id: 'destacada-5-shows',    w: 1080, h: 1080, tipo: 'destacada', icono: '\u2605', rotulo: 'SHOWS' },
+  { id: 'destacada-6-terrestres', w: 1080, h: 1080, tipo: 'destacada', icono: '\u2641', rotulo: 'TERRESTRES' },
+  {
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
@@ -196,6 +326,9 @@ const css = `
      text-transform:uppercase;transform:scaleX(.92) skewX(-5deg);transform-origin:left bottom;
      margin-left:-8px;text-shadow:0 14px 44px rgba(0,0,0,.85)}
   h1.mid{font-size:132px}
+  /* El espectro respira menos arriba para no cortarse en la grilla 1:1 */
+  .espectro h1{font-size:118px}
+  .espectro .barras{height:170px;margin-top:34px}
   h1.cita{font-size:96px;line-height:.98;letter-spacing:-.04em}
   .centro h1{transform-origin:center bottom}
 
@@ -238,6 +371,30 @@ const css = `
   .barras{display:flex;align-items:flex-end;gap:9px;height:210px;margin-top:44px}
   .barras i{flex:1;background:linear-gradient(180deg,${C.dorado_claro},${C.naranja_brasa} 62%,${C.azul_led})}
 
+  /* --- portada de reel: el frame que queda fijo en el perfil --- */
+  .reelnum{position:absolute;top:150px;left:68px;z-index:6;font-size:150px;font-weight:900;
+           line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:3px ${C.dorado};
+           opacity:.55}
+  .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;
+        width:150px;height:150px;border:5px solid ${C.blanco};border-radius:50%;opacity:.92;
+        box-shadow:0 10px 40px rgba(0,0,0,.7)}
+  .play::after{content:'';position:absolute;top:50%;left:56%;transform:translate(-50%,-50%);
+        border-left:44px solid ${C.blanco};border-top:27px solid transparent;
+        border-bottom:27px solid transparent}
+
+  /* --- portada de historia destacada --- */
+  .dest{position:absolute;inset:0;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;z-index:5;gap:38px}
+  .dest .aro{width:560px;height:560px;border:8px solid ${C.dorado};border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 0 70px rgba(201,162,75,.34), inset 0 0 60px rgba(201,162,75,.18)}
+  .dest .ico{font-size:250px;line-height:1;
+        background:linear-gradient(177deg,#FFF6D8 4%,${C.dorado_claro} 22%,${C.dorado} 50%,
+                   ${C.dorado_oscuro} 74%,${C.dorado_claro} 100%);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .dest .rot{font-size:52px;font-weight:900;letter-spacing:.26em;color:${C.blanco};
+        text-transform:uppercase}
+
   /* --- alerta --- */
   .marco{position:absolute;inset:36px;border:5px solid ${C.dorado};opacity:.9}
   .marco::before,.marco::after{content:'';position:absolute;width:74px;height:74px;
@@ -267,8 +424,8 @@ const render = p => {
     ${p.tipo === 'alerta' ? '<div class="scan"></div>' : ''}
     <div class="grano"></div>
     ${p.tipo === 'alerta' ? '<div class="marco"></div>' : ''}
-    <div class="handle"><span>${M.instagram}</span><span class="r">${EP}</span></div>
-    ${emblema ? `<img class="sello" src="data:image/png;base64,${emblema}">` : ''}`;
+    ${p.tipo === 'destacada' ? '' : `<div class="handle"><span>${M.instagram}</span><span class="r">${EP}</span></div>`}
+    ${emblema && p.tipo !== 'destacada' ? `<img class="sello" src="data:image/png;base64,${emblema}">` : ''}`;
 
   const sobre = p.sobre ? `<div class="sobre">${p.sobre}</div>` : '';
   let cuerpo = '';
@@ -282,7 +439,7 @@ const render = p => {
         ${pie}
       </div>`;
   } else if (p.tipo === 'espectro') {
-    cuerpo = `${cinta(FORMATO_AUDIO, '138px')}
+    cuerpo = `${cinta(FORMATO_AUDIO, '96px')}
       <div class="wrap">
         <h1>${p.titulo}</h1>
         <div class="barras">${barras()}</div>
@@ -296,6 +453,19 @@ const render = p => {
         <div class="comuna">${p.comuna}</div>
         <p>${p.texto}</p>
         ${pie}
+      </div>`;
+  } else if (p.tipo === 'reel') {
+    cuerpo = `<div class="reelnum">${p.n}</div><div class="play"></div>
+      <div class="wrap">
+        ${sobre}
+        <h1 class="mid">${p.titulo}</h1>
+        <p>${p.texto}</p>
+        ${pie}
+      </div>`;
+  } else if (p.tipo === 'destacada') {
+    cuerpo = `<div class="dest">
+        <div class="aro"><span class="ico">${p.icono}</span></div>
+        <div class="rot">${p.rotulo}</div>
       </div>`;
   } else if (p.tipo === 'alerta') {
     cuerpo = `${cinta(`${SINGLE} · ${SINGLE} · ${SINGLE}`, '1230px')}
