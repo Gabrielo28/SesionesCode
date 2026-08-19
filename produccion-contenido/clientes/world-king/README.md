@@ -140,6 +140,16 @@ El contraste entre ambos es material narrativo que la propuesta original no ten�
 el visitante camuflado. El gesto de mirarse el reloj, en modo terrestre, funciona
 como cuenta regresiva sin tener que explicarla.
 
+### Ritmo del feed
+
+Ninguna foto se repite en la grilla y las piezas **alternan artista y espacio**.
+Cuando varios posts seguidos usan el mismo recorte, el perfil se ve pobre aunque
+cada pieza por separado funcione — por eso hay fondos sin figura entremedio, que
+además dan respiro entre los retratos.
+
+La asignación de imagen por pieza está en el objeto `asignacion` del historial de
+`build.js`: cada `id` tiene su propia `imagen`.
+
 ## Qué falta del cliente
 
 - Fecha de lanzamiento del EP (hoy sale como `XX.XX.2026`, marcador a propósito)
