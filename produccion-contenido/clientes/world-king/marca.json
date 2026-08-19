@@ -129,8 +129,6 @@
     "OJO con el registro: el single se llama CACHAY, un chilenismo callejero, y el sonido es afro/reggaetón cálido. La capa sci-fi es el envoltorio, no puede tragarse la calle."
   ],
   "assets_pendientes_cliente": [
-    "Las fotos reales del artista COMO ARCHIVO (llegaron sólo como imágenes en el chat y no se pueden componer)",
-    "Los 6 archivos .CR2 exportados a JPG o PNG",
     "Portada oficial del EP 3L REYGRESO y del single CACHAY",
     "Fecha de lanzamiento del EP (CACHAY ya está publicado)",
     "Aclarar la discrepancia de catálogo: ¿Palm Beach y Corsica son suyos?",
@@ -152,5 +150,15 @@
     ],
     "escenario_recurrente": "Superficie LUNAR con la Tierra o la Luna grande al fondo",
     "_nota_paleta": "La capa de galaxia aporta MAGENTA y MORADO a la paleta, que no estaban en los canvas. Suman como acento sobre el negro y el dorado, sin desplazarlos."
+  },
+  "fotos_reales": {
+    "_ubicacion": "fotos/ — fotos originales del artista, con orientación EXIF ya corregida",
+    "rey-cetro.jpg": "El rey sentado con cetro, corona, camisa barroca y ankh. La mejor para hero.",
+    "rey-capa-frente.jpg": "De pie con capa y hombreras doradas, tres cuartos",
+    "rey-espaldas-a/b.jpg": "De espaldas, se ve la capa y las hombreras",
+    "retrato-traje.jpg / cuerpo-entero-traje.jpg": "Traje gris y negro, lentes, cruz — registro más sobrio",
+    "con-americo.jpg": "Backstage con Américo. Prueba social real, el press kit ya cita la colaboración.",
+    "recorte-*.png": "Los mismos, recortados con fondo transparente para componer sobre el espacio",
+    "_nota_tecnica": "Las fotos vienen subexpuestas: al componer se levantan sombras y se les agrega una luz de borde azul y ámbar para que la figura no se vea pegada sobre el fondo. Ver el script de composición."
   }
 }
