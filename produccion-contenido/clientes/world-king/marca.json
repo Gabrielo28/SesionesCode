@@ -185,6 +185,8 @@
       "Glow bloom suave y partículas brillantes en el aire",
       "Piel tersa y luminosa, sin poros, ligeramente estilizada"
     ],
-    "_nota": "Este método reemplaza al recorte-y-pegado. componer.py queda para casos donde la foto real sea buena."
+    "_nota": "Este método reemplaza al recorte-y-pegado. componer.py queda para casos donde la foto real sea buena. Al pedir imágenes nuevas, reusar el mismo media_id de referencia: es lo que mantiene la cara consistente entre tandas.",
+    "media_id_referencia": "332fce55-39e0-403e-86d8-21759bc8e068",
+    "tanda_aprobada": "12 imágenes generadas con este método el 20.08.2026 (prefijo wk2- en visuales/), aprobadas por el cliente. 7 en 4:5 para posts y 5 en 9:16 para historias y portadas de reel. Costo: 2 créditos por imagen."
   }
 }

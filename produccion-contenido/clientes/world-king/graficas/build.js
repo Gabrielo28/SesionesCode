@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const { recortarAlto, leerPNG } = require('./png');
 
 // Chrome/Chromium: se busca en las rutas habituales de Windows, macOS y Linux.
 const CANDIDATOS_CHROME = [
@@ -60,7 +61,7 @@ const piezas = [
     id: 'post-01-llegada',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'gen-wk-retrato.png',
+    imagen: 'wk2-frontal.png',
     sobre: 'TRANSMISIÓN DESDE LA EXÓSFERA',
     titulo: 'NO SOY<br><span class="oro">DE ACÁ</span>',
     texto: 'Bajé a traer algo que todavía no existe.',
@@ -90,7 +91,7 @@ const piezas = [
     id: 'post-04-corona',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'gen-wk-perfil.png',
+    imagen: 'wk2-perfil-tierra.png',
     sobre: 'EL REY',
     titulo: 'ALLÁ ARRIBA<br><span class="oro">LA MÚSICA<br>SE VE</span>',
     texto: 'Acá abajo apenas se escucha. Yo la vi.',
@@ -100,7 +101,7 @@ const piezas = [
     id: 'post-05-ankh',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'gen-wk-espaldas.png',
+    imagen: 'wk2-capa-abierta.png',
     sobre: 'LA MARCA',
     titulo: 'DONDE NACÍ<br><span class="oro">NO HAY TIEMPO</span>',
     texto: 'Por eso el ankh. Por eso volví.',
@@ -126,7 +127,7 @@ const piezas = [
     id: 'post-07-entre-ustedes',
     w: 1080, h: 1350,
     tipo: 'hero',
-    imagen: 'gen-wk-retrato.png',
+    imagen: 'wk2-terrestre.png',
     sobre: 'MODO TERRESTRE',
     titulo: 'NO VINE A<br><span class="oro">MANDAR</span>',
     texto: 'Vine a darles.<br>Lo que traigo se comparte.',
@@ -136,18 +137,18 @@ const piezas = [
     id: 'historia-09-ya-es-la-hora',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'fondo-story.png',
+    imagen: 'wk2-story-reloj.png',
     sobre: 'CUENTA REGRESIVA',
     titulo: 'YA<br><span class="oro">ES LA<br>HORA</span>',
     texto: '',
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE CUENTA REGRESIVA',
+    pie: 'DEJA ABAJO: STICKER DE CUENTA REGRESIVA',
   },
   {
     id: 'reel-01-la-llegada',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'fondo-story.png',
+    imagen: 'wk2-story-flotando.png',
     n: '01',
     sobre: 'PONTE AUDÍFONOS',
     titulo: 'LA<br><span class="oro">LLEGADA</span>',
@@ -157,7 +158,7 @@ const piezas = [
     id: 'reel-02-adaptacion',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'gen-wk-story.png',
+    imagen: 'wk2-riendo.png',
     n: '02',
     sobre: 'PERFORMANCE',
     titulo: 'ME<br><span class="oro">ADAPTO</span>',
@@ -167,7 +168,7 @@ const piezas = [
     id: 'reel-03-frecuencias',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'gen-wk-story.png',
+    imagen: 'wk2-story-busto.png',
     n: '03',
     sobre: 'FRECUENCIAS ANÓMALAS',
     titulo: 'NO<br><span class="oro">SOY</span><br>HUMANO',
@@ -177,7 +178,7 @@ const piezas = [
     id: 'reel-04-transmision',
     w: 1080, h: 1920,
     tipo: 'reel',
-    imagen: 'wk-terrestre-story.png',
+    imagen: 'wk2-audifonos.png',
     n: '04',
     sobre: 'TRANSMISIÓN DIRECTA',
     titulo: 'SINCRONIZA<br><span class="oro">TU FRECUENCIA</span>',
@@ -194,24 +195,24 @@ const piezas = [
     titulo: '¿QUÉ<br><span class="oro">MENSAJE</span><br>ME LLEVO?',
     texto: 'De la Tierra a la exósfera.',
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE PREGUNTAS',
+    pie: 'DEJA ABAJO: STICKER DE PREGUNTAS',
   },
   {
     id: 'historia-03-bts',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'fondo-story.png',
+    imagen: 'wk2-audifonos.png',
     sobre: 'DETRÁS DE LA SEÑAL',
     titulo: 'ASÍ<br><span class="oro">SUENA</span><br>ADENTRO',
     texto: `${FORMATO_AUDIO}`,
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER AL SITIO',
+    pie: 'DEJA ABAJO: STICKER AL SITIO',
   },
   {
     id: 'historia-04-outfit',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'wk-story-cetro.png',
+    imagen: 'wk2-cetro.png',
     sobre: 'ANATOMÍA DEL EQUIPO',
     titulo: 'LA<br><span class="oro">CORONA</span>',
     texto: 'Equipado para la gravedad terrestre.',
@@ -222,7 +223,7 @@ const piezas = [
     id: 'historia-04b-outfit-ankh',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'wk-terrestre-story.png',
+    imagen: 'wk2-story-descenso.png',
     sobre: 'ANATOMÍA DEL EQUIPO',
     titulo: 'EL<br><span class="oro">ANKH</span>',
     texto: 'Vida eterna. No es adorno.',
@@ -238,7 +239,7 @@ const piezas = [
     titulo: 'DALE<br><span class="oro">PLAY</span>',
     texto: `${SINGLE} · ya disponible`,
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE MÚSICA',
+    pie: 'DEJA ABAJO: STICKER DE MÚSICA',
   },
   {
     id: 'historia-06-prueba-impacto',
@@ -249,7 +250,7 @@ const piezas = [
     titulo: 'A USTEDES<br><span class="oro">SE LES OYE</span><br>DESDE ALLÁ',
     texto: 'Etiquétame y te comparto.',
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL REPOST',
+    pie: 'DEJA ABAJO: ESPACIO PARA EL REPOST',
   },
 
   // ----- PORTADAS DE HISTORIAS DESTACADAS (1:1) -----
@@ -263,12 +264,12 @@ const piezas = [
     id: 'historia-01-cuenta-regresiva',
     w: 1080, h: 1920,
     tipo: 'historia',
-    imagen: 'gen-wk-story.png',
+    imagen: 'wk2-story-sobre-tierra.png',
     sobre: 'ENTRADA EN LA ATMÓSFERA',
     titulo: 'ESTOY<br><span class="oro">ENTRANDO</span><br>EN ÓRBITA',
     texto: EP,
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER',
+    pie: 'DEJA ABAJO: ESPACIO PARA EL STICKER',
   },
   {
     id: 'historia-07-cita-musical',
@@ -278,7 +279,7 @@ const piezas = [
     cita: true,
     titulo: 'LA BARRA MÁS<br><span class="oro">CONTUNDENTE</span><br>DEL TEMA VA ACÁ',
     hueco: true,
-    pie: 'DEJA ESPACIO ABAJO PARA EL STICKER DE MÚSICA',
+    pie: 'DEJA ABAJO: STICKER DE MÚSICA',
   },
   {
     id: 'historia-08-ultimo-aviso',
@@ -380,10 +381,17 @@ const css = `
   .pie{margin-top:32px;max-width:770px;line-height:1.35;font-size:23px;font-weight:900;
        letter-spacing:.16em;color:${C.dorado};text-transform:uppercase;
        text-shadow:0 4px 18px rgba(0,0,0,.95)}
+  /* En las historias el pie cae sobre la foto (corona, capa): placa oscura
+     ajustada al ancho del texto para que se lea siempre. */
+  .wrap.arriba .pie:not(.pendiente){align-self:flex-start;background:rgba(4,7,12,.62);
+        padding:9px 16px;border-radius:3px;max-width:calc(100% - 20px)}
   .ankh{display:inline-block;vertical-align:-2px;margin-right:12px;color:${C.dorado}}
   .sello{position:absolute;bottom:56px;right:64px;width:132px;z-index:7;opacity:.96;
          filter:drop-shadow(0 6px 18px rgba(0,0,0,.9))}
-  .pie.pendiente{color:#5A6E88;font-weight:700;letter-spacing:.1em}
+  /* Nota de produccion, no es arte: se fija abajo para no pisar el titulo
+     en las piezas sin texto, y deja libre la esquina del sello. */
+  .pie.pendiente{position:absolute;left:68px;right:232px;bottom:52px;margin-top:0;
+                 max-width:none;font-size:20px;color:#5A6E88;font-weight:700;letter-spacing:.1em}
 
   /* --- el dato como flex --- */
   .cifra{font-size:300px;font-weight:900;line-height:.78;letter-spacing:-.06em;
@@ -407,7 +415,8 @@ const css = `
   .reelnum{position:absolute;top:150px;left:68px;z-index:6;font-size:150px;font-weight:900;
            line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:3px ${C.dorado};
            opacity:.55}
-  .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;
+  .wrap.reel{justify-content:flex-end;padding:0 68px 480px}
+  .play{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);z-index:6;
         width:150px;height:150px;border:5px solid ${C.blanco};border-radius:50%;opacity:.92;
         box-shadow:0 10px 40px rgba(0,0,0,.7)}
   .play::after{content:'';position:absolute;top:50%;left:56%;transform:translate(-50%,-50%);
@@ -488,7 +497,7 @@ const render = p => {
       </div>`;
   } else if (p.tipo === 'reel') {
     cuerpo = `<div class="reelnum">${p.n}</div><div class="play"></div>
-      <div class="wrap">
+      <div class="wrap reel">
         ${sobre}
         <h1 class="mid">${p.titulo}</h1>
         <p>${p.texto}</p>
@@ -528,16 +537,52 @@ console.log(`\n  WORLD KING · ${piezas.length} gráficas\n`);
 if (!fuente) console.log('  ⚠ No encontré Montserrat.ttf — se usará fuente del sistema');
 if (!CHROME) { console.log('  ✗ No encontré Chrome/Chromium. Define CHROME_PATH.'); process.exit(1); }
 
+// Chrome headless nuevo descuenta la altura de la barra del navegador del viewport y
+// deja sin pintar esa franja del screenshot. El descuento cambia entre versiones y
+// plataformas, así que se mide una vez con una página de prueba en vez de fijarlo.
+const disparar = (html, png, w, h) =>
+  execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+    '--force-device-scale-factor=1', '--default-background-color=ff05090F',
+    `--screenshot=${png}`, `--window-size=${w},${h}`,
+    'file://' + html.replace(/\\/g, '/')], { stdio: 'pipe' });
+
+function medirDesfaseUI() {
+  const sondaHtml = path.join(__dirname, '_sonda.html');
+  const sondaPng = path.join(__dirname, '_sonda.png');
+  const ALTO = 600;
+  try {
+    fs.writeFileSync(sondaHtml,
+      '<body style="margin:0;background:#000"><div style="height:100vh;background:#FF00FF"></div>', 'utf8');
+    disparar(sondaHtml, sondaPng, 300, ALTO);
+    const im = leerPNG(fs.readFileSync(sondaPng));
+    let ultima = -1;
+    for (let y = 0; y < im.alto; y++) {
+      const i = (y * im.ancho + 8) * im.canales;
+      if (im.pix[i] > 200 && im.pix[i + 1] < 60 && im.pix[i + 2] > 200) ultima = y;
+    }
+    const desfase = ALTO - (ultima + 1);
+    return desfase > 0 && desfase < 300 ? desfase : 0;
+  } catch (e) {
+    return 0;               // si la sonda falla se renderiza como antes
+  } finally {
+    [sondaHtml, sondaPng].forEach(f => { try { fs.unlinkSync(f); } catch (_) {} });
+  }
+}
+
+const DESFASE_UI = medirDesfaseUI();
+if (DESFASE_UI) console.log(`  · Compensando ${DESFASE_UI}px de barra del navegador\n`);
+
 piezas.forEach(p => {
   const html = path.join(__dirname, `${p.id}.html`);
   const png = path.join(outPNG, `${p.id}.png`);
   fs.writeFileSync(html, render(p), 'utf8');
   process.stdout.write(`  ${p.id.padEnd(34)} ... `);
   try {
-    execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-      '--force-device-scale-factor=1', '--default-background-color=ff05090F',
-      `--screenshot=${png}`, `--window-size=${p.w},${p.h}`,
-      'file://' + html.replace(/\\/g, '/')], { stdio: 'pipe' });
+    // Se pide la ventana MÁS ALTA que la pieza: el headless nuevo de Chrome reserva
+    // ~87px para la barra del navegador y deja esa franja sin pintar. Después se
+    // recorta el PNG a la altura exacta del formato.
+    disparar(html, png, p.w, p.h + DESFASE_UI);
+    fs.writeFileSync(png, recortarAlto(fs.readFileSync(png), p.h));
     console.log('✓');
   } catch (e) {
     console.log('✗', String(e.stderr || e.message).slice(0, 140));

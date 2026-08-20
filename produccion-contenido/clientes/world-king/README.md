@@ -10,6 +10,8 @@ están en `marca.json`.
 marca.json      Paleta, tono, concepto y lista de assets que faltan del cliente
 graficas/       Capa tipográfica: HTML + Chrome headless → PNG/
   build.js        Define las piezas y las renderiza
+  png.js          Recorta el PNG al alto exacto (ver Notas de render)
+  previsualizar.py  Arma las tres vistas previas
   PNG/            Salida lista para publicar
 visuales/       Piezas fotorrealistas generadas con Higgsfield (IA)
 ```
@@ -28,11 +30,6 @@ Las piezas se declaran en el array `piezas[]` de `build.js`.
 (`TEMA`, `FECHA_LANZAMIENTO`, `STREAMS`). Aparecen como `XX.XX.2026` y `—` en las
 gráficas a propósito: son marcadores visibles para que no se publique nada con
 datos inventados. Al recibirlos, se cambian ahí y se vuelve a correr `build.js`.
-
-## Nota de render
-
-Todo se dibuja dentro de `.frame` con tamaño explícito, no contra el `body`:
-posicionando contra el body, Chrome headless deja sin pintar la franja inferior.
 
 ## Dirección de diseño
 
@@ -80,11 +77,25 @@ El **ankh** pasa a ser recurso gráfico propio y firma el pie de cada pieza.
 La capa de galaxia suma **magenta y morado** a la paleta, como acento sobre el
 negro y el dorado, nunca en lugar de ellos.
 
-## Nota de render
+## Notas de render
 
-Todo se dibuja dentro de `.frame` con tamaño explícito, y el pie va en el flujo
-normal del bloque de texto. Posicionar el pie contra el marco con `position:
-absolute` lo dejaba fuera del lienzo al renderizar.
+Tres cosas que costaron encontrar y conviene no volver a tropezar:
+
+**El lienzo.** Todo se dibuja dentro de `.frame` con tamaño explícito, no contra
+el `body`.
+
+**La franja sin pintar.** El headless nuevo de Chrome descuenta la altura de la
+barra del navegador (~87px) del viewport, pero el screenshot igual sale del alto
+de la ventana: esa franja de abajo queda sin pintar y se come el sello y el pie.
+`build.js` lo mide solo al arrancar con una página de prueba, pide la ventana más
+alta y después recorta el PNG al alto exacto del formato con `png.js` (decodifica
+y reescribe el PNG con `zlib`, sin dependencias). Si el descuento cambia con otra
+versión de Chrome, la medición lo sigue sola.
+
+**Dónde va el texto de un reel.** Instagram recorta la portada de reel a 4:5
+**desde el centro** para la grilla del perfil, y en el reproductor tapa el tercio
+de abajo con su propia interfaz. El título va en la banda central (`.wrap.reel`,
+480px de aire abajo), no al pie: al pie se pierde en los dos lados.
 
 ## Inventario de piezas
 
@@ -97,14 +108,19 @@ absolute` lo dejaba fuera del lienzo al renderizar.
 | Historias | 10 | 1080×1920 |
 | Portadas de destacadas | 6 | 1080×1080 |
 
-Más dos vistas previas para revisar el conjunto:
-`_preview-feed.png` (la grilla como la ve alguien que llega al perfil) y
-`_preview-destacadas.png` (la tira circular bajo la bio).
+Más tres vistas previas, que se regeneran con `python3 graficas/previsualizar.py`
+después de cada `node build.js`:
 
-**Revisar siempre `_preview-feed.png` antes de cerrar un set.** Instagram recorta
-la grilla a 1:1 y ahí saltan problemas que la pieza suelta esconde — en esta
-tanda aparecieron dos: una imagen que se leía como iconografía religiosa y un
-titular que se cortaba.
+| Archivo | Qué muestra |
+|---|---|
+| `_preview-feed.png` | La grilla del perfil, recortada a 4:5 desde el centro igual que Instagram |
+| `_preview-historias.png` | La tira de historias en orden de publicación |
+| `_preview-destacadas.png` | La tira circular bajo la bio |
+
+**Revisar siempre `_preview-feed.png` antes de cerrar un set.** El recorte de la
+grilla deja ver problemas que la pieza suelta esconde — hasta ahora aparecieron
+tres ahí: una imagen que se leía como iconografía religiosa, un titular que se
+cortaba, y los títulos de las portadas de reel quedando fuera del recorte.
 
 ### Emoción: maravilla, no poder
 
@@ -147,8 +163,11 @@ Cuando varios posts seguidos usan el mismo recorte, el perfil se ve pobre aunque
 cada pieza por separado funcione — por eso hay fondos sin figura entremedio, que
 además dan respiro entre los retratos.
 
-La asignación de imagen por pieza está en el objeto `asignacion` del historial de
-`build.js`: cada `id` tiene su propia `imagen`.
+La asignación vive en `build.js`: cada pieza del array `piezas[]` declara su
+`imagen`. Al elegirla manda **la composición, no el tema**: una toma con la cara
+al centro sirve de portada de reel (el botón de play va arriba del centro y el
+título abajo); una toma con la figura pequeña o tumbada sirve de historia, donde
+no hay play que le caiga encima.
 
 ## Qué falta del cliente
 

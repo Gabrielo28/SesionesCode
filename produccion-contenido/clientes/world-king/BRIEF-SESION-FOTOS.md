@@ -1,5 +1,16 @@
 # World King — Brief de sesión de fotos
 
+> **Estado: ya no bloquea la producción.** Las 27 gráficas del lanzamiento están
+> listas sin sesión. La solución no fue retocar mejor las fotos existentes, fue
+> dejar de recortarlas: ahora la cara del artista se usa como **referencia de
+> identidad** para generar la imagen completa (ver `metodo_de_produccion` en
+> `marca.json`), así que los rasgos son los suyos pero la luz y la piel nacen
+> limpias en vez de simularse en post.
+>
+> Este brief sigue vigente para cuando se quiera **fotografía real** — material
+> propio, sin depender de generación, y reutilizable por años. Lo de abajo explica
+> exactamente qué hace falta para que las fotos sirvan.
+
 > **Por qué existe este documento.** La dirección de arte está aprobada y el
 > sistema gráfico funciona. El techo hoy son las fotos: tienen entre **67% y 90%
 > de píxeles sin información** (negro puro sin detalle). Al levantar sombras no
