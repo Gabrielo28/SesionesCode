@@ -175,5 +175,16 @@
     "Revisar SIEMPRE la vista previa del feed antes de dar por cerrado un set: la grilla recorta a 1:1 y muestra problemas que la pieza suelta esconde. Ahí aparecieron dos: una imagen con lectura religiosa involuntaria y un titular cortado.",
     "Las imágenes generadas con figura humana de brazos abiertos y halo dorado se leen como iconografía religiosa. Para las piezas de energía, pedir explícitamente que no haya figuras.",
     "No afirmar identidades de personas en fotos que el cliente no haya rotulado."
-  ]
+  ],
+  "metodo_de_produccion": {
+    "hallazgo": "Las fotos de estudio sirven como REFERENCIA DE IDENTIDAD para generar, no como recorte para componer. Recortarlas y pegarlas sobre un fondo arrastra su subexposición y el borde duro; usarlas como referencia conserva los rasgos y entrega piel limpia y acabado pulido.",
+    "como": "Subir un recorte de la cara (fotos/cara-referencia.jpg) con media_upload, y pasarlo en medias[] con role 'image' a nano_banana_pro. En el prompt: pedir explícitamente que respete el rostro de la referencia, más 'flawless smooth skin', 'polished, slightly stylised, almost a 3D render' y los efectos de luz.",
+    "efectos_que_dan_el_acabado": [
+      "Flare anamórfico dorado entrando por el borde izquierdo",
+      "Rim light azul frío marcando mandíbula y cuello por la derecha",
+      "Glow bloom suave y partículas brillantes en el aire",
+      "Piel tersa y luminosa, sin poros, ligeramente estilizada"
+    ],
+    "_nota": "Este método reemplaza al recorte-y-pegado. componer.py queda para casos donde la foto real sea buena."
+  }
 }
