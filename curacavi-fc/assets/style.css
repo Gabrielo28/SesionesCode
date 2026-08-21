@@ -407,11 +407,11 @@ h2.titular{font-size:clamp(1.9rem, 3.4vw, 2.6rem); margin-bottom:18px;}
 .sponsors-tier-title::after{content:""; flex:1; height:1px; background:var(--borde);}
 .sponsors-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:16px; margin-bottom:56px;}
 .sponsor-card{
-  background:#fff; border:1px solid var(--borde); border-radius:12px; padding:26px 16px; text-align:center;
-  display:flex; flex-direction:column; align-items:center; gap:10px; transition:transform .15s, box-shadow .15s;
+  background:#fff; border:1px solid var(--borde); border-radius:12px; padding:14px 10px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:8px; transition:transform .15s, box-shadow .15s;
 }
 .sponsor-card:hover{transform:translateY(-3px); box-shadow:0 14px 30px -18px rgba(0,0,0,.3);}
-.sponsor-card img{width:60px; height:60px; object-fit:contain; border-radius:8px;}
+.sponsor-card img{width:100px; height:100px; object-fit:contain; border-radius:8px;}
 .sponsor-card .placeholder-logo{
   width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,var(--naranja),var(--naranja2));
   color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Anton'; font-size:1.3rem;
