@@ -104,6 +104,26 @@ const glitchHTML = `
 
 const cans = `${latexClassic ? `<img src="data:image/png;base64,${latexClassic}">` : ''}${latexPunch ? `<img src="data:image/png;base64,${latexPunch}">` : ''}`;
 
+const dropShadow = 'drop-shadow(0 22px 18px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(255,6,156,.35)) drop-shadow(0 0 34px rgba(40,217,229,.25))';
+const dropShadowFar = 'drop-shadow(0 12px 12px rgba(0,0,0,.4)) drop-shadow(0 0 22px rgba(255,6,156,.2)) drop-shadow(0 0 22px rgba(40,217,229,.15))';
+
+/*
+ * Composición "asentada": las latas comparten una misma línea de base (bottom),
+ * la rotación pivotea desde esa base (no desde el centro) para que se vean paradas
+ * con un leve ángulo, no flotando. Una queda más cerca/grande (adelante) y otra
+ * más lejos/chica (atrás, con sombra y brillo más suaves para dar profundidad).
+ * opts: {x, bottom, h, rot, z, far, origin}. origin por defecto 'bottom center';
+ * para la lata acostada de lado se usa origin:'center' con rot:±90.
+ */
+const canImg = (src, o) => src ? `<img src="data:image/png;base64,${src}" style="position:absolute;
+  left:${o.x}px;bottom:${o.bottom}px;height:${o.h}px;width:auto;object-fit:contain;
+  transform:rotate(${o.rot}deg);transform-origin:${o.origin || 'bottom center'};z-index:${o.z};
+  filter:${o.far ? dropShadowFar : dropShadow}${o.op ? `;opacity:${o.op}` : ''}">` : '';
+
+const canScene = (top, height, a, b) => `<div style="position:absolute;top:${top}px;left:0;right:0;height:${height}px;z-index:5">
+  ${canImg(latexPunch, b)}${canImg(latexClassic, a)}
+</div>`;
+
 const footerHTML = `
   <div class="footer">
     ${logo ? `<img src="data:image/png;base64,${logo}">` : ''}
@@ -122,7 +142,9 @@ const piezas = [
       <div style="position:absolute;top:140px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(-2deg);display:inline-block">Energética vs funcional</span>
       </div>
-      <div class="latas" style="top:260px">${cans}</div>
+      ${canScene(210, 500,
+        { x: 570, bottom: 15, h: 420, rot: -7, z: 2 },
+        { x: 240, bottom: 70, h: 320, rot: 8, z: 1, far: true, op: 0.94 })}
       <div style="position:absolute;top:706px;left:48px;right:48px;z-index:6;
                   background:rgba(0,0,0,.7);border-radius:20px;padding:20px 30px;
                   border:2px solid rgba(255,255,255,.15)">
@@ -169,7 +191,9 @@ const piezas = [
                   text-shadow:0 5px 0 #000;padding:0 60px;line-height:1.05">
         DE FIBRA <span style="color:${C.lima};-webkit-text-stroke:2.5px #000">PREBIÓTICA</span>
       </div>
-      <div class="latas" style="top:640px">${cans}</div>
+      ${canScene(600, 400,
+        { x: 500, bottom: 10, h: 380, rot: -6, z: 2 },
+        { x: 140, bottom: 46, h: 250, rot: -90, z: 1, far: true, op: 0.92, origin: 'center' })}
       <div style="position:absolute;top:1000px;left:100px;right:100px;text-align:center;z-index:6;
                   font-family:'Marker';font-size:24px;line-height:1.28;color:${C.blanco};
                   text-shadow:0 2px 10px rgba(0,0,0,.9)">
@@ -201,7 +225,9 @@ const piezas = [
                   -webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000;padding:0 50px">
         ¿SABÍAS QUE TU YEET<br>TAMBIÉN CUIDA TU<br><span style="color:${C.lima};-webkit-text-stroke:3px #000">INTESTINO?</span>
       </div>
-      <div class="latas" style="top:610px">${cans}</div>
+      ${canScene(590, 360,
+        { x: 540, bottom: 12, h: 360, rot: 8, z: 2 },
+        { x: 230, bottom: 55, h: 280, rot: -10, z: 1, far: true, op: 0.93 })}
       <div style="position:absolute;top:940px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
         <span class="chip" style="background:${C.blanco};transform:none">Prebióticos 🦠</span>
         <span class="chip" style="background:${C.lima};transform:none">Sin cafeína</span>
@@ -236,7 +262,9 @@ const piezas = [
         <span style="color:${C.lima}">PREBIÓTICOS (1G INULINA)</span><br>
         SIN CAFEÍNA · SIN AZÚCAR · SIN SELLOS
       </div>
-      <div class="latas" style="top:580px">${cans}</div>
+      ${canScene(560, 380,
+        { x: 560, bottom: 12, h: 380, rot: -7, z: 2 },
+        { x: 270, bottom: 50, h: 300, rot: 9, z: 1, far: true, op: 0.93 })}
       <div style="position:absolute;bottom:56px;left:0;right:0;display:flex;flex-direction:column;
                   align-items:center;gap:6px;z-index:6">
         ${logo ? `<img src="data:image/png;base64,${logo}" style="width:170px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.8))">` : ''}
