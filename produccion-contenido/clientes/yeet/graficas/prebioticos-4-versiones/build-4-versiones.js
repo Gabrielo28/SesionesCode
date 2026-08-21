@@ -102,20 +102,7 @@ const glitchHTML = `
   <div class="grano"></div>
 `;
 
-const dropShadow = 'drop-shadow(0 24px 20px rgba(0,0,0,.6)) drop-shadow(0 0 38px rgba(255,6,156,.4)) drop-shadow(0 0 38px rgba(40,217,229,.3))';
-
-// Composición diagonal/desordenada de las dos latas, con distinto plano (tamaño/rotación/profundidad)
-// en vez de las dos derechas y centradas. top/height definen la banda del contenedor; a y b son
-// {x,y,h,rot,z} para cada lata (Classic y Punch respectivamente).
-const dynCans = (top, height, a, b) => {
-  const img = (src, o) => src ? `<img src="data:image/png;base64,${src}" style="position:absolute;
-    left:${o.x}px;top:${o.y}px;height:${o.h}px;width:auto;object-fit:contain;
-    transform:rotate(${o.rot}deg);z-index:${o.z};filter:${dropShadow}">` : '';
-  return `<div style="position:absolute;top:${top}px;left:0;right:0;height:${height}px;z-index:5">
-    ${img(latexPunch, b)}
-    ${img(latexClassic, a)}
-  </div>`;
-};
+const cans = `${latexClassic ? `<img src="data:image/png;base64,${latexClassic}">` : ''}${latexPunch ? `<img src="data:image/png;base64,${latexPunch}">` : ''}`;
 
 const footerHTML = `
   <div class="footer">
@@ -135,9 +122,7 @@ const piezas = [
       <div style="position:absolute;top:140px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(-2deg);display:inline-block">Energética vs funcional</span>
       </div>
-      ${dynCans(220, 480,
-        { x: 590, y: 90, h: 400, rot: 10, z: 2 },
-        { x: 250, y: 30, h: 350, rot: -14, z: 1 })}
+      <div class="latas" style="top:260px">${cans}</div>
       <div style="position:absolute;top:706px;left:48px;right:48px;z-index:6;
                   background:rgba(0,0,0,.7);border-radius:20px;padding:20px 30px;
                   border:2px solid rgba(255,255,255,.15)">
@@ -184,9 +169,7 @@ const piezas = [
                   text-shadow:0 5px 0 #000;padding:0 60px;line-height:1.05">
         DE FIBRA <span style="color:${C.lima};-webkit-text-stroke:2.5px #000">PREBIÓTICA</span>
       </div>
-      ${dynCans(618, 380,
-        { x: 560, y: 20, h: 340, rot: -12, z: 2 },
-        { x: 250, y: 55, h: 300, rot: 13, z: 1 })}
+      <div class="latas" style="top:640px">${cans}</div>
       <div style="position:absolute;top:1000px;left:100px;right:100px;text-align:center;z-index:6;
                   font-family:'Marker';font-size:24px;line-height:1.28;color:${C.blanco};
                   text-shadow:0 2px 10px rgba(0,0,0,.9)">
@@ -218,9 +201,7 @@ const piezas = [
                   -webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000;padding:0 50px">
         ¿SABÍAS QUE TU YEET<br>TAMBIÉN CUIDA TU<br><span style="color:${C.lima};-webkit-text-stroke:3px #000">INTESTINO?</span>
       </div>
-      ${dynCans(586, 360,
-        { x: 260, y: 10, h: 340, rot: -15, z: 2 },
-        { x: 560, y: 45, h: 300, rot: 11, z: 1 })}
+      <div class="latas" style="top:610px">${cans}</div>
       <div style="position:absolute;top:940px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
         <span class="chip" style="background:${C.blanco};transform:none">Prebióticos 🦠</span>
         <span class="chip" style="background:${C.lima};transform:none">Sin cafeína</span>
@@ -255,9 +236,7 @@ const piezas = [
         <span style="color:${C.lima}">PREBIÓTICOS (1G INULINA)</span><br>
         SIN CAFEÍNA · SIN AZÚCAR · SIN SELLOS
       </div>
-      ${dynCans(596, 380,
-        { x: 590, y: 15, h: 350, rot: 11, z: 2 },
-        { x: 260, y: 45, h: 310, rot: -13, z: 1 })}
+      <div class="latas" style="top:580px">${cans}</div>
       <div style="position:absolute;bottom:56px;left:0;right:0;display:flex;flex-direction:column;
                   align-items:center;gap:6px;z-index:6">
         ${logo ? `<img src="data:image/png;base64,${logo}" style="width:170px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.8))">` : ''}
