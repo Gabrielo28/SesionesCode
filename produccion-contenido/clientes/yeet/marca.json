@@ -19,9 +19,24 @@
   },
 
   "tipografia": {
-    "titulos": "Montserrat ExtraBold / Black, MAYÚSCULAS, tracking apretado",
-    "cuerpo": "Montserrat Medium",
-    "nota": "El logo usa una tipografía de pincel irregular propia — no intentar recrearla con fuentes, siempre usar el PNG"
+    "_corregido_2026-08-21": "Montserrat NO es lo que usan en sus piezas reales (solo se usó por defecto sin referencia). Ver sistema real abajo.",
+    "sistema_real": {
+      "brush_marcador": "Igual familia que el logo — irregular, redondeada, tipo marcador. Se usa también para subtítulos de producto (ej. 'EPIC POWER DRINK', 'La nueva generación de powerdrinks').",
+      "display_stencil": "Fuente gruesa tipo stencil/spray, relleno blanco con borde negro, textura rota/rayada — para titulares de impacto (ej. 'YEET WINTER PARTY', 'Es algo mejor').",
+      "sans_condensada_mayusculas": "Sans condensada en mayúsculas, letter-spacing amplio, siempre dentro de un chip de color plano magenta — para tags/etiquetas cortas (ej. '¿ES UNA BEBIDA ENERGÉTICA?', '14+', 'TU POWER YEET', datos de evento tipo flyer)."
+    },
+    "archivos_fuente": "No tenemos los .ttf/.otf reales. Pedir al cliente/diseñador original; mientras tanto aproximar con fuentes libres similares o generar el texto directo en imagen vía IA (Higgsfield) para títulos cortos.",
+    "nota_logo": "El logo usa una tipografía de pincel irregular propia — no intentar recrearla con fuentes, siempre usar el PNG"
+  },
+
+  "estilo_visual": {
+    "_fuente": "Análisis de 5 referencias + 8 frames del reel 'YEET_Power_Drink.mp4' (¿es una bebida energética?) enviados por el cliente el 2026-08-21",
+    "glitch_vhs": "Firma visual constante: barras de glitch, corte de canal RGB, bloques de pixel-sort, scanlines — sobre todo arriba del cuadro. Estética gamer/digital, no minimalista.",
+    "producto_en_escena": "Latas metidas en hielo real con niebla/vapor, chorros y salpicaduras de líquido en movimiento, o latas 'fantasma' duplicadas (efecto eco/glitch). Nunca sobre pedestal o panel blanco limpio tipo catálogo.",
+    "fondos": "Oscuros y con textura/grano (azul profundo, morado, negro) — no negro plano ni panel editorial limpio.",
+    "deporte_real": "~70% del contenido de la marca es deportivo — acción real (motocross en barro, skate, fútbol), joven, competitivo, con códigos de gaming. No genérico ni de estudio.",
+    "formato_evento": "Para flyers de evento: layout tipo afiche de rave/concierto — relámpagos, estrellas, datos de fecha/lugar/horario en bloques, ícono de restricción de edad, hashtags y redes en esquina superior.",
+    "cierre_tipico": "Fondo azul oscuro, chip magenta con texto corto ('TU POWER YEET'), íconos de redes en cuadrados magenta, 'Epic Like You' en texto pequeño."
   },
 
   "productos": [
