@@ -21,6 +21,7 @@ const BG_DIR = path.join(__dirname, 'higgsfield');
 
 const M = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'marca.json'), 'utf8'));
 const C = M.colores;
+const CIAN = '#28D9E5';
 
 const b64 = f => fs.existsSync(f) ? fs.readFileSync(f).toString('base64') : null;
 const logo = b64(LOGO);
@@ -43,6 +44,38 @@ const css = fondo => `
   .scrim-top{position:absolute;left:0;right:0;top:0;height:220px;
              background:linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)}
 
+  /* --- duotono de marca: magenta arriba-izq, cian abajo-der --- */
+  .duotono{position:absolute;inset:0;mix-blend-mode:color;opacity:.55;
+           background:radial-gradient(circle at 12% 8%, ${C.magenta} 0%, transparent 42%),
+                      radial-gradient(circle at 90% 96%, ${CIAN} 0%, transparent 46%)}
+  .duotono2{position:absolute;inset:0;mix-blend-mode:overlay;opacity:.4;
+            background:linear-gradient(135deg, ${C.magenta} 0%, transparent 30%, transparent 70%, ${CIAN} 100%)}
+
+  /* --- ruido / glitch a pantalla completa --- */
+  .glitch{position:absolute;inset:0;overflow:hidden;mix-blend-mode:screen}
+  .glitch span{position:absolute;display:block}
+  .gm{background:${C.magenta}}
+  .gc{background:${CIAN}}
+  .g1{top:2%;left:0;width:32%;height:10px;transform:skewX(-18deg);opacity:.9}
+  .g2{top:2%;left:34%;width:16%;height:10px;transform:skewX(-18deg);opacity:.8}
+  .g3{top:5%;left:6%;width:20%;height:6px;transform:skewX(-18deg);opacity:.7}
+  .g4{top:5%;left:48%;width:36%;height:6px;transform:skewX(-18deg);opacity:.7}
+  .g5{top:22%;right:0;width:10%;height:900px;opacity:.12}
+  .g6{top:34%;left:0;width:1080px;height:3px;opacity:.55}
+  .g7{top:34.4%;left:0;width:1080px;height:3px;opacity:.45}
+  .g8{top:58%;left:8%;width:70px;height:70px;opacity:.35}
+  .g9{top:63%;left:82%;width:44px;height:180px;opacity:.3}
+  .g10{top:71%;left:0;width:220px;height:9px;transform:skewX(-18deg);opacity:.8}
+  .g11{top:71%;left:240px;width:120px;height:9px;transform:skewX(-18deg);opacity:.6}
+  .g12{top:88%;left:20%;width:1080px;height:2px;opacity:.4}
+  .g13{top:12%;left:0;width:14px;height:1350px;opacity:.5}
+  .g14{top:12%;left:18px;width:7px;height:1350px;opacity:.4}
+  .scan{position:absolute;inset:0;mix-blend-mode:overlay;opacity:.5;
+        background:repeating-linear-gradient(0deg,rgba(255,255,255,.08) 0px,rgba(255,255,255,.08) 1px,transparent 1px,transparent 3px)}
+  .grano{position:absolute;inset:0;opacity:.18;mix-blend-mode:overlay;
+         background-image:radial-gradient(rgba(255,255,255,.9) 1px, transparent 1px);
+         background-size:3px 3px}
+
   .logo{position:absolute;top:54px;left:56px;width:170px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.7))}
 
   h1{position:absolute;left:64px;right:64px;bottom:76px;font-size:96px;line-height:.94;
@@ -64,7 +97,17 @@ piezas.forEach(p => {
 
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><style>${css(fondo)}</style></head>
 <body>
+  <div class="duotono"></div>
+  <div class="duotono2"></div>
   <div class="scrim-top"></div>
+  <div class="glitch">
+    <span class="g1 gm"></span><span class="g2 gc"></span><span class="g3 gc"></span><span class="g4 gm"></span>
+    <span class="g5 gc"></span><span class="g6 gm"></span><span class="g7 gc"></span>
+    <span class="g8 gm"></span><span class="g9 gc"></span><span class="g10 gc"></span><span class="g11 gm"></span>
+    <span class="g12 gm"></span><span class="g13 gc"></span><span class="g14 gm"></span>
+  </div>
+  <div class="scan"></div>
+  <div class="grano"></div>
   ${logo ? `<img class="logo" src="data:image/png;base64,${logo}">` : ''}
   <div class="scrim"></div>
   <h1>${p.titular}</h1>
