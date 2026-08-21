@@ -83,7 +83,12 @@ const baseCSS = fondo => `
   .footer{position:absolute;bottom:52px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:6}
   .footer img{width:120px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.8))}
   .footer .tag{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:.14em;color:#cfd6e0;text-transform:uppercase}
+
+  .logo-corner{position:absolute;top:48px;left:52px;width:118px;z-index:6;
+               filter:drop-shadow(0 4px 12px rgba(0,0,0,.75))}
 `;
+
+const logoCorner = logo ? `<img class="logo-corner" src="data:image/png;base64,${logo}">` : '';
 
 const glitchHTML = `
   <div class="duotono"></div>
@@ -112,6 +117,7 @@ const piezas = [
     archivo: path.join(BG_DEPORTE, 'moto.png'),
     nombre: '1-comparacion',
     extra: `
+      ${logoCorner}
       <div class="handle">${M.instagram}</div>
       <div style="position:absolute;top:120px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(-2deg);display:inline-block">Energética vs funcional</span>
@@ -142,6 +148,7 @@ const piezas = [
     archivo: path.join(BG_DEPORTE, 'basket.png'),
     nombre: '2-dato',
     extra: `
+      ${logoCorner}
       <div class="handle">${M.instagram}</div>
       <div style="position:absolute;top:150px;left:0;right:0;text-align:center;z-index:6;
                   font-family:'Oswald';font-weight:700;font-size:22px;letter-spacing:.14em;
@@ -170,6 +177,7 @@ const piezas = [
     archivo: path.join(BG_DEPORTE, 'skate.png'),
     nombre: '3-pregunta',
     extra: `
+      ${logoCorner}
       <div class="handle">${M.instagram}</div>
       <div style="position:absolute;top:140px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(2deg);display:inline-block">POV</span>
