@@ -15,7 +15,7 @@ const { execFileSync } = require('child_process');
 
 const CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const UPLOADS = '/root/.claude/uploads/87e39a38-9453-5c0b-983a-e32503ffcbe6';
-const LOGO = path.join(UPLOADS, '2dd48002-Sin_ti_tulo2.png');
+const LOGO = path.join(__dirname, '..', '..', 'assets', 'logo-color.png');
 const FONTS = path.join(__dirname, '..', 'fonts');
 const BG_DIR = path.join(__dirname, 'higgsfield');
 

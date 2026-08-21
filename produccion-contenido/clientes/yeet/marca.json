@@ -15,7 +15,10 @@
 
   "logos": {
     "fuxia_fondo_claro": "C:/Users/mezma/OneDrive/Escritorio/TRABAJO/Yeet Epic Like You fuxia.png",
-    "_faltan": "Falta el PNG en lima sobre negro y el negro sobre blanco, con fondo transparente"
+    "color_transparente": "produccion-contenido/clientes/yeet/assets/logo-color.png",
+    "blanco_transparente": "produccion-contenido/clientes/yeet/assets/logo-blanco.png",
+    "_uso": "Usar logo-color.png (lima + magenta) por defecto en la mayoría de las piezas. logo-blanco.png solo para casos puntuales donde el color no lea bien.",
+    "_nota_2026-08-21": "Hubo una confusión: el archivo que se guardó primero como 'el logo' era en realidad la versión blanca con transparencia (se veía como página en blanco en el visor por eso). El de color estaba en otro archivo sin abrir. Corregido — ver rutas arriba."
   },
 
   "tipografia": {
