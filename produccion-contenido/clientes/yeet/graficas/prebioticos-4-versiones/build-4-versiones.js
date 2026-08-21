@@ -72,19 +72,19 @@ const baseCSS = fondo => `
           text-shadow:0 2px 8px rgba(0,0,0,.9);z-index:6}
 
   .chip{background:${C.magenta};color:#000;font-family:'Oswald';font-weight:700;
-        font-size:22px;letter-spacing:.03em;text-transform:uppercase;padding:10px 20px;
+        font-size:27px;letter-spacing:.03em;text-transform:uppercase;padding:13px 26px;
         box-shadow:0 8px 20px rgba(0,0,0,.5)}
 
-  .latas{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:4px;z-index:5}
-  .latas img{height:300px;width:auto;object-fit:contain;
-             filter:drop-shadow(0 20px 16px rgba(0,0,0,.6)) drop-shadow(0 0 30px rgba(255,6,156,.35)) drop-shadow(0 0 30px rgba(40,217,229,.25))}
-  .latas.sm img{height:230px}
+  .latas{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:2px;z-index:5}
+  .latas img{height:430px;width:auto;object-fit:contain;
+             filter:drop-shadow(0 24px 20px rgba(0,0,0,.6)) drop-shadow(0 0 38px rgba(255,6,156,.4)) drop-shadow(0 0 38px rgba(40,217,229,.3))}
+  .latas.sm img{height:360px}
 
-  .footer{position:absolute;bottom:52px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:6}
-  .footer img{width:120px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.8))}
-  .footer .tag{font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:.14em;color:#cfd6e0;text-transform:uppercase}
+  .footer{position:absolute;bottom:48px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:6}
+  .footer img{width:190px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.8))}
+  .footer .tag{font-family:'Oswald';font-weight:700;font-size:16px;letter-spacing:.14em;color:#cfd6e0;text-transform:uppercase}
 
-  .logo-corner{position:absolute;top:48px;left:52px;width:118px;z-index:6;
+  .logo-corner{position:absolute;top:44px;left:48px;width:190px;z-index:6;
                filter:drop-shadow(0 4px 12px rgba(0,0,0,.75))}
 `;
 
@@ -119,42 +119,32 @@ const piezas = [
     extra: `
       ${logoCorner}
       <div class="handle">${M.instagram}</div>
-      <div style="position:absolute;top:120px;left:0;right:0;text-align:center;z-index:6">
+      <div style="position:absolute;top:140px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(-2deg);display:inline-block">Energética vs funcional</span>
       </div>
-      <div class="latas" style="top:380px">${cans}</div>
-      <div style="position:absolute;top:700px;left:56px;right:56px;z-index:6;
-                  background:rgba(0,0,0,.68);border-radius:20px;padding:22px 30px;
+      <div class="latas" style="top:260px">${cans}</div>
+      <div style="position:absolute;top:706px;left:48px;right:48px;z-index:6;
+                  background:rgba(0,0,0,.7);border-radius:20px;padding:20px 30px;
                   border:2px solid rgba(255,255,255,.15)">
         <div style="display:flex;justify-content:space-between;align-items:center;
-                    padding:9px 0;border-bottom:1px solid rgba(255,255,255,.15);
-                    font-family:'Oswald';font-weight:700;font-size:21px">
-          <span style="color:#ff5c7a">✗ Cafeína / estimulantes</span>
+                    padding:8px 0;border-bottom:1px solid rgba(255,255,255,.15);
+                    font-family:'Oswald';font-weight:700;font-size:23px">
+          <span style="color:#ff5c7a">✗ Cafeína / estimulantes / azúcar</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;
-                    padding:9px 0;border-bottom:1px solid rgba(255,255,255,.15);
-                    font-family:'Oswald';font-weight:700;font-size:21px">
-          <span style="color:#ff5c7a">✗ Azúcar añadida</span>
+                    padding:8px 0;border-bottom:1px solid rgba(255,255,255,.15);
+                    font-family:'Oswald';font-weight:700;font-size:23px">
+          <span style="color:${C.lima}">✓ Vitaminas B2·B6·B12·C·D3</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;
-                    padding:9px 0;border-bottom:1px solid rgba(255,255,255,.15);
-                    font-family:'Oswald';font-weight:700;font-size:21px">
-          <span style="color:${C.lima}">✓ Vitaminas B2 · B6 · B12 · Niacina</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;
-                    padding:9px 0;border-bottom:1px solid rgba(255,255,255,.15);
-                    font-family:'Oswald';font-weight:700;font-size:21px">
-          <span style="color:${C.lima}">✓ Vitamina C + D3</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;
-                    padding:9px 0;font-family:'Oswald';font-weight:700;font-size:21px">
+                    padding:8px 0;font-family:'Oswald';font-weight:700;font-size:23px">
           <span style="color:${C.lima}">✓ 1g fibra prebiótica (inulina)</span>
         </div>
       </div>
-      <div style="position:absolute;top:1070px;left:60px;right:60px;text-align:center;z-index:6;
-                  font-family:'Anton';font-size:50px;line-height:1;color:${C.blanco};
-                  -webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000">
-        NO ES ENERGÉTICA<br><span style="color:${C.lima};-webkit-text-stroke:2px #000">ES FUNCIONAL</span>
+      <div style="position:absolute;top:960px;left:50px;right:50px;text-align:center;z-index:6;
+                  font-family:'Anton';font-size:78px;line-height:1;color:${C.blanco};
+                  -webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000">
+        NO ES ENERGÉTICA<br><span style="color:${C.lima};-webkit-text-stroke:3px #000">ES FUNCIONAL</span>
       </div>
     `,
   },
@@ -165,37 +155,34 @@ const piezas = [
     extra: `
       ${logoCorner}
       <div class="handle">${M.instagram}</div>
-      <div style="position:absolute;top:150px;left:0;right:0;text-align:center;z-index:6;
-                  font-family:'Oswald';font-weight:700;font-size:22px;letter-spacing:.14em;
+      <div style="position:absolute;top:130px;left:0;right:0;text-align:center;z-index:6;
+                  font-family:'Oswald';font-weight:700;font-size:24px;letter-spacing:.14em;
                   color:${C.lima};text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.9)">
         Por cada lata
       </div>
-      <div style="position:absolute;top:186px;left:0;right:0;text-align:center;z-index:6">
-        <span style="font-family:'Anton';font-size:280px;line-height:.85;color:${C.blanco};
-                     -webkit-text-stroke:5px #000;text-shadow:0 10px 0 #000">1G</span>
+      <div style="position:absolute;top:236px;left:0;right:0;text-align:center;z-index:6">
+        <span style="font-family:'Anton';font-size:300px;line-height:.82;color:${C.blanco};
+                     -webkit-text-stroke:6px #000;text-shadow:0 12px 0 #000">1G</span>
       </div>
-      <div style="position:absolute;top:520px;left:0;right:0;text-align:center;z-index:6;
-                  font-family:'Anton';font-size:40px;color:${C.blanco};-webkit-text-stroke:2px #000;
-                  text-shadow:0 4px 0 #000;padding:0 80px;line-height:1.05">
-        DE FIBRA <span style="color:${C.lima};-webkit-text-stroke:2px #000">PREBIÓTICA</span>
+      <div style="position:absolute;top:558px;left:0;right:0;text-align:center;z-index:6;
+                  font-family:'Anton';font-size:48px;color:${C.blanco};-webkit-text-stroke:2.5px #000;
+                  text-shadow:0 5px 0 #000;padding:0 60px;line-height:1.05">
+        DE FIBRA <span style="color:${C.lima};-webkit-text-stroke:2.5px #000">PREBIÓTICA</span>
       </div>
-      <div class="latas sm" style="top:600px">${cans}</div>
-      <div style="position:absolute;top:850px;left:100px;right:100px;text-align:center;z-index:6;
-                  font-family:'Marker';font-size:25px;line-height:1.3;color:${C.blanco};
+      <div class="latas" style="top:640px">${cans}</div>
+      <div style="position:absolute;top:1000px;left:100px;right:100px;text-align:center;z-index:6;
+                  font-family:'Marker';font-size:24px;line-height:1.28;color:${C.blanco};
                   text-shadow:0 2px 10px rgba(0,0,0,.9)">
-        Alimenta las bacterias buenas<br>de tu intestino. Así de simple.
+        Alimenta las bacterias buenas de tu intestino.
       </div>
-      <div style="position:absolute;top:960px;left:70px;right:70px;z-index:6;
-                  background:rgba(0,0,0,.68);border-radius:18px;padding:20px 26px;
-                  border:2px solid rgba(255,255,255,.15);font-family:'Oswald';font-weight:700;
-                  font-size:19px;letter-spacing:.02em;color:#eaeaea;text-align:center;line-height:1.9">
-        Vitamina D3 <span style="color:${C.lima}">300% VD</span> ·
-        Vitamina C <span style="color:${C.lima}">108% VD</span><br>
-        Complejo B (B2·B6·B12·Niacina) · Magnesio + Zinc
+      <div style="position:absolute;top:1064px;left:0;right:0;text-align:center;z-index:6;
+                  font-family:'Oswald';font-weight:700;font-size:18px;letter-spacing:.02em;
+                  color:#eaeaea;text-shadow:0 2px 8px rgba(0,0,0,.9)">
+        + Vitamina D3 <span style="color:${C.lima}">300%</span> · Vitamina C <span style="color:${C.lima}">108%</span> · Magnesio + Zinc
       </div>
-      <div style="position:absolute;top:1130px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
-        <span class="chip" style="background:${C.blanco};transform:none;padding:8px 18px;font-size:17px">Sin cafeína</span>
-        <span class="chip" style="background:${C.lima};transform:none;padding:8px 18px;font-size:17px">Sin sellos</span>
+      <div style="position:absolute;top:1112px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
+        <span class="chip" style="background:${C.blanco};transform:none;padding:9px 20px;font-size:18px">Sin cafeína</span>
+        <span class="chip" style="background:${C.lima};transform:none;padding:9px 20px;font-size:18px">Sin sellos</span>
       </div>
     `,
   },
@@ -206,27 +193,27 @@ const piezas = [
     extra: `
       ${logoCorner}
       <div class="handle">${M.instagram}</div>
-      <div style="position:absolute;top:140px;left:0;right:0;text-align:center;z-index:6">
+      <div style="position:absolute;top:150px;left:0;right:0;text-align:center;z-index:6">
         <span class="chip" style="transform:rotate(2deg);display:inline-block">POV</span>
       </div>
-      <div style="position:absolute;top:210px;left:0;right:0;text-align:center;z-index:6;
-                  font-family:'Anton';font-size:62px;line-height:1.02;color:${C.blanco};
-                  -webkit-text-stroke:2.5px #000;text-shadow:0 5px 0 #000;padding:0 64px">
-        ¿SABÍAS QUE TU YEET<br>TAMBIÉN CUIDA TU<br><span style="color:${C.lima};-webkit-text-stroke:2.5px #000">INTESTINO?</span>
+      <div style="position:absolute;top:222px;left:0;right:0;text-align:center;z-index:6;
+                  font-family:'Anton';font-size:74px;line-height:1;color:${C.blanco};
+                  -webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000;padding:0 50px">
+        ¿SABÍAS QUE TU YEET<br>TAMBIÉN CUIDA TU<br><span style="color:${C.lima};-webkit-text-stroke:3px #000">INTESTINO?</span>
       </div>
-      <div class="latas" style="top:560px">${cans}</div>
-      <div style="position:absolute;top:890px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
+      <div class="latas" style="top:610px">${cans}</div>
+      <div style="position:absolute;top:940px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:6">
         <span class="chip" style="background:${C.blanco};transform:none">Prebióticos 🦠</span>
         <span class="chip" style="background:${C.lima};transform:none">Sin cafeína</span>
       </div>
-      <div style="position:absolute;top:970px;left:80px;right:80px;text-align:center;z-index:6;
-                  font-family:'Marker';font-size:25px;line-height:1.32;color:${C.blanco};
+      <div style="position:absolute;top:1024px;left:70px;right:70px;text-align:center;z-index:6;
+                  font-family:'Marker';font-size:24px;line-height:1.3;color:${C.blanco};
                   text-shadow:0 2px 10px rgba(0,0,0,.9)">
-        Los prebióticos son fibra que alimenta<br>las bacterias buenas de tu intestino.<br>Nada más, nada menos.
+        Fibra que alimenta las bacterias buenas de tu intestino.
       </div>
-      <div style="position:absolute;top:1110px;left:0;right:0;display:flex;justify-content:center;gap:10px;z-index:6">
-        <span class="chip" style="background:${C.magenta};color:#fff;transform:none;padding:8px 16px;font-size:16px">Vitamina D3 300%</span>
-        <span class="chip" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4);transform:none;padding:8px 16px;font-size:16px">Magnesio + Zinc</span>
+      <div style="position:absolute;top:1112px;left:0;right:0;display:flex;justify-content:center;gap:10px;z-index:6">
+        <span class="chip" style="background:${C.magenta};color:#fff;transform:none;padding:9px 18px;font-size:17px">Vitamina D3 300%</span>
+        <span class="chip" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4);transform:none;padding:9px 18px;font-size:17px">Magnesio + Zinc</span>
       </div>
     `,
   },
@@ -236,15 +223,15 @@ const piezas = [
     nombre: '4-declaracion',
     extra: `
       <div class="handle">${M.instagram}</div>
-      <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;
-                  align-items:center;justify-content:center;gap:30px;z-index:6">
-        <div style="font-family:'Anton';font-size:96px;line-height:.96;text-align:center;color:${C.blanco};
-                    -webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000;padding:0 50px">
-          FUNCIONAL.<br><span style="color:${C.magenta};-webkit-text-stroke:3px #000">NO</span>
-          <span style="color:${C.lima};-webkit-text-stroke:3px #000">ENERGÉTICA.</span>
+      <div style="position:absolute;top:118px;left:0;right:0;bottom:230px;display:flex;flex-direction:column;
+                  align-items:center;justify-content:center;gap:26px;z-index:6">
+        <div style="font-family:'Anton';font-size:112px;line-height:.94;text-align:center;color:${C.blanco};
+                    -webkit-text-stroke:3.5px #000;text-shadow:0 7px 0 #000;padding:0 40px">
+          FUNCIONAL.<br><span style="color:${C.magenta};-webkit-text-stroke:3.5px #000">NO</span>
+          <span style="color:${C.lima};-webkit-text-stroke:3.5px #000">ENERGÉTICA.</span>
         </div>
         <div style="font-family:'Oswald';font-weight:700;font-size:20px;letter-spacing:.06em;
-                    color:#eaeaea;text-align:center;padding:0 90px;line-height:1.7">
+                    color:#eaeaea;text-align:center;padding:0 90px;line-height:1.6">
           VITAMINAS B · C · D3 &nbsp;·&nbsp; MAGNESIO + ZINC<br>
           <span style="color:${C.lima}">PREBIÓTICOS (1G INULINA)</span><br>
           SIN CAFEÍNA · SIN AZÚCAR · SIN SELLOS
