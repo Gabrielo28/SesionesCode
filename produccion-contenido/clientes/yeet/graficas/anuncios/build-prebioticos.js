@@ -15,6 +15,7 @@ const UPLOADS = '/root/.claude/uploads/87e39a38-9453-5c0b-983a-e32503ffcbe6';
 const LOGO = path.join(UPLOADS, '2dd48002-Sin_ti_tulo2.png');
 const LATA_CLASSIC = path.join(UPLOADS, '1afbb687-Classic_Jumbo.jpeg');
 const LATA_PUNCH = path.join(UPLOADS, '34d56bc3-Punch_Jumbo.jpeg');
+const FONDO = path.join(__dirname, 'fondo-higgsfield.png');
 
 const M = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'marca.json'), 'utf8'));
 const C = M.colores;
@@ -24,33 +25,31 @@ const fuente = b64(FUENTE);
 const logo = b64(LOGO);
 const latexClassic = b64(LATA_CLASSIC);
 const latexPunch = b64(LATA_PUNCH);
+const fondo = b64(FONDO);
 
 if (!fuente) console.log('  ⚠ No encontré Montserrat.ttf');
 if (!logo) console.log('  ⚠ No encontré el logo');
 if (!latexClassic || !latexPunch) console.log('  ⚠ No encontré una de las latas');
+if (!fondo) console.log('  ⚠ No encontré el fondo Higgsfield, uso negro plano');
 
 const css = `
   @font-face { font-family:'Mont'; src:url(data:font/ttf;base64,${fuente}) format('truetype'); }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{width:1080px;height:1350px;background:${C.negro};font-family:'Mont',sans-serif;
-       overflow:hidden;position:relative;color:${C.blanco}}
-
-  .diag{position:absolute;width:1700px;height:230px;background:${C.magenta};
-        transform:rotate(-14deg);left:-280px;opacity:.24}
-  .diag.a{top:-70px}
-  .diag.b{top:1160px;background:${C.lima};opacity:.18}
+  body{width:1080px;height:1350px;background:${C.negro} ${fondo ? `url(data:image/png;base64,${fondo})` : ''} center/cover no-repeat;
+       font-family:'Mont',sans-serif;overflow:hidden;position:relative;color:${C.blanco}}
 
   .top{position:absolute;top:56px;left:0;right:0;text-align:center}
-  .handle{font-size:22px;font-weight:700;letter-spacing:.22em;color:${C.magenta};text-transform:uppercase}
+  .handle{font-size:22px;font-weight:700;letter-spacing:.22em;color:${C.blanco};text-transform:uppercase;
+          text-shadow:0 2px 10px rgba(0,0,0,.8)}
 
   .wrap{position:absolute;top:100px;left:0;right:0;bottom:24px;display:flex;flex-direction:column;
         align-items:center;justify-content:center;gap:20px;padding:0 80px}
 
   .cabecera{text-align:center}
   .sobre{font-size:24px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-         color:${C.lima};margin-bottom:10px}
+         color:${C.lima};margin-bottom:10px;text-shadow:0 2px 10px rgba(0,0,0,.8)}
   h1{font-size:66px;font-weight:900;line-height:1.04;letter-spacing:-.03em;text-transform:uppercase;
-     text-align:center}
+     text-align:center;text-shadow:0 4px 18px rgba(0,0,0,.85)}
   .lima{color:${C.lima}}
   .mag{color:${C.magenta}}
 
@@ -63,7 +62,7 @@ const css = `
   .divisor{position:absolute;left:50%;top:18px;bottom:18px;width:2px;background:rgba(0,0,0,.12);
            transform:translateX(-1px)}
 
-  .panel{width:860px;background:rgba(255,255,255,.06);border:2px solid rgba(180,230,29,.35);
+  .panel{width:860px;background:rgba(0,0,0,.55);border:2px solid rgba(180,230,29,.4);
          border-radius:20px;padding:20px 40px;flex-shrink:0}
   .panel .etq{font-size:19px;font-weight:800;letter-spacing:.12em;color:${C.lima};text-transform:uppercase;
               margin-bottom:8px}
@@ -82,7 +81,6 @@ const css = `
 
 const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><style>${css}</style></head>
 <body>
-  <div class="diag a"></div><div class="diag b"></div>
   <div class="top"><div class="handle">${M.instagram}</div></div>
 
   <div class="wrap">
