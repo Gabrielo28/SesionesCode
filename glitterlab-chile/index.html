@@ -10,20 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#FBF9F5;
-    --bg-alt:#F3EEE4;
-    --card:#FFFFFF;
-    --border:#E7E0D2;
-    --border-2:#D8CDB6;
-    --text:#241F19;
-    --text-dim:#6E6559;
-    --text-dim-2:#9A9083;
-    --gold:#A8802F;
-    --gold-soft:#E7D5AC;
-    --plum:#7C5468;
-    --sage:#5F7F6C;
+    --bg:#0B0C0C;
+    --bg-alt:#151716;
+    --card:#1B1D1C;
+    --border:rgba(255,255,255,.08);
+    --border-2:rgba(255,255,255,.16);
+    --text:#F4F5F3;
+    --text-dim:#A9ACA6;
+    --text-dim-2:#767974;
+    --teal:#2FE0C9;
+    --teal-soft:rgba(47,224,201,.14);
     --radius:16px;
-    --shadow: 0 12px 32px -18px rgba(36,31,25,.22);
+    --shadow: 0 12px 32px -18px rgba(0,0,0,.7);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
@@ -43,13 +41,13 @@
     font-weight:600;letter-spacing:-.01em;
   }
   h2{font-size:clamp(1.7rem,3.2vw,2.5rem);}
-  .accent{color:var(--gold);}
+  .accent{color:var(--teal);}
   .eyebrow{
     display:inline-flex;align-items:center;gap:8px;
     font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--gold);font-weight:600;font-family:'Inter',sans-serif;
-    background:rgba(168,128,47,.08);
-    border:1px solid rgba(168,128,47,.25);
+    color:var(--teal);font-weight:600;font-family:'Inter',sans-serif;
+    background:rgba(47,224,201,.10);
+    border:1px solid rgba(47,224,201,.28);
     padding:6px 14px;border-radius:999px;
   }
   .section-head{text-align:center;max-width:640px;margin:0 auto 44px;}
@@ -59,7 +57,7 @@
   /* ---------- header ---------- */
   header{
     position:sticky;top:0;z-index:100;
-    background:rgba(251,249,245,.86);
+    background:rgba(11,12,12,.82);
     backdrop-filter:blur(14px);
     border-bottom:1px solid var(--border);
   }
@@ -92,7 +90,7 @@
   .btn-ghost{
     background:transparent;border-color:var(--border-2);color:var(--text);
   }
-  .btn-ghost:hover{background:var(--card);border-color:var(--gold);}
+  .btn-ghost:hover{background:var(--card);border-color:var(--teal);}
   .btn-dark{
     background:var(--text);color:var(--bg);
     box-shadow:0 10px 26px -12px rgba(36,31,25,.5);
@@ -105,7 +103,7 @@
     color:var(--text-dim);border:1px solid var(--border-2);
     transition:color .15s, border-color .15s;
   }
-  .ig-link:hover{color:var(--gold);border-color:var(--gold);}
+  .ig-link:hover{color:var(--teal);border-color:var(--teal);}
 
   /* ---------- hero ---------- */
   .hero{padding-top:88px;padding-bottom:76px;}
@@ -130,7 +128,7 @@
     border-right:1px solid var(--border);
   }
   .stat:last-child{border-right:none;}
-  .stat b{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--gold);font-weight:600;}
+  .stat b{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--teal);font-weight:600;}
   .stat span{font-size:.8rem;color:var(--text-dim-2);}
 
   /* ---------- rubros ---------- */
@@ -155,8 +153,8 @@
   .rubro-card p{color:var(--text-dim);font-size:.94rem;}
   .rubro-card .tag{
     display:inline-block;margin-top:14px;font-size:.72rem;font-weight:600;
-    color:var(--sage);border:1px solid rgba(95,127,108,.3);
-    background:rgba(95,127,108,.08);padding:4px 10px;border-radius:999px;
+    color:var(--teal);border:1px solid rgba(47,224,201,.3);
+    background:rgba(47,224,201,.08);padding:4px 10px;border-radius:999px;
   }
 
   /* ---------- catalog ---------- */
@@ -169,7 +167,7 @@
     border:1px solid var(--border-2);background:var(--card);color:var(--text-dim);
     cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;
   }
-  .filter-btn:hover{color:var(--text);border-color:var(--gold);}
+  .filter-btn:hover{color:var(--text);border-color:var(--teal);}
   .filter-btn.active{
     background:var(--text);color:var(--bg);border-color:var(--text);
   }
@@ -205,8 +203,8 @@
   }
   .how-step .num{
     width:36px;height:36px;border-radius:50%;
-    background:var(--gold-soft);
-    color:var(--gold);font-weight:700;font-family:'Fraunces',serif;
+    background:var(--teal-soft);
+    color:var(--teal);font-weight:700;font-family:'Fraunces',serif;
     display:flex;align-items:center;justify-content:center;
     margin-bottom:16px;font-size:1rem;
   }
@@ -222,14 +220,14 @@
   @media(max-width:760px){.price-card{grid-template-columns:1fr;padding:30px;}}
   .price-card .big-price{
     font-family:'Fraunces',serif;
-    font-size:3.1rem;font-weight:600;color:var(--gold);line-height:1;
+    font-size:3.1rem;font-weight:600;color:var(--teal);line-height:1;
   }
   .price-card .unit{color:var(--text-dim);font-size:.95rem;margin-top:8px;}
   .price-list{display:flex;flex-direction:column;gap:12px;margin:24px 0;}
   .price-list li{
     display:flex;gap:10px;align-items:flex-start;color:var(--text-dim);font-size:.94rem;
   }
-  .price-list li .ok{color:var(--sage);font-weight:700;flex-shrink:0;}
+  .price-list li .ok{color:var(--teal);font-weight:700;flex-shrink:0;}
   .price-side{
     background:var(--bg-alt);border:1px solid var(--border);border-radius:14px;padding:26px;
   }
@@ -257,15 +255,15 @@
   }
   .faq-item summary::-webkit-details-marker{display:none;}
   .faq-item summary::after{
-    content:"+";font-size:1.4rem;color:var(--gold);font-weight:400;transition:transform .2s;
+    content:"+";font-size:1.4rem;color:var(--teal);font-weight:400;transition:transform .2s;
   }
   .faq-item[open] summary::after{transform:rotate(45deg);}
   .faq-item p{color:var(--text-dim);margin-top:12px;font-size:.94rem;max-width:720px;}
 
   /* ---------- final cta ---------- */
   .final-cta{
-    background:linear-gradient(135deg,#F3E7CC,#F8F1E2);
-    border:1px solid var(--border-2);
+    background:linear-gradient(135deg,#0F211E,#122A26);
+    border:1px solid rgba(47,224,201,.25);
     border-radius:24px;padding:64px 40px;text-align:center;color:var(--text);
     position:relative;overflow:hidden;
   }
