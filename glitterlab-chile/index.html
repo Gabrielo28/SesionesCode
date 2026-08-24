@@ -99,6 +99,13 @@
   }
   .nav-cta{display:none;}
   @media(min-width:900px){.nav-cta{display:inline-flex;}}
+  .ig-link{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;
+    color:var(--text-dim);border:1px solid var(--border-2);
+    transition:color .15s, border-color .15s;
+  }
+  .ig-link:hover{color:var(--gold);border-color:var(--gold);}
 
   /* ---------- hero ---------- */
   .hero{padding-top:88px;padding-bottom:76px;}
@@ -300,7 +307,12 @@
         <li><a href="#faq">Preguntas</a></li>
       </ul>
     </nav>
-    <a class="btn btn-primary nav-cta" id="wa-header" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a class="ig-link" href="https://instagram.com/resin.epoxic" target="_blank" rel="noopener" aria-label="Instagram @resin.epoxic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a class="btn btn-primary nav-cta" id="wa-header" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+    </div>
   </div>
 </header>
 
@@ -538,7 +550,10 @@
 <footer>
   <div class="wrap">
     <div class="logo" style="font-size:1.05rem;">✨ GlitterLab Chile</div>
-    <div>Pedidos y consultas por WhatsApp · Despacho a todo Chile</div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span>Pedidos y consultas por WhatsApp · Despacho a todo Chile</span>
+      <a href="https://instagram.com/resin.epoxic" target="_blank" rel="noopener" style="color:var(--text);font-weight:600;">@resin.epoxic</a>
+    </div>
   </div>
   <p class="disclaimer">Glitter de uso decorativo para uñas, resina, maquillaje artístico, repostería (exterior, no comestible), velas, jabones y manualidades. Verifica siempre las indicaciones de uso según la aplicación antes de usarlo sobre piel, rostro o alimentos.</p>
 </footer>
