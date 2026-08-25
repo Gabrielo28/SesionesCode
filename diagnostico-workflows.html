@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagnóstico gratis de procesos | Influence Chile</title>
-<meta name="description" content="Responda 9 preguntas en 3 minutos y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
+<meta name="description" content="Responda 3 preguntas en 1 minuto y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#33C7CE">
 <link rel="canonical" href="https://influencechile.cl/diagnostico-workflows.html">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Influence Chile">
 <meta property="og:locale" content="es_CL">
 <meta property="og:title" content="Diagnóstico de Procesos con IA | Influence Chile">
-<meta property="og:description" content="Un diagnóstico de 3 minutos que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
+<meta property="og:description" content="Un filtro rápido de 1 minuto que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
 <meta property="og:image" content="https://influencechile.cl/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,15 +128,15 @@
 
       <!-- Intro -->
       <div id="intro" class="intro">
-        <span class="eyebrow">Diagnóstico gratuito · 3 minutos</span>
+        <span class="eyebrow">Diagnóstico gratuito · 1 minuto</span>
         <h1>¿Dónde está perdiendo tiempo y dinero su <span class="coral">operación</span>?</h1>
-        <p>Nueve preguntas sobre cómo funciona hoy su operación: atención a clientes, ventas, agenda, cotizaciones, reportes, equipo, captación, post-venta y herramientas. Sirve para empresas de cualquier tamaño, desde un equipo de pocas personas hasta una organización con varias áreas. Al final le indicamos qué procesos conviene automatizar primero con inteligencia artificial, y cuáles no.</p>
+        <p>Un filtro rápido de 3 preguntas sobre atención a clientes, ventas y reportería. Sirve para empresas de cualquier tamaño, desde un equipo de pocas personas hasta una organización con varias áreas. Al final le indicamos qué conviene automatizar primero con inteligencia artificial — y, si quiere profundizar, el análisis completo de las nueve áreas de nuestra metodología lo hacemos juntos en una reunión de 30 minutos.</p>
         <ul>
           <li><span class="dot">✓</span> Sin compromiso ni datos de pago</li>
           <li><span class="dot">✓</span> El resultado es suyo, lo utilice con nosotros o no</li>
           <li><span class="dot">✓</span> Al final puede enviarnos el resultado directamente por WhatsApp</li>
         </ul>
-        <button class="btn btn-coral" onclick="mostrarSegmento()">Comenzar diagnóstico</button>
+        <button class="btn btn-coral" onclick="mostrarSegmento()">Comenzar diagnóstico rápido</button>
       </div>
 
       <!-- Tamaño de empresa -->
@@ -179,7 +179,7 @@
         <div id="hallazgos"></div>
         <div class="cta-box">
           <h3>Conversemos</h3>
-          <p>Una reunión de 30 minutos, sin compromiso, para revisar estos resultados y definir por dónde comenzar.</p>
+          <p>Esto es un vistazo de 3 de las 9 áreas que evaluamos. En una reunión de 30 minutos, sin compromiso, revisamos el diagnóstico completo — agenda, cotizaciones, gestión interna, captación de clientes y post-venta — y definimos por dónde comenzar.</p>
           <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
         </div>
       </div>
@@ -236,9 +236,11 @@
     mostrarPaso(0);
   }
 
-  // Cada pregunta corresponde a un área de la metodología de diagnóstico de workflows
-  // (prospeccion-ventas/06-diagnostico-workflows.md). Opciones ordenadas de mejor a peor,
-  // puntaje 0 (resuelto) a 3 (dolor fuerte).
+  // Filtro público: 3 de las 9 áreas de la metodología de diagnóstico de workflows
+  // (prospeccion-ventas/06-diagnostico-workflows.md) — las de mayor impacto universal,
+  // para maximizar la tasa de término. Las 9 áreas completas se revisan en la reunión
+  // de 30 minutos y en el diagnóstico PDF (generar-diagnostico.js).
+  // Opciones ordenadas de mejor a peor, puntaje 0 (resuelto) a 3 (dolor fuerte).
   const PREGUNTAS = [
     {
       area: 'atencion',
@@ -273,38 +275,6 @@
       hallazgo: 'Los interesados que no compran de inmediato no reciben ningún seguimiento posterior. Se trata de ventas que estaban prácticamente cerradas y que se están perdiendo por falta de continuidad en el contacto.'
     },
     {
-      area: 'agenda',
-      titulo: 'Agendamiento',
-      pregunta: '¿Cómo se agendan horas o reservas hoy?',
-      opciones: [
-        'Sistema automático que evita superposiciones y envía recordatorios',
-        'Calendario compartido: funciona, pero requiere gestión manual',
-        'Por WhatsApp o llamada telefónica, con ocasionales superposiciones de horario',
-        'En papel o de forma manual, sin recordatorios; hay inasistencias frecuentes'
-      ],
-      solucion: {
-        nombre: 'Agente de agendamiento',
-        detalle: 'Ofrece horarios disponibles, confirma la reserva y envía un recordatorio automático 24 horas antes.'
-      },
-      hallazgo: 'El agendamiento depende de coordinación manual, lo que genera superposiciones de horario e inasistencias que hoy no se están midiendo, pero que sí representan un costo real para el negocio.'
-    },
-    {
-      area: 'cotizaciones',
-      titulo: 'Cotizaciones y documentos',
-      pregunta: '¿Cuánto tiempo transcurre entre que se solicita una cotización y se envía?',
-      opciones: [
-        'Minutos: el proceso está automatizado o existe una plantilla lista',
-        'Menos de una hora, completando una plantilla de forma manual',
-        'Puede tomar un día completo, porque se elabora desde cero cada vez',
-        'En ocasiones pasa más de un día y el cliente pierde el interés'
-      ],
-      solucion: {
-        nombre: 'Generador automático de cotizaciones',
-        detalle: 'Genera y envía la cotización a partir de una plantilla con los datos del cliente, en minutos en lugar de horas.'
-      },
-      hallazgo: 'Elaborar cada cotización de forma manual toma un tiempo que se multiplica por la cantidad de solicitudes mensuales, y cada hora de demora es una oportunidad para que el cliente compare con la competencia.'
-    },
-    {
       area: 'reportes',
       titulo: 'Reportería y control',
       pregunta: '¿Cómo se informa la gerencia sobre el desempeño del mes?',
@@ -319,70 +289,6 @@
         detalle: 'Reúne los datos que ya existen (ventas, redes sociales, caja, sistemas internos) y entrega un resumen periódico sin necesidad de elaborarlo manualmente.'
       },
       hallazgo: 'Elaborar el reporte de forma manual cada semana o cada mes ocupa el tiempo de una persona remunerada en tareas de copiar y pegar información, en lugar de en la toma de decisiones.'
-    },
-    {
-      area: 'interno',
-      titulo: 'Gestión interna',
-      pregunta: '¿Con qué frecuencia se traspasa información de forma manual entre áreas (venta → producción → despacho, etc.)?',
-      opciones: [
-        'Está todo conectado; la información se traspasa de forma automática',
-        'Se traspasa de forma manual, pero el proceso es rápido',
-        'Se copia y pega entre planillas o conversaciones con frecuencia',
-        'Se pierde o se duplica información entre áreas con frecuencia'
-      ],
-      solucion: {
-        nombre: 'Automatización de procesos internos',
-        detalle: 'Conecta las herramientas que ya utiliza el equipo para que la información se traspase automáticamente entre áreas, sin necesidad de reescribirla.'
-      },
-      hallazgo: 'La información se está traspasando de forma manual entre áreas, lo que genera errores, duplicidades y horas de trabajo que no aportan valor al cliente.'
-    },
-    {
-      area: 'marketing',
-      titulo: 'Captación de nuevos clientes',
-      pregunta: 'Más allá de responder a quien ya llegó, ¿cómo se generan clientes o consultas nuevas hoy?',
-      opciones: [
-        'Existen campañas activas y se mide el costo de cada cliente nuevo',
-        'Se publica contenido y ocasionalmente se pautea, pero sin métricas claras',
-        'Se depende casi por completo del boca a boca y las referencias',
-        'No existe una estrategia definida de captación de clientes'
-      ],
-      solucion: {
-        nombre: 'Captación con IA y contenido',
-        detalle: 'Segmentación de audiencia, contenido y campañas optimizadas con IA, integradas al mismo flujo de atención y seguimiento.'
-      },
-      hallazgo: 'El crecimiento depende casi por completo del boca a boca, sin un sistema repetible de captación, lo que hace que los nuevos clientes queden sujetos al azar en lugar de a un proceso medible.'
-    },
-    {
-      area: 'postventa',
-      titulo: 'Post-venta y fidelización',
-      pregunta: 'Después de que un cliente compra, ¿qué seguimiento recibe?',
-      opciones: [
-        'Existe un proceso automático de seguimiento, encuestas y recordatorios de recompra',
-        'Se realiza un seguimiento manual de forma ocasional',
-        'Prácticamente no hay contacto posterior a la venta',
-        'Ningún seguimiento: el cliente no vuelve a saber de la empresa hasta que él mismo consulta'
-      ],
-      solucion: {
-        nombre: 'Automatización de post-venta y fidelización',
-        detalle: 'Envía mensajes automáticos de agradecimiento, encuestas de satisfacción y recordatorios de recompra o mantención.'
-      },
-      hallazgo: 'Los clientes que ya compraron no reciben ningún seguimiento posterior. Es la venta más económica de conseguir, porque ya existe confianza previa, y hoy se está desaprovechando por completo.'
-    },
-    {
-      area: 'herramientas',
-      titulo: 'Herramientas y datos',
-      pregunta: '¿Cuántos sistemas o planillas distintas utiliza el equipo para operar (WhatsApp, Excel, algún software, papel)?',
-      opciones: [
-        'Todo está centralizado en un sistema conectado',
-        'Dos o tres herramientas que se comunican razonablemente bien entre sí',
-        'Varias planillas y conversaciones sueltas que alguien debe cuadrar manualmente',
-        'Cada área trabaja con su propio método, sin ninguna conexión entre ellos'
-      ],
-      solucion: {
-        nombre: 'Integración de datos y sistemas',
-        detalle: 'Conecta las herramientas que ya existen (CRM, planillas, WhatsApp) en un solo flujo de información, sin necesidad de migrar de sistema.'
-      },
-      hallazgo: 'Mientras más sistemas desconectados existen, más horas de trabajo administrativo se destinan a cuadrar información, y mayor es la probabilidad de errores por datos que no coinciden entre sí.'
     }
   ];
 
@@ -444,8 +350,8 @@
     const maxima = PREGUNTAS.length * 3;
 
     let nivelClase = 'bajo', nivelTexto = 'Nivel de urgencia: bajo';
-    if (total >= 15) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
-    else if (total >= 7) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
+    if (total >= 6) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
+    else if (total >= 3) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
 
     const empresa = document.getElementById('f-empresa').value.trim() || 'su negocio';
     const nombre = document.getElementById('f-nombre').value.trim();
@@ -457,8 +363,8 @@
       ? `${empresa} presenta una operación bien encaminada`
       : `Estos son los resultados del diagnóstico para ${empresa}`;
     document.getElementById('res-lead').textContent = total === 0
-      ? 'No se detectaron cuellos de botella significativos a partir de sus respuestas. De todas formas, si desea una segunda mirada de un especialista, la conversación es sin costo.'
-      : `Puntaje de fricción: ${total} de ${maxima}. A continuación se presentan las áreas donde más se está perdiendo tiempo o clientes, ordenadas de mayor a menor prioridad.`;
+      ? 'No se detectaron cuellos de botella significativos en las áreas evaluadas. De todas formas, si desea una segunda mirada de un especialista, la conversación es sin costo.'
+      : `Puntaje de fricción: ${total} de ${maxima} en las áreas evaluadas. A continuación se presentan los resultados, ordenados de mayor a menor prioridad.`;
 
     const segnota = document.getElementById('res-segnota');
     segnota.style.display = 'block';
@@ -482,13 +388,13 @@
     // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
     const resumen = PREGUNTAS.map(p => `${p.titulo}: ${respuestas[p.area] ?? '-'}/3`).join(' · ');
     const rubro = document.getElementById('f-rubro').value.trim();
-    let msg = `Hola, completé el diagnóstico de procesos de Influence Chile.\n`;
+    let msg = `Hola, completé el diagnóstico rápido de procesos de Influence Chile.\n`;
     msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
     msg += `Tamaño: ${seg.label}\n`;
     if (nombre) msg += `Contacto: ${nombre}\n`;
     msg += `Puntaje de fricción: ${total}/${maxima}\n`;
     msg += `Detalle: ${resumen}\n`;
-    msg += `Me gustaría conversar sobre los resultados obtenidos.`;
+    msg += `Me gustaría agendar la reunión para ver el diagnóstico completo.`;
     document.getElementById('wa-link').href = 'https://wa.me/56965450723?text=' + encodeURIComponent(msg);
 
     document.getElementById('quiz').style.display = 'none';

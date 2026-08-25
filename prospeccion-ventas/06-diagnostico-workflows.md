@@ -261,8 +261,31 @@ Documento de diagnóstico (PDF/HTML, mismo criterio que la auditoría de redes �
 ## Cómo escala
 
 El cuestionario web (`diagnostico-workflows.html`) hace el primer filtro sin que tú muevas un
-dedo: identifica el tamaño de la empresa, recorre las 9 áreas, y el prospecto ve su propio
+dedo: identifica el tamaño de la empresa, recorre 3 de las 9 áreas, y el prospecto ve su propio
 resultado al instante. Te llega calificado por WhatsApp con el segmento y las áreas de dolor ya
 identificadas — tu llamada ya no parte de cero, parte de confirmar y profundizar lo que el
 cuestionario detectó. De ahí sale el JSON para el generador y el diagnóstico se produce en el
 mismo formato que las propuestas de redes.
+
+---
+
+## Por qué el cuestionario público es corto (y el diagnóstico completo no)
+
+Las 9 áreas son la metodología completa, pero **no se le piden las 9 a un desconocido en la
+web**. Cada paso adicional en un formulario pierde gente: si cada pregunta retiene un 90% de
+quienes siguen, un formulario de 11 pasos (tamaño + 9 preguntas + datos de contacto) termina
+completándolo apenas ~30% de quienes lo empiezan. Un cuestionario largo funciona cuando ya hay
+compromiso — una llamada agendada, alguien que levantó la mano — pero mata la conversión cuando
+es lo primero que ve un visitante frío.
+
+Por eso el cuestionario público quedó en **5 pasos**: tamaño de empresa + 3 preguntas (atención
+al cliente, seguimiento de ventas, reportería — las de mayor impacto universal, sin importar
+rubro ni tamaño) + datos de contacto. Mismo largo que el cotizador de planes que ya existe en
+el sitio, para no introducir un salto de fricción entre ambas herramientas.
+
+El resultado no esconde que es parcial — al contrario, lo usa como gancho: *"esto es un vistazo
+de 3 de las 9 áreas; el resto lo vemos en la reunión de 30 minutos"*. Así la brevedad no se lee
+como que falta contenido, sino como el motivo para agendar. **Las 9 áreas completas se usan en
+la llamada** (guion en la sección anterior) y en el diagnóstico PDF que se manda después
+(`propuesta/generar-diagnostico.js`) — ahí sí vale la pena la profundidad, porque el prospecto
+ya invirtió tiempo en la conversación.
