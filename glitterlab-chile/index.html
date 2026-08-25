@@ -183,8 +183,8 @@
     transition:transform .15s, box-shadow .15s;
   }
   .swatch:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
-  .swatch .chip{height:64px;position:relative;}
-  .swatch .chip::after{
+  .swatch .chip{height:110px;position:relative;}
+  .swatch .chip:not(.photo)::after{
     content:"";position:absolute;inset:0;
     background-image:radial-gradient(rgba(255,255,255,.85) 1px, transparent 1.4px);
     background-size:9px 9px;
@@ -403,9 +403,10 @@
       <button class="filter-btn" data-cat="neon">Neón</button>
       <button class="filter-btn" data-cat="pastel">Pastel</button>
       <button class="filter-btn" data-cat="chunky">Grueso / Chunky</button>
+      <button class="filter-btn" data-cat="formas">Formas</button>
     </div>
     <div class="swatch-grid" id="swatch-grid"></div>
-    <p class="catalog-note">Los colores en pantalla son referenciales. Consulta disponibilidad exacta por WhatsApp antes de armar tu lote.</p>
+    <p class="catalog-note">Fotos reales del glitter, sin retoque de color. Consulta disponibilidad exacta por WhatsApp antes de armar tu lote.</p>
   </div>
 </section>
 
@@ -618,6 +619,8 @@
     {n:'Plata Chunky',c:'chunky',g:'linear-gradient(135deg,#8F8A7E,#C7C2B4)'},
     {n:'Rosa Chunky',c:'chunky',g:'linear-gradient(135deg,#B9577E,#E3A0BB)'},
     {n:'Café Chunky',c:'chunky',g:'linear-gradient(135deg,#4A3626,#7A5C42)'},
+
+    {n:'Glitter Miau Miau',c:'formas',img:'img/glitter-miau-miau.jpg'},
   ];
 
   const grid = document.getElementById('swatch-grid');
@@ -626,7 +629,7 @@
       .filter(p => filter === 'all' || p.c === filter)
       .map(p => `
         <div class="swatch">
-          <div class="chip" style="background:${p.g};"></div>
+          <div class="chip${p.img ? ' photo' : ''}" style="${p.img ? `background-image:url('${p.img}');background-size:cover;background-position:center;` : `background:${p.g};`}"></div>
           <div class="label"><b>${p.n}</b>15g · $2.990</div>
         </div>
       `).join('');
