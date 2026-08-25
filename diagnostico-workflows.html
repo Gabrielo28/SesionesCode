@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagnóstico gratis de procesos | Influence Chile</title>
-<meta name="description" content="Responda 3 preguntas en 1 minuto y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
+<meta name="description" content="Responda 3 preguntas en 2 minutos y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#33C7CE">
 <link rel="canonical" href="https://influencechile.cl/diagnostico-workflows.html">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Influence Chile">
 <meta property="og:locale" content="es_CL">
 <meta property="og:title" content="Diagnóstico de Procesos con IA | Influence Chile">
-<meta property="og:description" content="Un filtro rápido de 1 minuto que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
+<meta property="og:description" content="Un filtro rápido de 2 minutos que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
 <meta property="og:image" content="https://influencechile.cl/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,7 +74,8 @@
 
   .opt{display:block;border:1.5px solid #dcebeb;border-radius:14px;padding:15px 18px;margin-bottom:11px;cursor:pointer;transition:border-color .15s ease,background .15s ease}
   .opt:hover{border-color:var(--teal)}
-  .opt input{display:none}
+  .opt input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .opt:focus-within{border-color:var(--teal-dark);box-shadow:0 0 0 3px rgba(51,199,206,.3)}
   .opt span{font-size:.95rem;color:var(--ink)}
   .opt.sel{border-color:var(--teal-dark);background:#eefbfb;font-weight:600}
 
@@ -128,7 +129,7 @@
 
       <!-- Intro -->
       <div id="intro" class="intro">
-        <span class="eyebrow">Diagnóstico gratuito · 1 minuto</span>
+        <span class="eyebrow">Diagnóstico gratuito · 2 minutos</span>
         <h1>¿Dónde está perdiendo tiempo y dinero su <span class="coral">operación</span>?</h1>
         <p>Un filtro rápido de 3 preguntas sobre atención a clientes, ventas y reportería. Sirve para empresas de cualquier tamaño, desde un equipo de pocas personas hasta una organización con varias áreas. Al final le indicamos qué conviene automatizar primero con inteligencia artificial — y, si quiere profundizar, el análisis completo de las nueve áreas de nuestra metodología lo hacemos juntos en una reunión de 30 minutos.</p>
         <ul>
@@ -179,7 +180,7 @@
         <div id="hallazgos"></div>
         <div class="cta-box">
           <h3>Conversemos</h3>
-          <p>Esto es un vistazo de 3 de las 9 áreas que evaluamos. En una reunión de 30 minutos, sin compromiso, revisamos el diagnóstico completo — agenda, cotizaciones, gestión interna, captación de clientes y post-venta — y definimos por dónde comenzar.</p>
+          <p>Esto es un vistazo de 3 de las 9 áreas que evaluamos. En una reunión de 30 minutos, sin compromiso, revisamos el diagnóstico completo — agenda, cotizaciones, gestión interna, captación de clientes, post-venta y herramientas — y definimos por dónde comenzar.</p>
           <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
         </div>
       </div>
@@ -355,26 +356,36 @@
 
     const empresa = document.getElementById('f-empresa').value.trim() || 'su negocio';
     const nombre = document.getElementById('f-nombre').value.trim();
+    const whatsappContacto = document.getElementById('f-whatsapp').value.trim();
     const seg = segmentoSel || SEGMENTOS[1];
-
-    document.getElementById('nivel').className = 'nivel ' + nivelClase;
-    document.getElementById('nivel').textContent = nivelTexto;
-    document.getElementById('res-titulo').innerHTML = total === 0
-      ? `${empresa} presenta una operación bien encaminada`
-      : `Estos son los resultados del diagnóstico para ${empresa}`;
-    document.getElementById('res-lead').textContent = total === 0
-      ? 'No se detectaron cuellos de botella significativos en las áreas evaluadas. De todas formas, si desea una segunda mirada de un especialista, la conversación es sin costo.'
-      : `Puntaje de fricción: ${total} de ${maxima} en las áreas evaluadas. A continuación se presentan los resultados, ordenados de mayor a menor prioridad.`;
-
-    const segnota = document.getElementById('res-segnota');
-    segnota.style.display = 'block';
-    segnota.innerHTML = `<b>Empresa de ${seg.label.toLowerCase()}:</b> ${seg.nota}`;
 
     const ordenadas = PREGUNTAS
       .map(p => ({ ...p, score: respuestas[p.area] || 0 }))
       .filter(p => p.score >= 2)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 4);
+      .slice(0, 3);
+
+    // El título y el mensaje dependen de si quedó algún hallazgo relevante (score >= 2),
+    // no del puntaje total en 0 — con 3 preguntas, un puntaje bajo pero distinto de 0
+    // puede igual no dejar ningún hallazgo, y la pantalla no debe quedar con un hueco vacío.
+    const sinHallazgos = ordenadas.length === 0;
+
+    document.getElementById('nivel').className = 'nivel ' + nivelClase;
+    document.getElementById('nivel').textContent = nivelTexto;
+    document.getElementById('res-titulo').textContent = sinHallazgos
+      ? `${empresa} presenta una operación bien encaminada en estas áreas`
+      : `Estos son los resultados del diagnóstico para ${empresa}`;
+    document.getElementById('res-lead').textContent = sinHallazgos
+      ? 'No se detectaron cuellos de botella significativos en las 3 áreas evaluadas. De todas formas, si desea una segunda mirada de un especialista sobre el resto de la operación, la conversación es sin costo.'
+      : `Puntaje de fricción: ${total} de ${maxima} en las áreas evaluadas. A continuación se presentan los resultados, ordenados de mayor a menor prioridad.`;
+
+    const segnota = document.getElementById('res-segnota');
+    segnota.style.display = 'block';
+    segnota.textContent = '';
+    const segnotaB = document.createElement('b');
+    segnotaB.textContent = `Empresa de ${seg.label.toLowerCase()}: `;
+    segnota.appendChild(segnotaB);
+    segnota.appendChild(document.createTextNode(seg.nota));
 
     const cont = document.getElementById('hallazgos');
     cont.innerHTML = ordenadas.map(p => `
@@ -392,6 +403,7 @@
     msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
     msg += `Tamaño: ${seg.label}\n`;
     if (nombre) msg += `Contacto: ${nombre}\n`;
+    if (whatsappContacto) msg += `WhatsApp de contacto: ${whatsappContacto}\n`;
     msg += `Puntaje de fricción: ${total}/${maxima}\n`;
     msg += `Detalle: ${resumen}\n`;
     msg += `Me gustaría agendar la reunión para ver el diagnóstico completo.`;
