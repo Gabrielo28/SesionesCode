@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico gratis de procesos | Influence Chile</title>
+<meta name="description" content="Responde 6 preguntas de 2 minutos y descubre en qué parte de tu operación estás perdiendo tiempo y clientes — y qué se puede automatizar con IA para resolverlo.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#33C7CE">
+<link rel="canonical" href="https://influencechile.cl/diagnostico-workflows.html">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Influence Chile">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="¿Dónde se te escapa el tiempo? | Diagnóstico gratis — Influence Chile">
+<meta property="og:description" content="6 preguntas, 2 minutos. Descubre qué parte de tu operación conviene automatizar primero.">
+<meta property="og:image" content="https://influencechile.cl/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#33C7CE; --teal-dark:#12959C; --teal-ink:#0d5a5f;
+    --coral:#FF7B7B; --coral-strong:#ff6363;
+    --white:#ffffff; --ink:#123638; --muted:#5b7c7e; --paper:#f3fbfb;
+    --shadow:0 18px 40px rgba(9,80,84,.14); --radius:22px;
+    --amber:#E39A2A; --red:#D9534F; --green:#12959C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.55;min-height:100vh}
+  a{text-decoration:none;color:inherit}
+  .wrap{width:min(760px,92%);margin:0 auto}
+  h1,h2,h3{line-height:1.12;letter-spacing:-.4px;font-weight:800}
+  .coral{color:var(--coral)}
+  .teal{color:var(--teal-dark)}
+
+  header.top{padding:22px 0}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;flex-direction:column;line-height:1}
+  .logo b{font-style:italic;font-weight:800;font-size:1.3rem;color:var(--teal-dark);letter-spacing:-1px}
+  .logo small{font-weight:800;font-size:.46rem;letter-spacing:4px;color:var(--teal-dark);opacity:.8;margin-top:2px}
+  header.top a.back{font-weight:700;font-size:.82rem;color:var(--muted)}
+
+  main{padding:10px 0 70px}
+
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:34px 28px}
+  @media(min-width:640px){.card{padding:46px 48px}}
+
+  .intro .eyebrow{display:inline-block;font-weight:800;letter-spacing:3px;font-size:.7rem;text-transform:uppercase;color:var(--coral);margin-bottom:12px}
+  .intro h1{font-size:1.9rem;margin-bottom:12px}
+  @media(min-width:640px){.intro h1{font-size:2.3rem}}
+  .intro p{color:var(--muted);font-size:1rem;margin-bottom:26px}
+  .intro ul{list-style:none;margin-bottom:30px}
+  .intro li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;color:var(--ink);margin-bottom:10px}
+  .intro li .dot{flex:0 0 20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;font-size:.88rem;padding:15px 26px;border-radius:60px;border:0;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;font-family:inherit;width:100%}
+  .btn:active{transform:scale(.98)}
+  .btn-coral{background:var(--coral);color:#fff;box-shadow:0 12px 26px rgba(255,99,99,.3)}
+  .btn-teal{background:var(--teal-dark);color:#fff}
+  .btn-outline{background:transparent;color:var(--muted);box-shadow:none;font-weight:700}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  .progress{display:flex;gap:6px;margin-bottom:26px}
+  .progress span{flex:1;height:5px;border-radius:3px;background:#e2eeee}
+  .progress span.done{background:var(--teal-dark)}
+
+  .step{display:none}
+  .step.active{display:block}
+  .step .qnum{font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:8px}
+  .step h2{font-size:1.35rem;margin-bottom:22px}
+  @media(min-width:640px){.step h2{font-size:1.55rem}}
+
+  .opt{display:block;border:1.5px solid #dcebeb;border-radius:14px;padding:15px 18px;margin-bottom:11px;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+  .opt:hover{border-color:var(--teal)}
+  .opt input{display:none}
+  .opt span{font-size:.95rem;color:var(--ink)}
+  .opt.sel{border-color:var(--teal-dark);background:#eefbfb;font-weight:600}
+
+  .nav-row{display:flex;gap:12px;margin-top:26px}
+  .nav-row .btn{width:auto;flex:1}
+  .nav-row .btn-outline{flex:0 0 auto;padding-left:18px;padding-right:18px}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+  .field input{width:100%;padding:13px 15px;border:1.5px solid #dcebeb;border-radius:12px;font-family:inherit;font-size:.95rem;color:var(--ink)}
+  .field input:focus{outline:none;border-color:var(--teal-dark)}
+
+  #resultado{display:none}
+  .nivel{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:60px;font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
+  .nivel.alto{background:#fdeceb;color:var(--red)}
+  .nivel.medio{background:#fdf3e3;color:var(--amber)}
+  .nivel.bajo{background:#e6f6f6;color:var(--green)}
+  #resultado h1{font-size:1.7rem;margin-bottom:10px}
+  #resultado > p.lead{color:var(--muted);margin-bottom:28px;font-size:.98rem}
+
+  .hallazgo{border-left:3px solid var(--coral);padding:2px 0 2px 16px;margin-bottom:22px}
+  .hallazgo .tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--coral-strong);background:#fff1f1;padding:3px 9px;border-radius:20px;margin-bottom:8px}
+  .hallazgo h3{font-size:1.08rem;margin-bottom:6px}
+  .hallazgo p{font-size:.92rem;color:var(--muted);margin-bottom:8px}
+  .hallazgo .sol{font-size:.88rem;color:var(--ink);background:#f3fbfb;border-radius:10px;padding:10px 12px}
+  .hallazgo .sol b{color:var(--teal-dark)}
+
+  .cta-box{background:linear-gradient(150deg,var(--ink),var(--teal-dark));color:#fff;border-radius:18px;padding:28px 24px;margin-top:8px;text-align:center}
+  .cta-box h3{font-size:1.25rem;margin-bottom:8px}
+  .cta-box p{font-size:.92rem;opacity:.9;margin-bottom:18px}
+  .cta-box .btn-coral{width:auto;padding:15px 34px}
+
+  footer{text-align:center;padding:30px 0;color:var(--muted);font-size:.8rem}
+  footer a{color:var(--teal-dark);font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="logo"><b>influence</b><small>CHILE</small></a>
+    <a href="index.html" class="back">← Volver al sitio</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- Intro -->
+      <div id="intro" class="intro">
+        <span class="eyebrow">Diagnóstico gratis · 2 minutos</span>
+        <h1>¿Dónde se te está escapando el <span class="coral">tiempo y la plata</span>?</h1>
+        <p>6 preguntas sobre cómo funciona hoy tu operación — atención a clientes, ventas, agenda, cotizaciones, reportes y equipo. Al final te decimos qué conviene automatizar primero, con IA, y qué no.</p>
+        <ul>
+          <li><span class="dot">✓</span> Sin compromiso, sin dejar tarjeta</li>
+          <li><span class="dot">✓</span> El resultado es tuyo, lo uses con nosotros o no</li>
+          <li><span class="dot">✓</span> Al final puedes mandarnos el resultado directo por WhatsApp</li>
+        </ul>
+        <button class="btn btn-coral" onclick="empezar()">Empezar diagnóstico</button>
+      </div>
+
+      <!-- Quiz -->
+      <div id="quiz" style="display:none">
+        <div class="progress" id="progress"></div>
+        <div id="steps"></div>
+      </div>
+
+      <!-- Datos de contacto -->
+      <div id="datos" class="step">
+        <div class="qnum">Último paso</div>
+        <h2>¿A quién le mandamos el resultado?</h2>
+        <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" type="text" placeholder="Nombre de tu negocio"></div>
+        <div class="field"><label for="f-nombre">Tu nombre</label><input id="f-nombre" type="text" placeholder="Cómo te llamas"></div>
+        <div class="field"><label for="f-rubro">Rubro</label><input id="f-rubro" type="text" placeholder="Ej: clínica dental, retail, inmobiliaria"></div>
+        <div class="field"><label for="f-whatsapp">WhatsApp (opcional, para conversarlo directo)</label><input id="f-whatsapp" type="tel" placeholder="+56 9 ...."></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" onclick="volverA(6)">← Atrás</button>
+          <button class="btn btn-teal" onclick="verResultado()">Ver mi diagnóstico</button>
+        </div>
+      </div>
+
+      <!-- Resultado -->
+      <div id="resultado">
+        <div id="nivel" class="nivel"></div>
+        <h1 id="res-titulo"></h1>
+        <p class="lead" id="res-lead"></p>
+        <div id="hallazgos"></div>
+        <div class="cta-box">
+          <h3>¿Lo conversamos?</h3>
+          <p>30 minutos, sin compromiso. Revisamos esto juntos y vemos por dónde partir.</p>
+          <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Mandar por WhatsApp</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  Influence Chile · <a href="https://www.instagram.com/influence.chile" target="_blank" rel="noopener">@influence.chile</a> · +56 9 6545 0723
+</footer>
+
+<script>
+  // Cada pregunta corresponde a un área de la metodología de diagnóstico de workflows
+  // (prospeccion-ventas/06-diagnostico-workflows.md). Opciones ordenadas de mejor a peor,
+  // puntaje 0 (resuelto) a 3 (dolor fuerte).
+  const PREGUNTAS = [
+    {
+      area: 'atencion',
+      titulo: 'Atención al cliente',
+      pregunta: '¿Cómo responden hoy las consultas que llegan por WhatsApp o Instagram?',
+      opciones: [
+        'Respondemos rápido siempre, incluso fuera de horario',
+        'Respondemos rápido en horario laboral; fuera de eso, queda para el otro día',
+        'A veces se demora horas porque la misma persona hace otras cosas',
+        'Se acumulan mensajes sin responder y no hay quien esté a cargo fijo'
+      ],
+      solucion: {
+        nombre: 'Agente de WhatsApp/Instagram con IA',
+        detalle: 'Responde las preguntas frecuentes al instante, 24/7, y deriva a una persona solo cuando hace falta.'
+      },
+      hallazgo: 'Las consultas por WhatsApp/Instagram no se están respondiendo lo bastante rápido, y eso es el momento exacto en que un cliente decide comprarte a ti o al de al lado.'
+    },
+    {
+      area: 'ventas',
+      titulo: 'Seguimiento de ventas',
+      pregunta: 'Cuando alguien pregunta y no compra al toque, ¿qué pasa después?',
+      opciones: [
+        'Tenemos algo automático que le vuelve a escribir',
+        'Alguien anota y en general le vuelve a escribir',
+        'Depende de si la persona se acuerda',
+        'Nadie vuelve a contactarlo — se pierde'
+      ],
+      solucion: {
+        nombre: 'Automatización de seguimiento de leads',
+        detalle: 'Detecta al que preguntó y no compró, y dispara recordatorios automáticos a los 1, 3 y 7 días.'
+      },
+      hallazgo: 'Los interesados que no compran de inmediato no reciben ningún seguimiento — son ventas que ya casi estaban cerradas y se están dejando ir solas.'
+    },
+    {
+      area: 'agenda',
+      titulo: 'Agendamiento',
+      pregunta: '¿Cómo agendan horas o reservas hoy?',
+      opciones: [
+        'Sistema automático que evita choques y manda recordatorio',
+        'Calendario compartido — funciona, pero es manual',
+        'Por WhatsApp o llamada, y a veces se pisan horarios',
+        'A mano o en papel, sin recordatorios; hay inasistencias frecuentes'
+      ],
+      solucion: {
+        nombre: 'Agente de agendamiento',
+        detalle: 'Ofrece horarios disponibles, confirma y manda recordatorio automático 24h antes.'
+      },
+      hallazgo: 'El agendamiento depende de coordinación manual — eso produce choques de horario e inasistencias que hoy nadie está contando pero sí están costando plata.'
+    },
+    {
+      area: 'cotizaciones',
+      titulo: 'Cotizaciones y documentos',
+      pregunta: '¿Cuánto se demoran en mandar una cotización desde que la piden?',
+      opciones: [
+        'Minutos — está automatizado o hay plantilla lista',
+        'Menos de una hora, con plantilla que se llena a mano',
+        'Puede tomar todo el día porque se arma desde cero',
+        'A veces pasa más de un día y el cliente se enfría'
+      ],
+      solucion: {
+        nombre: 'Generador automático de cotizaciones',
+        detalle: 'Arma y envía la cotización desde una plantilla con los datos del cliente, en minutos en vez de horas.'
+      },
+      hallazgo: 'Armar cada cotización a mano toma tiempo que se nota multiplicado por todas las que se piden al mes — y cada hora de demora es una ventana para que el cliente compare con otro.'
+    },
+    {
+      area: 'reportes',
+      titulo: 'Reportería y control',
+      pregunta: '¿Cómo sabe el dueño o gerente cómo va el mes?',
+      opciones: [
+        'Dashboard automático, siempre a la vista',
+        'Reporte que arma alguien y toma poco tiempo',
+        'Planilla que se arma a mano y toma varias horas',
+        'No hay reporte real; se estima o se sabe recién al cierre'
+      ],
+      solucion: {
+        nombre: 'Reporte / dashboard automático',
+        detalle: 'Junta los datos que ya existen (ventas, redes, caja) y entrega un resumen sin que nadie lo arme a mano.'
+      },
+      hallazgo: 'Armar el reporte a mano cada semana o mes es tiempo de alguien con sueldo que se va en copiar y pegar, en vez de en decidir.'
+    },
+    {
+      area: 'interno',
+      titulo: 'Gestión interna',
+      pregunta: '¿Cuánta información se traspasa a mano entre áreas (venta → producción → despacho, etc.)?',
+      opciones: [
+        'Está todo conectado, el dato se mueve solo',
+        'Se traspasa manualmente pero es rápido',
+        'Se copia y pega entre planillas o chats seguido',
+        'Se pierde o se duplica información entre áreas con frecuencia'
+      ],
+      solucion: {
+        nombre: 'Automatización de procesos internos',
+        detalle: 'Conecta las herramientas que ya usan para que el dato se mueva solo entre áreas, sin reescribirlo a mano.'
+      },
+      hallazgo: 'La información se está traspasando a mano entre áreas, lo que significa errores, duplicados y horas de trabajo que no le agregan nada al cliente.'
+    }
+  ];
+
+  const respuestas = {};
+
+  function construirPasos () {
+    const cont = document.getElementById('steps');
+    const prog = document.getElementById('progress');
+    PREGUNTAS.forEach((p, i) => {
+      prog.insertAdjacentHTML('beforeend', `<span data-i="${i}"></span>`);
+      const div = document.createElement('div');
+      div.className = 'step';
+      div.id = 'step-' + i;
+      div.innerHTML = `
+        <div class="qnum">Pregunta ${i + 1} de ${PREGUNTAS.length} · ${p.titulo}</div>
+        <h2>${p.pregunta}</h2>
+        ${p.opciones.map((o, j) => `
+          <label class="opt" data-i="${i}" data-j="${j}">
+            <input type="radio" name="p${i}" value="${j}">
+            <span>${o}</span>
+          </label>`).join('')}
+        <div class="nav-row">
+          ${i > 0 ? `<button class="btn btn-outline" onclick="volverA(${i - 1})">← Atrás</button>` : '<span></span>'}
+          <button class="btn btn-teal" id="next-${i}" disabled onclick="siguiente(${i})">Siguiente</button>
+        </div>`;
+      cont.appendChild(div);
+    });
+
+    cont.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const i = +opt.dataset.i, j = +opt.dataset.j;
+        document.querySelectorAll(`.opt[data-i="${i}"]`).forEach(o => o.classList.remove('sel'));
+        opt.classList.add('sel');
+        respuestas[PREGUNTAS[i].area] = j;
+        document.getElementById('next-' + i).disabled = false;
+      });
+    });
+  }
+
+  function empezar () {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    mostrarPaso(0);
+  }
+
+  function mostrarPaso (i) {
+    document.querySelectorAll('#quiz .step, #datos').forEach(s => s.classList.remove('active'));
+    const target = i < PREGUNTAS.length ? document.getElementById('step-' + i) : document.getElementById('datos');
+    target.classList.add('active');
+    document.querySelectorAll('#progress span').forEach(s => s.classList.toggle('done', +s.dataset.i < i));
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function siguiente (i) { mostrarPaso(i + 1); }
+  function volverA (i) { mostrarPaso(i); }
+
+  function verResultado () {
+    const total = PREGUNTAS.reduce((s, p) => s + (respuestas[p.area] || 0), 0);
+    const maxima = PREGUNTAS.length * 3;
+
+    let nivelClase = 'bajo', nivelTexto = 'Nivel de urgencia: bajo';
+    if (total >= 10) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
+    else if (total >= 5) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
+
+    const empresa = document.getElementById('f-empresa').value.trim() || 'tu negocio';
+    const nombre = document.getElementById('f-nombre').value.trim();
+
+    document.getElementById('nivel').className = 'nivel ' + nivelClase;
+    document.getElementById('nivel').textContent = nivelTexto;
+    document.getElementById('res-titulo').innerHTML = total === 0
+      ? `${empresa} está bastante ordenado`
+      : `Esto es lo que encontramos en ${empresa}`;
+    document.getElementById('res-lead').textContent = total === 0
+      ? 'No detectamos cuellos de botella grandes en lo que respondiste. Igual, si quieres una segunda mirada de un experto, es gratis.'
+      : `Puntaje de fricción: ${total} de ${maxima}. Estas son las áreas donde más se está perdiendo tiempo o clientes, ordenadas de mayor a menor.`;
+
+    const ordenadas = PREGUNTAS
+      .map(p => ({ ...p, score: respuestas[p.area] || 0 }))
+      .filter(p => p.score >= 2)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    const cont = document.getElementById('hallazgos');
+    cont.innerHTML = ordenadas.map(p => `
+      <div class="hallazgo">
+        <span class="tag">${p.score === 3 ? 'Prioridad alta' : 'Prioridad media'}</span>
+        <h3>${p.titulo}</h3>
+        <p>${p.hallazgo}</p>
+        <div class="sol"><b>Se resuelve con:</b> ${p.solucion.nombre} — ${p.solucion.detalle}</div>
+      </div>`).join('');
+
+    // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
+    const resumen = PREGUNTAS.map(p => `${p.titulo}: ${respuestas[p.area] ?? '-'}/3`).join(' · ');
+    const rubro = document.getElementById('f-rubro').value.trim();
+    let msg = `Hola, hice el diagnóstico de workflows de Influence Chile.\n`;
+    msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
+    if (nombre) msg += `Contacto: ${nombre}\n`;
+    msg += `Puntaje de fricción: ${total}/${maxima}\n`;
+    msg += `Detalle: ${resumen}\n`;
+    msg += `Quiero conversar sobre las prioridades que salieron.`;
+    document.getElementById('wa-link').href = 'https://wa.me/56965450723?text=' + encodeURIComponent(msg);
+
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('datos').classList.remove('active');
+    document.getElementById('resultado').style.display = 'block';
+    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  construirPasos();
+</script>
+</body>
+</html>

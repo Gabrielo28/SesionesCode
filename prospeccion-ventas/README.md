@@ -9,8 +9,10 @@
 | [03-auditoria-express.md](03-auditoria-express.md) | El proceso de auditoría que abre la conversación |
 | [04-seguimiento-y-objeciones.md](04-seguimiento-y-objeciones.md) | Las 7 objeciones y las reglas de la reunión |
 | [05-secuencias-completas.md](05-secuencias-completas.md) | Copy completo de las 3 secuencias de seguimiento |
+| [06-diagnostico-workflows.md](06-diagnostico-workflows.md) | Diagnóstico de procesos internos para vender automatización con IA |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas |
-| [propuesta/](propuesta/) | Generador de propuestas PDF personalizadas |
+| [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
+| [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
 
 ---
 
@@ -79,6 +81,24 @@ cd propuesta && node generar.js
 
 Los precios de planes y add-ons están dentro de `generar.js`. Si suben, se
 cambian ahí una vez y quedan para todas las propuestas.
+
+---
+
+## Generar un diagnóstico de workflows
+
+Metodología completa en [06-diagnostico-workflows.md](06-diagnostico-workflows.md). El
+cuestionario web (`../diagnostico-workflows.html`) hace el primer filtro solo; para el
+documento formal después de la llamada:
+
+```bash
+cd propuesta && node generar-diagnostico.js
+```
+
+1. Edita `cliente-workflows.json` con los hallazgos de la llamada (o crea uno nuevo)
+2. Corre `node generar-diagnostico.js otraempresa.json`
+3. Salen `diagnostico-<empresa>.html` y `diagnostico-<empresa>.pdf`
+
+Sin precios en el documento — el precio va en la reunión, no en el diagnóstico.
 
 ---
 
