@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagnóstico gratis de procesos | Influence Chile</title>
-<meta name="description" content="Responde 6 preguntas de 2 minutos y descubre en qué parte de tu operación estás perdiendo tiempo y clientes — y qué se puede automatizar con IA para resolverlo.">
+<meta name="description" content="Responda 9 preguntas en 3 minutos y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#33C7CE">
 <link rel="canonical" href="https://influencechile.cl/diagnostico-workflows.html">
@@ -12,8 +12,8 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Influence Chile">
 <meta property="og:locale" content="es_CL">
-<meta property="og:title" content="¿Dónde se te escapa el tiempo? | Diagnóstico gratis — Influence Chile">
-<meta property="og:description" content="6 preguntas, 2 minutos. Descubre qué parte de tu operación conviene automatizar primero.">
+<meta property="og:title" content="Diagnóstico de Procesos con IA | Influence Chile">
+<meta property="og:description" content="Un diagnóstico de 3 minutos que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
 <meta property="og:image" content="https://influencechile.cl/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,9 @@
   .nivel.medio{background:#fdf3e3;color:var(--amber)}
   .nivel.bajo{background:#e6f6f6;color:var(--green)}
   #resultado h1{font-size:1.7rem;margin-bottom:10px}
-  #resultado > p.lead{color:var(--muted);margin-bottom:28px;font-size:.98rem}
+  #resultado > p.lead{color:var(--muted);margin-bottom:16px;font-size:.98rem}
+  .segnota{background:var(--paper);border-radius:12px;padding:14px 16px;font-size:.88rem;color:var(--ink);margin-bottom:28px;border-left:3px solid var(--teal-dark)}
+  .segnota b{color:var(--teal-dark)}
 
   .hallazgo{border-left:3px solid var(--coral);padding:2px 0 2px 16px;margin-bottom:22px}
   .hallazgo .tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--coral-strong);background:#fff1f1;padding:3px 9px;border-radius:20px;margin-bottom:8px}
@@ -126,15 +128,26 @@
 
       <!-- Intro -->
       <div id="intro" class="intro">
-        <span class="eyebrow">Diagnóstico gratis · 2 minutos</span>
-        <h1>¿Dónde se te está escapando el <span class="coral">tiempo y la plata</span>?</h1>
-        <p>6 preguntas sobre cómo funciona hoy tu operación — atención a clientes, ventas, agenda, cotizaciones, reportes y equipo. Al final te decimos qué conviene automatizar primero, con IA, y qué no.</p>
+        <span class="eyebrow">Diagnóstico gratuito · 3 minutos</span>
+        <h1>¿Dónde está perdiendo tiempo y dinero su <span class="coral">operación</span>?</h1>
+        <p>Nueve preguntas sobre cómo funciona hoy su operación: atención a clientes, ventas, agenda, cotizaciones, reportes, equipo, captación, post-venta y herramientas. Sirve para empresas de cualquier tamaño, desde un equipo de pocas personas hasta una organización con varias áreas. Al final le indicamos qué procesos conviene automatizar primero con inteligencia artificial, y cuáles no.</p>
         <ul>
-          <li><span class="dot">✓</span> Sin compromiso, sin dejar tarjeta</li>
-          <li><span class="dot">✓</span> El resultado es tuyo, lo uses con nosotros o no</li>
-          <li><span class="dot">✓</span> Al final puedes mandarnos el resultado directo por WhatsApp</li>
+          <li><span class="dot">✓</span> Sin compromiso ni datos de pago</li>
+          <li><span class="dot">✓</span> El resultado es suyo, lo utilice con nosotros o no</li>
+          <li><span class="dot">✓</span> Al final puede enviarnos el resultado directamente por WhatsApp</li>
         </ul>
-        <button class="btn btn-coral" onclick="empezar()">Empezar diagnóstico</button>
+        <button class="btn btn-coral" onclick="mostrarSegmento()">Comenzar diagnóstico</button>
+      </div>
+
+      <!-- Tamaño de empresa -->
+      <div id="segmento" class="step">
+        <div class="qnum">Antes de empezar</div>
+        <h2>¿Cuántas personas trabajan en la empresa, aproximadamente?</h2>
+        <div id="seg-opts"></div>
+        <div class="nav-row">
+          <button class="btn btn-outline" onclick="volverIntro()">← Atrás</button>
+          <button class="btn btn-teal" id="seg-next" disabled onclick="empezarQuiz()">Siguiente</button>
+        </div>
       </div>
 
       <!-- Quiz -->
@@ -146,14 +159,14 @@
       <!-- Datos de contacto -->
       <div id="datos" class="step">
         <div class="qnum">Último paso</div>
-        <h2>¿A quién le mandamos el resultado?</h2>
-        <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" type="text" placeholder="Nombre de tu negocio"></div>
-        <div class="field"><label for="f-nombre">Tu nombre</label><input id="f-nombre" type="text" placeholder="Cómo te llamas"></div>
-        <div class="field"><label for="f-rubro">Rubro</label><input id="f-rubro" type="text" placeholder="Ej: clínica dental, retail, inmobiliaria"></div>
-        <div class="field"><label for="f-whatsapp">WhatsApp (opcional, para conversarlo directo)</label><input id="f-whatsapp" type="tel" placeholder="+56 9 ...."></div>
+        <h2>¿A quién enviamos el resultado?</h2>
+        <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" type="text" placeholder="Nombre de su empresa"></div>
+        <div class="field"><label for="f-nombre">Nombre de contacto</label><input id="f-nombre" type="text" placeholder="Su nombre"></div>
+        <div class="field"><label for="f-rubro">Rubro</label><input id="f-rubro" type="text" placeholder="Ej: clínica dental, retail, manufactura, servicios profesionales"></div>
+        <div class="field"><label for="f-whatsapp">WhatsApp (opcional, para coordinar una conversación directa)</label><input id="f-whatsapp" type="tel" placeholder="+56 9 ...."></div>
         <div class="nav-row">
-          <button class="btn btn-outline" onclick="volverA(6)">← Atrás</button>
-          <button class="btn btn-teal" onclick="verResultado()">Ver mi diagnóstico</button>
+          <button class="btn btn-outline" onclick="volverA(PREGUNTAS.length - 1)">← Atrás</button>
+          <button class="btn btn-teal" onclick="verResultado()">Ver diagnóstico</button>
         </div>
       </div>
 
@@ -162,11 +175,12 @@
         <div id="nivel" class="nivel"></div>
         <h1 id="res-titulo"></h1>
         <p class="lead" id="res-lead"></p>
+        <div id="res-segnota" class="segnota" style="display:none"></div>
         <div id="hallazgos"></div>
         <div class="cta-box">
-          <h3>¿Lo conversamos?</h3>
-          <p>30 minutos, sin compromiso. Revisamos esto juntos y vemos por dónde partir.</p>
-          <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Mandar por WhatsApp</a>
+          <h3>Conversemos</h3>
+          <p>Una reunión de 30 minutos, sin compromiso, para revisar estos resultados y definir por dónde comenzar.</p>
+          <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
         </div>
       </div>
 
@@ -179,6 +193,49 @@
 </footer>
 
 <script>
+  // Segmentación por tamaño — ver prospeccion-ventas/06-diagnostico-workflows.md
+  const SEGMENTOS = [
+    { id: 'micro', label: '1 a 5 personas', nota: 'En equipos de este tamaño, el cuello de botella más frecuente es el tiempo del propio dueño o dueña, que suele cumplir varios roles a la vez. Automatizar una sola tarea repetitiva libera horas que hoy nadie más puede cubrir.' },
+    { id: 'pequena', label: '6 a 25 personas', nota: 'En este tamaño de equipo, lo que más rinde es dejar de improvisar: reemplazar métodos personales de cada persona por un proceso repetible que no dependa de quién esté trabajando ese día.' },
+    { id: 'mediana', label: '26 a 100 personas', nota: 'En una empresa de este tamaño, el problema no suele ser falta de personal, sino falta de conexión entre áreas y de visibilidad para la gerencia sobre lo que está pasando en la operación.' },
+    { id: 'grande', label: 'Más de 100 personas', nota: 'En una organización de este tamaño, probablemente ya existen sistemas o software instalado. El punto de mayor impacto suele ser la integración entre esos sistemas, no la falta de herramientas.' }
+  ];
+  let segmentoSel = null;
+
+  function construirSegmento () {
+    const cont = document.getElementById('seg-opts');
+    cont.innerHTML = SEGMENTOS.map((s, i) => `
+      <label class="opt" data-seg="${i}">
+        <input type="radio" name="segmento" value="${i}">
+        <span>${s.label}</span>
+      </label>`).join('');
+    cont.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        cont.querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
+        opt.classList.add('sel');
+        segmentoSel = SEGMENTOS[+opt.dataset.seg];
+        document.getElementById('seg-next').disabled = false;
+      });
+    });
+  }
+
+  function mostrarSegmento () {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('segmento').classList.add('active');
+    document.getElementById('segmento').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function volverIntro () {
+    document.getElementById('segmento').classList.remove('active');
+    document.getElementById('intro').style.display = 'block';
+  }
+
+  function empezarQuiz () {
+    document.getElementById('segmento').classList.remove('active');
+    document.getElementById('quiz').style.display = 'block';
+    mostrarPaso(0);
+  }
+
   // Cada pregunta corresponde a un área de la metodología de diagnóstico de workflows
   // (prospeccion-ventas/06-diagnostico-workflows.md). Opciones ordenadas de mejor a peor,
   // puntaje 0 (resuelto) a 3 (dolor fuerte).
@@ -186,98 +243,146 @@
     {
       area: 'atencion',
       titulo: 'Atención al cliente',
-      pregunta: '¿Cómo responden hoy las consultas que llegan por WhatsApp o Instagram?',
+      pregunta: '¿Cómo se responden hoy las consultas que llegan por WhatsApp o Instagram?',
       opciones: [
-        'Respondemos rápido siempre, incluso fuera de horario',
-        'Respondemos rápido en horario laboral; fuera de eso, queda para el otro día',
-        'A veces se demora horas porque la misma persona hace otras cosas',
-        'Se acumulan mensajes sin responder y no hay quien esté a cargo fijo'
+        'Se responde con rapidez siempre, incluso fuera del horario laboral',
+        'Se responde con rapidez en horario laboral; fuera de eso, queda pendiente hasta el día siguiente',
+        'En ocasiones la respuesta demora horas, porque la misma persona atiende otras tareas',
+        'Se acumulan mensajes sin responder porque no hay una persona a cargo de forma permanente'
       ],
       solucion: {
         nombre: 'Agente de WhatsApp/Instagram con IA',
-        detalle: 'Responde las preguntas frecuentes al instante, 24/7, y deriva a una persona solo cuando hace falta.'
+        detalle: 'Responde las consultas frecuentes de forma inmediata, las 24 horas, y deriva a una persona solo cuando es necesario.'
       },
-      hallazgo: 'Las consultas por WhatsApp/Instagram no se están respondiendo lo bastante rápido, y eso es el momento exacto en que un cliente decide comprarte a ti o al de al lado.'
+      hallazgo: 'Las consultas por WhatsApp e Instagram no se están respondiendo con la rapidez necesaria, y ese es precisamente el momento en que un cliente decide comprar en su negocio o en la competencia.'
     },
     {
       area: 'ventas',
       titulo: 'Seguimiento de ventas',
-      pregunta: 'Cuando alguien pregunta y no compra al toque, ¿qué pasa después?',
+      pregunta: 'Cuando un cliente potencial consulta y no concreta la compra de inmediato, ¿qué ocurre después?',
       opciones: [
-        'Tenemos algo automático que le vuelve a escribir',
-        'Alguien anota y en general le vuelve a escribir',
-        'Depende de si la persona se acuerda',
-        'Nadie vuelve a contactarlo — se pierde'
+        'Contamos con un sistema automático que retoma el contacto',
+        'Alguien del equipo registra el contacto y, en general, vuelve a escribirle',
+        'Depende de si la persona a cargo se acuerda de hacerlo',
+        'Nadie vuelve a contactarlo y la oportunidad se pierde'
       ],
       solucion: {
         nombre: 'Automatización de seguimiento de leads',
-        detalle: 'Detecta al que preguntó y no compró, y dispara recordatorios automáticos a los 1, 3 y 7 días.'
+        detalle: 'Detecta a los contactos que consultaron sin concretar la compra y envía recordatorios automáticos al día 1, 3 y 7.'
       },
-      hallazgo: 'Los interesados que no compran de inmediato no reciben ningún seguimiento — son ventas que ya casi estaban cerradas y se están dejando ir solas.'
+      hallazgo: 'Los interesados que no compran de inmediato no reciben ningún seguimiento posterior. Se trata de ventas que estaban prácticamente cerradas y que se están perdiendo por falta de continuidad en el contacto.'
     },
     {
       area: 'agenda',
       titulo: 'Agendamiento',
-      pregunta: '¿Cómo agendan horas o reservas hoy?',
+      pregunta: '¿Cómo se agendan horas o reservas hoy?',
       opciones: [
-        'Sistema automático que evita choques y manda recordatorio',
-        'Calendario compartido — funciona, pero es manual',
-        'Por WhatsApp o llamada, y a veces se pisan horarios',
-        'A mano o en papel, sin recordatorios; hay inasistencias frecuentes'
+        'Sistema automático que evita superposiciones y envía recordatorios',
+        'Calendario compartido: funciona, pero requiere gestión manual',
+        'Por WhatsApp o llamada telefónica, con ocasionales superposiciones de horario',
+        'En papel o de forma manual, sin recordatorios; hay inasistencias frecuentes'
       ],
       solucion: {
         nombre: 'Agente de agendamiento',
-        detalle: 'Ofrece horarios disponibles, confirma y manda recordatorio automático 24h antes.'
+        detalle: 'Ofrece horarios disponibles, confirma la reserva y envía un recordatorio automático 24 horas antes.'
       },
-      hallazgo: 'El agendamiento depende de coordinación manual — eso produce choques de horario e inasistencias que hoy nadie está contando pero sí están costando plata.'
+      hallazgo: 'El agendamiento depende de coordinación manual, lo que genera superposiciones de horario e inasistencias que hoy no se están midiendo, pero que sí representan un costo real para el negocio.'
     },
     {
       area: 'cotizaciones',
       titulo: 'Cotizaciones y documentos',
-      pregunta: '¿Cuánto se demoran en mandar una cotización desde que la piden?',
+      pregunta: '¿Cuánto tiempo transcurre entre que se solicita una cotización y se envía?',
       opciones: [
-        'Minutos — está automatizado o hay plantilla lista',
-        'Menos de una hora, con plantilla que se llena a mano',
-        'Puede tomar todo el día porque se arma desde cero',
-        'A veces pasa más de un día y el cliente se enfría'
+        'Minutos: el proceso está automatizado o existe una plantilla lista',
+        'Menos de una hora, completando una plantilla de forma manual',
+        'Puede tomar un día completo, porque se elabora desde cero cada vez',
+        'En ocasiones pasa más de un día y el cliente pierde el interés'
       ],
       solucion: {
         nombre: 'Generador automático de cotizaciones',
-        detalle: 'Arma y envía la cotización desde una plantilla con los datos del cliente, en minutos en vez de horas.'
+        detalle: 'Genera y envía la cotización a partir de una plantilla con los datos del cliente, en minutos en lugar de horas.'
       },
-      hallazgo: 'Armar cada cotización a mano toma tiempo que se nota multiplicado por todas las que se piden al mes — y cada hora de demora es una ventana para que el cliente compare con otro.'
+      hallazgo: 'Elaborar cada cotización de forma manual toma un tiempo que se multiplica por la cantidad de solicitudes mensuales, y cada hora de demora es una oportunidad para que el cliente compare con la competencia.'
     },
     {
       area: 'reportes',
       titulo: 'Reportería y control',
-      pregunta: '¿Cómo sabe el dueño o gerente cómo va el mes?',
+      pregunta: '¿Cómo se informa la gerencia sobre el desempeño del mes?',
       opciones: [
-        'Dashboard automático, siempre a la vista',
-        'Reporte que arma alguien y toma poco tiempo',
-        'Planilla que se arma a mano y toma varias horas',
-        'No hay reporte real; se estima o se sabe recién al cierre'
+        'Dashboard automático, siempre disponible',
+        'Reporte elaborado por alguien del equipo, que toma poco tiempo',
+        'Planilla elaborada manualmente, que toma varias horas',
+        'No existe un reporte formal; la información se estima o se conoce recién al cierre del mes'
       ],
       solucion: {
         nombre: 'Reporte / dashboard automático',
-        detalle: 'Junta los datos que ya existen (ventas, redes, caja) y entrega un resumen sin que nadie lo arme a mano.'
+        detalle: 'Reúne los datos que ya existen (ventas, redes sociales, caja, sistemas internos) y entrega un resumen periódico sin necesidad de elaborarlo manualmente.'
       },
-      hallazgo: 'Armar el reporte a mano cada semana o mes es tiempo de alguien con sueldo que se va en copiar y pegar, en vez de en decidir.'
+      hallazgo: 'Elaborar el reporte de forma manual cada semana o cada mes ocupa el tiempo de una persona remunerada en tareas de copiar y pegar información, en lugar de en la toma de decisiones.'
     },
     {
       area: 'interno',
       titulo: 'Gestión interna',
-      pregunta: '¿Cuánta información se traspasa a mano entre áreas (venta → producción → despacho, etc.)?',
+      pregunta: '¿Con qué frecuencia se traspasa información de forma manual entre áreas (venta → producción → despacho, etc.)?',
       opciones: [
-        'Está todo conectado, el dato se mueve solo',
-        'Se traspasa manualmente pero es rápido',
-        'Se copia y pega entre planillas o chats seguido',
+        'Está todo conectado; la información se traspasa de forma automática',
+        'Se traspasa de forma manual, pero el proceso es rápido',
+        'Se copia y pega entre planillas o conversaciones con frecuencia',
         'Se pierde o se duplica información entre áreas con frecuencia'
       ],
       solucion: {
         nombre: 'Automatización de procesos internos',
-        detalle: 'Conecta las herramientas que ya usan para que el dato se mueva solo entre áreas, sin reescribirlo a mano.'
+        detalle: 'Conecta las herramientas que ya utiliza el equipo para que la información se traspase automáticamente entre áreas, sin necesidad de reescribirla.'
       },
-      hallazgo: 'La información se está traspasando a mano entre áreas, lo que significa errores, duplicados y horas de trabajo que no le agregan nada al cliente.'
+      hallazgo: 'La información se está traspasando de forma manual entre áreas, lo que genera errores, duplicidades y horas de trabajo que no aportan valor al cliente.'
+    },
+    {
+      area: 'marketing',
+      titulo: 'Captación de nuevos clientes',
+      pregunta: 'Más allá de responder a quien ya llegó, ¿cómo se generan clientes o consultas nuevas hoy?',
+      opciones: [
+        'Existen campañas activas y se mide el costo de cada cliente nuevo',
+        'Se publica contenido y ocasionalmente se pautea, pero sin métricas claras',
+        'Se depende casi por completo del boca a boca y las referencias',
+        'No existe una estrategia definida de captación de clientes'
+      ],
+      solucion: {
+        nombre: 'Captación con IA y contenido',
+        detalle: 'Segmentación de audiencia, contenido y campañas optimizadas con IA, integradas al mismo flujo de atención y seguimiento.'
+      },
+      hallazgo: 'El crecimiento depende casi por completo del boca a boca, sin un sistema repetible de captación, lo que hace que los nuevos clientes queden sujetos al azar en lugar de a un proceso medible.'
+    },
+    {
+      area: 'postventa',
+      titulo: 'Post-venta y fidelización',
+      pregunta: 'Después de que un cliente compra, ¿qué seguimiento recibe?',
+      opciones: [
+        'Existe un proceso automático de seguimiento, encuestas y recordatorios de recompra',
+        'Se realiza un seguimiento manual de forma ocasional',
+        'Prácticamente no hay contacto posterior a la venta',
+        'Ningún seguimiento: el cliente no vuelve a saber de la empresa hasta que él mismo consulta'
+      ],
+      solucion: {
+        nombre: 'Automatización de post-venta y fidelización',
+        detalle: 'Envía mensajes automáticos de agradecimiento, encuestas de satisfacción y recordatorios de recompra o mantención.'
+      },
+      hallazgo: 'Los clientes que ya compraron no reciben ningún seguimiento posterior. Es la venta más económica de conseguir, porque ya existe confianza previa, y hoy se está desaprovechando por completo.'
+    },
+    {
+      area: 'herramientas',
+      titulo: 'Herramientas y datos',
+      pregunta: '¿Cuántos sistemas o planillas distintas utiliza el equipo para operar (WhatsApp, Excel, algún software, papel)?',
+      opciones: [
+        'Todo está centralizado en un sistema conectado',
+        'Dos o tres herramientas que se comunican razonablemente bien entre sí',
+        'Varias planillas y conversaciones sueltas que alguien debe cuadrar manualmente',
+        'Cada área trabaja con su propio método, sin ninguna conexión entre ellos'
+      ],
+      solucion: {
+        nombre: 'Integración de datos y sistemas',
+        detalle: 'Conecta las herramientas que ya existen (CRM, planillas, WhatsApp) en un solo flujo de información, sin necesidad de migrar de sistema.'
+      },
+      hallazgo: 'Mientras más sistemas desconectados existen, más horas de trabajo administrativo se destinan a cuadrar información, y mayor es la probabilidad de errores por datos que no coinciden entre sí.'
     }
   ];
 
@@ -300,7 +405,7 @@
             <span>${o}</span>
           </label>`).join('')}
         <div class="nav-row">
-          ${i > 0 ? `<button class="btn btn-outline" onclick="volverA(${i - 1})">← Atrás</button>` : '<span></span>'}
+          ${i > 0 ? `<button class="btn btn-outline" onclick="volverA(${i - 1})">← Atrás</button>` : '<button class="btn btn-outline" onclick="volverASegmento()">← Atrás</button>'}
           <button class="btn btn-teal" id="next-${i}" disabled onclick="siguiente(${i})">Siguiente</button>
         </div>`;
       cont.appendChild(div);
@@ -317,10 +422,10 @@
     });
   }
 
-  function empezar () {
-    document.getElementById('intro').style.display = 'none';
-    document.getElementById('quiz').style.display = 'block';
-    mostrarPaso(0);
+  function volverASegmento () {
+    document.querySelectorAll('#quiz .step').forEach(s => s.classList.remove('active'));
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('segmento').classList.add('active');
   }
 
   function mostrarPaso (i) {
@@ -339,26 +444,31 @@
     const maxima = PREGUNTAS.length * 3;
 
     let nivelClase = 'bajo', nivelTexto = 'Nivel de urgencia: bajo';
-    if (total >= 10) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
-    else if (total >= 5) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
+    if (total >= 15) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
+    else if (total >= 7) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
 
-    const empresa = document.getElementById('f-empresa').value.trim() || 'tu negocio';
+    const empresa = document.getElementById('f-empresa').value.trim() || 'su negocio';
     const nombre = document.getElementById('f-nombre').value.trim();
+    const seg = segmentoSel || SEGMENTOS[1];
 
     document.getElementById('nivel').className = 'nivel ' + nivelClase;
     document.getElementById('nivel').textContent = nivelTexto;
     document.getElementById('res-titulo').innerHTML = total === 0
-      ? `${empresa} está bastante ordenado`
-      : `Esto es lo que encontramos en ${empresa}`;
+      ? `${empresa} presenta una operación bien encaminada`
+      : `Estos son los resultados del diagnóstico para ${empresa}`;
     document.getElementById('res-lead').textContent = total === 0
-      ? 'No detectamos cuellos de botella grandes en lo que respondiste. Igual, si quieres una segunda mirada de un experto, es gratis.'
-      : `Puntaje de fricción: ${total} de ${maxima}. Estas son las áreas donde más se está perdiendo tiempo o clientes, ordenadas de mayor a menor.`;
+      ? 'No se detectaron cuellos de botella significativos a partir de sus respuestas. De todas formas, si desea una segunda mirada de un especialista, la conversación es sin costo.'
+      : `Puntaje de fricción: ${total} de ${maxima}. A continuación se presentan las áreas donde más se está perdiendo tiempo o clientes, ordenadas de mayor a menor prioridad.`;
+
+    const segnota = document.getElementById('res-segnota');
+    segnota.style.display = 'block';
+    segnota.innerHTML = `<b>Empresa de ${seg.label.toLowerCase()}:</b> ${seg.nota}`;
 
     const ordenadas = PREGUNTAS
       .map(p => ({ ...p, score: respuestas[p.area] || 0 }))
       .filter(p => p.score >= 2)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
+      .slice(0, 4);
 
     const cont = document.getElementById('hallazgos');
     cont.innerHTML = ordenadas.map(p => `
@@ -372,12 +482,13 @@
     // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
     const resumen = PREGUNTAS.map(p => `${p.titulo}: ${respuestas[p.area] ?? '-'}/3`).join(' · ');
     const rubro = document.getElementById('f-rubro').value.trim();
-    let msg = `Hola, hice el diagnóstico de workflows de Influence Chile.\n`;
+    let msg = `Hola, completé el diagnóstico de procesos de Influence Chile.\n`;
     msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
+    msg += `Tamaño: ${seg.label}\n`;
     if (nombre) msg += `Contacto: ${nombre}\n`;
     msg += `Puntaje de fricción: ${total}/${maxima}\n`;
     msg += `Detalle: ${resumen}\n`;
-    msg += `Quiero conversar sobre las prioridades que salieron.`;
+    msg += `Me gustaría conversar sobre los resultados obtenidos.`;
     document.getElementById('wa-link').href = 'https://wa.me/56965450723?text=' + encodeURIComponent(msg);
 
     document.getElementById('quiz').style.display = 'none';
@@ -386,6 +497,7 @@
     document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  construirSegmento();
   construirPasos();
 </script>
 </body>

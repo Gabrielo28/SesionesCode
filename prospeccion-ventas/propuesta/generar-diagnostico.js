@@ -91,7 +91,7 @@ const html = `<!doctype html>
   <h2>${esc(d.objetivo)}</h2>
   <div class="meta">
     Preparado para ${esc(d.contacto)}${d.cargo ? ', ' + esc(d.cargo) : ''}<br>
-    ${esc(d.rubro)}${d.ciudad ? ' · ' + esc(d.ciudad) : ''}<br>
+    ${esc(d.rubro)}${d.ciudad ? ' · ' + esc(d.ciudad) : ''}${d.segmento ? ' · ' + esc(d.segmento) : ''}<br>
     ${fecha}
   </div>
 </section>
