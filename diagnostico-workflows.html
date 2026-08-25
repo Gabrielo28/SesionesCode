@@ -83,6 +83,8 @@
   .nav-row .btn{width:auto;flex:1}
   .nav-row .btn-outline{flex:0 0 auto;padding-left:18px;padding-right:18px}
 
+  input[name="bot-field"]{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+
   .field{margin-bottom:16px}
   .field label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px}
   .field input{width:100%;padding:13px 15px;border:1.5px solid #dcebeb;border-radius:12px;font-family:inherit;font-size:.95rem;color:var(--ink)}
@@ -146,10 +148,18 @@
         <h2>¿Cuántas personas trabajan en la empresa, aproximadamente?</h2>
         <div id="seg-opts"></div>
         <div class="nav-row">
-          <button class="btn btn-outline" onclick="volverIntro()">← Atrás</button>
-          <button class="btn btn-teal" id="seg-next" disabled onclick="empezarQuiz()">Siguiente</button>
+          <button type="button" class="btn btn-outline" onclick="volverIntro()">← Atrás</button>
+          <button type="button" class="btn btn-teal" id="seg-next" disabled onclick="empezarQuiz()">Siguiente</button>
         </div>
       </div>
+
+      <!-- Formulario oculto, solo para que Netlify detecte el esquema al desplegar.
+           El envío real de "quien empezó el cuestionario" se hace por fetch en empezarQuiz(). -->
+      <form name="diagnostico-iniciado" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="tamano">
+        <input type="hidden" name="fecha">
+        <input name="bot-field">
+      </form>
 
       <!-- Quiz -->
       <div id="quiz" style="display:none">
@@ -157,19 +167,25 @@
         <div id="steps"></div>
       </div>
 
-      <!-- Datos de contacto -->
-      <div id="datos" class="step">
+      <!-- Datos de contacto — formulario real de Netlify: el envío queda registrado
+           apenas se genera el resultado, sin depender de que la persona use el botón de WhatsApp. -->
+      <form id="datos" class="step" name="diagnostico-completo" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="return false">
         <div class="qnum">Último paso</div>
         <h2>¿A quién enviamos el resultado?</h2>
-        <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" type="text" placeholder="Nombre de su empresa"></div>
-        <div class="field"><label for="f-nombre">Nombre de contacto</label><input id="f-nombre" type="text" placeholder="Su nombre"></div>
-        <div class="field"><label for="f-rubro">Rubro</label><input id="f-rubro" type="text" placeholder="Ej: clínica dental, retail, manufactura, servicios profesionales"></div>
-        <div class="field"><label for="f-whatsapp">WhatsApp (opcional, para coordinar una conversación directa)</label><input id="f-whatsapp" type="tel" placeholder="+56 9 ...."></div>
+        <div class="field"><label for="f-empresa">Empresa</label><input id="f-empresa" name="empresa" type="text" placeholder="Nombre de su empresa"></div>
+        <div class="field"><label for="f-nombre">Nombre de contacto</label><input id="f-nombre" name="nombre" type="text" placeholder="Su nombre"></div>
+        <div class="field"><label for="f-rubro">Rubro</label><input id="f-rubro" name="rubro" type="text" placeholder="Ej: clínica dental, retail, manufactura, servicios profesionales"></div>
+        <div class="field"><label for="f-whatsapp">WhatsApp (opcional, para coordinar una conversación directa)</label><input id="f-whatsapp" name="whatsapp" type="tel" placeholder="+56 9 ...."></div>
+        <input type="hidden" id="f-tamano" name="tamano">
+        <input type="hidden" id="f-puntaje" name="puntaje">
+        <input type="hidden" id="f-nivel" name="nivel_urgencia">
+        <input type="hidden" id="f-detalle" name="detalle_por_area">
+        <input name="bot-field">
         <div class="nav-row">
-          <button class="btn btn-outline" onclick="volverA(PREGUNTAS.length - 1)">← Atrás</button>
-          <button class="btn btn-teal" onclick="verResultado()">Ver diagnóstico</button>
+          <button type="button" class="btn btn-outline" onclick="volverA(PREGUNTAS.length - 1)">← Atrás</button>
+          <button type="button" class="btn btn-teal" onclick="verResultado()">Ver diagnóstico</button>
         </div>
-      </div>
+      </form>
 
       <!-- Resultado -->
       <div id="resultado">
@@ -203,6 +219,27 @@
   ];
   let segmentoSel = null;
 
+  // Envía un formulario a Netlify Forms sin recargar la página. En Netlify esto queda
+  // registrado en el panel del sitio (con notificación por correo configurable); fuera
+  // de Netlify (ej. viendo el archivo local) simplemente falla en silencio, sin romper
+  // el cuestionario. Comparar los envíos de "diagnostico-iniciado" contra los de
+  // "diagnostico-completo" da la tasa de término real.
+  function enviarNetlify (formName, datos) {
+    const body = new URLSearchParams({ 'form-name': formName, ...datos }).toString();
+    fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body })
+      .catch(() => { /* no bloquea la experiencia si no está en Netlify */ });
+  }
+
+  // Puente a Google Analytics / Meta Pixel, si en algún momento se agregan al sitio.
+  // Hoy no hay ningún ID de tracking configurado, así que esto no hace nada — pero en
+  // cuanto exista gtag() o fbq() en la página, estos eventos empiezan a llegar solos.
+  function trackEvent (name, params) {
+    try {
+      if (typeof gtag === 'function') gtag('event', name, params);
+      if (typeof fbq === 'function') fbq('trackCustom', name, params);
+    } catch (e) { /* nunca debe romper el flujo del diagnóstico */ }
+  }
+
   function construirSegmento () {
     const cont = document.getElementById('seg-opts');
     cont.innerHTML = SEGMENTOS.map((s, i) => `
@@ -235,6 +272,10 @@
     document.getElementById('segmento').classList.remove('active');
     document.getElementById('quiz').style.display = 'block';
     mostrarPaso(0);
+
+    const seg = segmentoSel || SEGMENTOS[1];
+    enviarNetlify('diagnostico-iniciado', { tamano: seg.label, fecha: new Date().toISOString() });
+    trackEvent('diagnostico_iniciado', { tamano_empresa: seg.label });
   }
 
   // Filtro público: 3 de las 9 áreas de la metodología de diagnóstico de workflows
@@ -396,9 +437,23 @@
         <div class="sol"><b>Se resuelve con:</b> ${p.solucion.nombre} — ${p.solucion.detalle}</div>
       </div>`).join('');
 
-    // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
+    // Resumen de lo respondido, reutilizado tanto en el envío a Netlify como en el mensaje de WhatsApp
     const resumen = PREGUNTAS.map(p => `${p.titulo}: ${respuestas[p.area] ?? '-'}/3`).join(' · ');
     const rubro = document.getElementById('f-rubro').value.trim();
+
+    // Se guarda el lead completo apenas existe el resultado, sin depender de que la
+    // persona además apriete el botón de WhatsApp — así no se pierde si cierra la pestaña.
+    document.getElementById('f-tamano').value = seg.label;
+    document.getElementById('f-puntaje').value = `${total}/${maxima}`;
+    document.getElementById('f-nivel').value = nivelTexto;
+    document.getElementById('f-detalle').value = resumen;
+    enviarNetlify('diagnostico-completo', {
+      empresa, nombre, rubro, whatsapp: whatsappContacto,
+      tamano: seg.label, puntaje: `${total}/${maxima}`, nivel_urgencia: nivelTexto, detalle_por_area: resumen
+    });
+    trackEvent('diagnostico_completo', { tamano_empresa: seg.label, puntaje: total, nivel_urgencia: nivelClase });
+
+    // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
     let msg = `Hola, completé el diagnóstico rápido de procesos de Influence Chile.\n`;
     msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
     msg += `Tamaño: ${seg.label}\n`;

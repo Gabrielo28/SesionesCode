@@ -289,3 +289,27 @@ como que falta contenido, sino como el motivo para agendar. **Las 9 áreas compl
 la llamada** (guion en la sección anterior) y en el diagnóstico PDF que se manda después
 (`propuesta/generar-diagnostico.js`) — ahí sí vale la pena la profundidad, porque el prospecto
 ya invirtió tiempo en la conversación.
+
+---
+
+## Dónde queda el lead (Netlify Forms)
+
+El cuestionario usa **Netlify Forms**, que se activa solo al desplegar el sitio en Netlify —
+no requiere cuenta ni servicio adicional. Dos formularios:
+
+- **`diagnostico-iniciado`** — se envía apenas se elige el tamaño de empresa y se entra a las
+  3 preguntas. Marca "esta persona empezó en serio", no solo que abrió la página.
+- **`diagnostico-completo`** — se envía en el momento exacto en que se genera el resultado
+  (antes de que la persona decida o no apretar el botón de WhatsApp). Trae empresa, contacto,
+  rubro, WhatsApp, tamaño, puntaje y el detalle de las 3 áreas.
+
+**Dónde verlo:** panel de Netlify del sitio → pestaña *Forms*. Ahí quedan ambos, con la opción
+de activar notificación por correo o Slack por cada envío nuevo (se configura en el panel, no
+en el código). **Comparar cuántos `diagnostico-iniciado` hay contra cuántos
+`diagnostico-completo`** es la tasa de término real del cuestionario — la forma de confirmar,
+con datos, si el largo actual (3 preguntas) sigue siendo el correcto o si conviene acortarlo
+más.
+
+No hay ningún Google Analytics ni Meta Pixel conectado todavía. El código ya dispara los mismos
+eventos hacia `gtag()`/`fbq()` si en algún momento se agregan al sitio — no hace falta tocar
+`diagnostico-workflows.html` de nuevo cuando eso pase.
