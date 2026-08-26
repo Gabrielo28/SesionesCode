@@ -10,7 +10,9 @@
 | [04-seguimiento-y-objeciones.md](04-seguimiento-y-objeciones.md) | Las 7 objeciones y las reglas de la reunión |
 | [05-secuencias-completas.md](05-secuencias-completas.md) | Copy completo de las 3 secuencias de seguimiento |
 | [06-diagnostico-workflows.md](06-diagnostico-workflows.md) | Diagnóstico de procesos internos para vender automatización con IA |
-| [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas |
+| [07-icp-automatizacion.md](07-icp-automatizacion.md) | A quién vendemos automatización con IA — distinto del ICP de redes, 100% remoto |
+| [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
+| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 21 empresas nuevas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
 
@@ -99,6 +101,22 @@ cd propuesta && node generar-diagnostico.js
 3. Salen `diagnostico-<empresa>.html` y `diagnostico-<empresa>.pdf`
 
 Sin precios en el documento — el precio va en la reunión, no en el diagnóstico.
+
+---
+
+## El listado de leads de automatización
+
+Dos fuentes, ver [07-icp-automatizacion.md](07-icp-automatizacion.md) para el criterio completo:
+
+1. **Cross-sell inmediato:** filtra `leads-chile-132-empresas.csv` por rubro `Centro médico /
+   Clínica`, `Odontología` o `Farmacia / Salud retail` — 39 empresas ya calificadas para redes
+   que también encajan en automatización.
+2. **`leads-automatizacion-chile.csv`** — 21 empresas nuevas en inmobiliaria/corretaje y
+   servicios profesionales B2B (legal, contable, RR.HH.), encontradas por búsqueda web. A
+   diferencia del CSV de redes, **no trae facturación ni cantidad de empleados** porque esos
+   datos no salían de fuentes públicas verificables — cada fila trae la señal encontrada, la
+   fuente, y qué falta confirmar antes de escribirle. No sirve para mandar en frío tal cual:
+   primero hay que revisar el sitio de cada una y confirmar tamaño real de equipo.
 
 ---
 
