@@ -152,45 +152,58 @@ no vender un sistema nuevo — ahí está la resistencia más baja.
 
 ## Catálogo de soluciones (mapeo dolor → solución)
 
-| Dolor detectado | Solución de IA/automatización | Qué hace |
-|---|---|---|
-| Responden lo mismo todo el día, fuera de horario nadie contesta | **Agente de WhatsApp/Instagram con IA** | Responde preguntas frecuentes 24/7, deriva a un humano solo cuando hace falta, agenda directo en el chat |
-| Leads se pierden, nadie vuelve a escribirle al que no respondió | **Automatización de seguimiento** | Detecta el lead nuevo, lo registra, dispara recordatorios automáticos a los 1, 3 y 7 días si no hay respuesta |
-| Cotizaciones lentas, armadas a mano cada vez | **Generador automático de cotizaciones** | Arma y envía la cotización desde una plantilla con los datos del cliente, en minutos en vez de horas |
-| Agendamiento manual, se pisan horarios, inasistencias | **Agente de agendamiento** | Ofrece horarios disponibles, confirma, manda recordatorio automático 24h antes |
-| La gerencia no sabe cómo va el mes sin preguntar/armar Excel | **Dashboard/reporte automático** | Junta los datos que ya existen (ventas, redes, caja, sistemas internos) y entrega un resumen periódico sin que nadie lo arme a mano |
-| Tareas repetitivas de traspaso de información entre áreas | **Automatización de procesos internos** | Conecta las herramientas que ya usan para que el dato se mueva solo (ej. venta cerrada → entra a producción → avisa a despacho) |
-| Crecimiento depende solo del boca a boca, sin métricas | **Captación con IA + contenido** | Segmentación de audiencia, contenido y campañas optimizadas, integradas al mismo flujo de atención/seguimiento (cruce directo con el servicio de redes) |
-| El cliente compra y no recibe ningún seguimiento después | **Automatización de post-venta/fidelización** | Mensajes automáticos de agradecimiento, encuestas de satisfacción, recordatorios de recompra o mantención |
-| Varios sistemas/planillas que no se hablan entre sí | **Integración de datos y sistemas** | Conecta las herramientas existentes (CRM, ERP, planillas, WhatsApp) en un solo flujo, sin migrar de sistema |
+Estos son los **servicios reales que ya están publicados y con precio** en la sección "Sitios y
+automatización" de influencechile.cl — no es un catálogo aparte, es el mismo. La mayoría de los
+9 dolores del diagnóstico caen en solo 3 de esos servicios:
 
-Este catálogo se actualiza a medida que se cierran proyectos — cada solución nueva que se
-construye para un cliente entra aquí como oferta repetible para el siguiente.
+| Dolor detectado | Solución (nombre real, mismo que en la web) | Qué hace |
+|---|---|---|
+| Responden lo mismo todo el día, fuera de horario nadie contesta | **WhatsApp que responde y agenda** | Responde preguntas frecuentes 24/7, deriva a un humano solo cuando hace falta, agenda directo en el chat |
+| Agendamiento manual, se pisan horarios, inasistencias | **WhatsApp que responde y agenda** | El mismo servicio cubre agenda: ofrece horarios, confirma, manda recordatorio 24h antes |
+| Leads se pierden, nadie vuelve a escribirle al que no respondió | **Automatización de procesos** | Conecta lo que ya usan para que el seguimiento (recordatorios, avisos) deje de depender de que alguien se acuerde |
+| Tareas repetitivas de traspaso de información entre áreas | **Automatización de procesos** | Conecta las herramientas que ya usan para que el dato se mueva solo (ej. venta cerrada → entra a producción → avisa a despacho) |
+| El cliente compra y no recibe ningún seguimiento después | **Automatización de procesos** | Recordatorios automáticos de recompra o mantención, mismo mecanismo que el seguimiento de leads |
+| Cotizaciones lentas, armadas a mano cada vez | **Cotizadores y paneles a medida** | Calculadora que arma y entrega la cotización desde los datos del cliente, en minutos en vez de horas |
+| La gerencia no sabe cómo va el mes sin preguntar/armar Excel | **Cotizadores y paneles a medida** | Panel de reportes en un enlace, con los datos que ya existen (ventas, redes, caja) |
+| Crecimiento depende solo del boca a boca, sin métricas | **Plan de redes + Meta Ads** (no es del catálogo dev) | Esto no se resuelve con automatización — es el servicio de redes/pauta que ya vendemos. Cruce directo con `01-icp-y-scoring.md` |
+| Varios sistemas/planillas que no se hablan entre sí | **Automatización de procesos**, o **Proyecto personalizado** si la integración es compleja | Conecta las herramientas existentes; si el caso no calza en un servicio estándar, se cotiza a medida |
+
+**Cuando el hallazgo no calza limpio en ninguno de estos tres servicios**, no se fuerza — se
+ofrece **Proyecto personalizado (a medida)**, la 7ª tarjeta de la sección "Sitios y
+automatización". Es preferible decir "esto se sale del catálogo estándar, lo cotizamos en la
+reunión" que estirar un servicio para que "encaje" y después no cumplir el alcance.
 
 ---
 
 ## Cómo esto genera ingresos para la agencia
 
-Cada solución del catálogo se vende con **dos componentes**, igual que cualquier proyecto de
-software a medida: un **setup** (cobro único, cubre diseño e implementación) y una **mantención
-mensual** (cobro recurrente, cubre hosting, monitoreo, ajustes y soporte). El setup financia el
-trabajo de construir; la mantención es el ingreso recurrente que hace crecer la agencia mes a
-mes, igual que los planes de redes.
+Cada solución se vende con **dos componentes**: un **setup** (cobro único, implementación) y,
+en las que aplica, una **mantención mensual** (cobro recurrente). El setup financia el trabajo
+de construir; la mantención es el ingreso recurrente que hace crecer la agencia mes a mes, igual
+que los planes de redes.
 
-**Marco de referencia por segmento** (punto de partida para cotizar — se ajusta con cada caso
-real, no es un tarifario cerrado):
+**Precios reales, los mismos publicados en la sección "Sitios y automatización" de la web** (no
+es un marco de referencia — es el tarifario vigente, un solo precio por servicio, sin
+segmentar por tamaño de empresa. El alcance final, no el precio base, es lo que se ajusta según
+la complejidad del caso):
 
-| Segmento | Setup por solución | Mantención mensual por solución |
+| Servicio | Setup | Mantención mensual |
 |---|---|---|
-| Micro (1-5 personas) | $300.000 – $600.000 | $60.000 – $120.000 |
-| Pequeña / PyME (6-25 personas) | $600.000 – $1.200.000 | $120.000 – $250.000 |
-| Mediana (26-100 personas) | $1.200.000 – $3.000.000 | $250.000 – $600.000 |
-| Grande (100+ personas) | A medida, previa evaluación (desde $3.000.000) | A medida, previa evaluación |
+| WhatsApp que responde y agenda | Desde $350.000 | Desde $80.000 |
+| Cotizadores y paneles a medida | Desde $250.000 | Según alcance |
+| Automatización de procesos | Desde $500.000 | Desde $200.000 |
+| Proyecto personalizado (a medida) | Se define en la reunión | Se define en la reunión |
+
+Referencia de los servicios de desarrollo relacionados (no nacen del diagnóstico de workflows,
+pero suelen aparecer cuando el hallazgo es "no tenemos ni sitio"): Landing de campaña
+($250.000–$450.000), Sitio web con módulo ($500.000–$900.000), Tienda en línea
+($700.000–$1.400.000) — todos pago único, sin mantención mensual asociada.
 
 Reglas de cotización:
 
-1. **Se cobra por solución implementada, no por "proyecto de IA" en abstracto.** Un agente de
-   WhatsApp es una solución; un dashboard es otra. Cada una tiene su propio setup y mantención.
+1. **Se cobra por solución implementada, no por "proyecto de IA" en abstracto.** WhatsApp que
+   responde y agenda es una solución; Automatización de procesos es otra. Cada una con su propio
+   setup y mantención — igual que ya está estructurado en la web, no hay que inventar nada nuevo.
 2. **La primera venta es siempre Prioridad 1** (matriz de arriba): una sola solución, la que más
    duele y es más fácil de implementar. El resto queda en el roadmap de fases 2 y 3 — así el
    ticket crece con el cliente en vez de tener que cerrar todo de una vez.
@@ -199,6 +212,8 @@ Reglas de cotización:
    siguiente prioridad, no solo la actual.
 4. **Los clientes de redes ya activos son el cierre más rápido**: no hay que vender confianza de
    nuevo, solo mostrarles el hallazgo. Es upsell puro sobre una relación que ya existe.
+5. **Si el caso no calza en ninguno de los 3 servicios, se ofrece Proyecto personalizado** en
+   vez de forzarlo — ver la nota al final del catálogo de arriba.
 
 ---
 
@@ -266,6 +281,12 @@ resultado al instante. Te llega calificado por WhatsApp con el segmento y las á
 identificadas — tu llamada ya no parte de cero, parte de confirmar y profundizar lo que el
 cuestionario detectó. De ahí sale el JSON para el generador y el diagnóstico se produce en el
 mismo formato que las propuestas de redes.
+
+**Está conectado al quiz de 5 preguntas de la home.** Cuando alguien responde "Automatizar
+tareas repetitivas" en la pregunta 2, el resultado ya no lo manda directo a WhatsApp — lo invita
+primero a este diagnóstico ("Hacer diagnóstico rápido"). Así no compiten dos "diagnósticos
+gratis" distintos por el mismo visitante: el quiz de la home detecta la intención en 5
+preguntas genéricas, y este cuestionario profundiza específicamente en automatización.
 
 ---
 

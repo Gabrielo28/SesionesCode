@@ -648,6 +648,13 @@
           <div class="precio"><b>Desde $500.000</b><small>+ desde $200.000 mensual de operación</small></div>
           <a href="#" class="dcard-btn" data-wa-service="Automatización de procesos">Cotizar por WhatsApp →</a>
         </div>
+        <div class="dcard slide">
+          <div class="tipo">A la medida</div>
+          <h3>Proyecto personalizado</h3>
+          <p>Si lo que necesitas no calza en ninguna de las categorías anteriores — un sistema propio, una integración puntual — lo construimos igual, ajustado a tu caso.</p>
+          <div class="precio"><b>A medida</b><small>Se define en la reunión</small></div>
+          <a href="#" class="dcard-btn" data-wa-service="Proyecto personalizado a medida">Cotizar por WhatsApp →</a>
+        </div>
         </div>
         <button type="button" class="rc-nav next" aria-label="Siguiente">&rsaquo;</button>
       </div>
@@ -1108,10 +1115,32 @@
   </div>
 </footer>
 
+<!-- Formularios ocultos, solo para que Netlify detecte el esquema al desplegar.
+     El envío real se hace por fetch en el script (enviarNetlify), sin recargar la página. -->
+<form name="quiz-resultado" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="tipo"><input type="hidden" name="necesidad"><input type="hidden" name="presencia">
+  <input type="hidden" name="prioridad"><input type="hidden" name="presupuesto"><input type="hidden" name="recomendacion">
+  <input name="bot-field">
+</form>
+<form name="cotizacion-web" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="nombre"><input type="hidden" name="negocio"><input type="hidden" name="redes_web">
+  <input type="hidden" name="servicios"><input type="hidden" name="total">
+  <input name="bot-field">
+</form>
+
 <script>
   const WA = "56965450723";
   const clp = n => "$" + n.toLocaleString("es-CL");
   document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // Envía un formulario a Netlify Forms sin recargar la página, para que el lead quede
+  // registrado apenas hay datos útiles (no solo cuando la persona aprieta WhatsApp).
+  // Fuera de Netlify (ej. viendo el archivo local) falla en silencio, sin romper nada.
+  function enviarNetlify(formName, datos) {
+    const body = new URLSearchParams({ "form-name": formName, ...datos }).toString();
+    fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body })
+      .catch(() => {});
+  }
 
   // mobile menu
   const menu = document.getElementById("menu");
@@ -1250,10 +1279,10 @@
       const servicio = a.prioridad === "tiempo" ? "Automatización de procesos" : "WhatsApp que responde y agenda";
       return {
         title: servicio,
-        desc: `Si la prioridad es ${a.prioridad === "tiempo" ? "dejar de perder tiempo en tareas manuales" : "no perder leads fuera de horario"}, "${servicio}" es lo que resuelve eso primero.`,
-        ctaLabel: `Cotizar por WhatsApp`,
-        target: "#servicios",
-        tab: "dev",
+        desc: `Si la prioridad es ${a.prioridad === "tiempo" ? "dejar de perder tiempo en tareas manuales" : "no perder leads fuera de horario"}, "${servicio}" es lo que resuelve eso primero — antes de cotizarlo, te conviene un diagnóstico rápido de tu operación para confirmar el alcance.`,
+        ctaLabel: `Hacer diagnóstico rápido`,
+        seeLabel: `Hacer diagnóstico rápido`,
+        target: "diagnostico-workflows.html",
       };
     }
 
@@ -1266,10 +1295,21 @@
         <p>${rec.desc}</p>
         <div class="quiz-ctas">
           <a href="#" class="btn btn-coral" id="quizWA">Enviar por WhatsApp</a>
-          <a href="${rec.target}" class="btn btn-teal" id="quizSee">Ver detalles</a>
+          <a href="${rec.target}" class="btn btn-teal" id="quizSee">${rec.seeLabel || "Ver detalles"}</a>
         </div>
         <button type="button" class="quiz-restart" id="quizRestart">Volver a empezar</button>
       `;
+
+      // El resultado ya tiene todas las respuestas — se guarda apenas se muestra,
+      // sin depender de que la persona además apriete "Enviar por WhatsApp".
+      enviarNetlify("quiz-resultado", {
+        tipo: LABELS.tipo[answers.tipo] || "",
+        necesidad: LABELS.necesidad[answers.necesidad] || "",
+        presencia: LABELS.presencia[answers.presencia] || "",
+        prioridad: LABELS.prioridad[answers.prioridad] || "",
+        presupuesto: LABELS.presupuesto[answers.presupuesto] || "",
+        recomendacion: rec.title,
+      });
 
       document.getElementById("quizWA").onclick = (e) => {
         e.preventDefault();
@@ -1463,6 +1503,11 @@
     const biz=document.getElementById("qBiz").value.trim();
     const soc=document.getElementById("qSocial").value.trim();
     if(!items.length){alert("Selecciona al menos un servicio para cotizar.");return;}
+    enviarNetlify("cotizacion-web", {
+      nombre: name, negocio: biz, redes_web: soc,
+      servicios: items.map(i => `${i.n}: ${i.v===0?'Incluido':clp(i.v)}`).join(" · "),
+      total: clp(total)
+    });
     let msg=`¡Hola Influence Chile! 👋 Quiero cotizar:%0A%0A`;
     items.forEach(i=>msg+=`• ${i.n}: ${i.v===0?'Incluido':clp(i.v)}%0A`);
     msg+=`%0A*Total estimado: ${clp(total)}* (sin IVA)%0A`;
