@@ -276,11 +276,11 @@ Documento de diagnóstico (PDF/HTML, mismo criterio que la auditoría de redes �
 ## Cómo escala
 
 El cuestionario web (`diagnostico-workflows.html`) hace el primer filtro sin que tú muevas un
-dedo: identifica el tamaño de la empresa, recorre 3 de las 9 áreas, y el prospecto ve su propio
-resultado al instante. Te llega calificado por WhatsApp con el segmento y las áreas de dolor ya
-identificadas — tu llamada ya no parte de cero, parte de confirmar y profundizar lo que el
-cuestionario detectó. De ahí sale el JSON para el generador y el diagnóstico se produce en el
-mismo formato que las propuestas de redes.
+dedo: identifica el tamaño de la empresa, deja que el prospecto marque las áreas que le
+preocupan, y ve su propio resultado al instante. Te llega calificado por WhatsApp con el
+segmento y las áreas de dolor ya identificadas — tu llamada ya no parte de cero, parte de
+confirmar y profundizar lo que el cuestionario detectó. De ahí sale el JSON para el generador y
+el diagnóstico se produce en el mismo formato que las propuestas de redes.
 
 **Está conectado al quiz de 5 preguntas de la home.** Cuando alguien responde "Automatizar
 tareas repetitivas" en la pregunta 2, el resultado ya no lo manda directo a WhatsApp — lo invita
@@ -290,26 +290,31 @@ preguntas genéricas, y este cuestionario profundiza específicamente en automat
 
 ---
 
-## Por qué el cuestionario público es corto (y el diagnóstico completo no)
+## Por qué es un acordeón y no un formulario de 9 pasos (ni un checklist plano)
 
-Las 9 áreas son la metodología completa, pero **no se le piden las 9 a un desconocido en la
-web**. Cada paso adicional en un formulario pierde gente: si cada pregunta retiene un 90% de
-quienes siguen, un formulario de 11 pasos (tamaño + 9 preguntas + datos de contacto) termina
-completándolo apenas ~30% de quienes lo empiezan. Un cuestionario largo funciona cuando ya hay
-compromiso — una llamada agendada, alguien que levantó la mano — pero mata la conversión cuando
-es lo primero que ve un visitante frío.
+Las 9 áreas son la metodología completa, pero **pedirlas todas en secuencia forzada pierde
+gente**: si cada pregunta retiene un 90% de quienes siguen, un formulario de 11 pasos (tamaño +
+9 preguntas + datos de contacto) termina completándolo apenas ~30% de quienes lo empiezan. La
+alternativa opuesta — puros checkboxes sin severidad — resuelve la fricción pero pierde lo que
+hace valioso al diagnóstico: decir "esto es prioridad alta" en vez de solo "esto le aplica".
 
-Por eso el cuestionario público quedó en **5 pasos**: tamaño de empresa + 3 preguntas (atención
-al cliente, seguimiento de ventas, reportería — las de mayor impacto universal, sin importar
-rubro ni tamaño) + datos de contacto. Mismo largo que el cotizador de planes que ya existe en
-el sitio, para no introducir un salto de fricción entre ambas herramientas.
+La solución fue un **acordeón de las 9 áreas en una sola pantalla**: cada área es una tarjeta
+colapsada con el título y una pregunta corta; el visitante abre las que le suenan a su realidad
+y responde ahí mismo con las mismas 4 opciones de severidad de siempre (0 a 3). Puede responder
+una, tres o las nueve — nada lo obliga a seguir un orden ni a completarlas todas. Un contador
+("X de 9 áreas respondidas") le muestra su progreso sin presionarlo.
 
-El resultado no esconde que es parcial — al contrario, lo usa como gancho: *"esto es un vistazo
-de 3 de las 9 áreas; el resto lo vemos en la reunión de 30 minutos"*. Así la brevedad no se lee
-como que falta contenido, sino como el motivo para agendar. **Las 9 áreas completas se usan en
-la llamada** (guion en la sección anterior) y en el diagnóstico PDF que se manda después
-(`propuesta/generar-diagnostico.js`) — ahí sí vale la pena la profundidad, porque el prospecto
-ya invirtió tiempo en la conversación.
+Esto resuelve las dos cosas a la vez: no hay 9 pasos secuenciales que abandonar a mitad de
+camino (todo está en una pantalla, se abre lo que interesa), y cada respuesta sigue siendo un
+diagnóstico con prioridad, no un simple "sí/no". El resultado muestra hasta 5 hallazgos (los de
+mayor puntaje entre lo que efectivamente se respondió) y, si quedaron áreas sin marcar, el CTA
+final las lista por nombre como gancho para la reunión de 30 minutos — así la brevedad se lee
+como invitación, no como que falta contenido.
+
+Como este cuestionario ya no es lo primero que ve un desconocido — llega desde el quiz de la
+home, con intención ya confirmada ("automatizar") — no hace tanta falta el "efecto de
+inversión" de un wizard paso a paso (la sensación de "ya avancé, sigo"); el visitante llega con
+compromiso previo.
 
 ---
 
@@ -318,11 +323,12 @@ ya invirtió tiempo en la conversación.
 El cuestionario usa **Netlify Forms**, que se activa solo al desplegar el sitio en Netlify —
 no requiere cuenta ni servicio adicional. Dos formularios:
 
-- **`diagnostico-iniciado`** — se envía apenas se elige el tamaño de empresa y se entra a las
-  3 preguntas. Marca "esta persona empezó en serio", no solo que abrió la página.
+- **`diagnostico-iniciado`** — se envía apenas se elige el tamaño de empresa y se entra al
+  acordeón de las 9 áreas. Marca "esta persona empezó en serio", no solo que abrió la página.
 - **`diagnostico-completo`** — se envía en el momento exacto en que se genera el resultado
   (antes de que la persona decida o no apretar el botón de WhatsApp). Trae empresa, contacto,
-  rubro, WhatsApp, tamaño, puntaje y el detalle de las 3 áreas.
+  rubro, WhatsApp, tamaño, puntaje y el detalle de las áreas que efectivamente respondió (puede
+  ser una, varias o las nueve).
 
 **Dónde verlo:** panel de Netlify del sitio → pestaña *Forms*. Ahí quedan ambos, con la opción
 de activar notificación por correo o Slack por cada envío nuevo (se configura en el panel, no

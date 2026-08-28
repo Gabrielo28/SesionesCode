@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagnóstico gratis de procesos | Influence Chile</title>
-<meta name="description" content="Responda 3 preguntas en 2 minutos y descubra en qué parte de su operación se están perdiendo tiempo y clientes, y qué procesos conviene automatizar con IA. Para empresas de cualquier tamaño.">
+<meta name="description" content="Marque las áreas de su operación que le preocupan y descubra qué procesos conviene automatizar con IA. Responda solo lo que quiera, a su ritmo. Para empresas de cualquier tamaño.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#33C7CE">
 <link rel="canonical" href="https://influencechile.cl/diagnostico-workflows.html">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Influence Chile">
 <meta property="og:locale" content="es_CL">
 <meta property="og:title" content="Diagnóstico de Procesos con IA | Influence Chile">
-<meta property="og:description" content="Un filtro rápido de 2 minutos que identifica qué procesos de su negocio conviene automatizar primero, sin importar el tamaño de la empresa.">
+<meta property="og:description" content="Marque las áreas de su negocio que le preocupan y descubra qué conviene automatizar primero, sin importar el tamaño de la empresa.">
 <meta property="og:image" content="https://influencechile.cl/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,15 +62,12 @@
   .btn-outline{background:transparent;color:var(--muted);box-shadow:none;font-weight:700}
   .btn[disabled]{opacity:.4;cursor:not-allowed}
 
-  .progress{display:flex;gap:6px;margin-bottom:26px}
-  .progress span{flex:1;height:5px;border-radius:3px;background:#e2eeee}
-  .progress span.done{background:var(--teal-dark)}
-
   .step{display:none}
   .step.active{display:block}
   .step .qnum{font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--coral);margin-bottom:8px}
-  .step h2{font-size:1.35rem;margin-bottom:22px}
+  .step h2{font-size:1.35rem;margin-bottom:10px}
   @media(min-width:640px){.step h2{font-size:1.55rem}}
+  .step .subp{color:var(--muted);font-size:.92rem;margin-bottom:22px}
 
   .opt{display:block;border:1.5px solid #dcebeb;border-radius:14px;padding:15px 18px;margin-bottom:11px;cursor:pointer;transition:border-color .15s ease,background .15s ease}
   .opt:hover{border-color:var(--teal)}
@@ -83,12 +80,30 @@
   .nav-row .btn{width:auto;flex:1}
   .nav-row .btn-outline{flex:0 0 auto;padding-left:18px;padding-right:18px}
 
-  input[name="bot-field"]{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-
   .field{margin-bottom:16px}
   .field label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px}
   .field input{width:100%;padding:13px 15px;border:1.5px solid #dcebeb;border-radius:12px;font-family:inherit;font-size:.95rem;color:var(--ink)}
   .field input:focus{outline:none;border-color:var(--teal-dark)}
+
+  input[name="bot-field"]{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+
+  /* Acordeón de las 9 áreas */
+  .acc-counter{display:flex;align-items:center;justify-content:space-between;background:var(--paper);border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:.85rem;font-weight:700;color:var(--teal-dark)}
+  .acc-counter span.muted{color:var(--muted);font-weight:500;font-size:.8rem}
+  .acc-item{border:1.5px solid #dcebeb;border-radius:16px;margin-bottom:12px;overflow:hidden}
+  .acc-item.answered{border-color:var(--teal)}
+  .acc-header{width:100%;display:flex;align-items:center;gap:12px;padding:16px 18px;background:#fff;border:0;cursor:pointer;text-align:left;font-family:inherit}
+  .acc-header .achk{flex:0 0 22px;height:22px;border-radius:50%;background:#e6f1f1;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--muted);font-weight:800}
+  .acc-item.answered .achk{background:var(--teal);color:#fff}
+  .acc-header .atext{flex:1}
+  .acc-header .atitle{font-size:.98rem;font-weight:800;color:var(--ink)}
+  .acc-header .ateaser{font-size:.82rem;color:var(--muted);margin-top:2px}
+  .acc-header .achev{flex:0 0 auto;font-size:.9rem;color:var(--muted);transition:transform .2s ease}
+  .acc-item.open .achev{transform:rotate(180deg)}
+  .acc-body{display:none;padding:0 18px 18px}
+  .acc-item.open .acc-body{display:block}
+  .acc-body .opt{margin-bottom:8px;padding:12px 15px}
+  .acc-body .opt span{font-size:.88rem}
 
   #resultado{display:none}
   .nivel{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:60px;font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
@@ -131,15 +146,15 @@
 
       <!-- Intro -->
       <div id="intro" class="intro">
-        <span class="eyebrow">Diagnóstico gratuito · 2 minutos</span>
+        <span class="eyebrow">Diagnóstico gratuito · a su ritmo</span>
         <h1>¿Dónde está perdiendo tiempo y dinero su <span class="coral">operación</span>?</h1>
-        <p>Un filtro rápido de 3 preguntas sobre atención a clientes, ventas y reportería. Sirve para empresas de cualquier tamaño, desde un equipo de pocas personas hasta una organización con varias áreas. Al final le indicamos qué conviene automatizar primero con inteligencia artificial — y, si quiere profundizar, el análisis completo de las nueve áreas de nuestra metodología lo hacemos juntos en una reunión de 30 minutos.</p>
+        <p>Marque las áreas de su operación que le preocupan — atención a clientes, ventas, agenda, cotizaciones, reportes, equipo, captación, post-venta y herramientas. Responda solo las que quiera, tantas como quiera. Al final le indicamos qué conviene automatizar primero con inteligencia artificial.</p>
         <ul>
           <li><span class="dot">✓</span> Sin compromiso ni datos de pago</li>
           <li><span class="dot">✓</span> El resultado es suyo, lo utilice con nosotros o no</li>
           <li><span class="dot">✓</span> Al final puede enviarnos el resultado directamente por WhatsApp</li>
         </ul>
-        <button class="btn btn-coral" onclick="mostrarSegmento()">Comenzar diagnóstico rápido</button>
+        <button class="btn btn-coral" onclick="mostrarSegmento()">Comenzar diagnóstico</button>
       </div>
 
       <!-- Tamaño de empresa -->
@@ -149,22 +164,31 @@
         <div id="seg-opts"></div>
         <div class="nav-row">
           <button type="button" class="btn btn-outline" onclick="volverIntro()">← Atrás</button>
-          <button type="button" class="btn btn-teal" id="seg-next" disabled onclick="empezarQuiz()">Siguiente</button>
+          <button type="button" class="btn btn-teal" id="seg-next" disabled onclick="mostrarAcordeon()">Siguiente</button>
         </div>
       </div>
 
-      <!-- Formulario oculto, solo para que Netlify detecte el esquema al desplegar.
-           El envío real de "quien empezó el cuestionario" se hace por fetch en empezarQuiz(). -->
+      <!-- Formulario oculto, solo para que Netlify detecte el esquema al desplegar. -->
       <form name="diagnostico-iniciado" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
         <input type="hidden" name="tamano">
         <input type="hidden" name="fecha">
         <input name="bot-field">
       </form>
 
-      <!-- Quiz -->
-      <div id="quiz" style="display:none">
-        <div class="progress" id="progress"></div>
-        <div id="steps"></div>
+      <!-- Acordeón de las 9 áreas -->
+      <div id="acordeon" class="step">
+        <div class="qnum">Marque lo que le aplica</div>
+        <h2>¿Qué áreas de su operación le preocupan?</h2>
+        <p class="subp">Haga clic en cada área para responder. Puede abrir una, varias o las nueve — usted decide.</p>
+        <div class="acc-counter">
+          <span id="acc-count">0 de 9 áreas respondidas</span>
+          <span class="muted">Puede responder las que quiera</span>
+        </div>
+        <div id="acc-list"></div>
+        <div class="nav-row">
+          <button type="button" class="btn btn-outline" onclick="volverASegmento()">← Atrás</button>
+          <button type="button" class="btn btn-teal" id="acc-next" disabled onclick="mostrarDatos()">Continuar</button>
+        </div>
       </div>
 
       <!-- Datos de contacto — formulario real de Netlify: el envío queda registrado
@@ -182,7 +206,7 @@
         <input type="hidden" id="f-detalle" name="detalle_por_area">
         <input name="bot-field">
         <div class="nav-row">
-          <button type="button" class="btn btn-outline" onclick="volverA(PREGUNTAS.length - 1)">← Atrás</button>
+          <button type="button" class="btn btn-outline" onclick="volverAlAcordeon()">← Atrás</button>
           <button type="button" class="btn btn-teal" onclick="verResultado()">Ver diagnóstico</button>
         </div>
       </form>
@@ -196,7 +220,7 @@
         <div id="hallazgos"></div>
         <div class="cta-box">
           <h3>Conversemos</h3>
-          <p>Esto es un vistazo de 3 de las 9 áreas que evaluamos. En una reunión de 30 minutos, sin compromiso, revisamos el diagnóstico completo — agenda, cotizaciones, gestión interna, captación de clientes, post-venta y herramientas — y definimos por dónde comenzar.</p>
+          <p id="cta-texto"></p>
           <a id="wa-link" class="btn btn-coral" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
         </div>
       </div>
@@ -230,16 +254,6 @@
       .catch(() => { /* no bloquea la experiencia si no está en Netlify */ });
   }
 
-  // Puente a Google Analytics / Meta Pixel, si en algún momento se agregan al sitio.
-  // Hoy no hay ningún ID de tracking configurado, así que esto no hace nada — pero en
-  // cuanto exista gtag() o fbq() en la página, estos eventos empiezan a llegar solos.
-  function trackEvent (name, params) {
-    try {
-      if (typeof gtag === 'function') gtag('event', name, params);
-      if (typeof fbq === 'function') fbq('trackCustom', name, params);
-    } catch (e) { /* nunca debe romper el flujo del diagnóstico */ }
-  }
-
   function construirSegmento () {
     const cont = document.getElementById('seg-opts');
     cont.innerHTML = SEGMENTOS.map((s, i) => `
@@ -268,21 +282,24 @@
     document.getElementById('intro').style.display = 'block';
   }
 
-  function empezarQuiz () {
+  function mostrarAcordeon () {
     document.getElementById('segmento').classList.remove('active');
-    document.getElementById('quiz').style.display = 'block';
-    mostrarPaso(0);
+    document.getElementById('acordeon').classList.add('active');
+    document.getElementById('acordeon').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     const seg = segmentoSel || SEGMENTOS[1];
     enviarNetlify('diagnostico-iniciado', { tamano: seg.label, fecha: new Date().toISOString() });
-    trackEvent('diagnostico_iniciado', { tamano_empresa: seg.label });
   }
 
-  // Filtro público: 3 de las 9 áreas de la metodología de diagnóstico de workflows
-  // (prospeccion-ventas/06-diagnostico-workflows.md) — las de mayor impacto universal,
-  // para maximizar la tasa de término. Las 9 áreas completas se revisan en la reunión
-  // de 30 minutos y en el diagnóstico PDF (generar-diagnostico.js).
-  // Opciones ordenadas de mejor a peor, puntaje 0 (resuelto) a 3 (dolor fuerte).
+  function volverASegmento () {
+    document.getElementById('acordeon').classList.remove('active');
+    document.getElementById('segmento').classList.add('active');
+  }
+
+  // Las 9 áreas de la metodología de diagnóstico de workflows
+  // (prospeccion-ventas/06-diagnostico-workflows.md). Opciones ordenadas de mejor a peor,
+  // puntaje 0 (resuelto) a 3 (dolor fuerte). Los nombres de solución son los mismos
+  // servicios reales, ya publicados, de la sección "Sitios y automatización" de la web.
   const PREGUNTAS = [
     {
       area: 'atencion',
@@ -294,10 +311,7 @@
         'En ocasiones la respuesta demora horas, porque la misma persona atiende otras tareas',
         'Se acumulan mensajes sin responder porque no hay una persona a cargo de forma permanente'
       ],
-      solucion: {
-        nombre: 'WhatsApp que responde y agenda',
-        detalle: 'Responde las consultas frecuentes de forma inmediata, las 24 horas, y deriva a una persona solo cuando es necesario.'
-      },
+      solucion: { nombre: 'WhatsApp que responde y agenda', detalle: 'Responde las consultas frecuentes de forma inmediata, las 24 horas, y deriva a una persona solo cuando es necesario.' },
       hallazgo: 'Las consultas por WhatsApp e Instagram no se están respondiendo con la rapidez necesaria, y ese es precisamente el momento en que un cliente decide comprar en su negocio o en la competencia.'
     },
     {
@@ -310,11 +324,34 @@
         'Depende de si la persona a cargo se acuerda de hacerlo',
         'Nadie vuelve a contactarlo y la oportunidad se pierde'
       ],
-      solucion: {
-        nombre: 'Automatización de procesos',
-        detalle: 'Detecta a los contactos que consultaron sin concretar la compra y envía recordatorios automáticos al día 1, 3 y 7.'
-      },
+      solucion: { nombre: 'Automatización de procesos', detalle: 'Detecta a los contactos que consultaron sin concretar la compra y envía recordatorios automáticos al día 1, 3 y 7.' },
       hallazgo: 'Los interesados que no compran de inmediato no reciben ningún seguimiento posterior. Se trata de ventas que estaban prácticamente cerradas y que se están perdiendo por falta de continuidad en el contacto.'
+    },
+    {
+      area: 'agenda',
+      titulo: 'Agendamiento',
+      pregunta: '¿Cómo se agendan horas o reservas hoy?',
+      opciones: [
+        'Sistema automático que evita superposiciones y envía recordatorios',
+        'Calendario compartido: funciona, pero requiere gestión manual',
+        'Por WhatsApp o llamada telefónica, con ocasionales superposiciones de horario',
+        'En papel o de forma manual, sin recordatorios; hay inasistencias frecuentes'
+      ],
+      solucion: { nombre: 'WhatsApp que responde y agenda', detalle: 'Ofrece horarios disponibles, confirma la reserva y envía un recordatorio automático 24 horas antes.' },
+      hallazgo: 'El agendamiento depende de coordinación manual, lo que genera superposiciones de horario e inasistencias que hoy no se están midiendo, pero que sí representan un costo real para el negocio.'
+    },
+    {
+      area: 'cotizaciones',
+      titulo: 'Cotizaciones y documentos',
+      pregunta: '¿Cuánto tiempo transcurre entre que se solicita una cotización y se envía?',
+      opciones: [
+        'Minutos: el proceso está automatizado o existe una plantilla lista',
+        'Menos de una hora, completando una plantilla de forma manual',
+        'Puede tomar un día completo, porque se elabora desde cero cada vez',
+        'En ocasiones pasa más de un día y el cliente pierde el interés'
+      ],
+      solucion: { nombre: 'Cotizadores y paneles a medida', detalle: 'Genera y envía la cotización a partir de una plantilla con los datos del cliente, en minutos en lugar de horas.' },
+      hallazgo: 'Elaborar cada cotización de forma manual toma un tiempo que se multiplica por la cantidad de solicitudes mensuales, y cada hora de demora es una oportunidad para que el cliente compare con la competencia.'
     },
     {
       area: 'reportes',
@@ -326,38 +363,85 @@
         'Planilla elaborada manualmente, que toma varias horas',
         'No existe un reporte formal; la información se estima o se conoce recién al cierre del mes'
       ],
-      solucion: {
-        nombre: 'Cotizadores y paneles a medida',
-        detalle: 'Reúne los datos que ya existen (ventas, redes sociales, caja, sistemas internos) y entrega un resumen periódico sin necesidad de elaborarlo manualmente.'
-      },
+      solucion: { nombre: 'Cotizadores y paneles a medida', detalle: 'Reúne los datos que ya existen (ventas, redes sociales, caja, sistemas internos) y entrega un resumen periódico sin necesidad de elaborarlo manualmente.' },
       hallazgo: 'Elaborar el reporte de forma manual cada semana o cada mes ocupa el tiempo de una persona remunerada en tareas de copiar y pegar información, en lugar de en la toma de decisiones.'
+    },
+    {
+      area: 'interno',
+      titulo: 'Gestión interna',
+      pregunta: '¿Con qué frecuencia se traspasa información de forma manual entre áreas (venta → producción → despacho, etc.)?',
+      opciones: [
+        'Está todo conectado; la información se traspasa de forma automática',
+        'Se traspasa de forma manual, pero el proceso es rápido',
+        'Se copia y pega entre planillas o conversaciones con frecuencia',
+        'Se pierde o se duplica información entre áreas con frecuencia'
+      ],
+      solucion: { nombre: 'Automatización de procesos', detalle: 'Conecta las herramientas que ya utiliza el equipo para que la información se traspase automáticamente entre áreas, sin necesidad de reescribirla.' },
+      hallazgo: 'La información se está traspasando de forma manual entre áreas, lo que genera errores, duplicidades y horas de trabajo que no aportan valor al cliente.'
+    },
+    {
+      area: 'marketing',
+      titulo: 'Captación de nuevos clientes',
+      pregunta: 'Más allá de responder a quien ya llegó, ¿cómo se generan clientes o consultas nuevas hoy?',
+      opciones: [
+        'Existen campañas activas y se mide el costo de cada cliente nuevo',
+        'Se publica contenido y ocasionalmente se pautea, pero sin métricas claras',
+        'Se depende casi por completo del boca a boca y las referencias',
+        'No existe una estrategia definida de captación de clientes'
+      ],
+      solucion: { nombre: 'Plan de redes + Meta Ads', detalle: 'Esto no se resuelve con automatización, sino con nuestro servicio de contenido y pauta — segmentación de audiencia y campañas medibles, integradas al mismo flujo de atención.' },
+      hallazgo: 'El crecimiento depende casi por completo del boca a boca, sin un sistema repetible de captación, lo que hace que los nuevos clientes queden sujetos al azar en lugar de a un proceso medible.'
+    },
+    {
+      area: 'postventa',
+      titulo: 'Post-venta y fidelización',
+      pregunta: 'Después de que un cliente compra, ¿qué seguimiento recibe?',
+      opciones: [
+        'Existe un proceso automático de seguimiento, encuestas y recordatorios de recompra',
+        'Se realiza un seguimiento manual de forma ocasional',
+        'Prácticamente no hay contacto posterior a la venta',
+        'Ningún seguimiento: el cliente no vuelve a saber de la empresa hasta que él mismo consulta'
+      ],
+      solucion: { nombre: 'Automatización de procesos', detalle: 'Envía mensajes automáticos de agradecimiento, encuestas de satisfacción y recordatorios de recompra o mantención.' },
+      hallazgo: 'Los clientes que ya compraron no reciben ningún seguimiento posterior. Es la venta más económica de conseguir, porque ya existe confianza previa, y hoy se está desaprovechando por completo.'
+    },
+    {
+      area: 'herramientas',
+      titulo: 'Herramientas y datos',
+      pregunta: '¿Cuántos sistemas o planillas distintas utiliza el equipo para operar (WhatsApp, Excel, algún software, papel)?',
+      opciones: [
+        'Todo está centralizado en un sistema conectado',
+        'Dos o tres herramientas que se comunican razonablemente bien entre sí',
+        'Varias planillas y conversaciones sueltas que alguien debe cuadrar manualmente',
+        'Cada área trabaja con su propio método, sin ninguna conexión entre ellos'
+      ],
+      solucion: { nombre: 'Automatización de procesos', detalle: 'Conecta las herramientas que ya existen en un solo flujo de información. Si la integración es muy particular, se cotiza como Proyecto personalizado.' },
+      hallazgo: 'Mientras más sistemas desconectados existen, más horas de trabajo administrativo se destinan a cuadrar información, y mayor es la probabilidad de errores por datos que no coinciden entre sí.'
     }
   ];
 
   const respuestas = {};
 
-  function construirPasos () {
-    const cont = document.getElementById('steps');
-    const prog = document.getElementById('progress');
-    PREGUNTAS.forEach((p, i) => {
-      prog.insertAdjacentHTML('beforeend', `<span data-i="${i}"></span>`);
-      const div = document.createElement('div');
-      div.className = 'step';
-      div.id = 'step-' + i;
-      div.innerHTML = `
-        <div class="qnum">Pregunta ${i + 1} de ${PREGUNTAS.length} · ${p.titulo}</div>
-        <h2>${p.pregunta}</h2>
-        ${p.opciones.map((o, j) => `
-          <label class="opt" data-i="${i}" data-j="${j}">
-            <input type="radio" name="p${i}" value="${j}">
-            <span>${o}</span>
-          </label>`).join('')}
-        <div class="nav-row">
-          ${i > 0 ? `<button class="btn btn-outline" onclick="volverA(${i - 1})">← Atrás</button>` : '<button class="btn btn-outline" onclick="volverASegmento()">← Atrás</button>'}
-          <button class="btn btn-teal" id="next-${i}" disabled onclick="siguiente(${i})">Siguiente</button>
-        </div>`;
-      cont.appendChild(div);
-    });
+  function construirAcordeon () {
+    const cont = document.getElementById('acc-list');
+    cont.innerHTML = PREGUNTAS.map((p, i) => `
+      <div class="acc-item" id="acc-item-${i}" data-area="${p.area}">
+        <button type="button" class="acc-header" aria-expanded="false" onclick="toggleAcordeon(${i})">
+          <span class="achk" id="acc-chk-${i}">${i + 1}</span>
+          <span class="atext">
+            <span class="atitle">${p.titulo}</span>
+            <span class="ateaser">${p.pregunta}</span>
+          </span>
+          <span class="achev">▾</span>
+        </button>
+        <div class="acc-body">
+          ${p.opciones.map((o, j) => `
+            <label class="opt" data-i="${i}" data-j="${j}">
+              <input type="radio" name="p${i}" value="${j}">
+              <span>${o}</span>
+            </label>`).join('')}
+        </div>
+      </div>`).join('');
 
     cont.querySelectorAll('.opt').forEach(opt => {
       opt.addEventListener('click', () => {
@@ -365,60 +449,68 @@
         document.querySelectorAll(`.opt[data-i="${i}"]`).forEach(o => o.classList.remove('sel'));
         opt.classList.add('sel');
         respuestas[PREGUNTAS[i].area] = j;
-        document.getElementById('next-' + i).disabled = false;
+        document.getElementById(`acc-item-${i}`).classList.add('answered');
+        document.getElementById(`acc-chk-${i}`).textContent = '✓';
+        actualizarContador();
       });
     });
   }
 
-  function volverASegmento () {
-    document.querySelectorAll('#quiz .step').forEach(s => s.classList.remove('active'));
-    document.getElementById('quiz').style.display = 'none';
-    document.getElementById('segmento').classList.add('active');
+  function toggleAcordeon (i) {
+    const item = document.getElementById('acc-item-' + i);
+    const open = item.classList.toggle('open');
+    item.querySelector('.acc-header').setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
-  function mostrarPaso (i) {
-    document.querySelectorAll('#quiz .step, #datos').forEach(s => s.classList.remove('active'));
-    const target = i < PREGUNTAS.length ? document.getElementById('step-' + i) : document.getElementById('datos');
-    target.classList.add('active');
-    document.querySelectorAll('#progress span').forEach(s => s.classList.toggle('done', +s.dataset.i < i));
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function actualizarContador () {
+    const n = Object.keys(respuestas).length;
+    document.getElementById('acc-count').textContent = `${n} de ${PREGUNTAS.length} áreas respondidas`;
+    document.getElementById('acc-next').disabled = n === 0;
   }
 
-  function siguiente (i) { mostrarPaso(i + 1); }
-  function volverA (i) { mostrarPaso(i); }
+  function mostrarDatos () {
+    document.getElementById('acordeon').classList.remove('active');
+    document.getElementById('datos').classList.add('active');
+    document.getElementById('datos').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function volverAlAcordeon () {
+    document.getElementById('datos').classList.remove('active');
+    document.getElementById('acordeon').classList.add('active');
+  }
 
   function verResultado () {
-    const total = PREGUNTAS.reduce((s, p) => s + (respuestas[p.area] || 0), 0);
-    const maxima = PREGUNTAS.length * 3;
+    const respondidas = PREGUNTAS.filter(p => respuestas[p.area] !== undefined);
+    const noRespondidas = PREGUNTAS.filter(p => respuestas[p.area] === undefined);
+    const total = respondidas.reduce((s, p) => s + respuestas[p.area], 0);
+    const maxima = respondidas.length * 3;
+    const pct = maxima > 0 ? total / maxima : 0;
 
     let nivelClase = 'bajo', nivelTexto = 'Nivel de urgencia: bajo';
-    if (total >= 6) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
-    else if (total >= 3) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
+    if (pct >= 0.66) { nivelClase = 'alto'; nivelTexto = 'Nivel de urgencia: alto'; }
+    else if (pct >= 0.33) { nivelClase = 'medio'; nivelTexto = 'Nivel de urgencia: medio'; }
 
     const empresa = document.getElementById('f-empresa').value.trim() || 'su negocio';
     const nombre = document.getElementById('f-nombre').value.trim();
     const whatsappContacto = document.getElementById('f-whatsapp').value.trim();
     const seg = segmentoSel || SEGMENTOS[1];
 
-    const ordenadas = PREGUNTAS
-      .map(p => ({ ...p, score: respuestas[p.area] || 0 }))
+    const ordenadas = respondidas
+      .map(p => ({ ...p, score: respuestas[p.area] }))
       .filter(p => p.score >= 2)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
+      .slice(0, 5);
 
-    // El título y el mensaje dependen de si quedó algún hallazgo relevante (score >= 2),
-    // no del puntaje total en 0 — con 3 preguntas, un puntaje bajo pero distinto de 0
-    // puede igual no dejar ningún hallazgo, y la pantalla no debe quedar con un hueco vacío.
     const sinHallazgos = ordenadas.length === 0;
 
     document.getElementById('nivel').className = 'nivel ' + nivelClase;
     document.getElementById('nivel').textContent = nivelTexto;
     document.getElementById('res-titulo').textContent = sinHallazgos
-      ? `${empresa} presenta una operación bien encaminada en estas áreas`
+      ? `${empresa} presenta una operación bien encaminada en las áreas marcadas`
       : `Estos son los resultados del diagnóstico para ${empresa}`;
     document.getElementById('res-lead').textContent = sinHallazgos
-      ? 'No se detectaron cuellos de botella significativos en las 3 áreas evaluadas. De todas formas, si desea una segunda mirada de un especialista sobre el resto de la operación, la conversación es sin costo.'
-      : `Puntaje de fricción: ${total} de ${maxima} en las áreas evaluadas. A continuación se presentan los resultados, ordenados de mayor a menor prioridad.`;
+      ? `No se detectaron cuellos de botella significativos en las ${respondidas.length} área(s) que marcó. De todas formas, si desea una segunda mirada de un especialista sobre el resto de la operación, la conversación es sin costo.`
+      : `Puntaje de fricción: ${total} de ${maxima}, en las ${respondidas.length} área(s) que marcó. A continuación se presentan los resultados, ordenados de mayor a menor prioridad.`;
 
     const segnota = document.getElementById('res-segnota');
     segnota.style.display = 'block';
@@ -437,8 +529,17 @@
         <div class="sol"><b>Se resuelve con:</b> ${p.solucion.nombre} — ${p.solucion.detalle}</div>
       </div>`).join('');
 
+    // El texto del CTA lista, por nombre, las áreas que todavía no se marcaron —
+    // así el "vistazo parcial" queda personalizado según lo que cada quien respondió.
+    const ctaTexto = document.getElementById('cta-texto');
+    ctaTexto.textContent = noRespondidas.length > 0
+      ? `Esto es lo que se ve en las áreas que marcó. En una reunión de 30 minutos, sin compromiso, revisamos también ${noRespondidas.map(p => p.titulo.toLowerCase()).join(', ')} — y definimos por dónde comenzar.`
+      : `Ya revisamos las 9 áreas de la operación. En una reunión de 30 minutos, sin compromiso, afinamos el diagnóstico completo y definimos por dónde comenzar.`;
+
     // Resumen de lo respondido, reutilizado tanto en el envío a Netlify como en el mensaje de WhatsApp
-    const resumen = PREGUNTAS.map(p => `${p.titulo}: ${respuestas[p.area] ?? '-'}/3`).join(' · ');
+    const resumen = respondidas.length
+      ? respondidas.map(p => `${p.titulo}: ${respuestas[p.area]}/3`).join(' · ')
+      : 'Sin áreas respondidas';
     const rubro = document.getElementById('f-rubro').value.trim();
 
     // Se guarda el lead completo apenas existe el resultado, sin depender de que la
@@ -451,27 +552,24 @@
       empresa, nombre, rubro, whatsapp: whatsappContacto,
       tamano: seg.label, puntaje: `${total}/${maxima}`, nivel_urgencia: nivelTexto, detalle_por_area: resumen
     });
-    trackEvent('diagnostico_completo', { tamano_empresa: seg.label, puntaje: total, nivel_urgencia: nivelClase });
 
-    // Mensaje de WhatsApp con el resumen de lo respondido, para que el contacto llegue calificado
     let msg = `Hola, completé el diagnóstico rápido de procesos de Influence Chile.\n`;
     msg += `Empresa: ${empresa}${rubro ? ' (' + rubro + ')' : ''}\n`;
     msg += `Tamaño: ${seg.label}\n`;
     if (nombre) msg += `Contacto: ${nombre}\n`;
     if (whatsappContacto) msg += `WhatsApp de contacto: ${whatsappContacto}\n`;
-    msg += `Puntaje de fricción: ${total}/${maxima}\n`;
+    msg += `Puntaje de fricción: ${total}/${maxima} (${respondidas.length} de ${PREGUNTAS.length} áreas)\n`;
     msg += `Detalle: ${resumen}\n`;
     msg += `Me gustaría agendar la reunión para ver el diagnóstico completo.`;
     document.getElementById('wa-link').href = 'https://wa.me/56965450723?text=' + encodeURIComponent(msg);
 
-    document.getElementById('quiz').style.display = 'none';
     document.getElementById('datos').classList.remove('active');
     document.getElementById('resultado').style.display = 'block';
     document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   construirSegmento();
-  construirPasos();
+  construirAcordeon();
 </script>
 </body>
 </html>
