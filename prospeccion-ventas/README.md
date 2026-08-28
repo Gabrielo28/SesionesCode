@@ -11,6 +11,7 @@
 | [05-secuencias-completas.md](05-secuencias-completas.md) | Copy completo de las 3 secuencias de seguimiento |
 | [06-diagnostico-workflows.md](06-diagnostico-workflows.md) | Diagnóstico de procesos internos para vender automatización con IA |
 | [07-icp-automatizacion.md](07-icp-automatizacion.md) | A quién vendemos automatización con IA — distinto del ICP de redes, 100% remoto |
+| [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
 | [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 21 empresas nuevas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
