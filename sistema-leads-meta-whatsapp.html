@@ -1,284 +1,291 @@
-<title>Propuesta de Servicios · Sistema de Clientes por WhatsApp</title>
+<title>Propuesta · Sistema de Clientes por WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper:#F7F3E9; --surface:#FFFFFF; --surface-2:#EFE8D6;
-    --ink:#1C2622; --muted:#4E5B57; --faint:#7C8985;
-    --hairline:#DCD2B8; --hairline-strong:#C7BA95;
-    --accent:#1F5C4E; --accent-ink:#153F35; --accent-wash:#E8F0EC;
-    --gold:#8A6A2E; --gold-wash:#F3ECDB;
-    --shadow:0 1px 2px rgba(28,38,34,.05), 0 6px 18px rgba(28,38,34,.05);
-    --font-serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
-    --font-sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
-    --measure:700px;
+    --teal:#33C7CE; --teal-dark:#12959C; --teal-ink:#0d5a5f;
+    --wa:#25D366; --wa-dark:#075E54; --wa-bubble:#DCF8C6; --wa-check:#34B7F1;
+    --ink:#123638; --muted:#5b7c7e; --faint:#8FA9AB;
+    --paper:#F3FBFB; --surface:#FFFFFF; --surface-2:#EAF6F6;
+    --hairline:#D9EFEF;
+    --shadow:0 2px 8px rgba(18,54,56,.06), 0 10px 28px rgba(18,54,56,.07);
+    --font:'Montserrat',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --measure:720px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper:#171D1A; --surface:#1F2622; --surface-2:#262E29;
-      --ink:#EDE8DA; --muted:#B7BFB8; --faint:#8A948D;
-      --hairline:#333D37; --hairline-strong:#414D45;
-      --accent:#6FB39E; --accent-ink:#8FCBB8; --accent-wash:#1C2B26;
-      --gold:#D2B673; --gold-wash:#2A2418;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+      --teal:#4FD6DC; --teal-dark:#33C7CE; --teal-ink:#8FE3E7;
+      --wa:#2FE07A; --wa-dark:#1E9E5A; --wa-bubble:#123822; --wa-check:#53C4F0;
+      --ink:#EAF7F6; --muted:#A9C7C8; --faint:#6E8C8D;
+      --paper:#0E1B1B; --surface:#152524; --surface-2:#1B2E2C;
+      --hairline:#243A38;
+      --shadow:0 2px 8px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.35);
     }
   }
   :root[data-theme="light"] {
-    --paper:#F7F3E9; --surface:#FFFFFF; --surface-2:#EFE8D6;
-    --ink:#1C2622; --muted:#4E5B57; --faint:#7C8985;
-    --hairline:#DCD2B8; --hairline-strong:#C7BA95;
-    --accent:#1F5C4E; --accent-ink:#153F35; --accent-wash:#E8F0EC;
-    --gold:#8A6A2E; --gold-wash:#F3ECDB;
-    --shadow:0 1px 2px rgba(28,38,34,.05), 0 6px 18px rgba(28,38,34,.05);
+    --teal:#33C7CE; --teal-dark:#12959C; --teal-ink:#0d5a5f;
+    --wa:#25D366; --wa-dark:#075E54; --wa-bubble:#DCF8C6; --wa-check:#34B7F1;
+    --ink:#123638; --muted:#5b7c7e; --faint:#8FA9AB;
+    --paper:#F3FBFB; --surface:#FFFFFF; --surface-2:#EAF6F6;
+    --hairline:#D9EFEF;
+    --shadow:0 2px 8px rgba(18,54,56,.06), 0 10px 28px rgba(18,54,56,.07);
   }
   :root[data-theme="dark"] {
-    --paper:#171D1A; --surface:#1F2622; --surface-2:#262E29;
-    --ink:#EDE8DA; --muted:#B7BFB8; --faint:#8A948D;
-    --hairline:#333D37; --hairline-strong:#414D45;
-    --accent:#6FB39E; --accent-ink:#8FCBB8; --accent-wash:#1C2B26;
-    --gold:#D2B673; --gold-wash:#2A2418;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --teal:#4FD6DC; --teal-dark:#33C7CE; --teal-ink:#8FE3E7;
+    --wa:#2FE07A; --wa-dark:#1E9E5A; --wa-bubble:#123822; --wa-check:#53C4F0;
+    --ink:#EAF7F6; --muted:#A9C7C8; --faint:#6E8C8D;
+    --paper:#0E1B1B; --surface:#152524; --surface-2:#1B2E2C;
+    --hairline:#243A38;
+    --shadow:0 2px 8px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.35);
   }
 
   * { box-sizing:border-box; }
   body { margin:0; background:var(--paper); color:var(--ink);
-    font-family:var(--font-sans); font-size:17px; line-height:1.7; -webkit-font-smoothing:antialiased; }
+    font-family:var(--font); font-size:17px; line-height:1.7; -webkit-font-smoothing:antialiased; }
   .wrap { max-width:var(--measure); margin:0 auto; padding:0 24px 90px; }
 
-  /* ---- letterhead ---- */
-  .letterhead { display:flex; justify-content:space-between; align-items:center;
-    padding:26px 0; border-bottom:2px solid var(--ink); font-family:var(--font-serif); }
-  .letterhead .brand { font-size:15px; font-weight:700; letter-spacing:.03em; }
-  .letterhead .ref { font-family:var(--font-sans); font-size:12.5px; color:var(--faint);
-    letter-spacing:.04em; }
+  /* ---- header ---- */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:30px 0 0; }
+  .logo { display:flex; flex-direction:column; line-height:1; }
+  .logo b { font-style:italic; font-weight:800; font-size:1.5rem; color:var(--teal-dark); letter-spacing:-1px; }
+  .logo small { font-weight:800; font-size:.62rem; letter-spacing:4px; color:var(--teal-dark); opacity:.8; margin-top:2px; }
+  .tagpill { background:var(--surface-2); color:var(--teal-ink); font-weight:700; font-size:12.5px;
+    padding:7px 14px; border-radius:999px; }
 
-  header { padding:40px 0 32px; border-bottom:1px solid var(--hairline-strong); }
-  .eyebrow { font-family:var(--font-serif); font-style:italic; font-size:15px;
-    color:var(--accent-ink); margin:0 0 14px; }
-  h1 { font-family:var(--font-serif); font-size:clamp(26px,4.4vw,36px); line-height:1.25;
-    font-weight:700; margin:0; text-wrap:balance; }
-  .lede { font-size:18.5px; color:var(--ink); margin:18px 0 0; max-width:58ch; }
+  header { padding:26px 0 34px; border-bottom:1px solid var(--hairline); }
+  h1 { font-size:clamp(28px,4.6vw,38px); line-height:1.18; letter-spacing:-.01em;
+    font-weight:800; margin:22px 0 0; color:var(--ink); text-wrap:balance; }
+  .lede { font-size:19px; color:var(--muted); margin:16px 0 0; max-width:58ch; }
 
-  .docinfo { margin-top:26px; border:1px solid var(--hairline-strong); border-radius:4px;
-    background:var(--surface); }
-  .docinfo dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    margin:0; padding:0; }
-  .docinfo div { padding:13px 18px; border-right:1px solid var(--hairline); border-bottom:1px solid var(--hairline); }
-  .docinfo div:last-child { border-right:none; }
-  .docinfo dt { font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--faint); margin:0 0 4px; }
-  .docinfo dd { margin:0; font-size:15px; font-weight:600; }
+  .meta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .meta-row span { display:inline-flex; align-items:center; gap:7px; background:var(--surface);
+    border:1px solid var(--hairline); border-radius:999px; padding:7px 14px; font-size:13.5px;
+    font-weight:600; color:var(--teal-ink); }
+  .meta-row .dot { width:7px; height:7px; border-radius:50%; background:var(--wa); }
 
-  nav.toc { margin:26px 0 0; padding:16px 0 0; }
+  nav.toc { margin:28px 0 0; }
   nav.toc ol { list-style:none; margin:0; padding:0; counter-reset:toc;
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:4px 26px; }
-  nav.toc a { counter-increment:toc; display:flex; gap:10px; align-items:baseline;
-    text-decoration:none; color:var(--ink); padding:5px 0; font-size:15px; }
-  nav.toc a::before { content:counter(toc)"."; font-family:var(--font-serif); color:var(--accent-ink); font-weight:700; }
-  nav.toc a:hover { color:var(--accent-ink); }
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:6px 24px; }
+  nav.toc a { counter-increment:toc; display:flex; gap:11px; align-items:center;
+    text-decoration:none; color:var(--ink); padding:6px 0; font-size:15.5px; font-weight:600; }
+  nav.toc a::before { content:counter(toc); display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%; background:var(--surface-2); color:var(--teal-dark);
+    font-size:12px; font-weight:800; flex:none; }
+  nav.toc a:hover { color:var(--teal-dark); }
 
-  section { padding-top:46px; scroll-margin-top:20px; }
-  .kicker { font-family:var(--font-serif); font-style:italic; font-size:14.5px;
-    color:var(--faint); margin:0 0 6px; }
-  h2 { font-family:var(--font-serif); font-size:clamp(21px,3.2vw,25px); line-height:1.25;
-    font-weight:700; margin:0 0 20px; padding-bottom:12px; border-bottom:1px solid var(--hairline-strong);
-    text-wrap:balance; }
-  h2 .num { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px;
-    border:1.5px solid var(--accent); color:var(--accent-ink); font-family:var(--font-serif);
-    font-size:15px; font-weight:700; margin-right:12px; vertical-align:-6px; }
-  .intro { color:var(--ink); font-size:17.5px; margin:0 0 22px; max-width:60ch; }
-  h3 { font-family:var(--font-serif); font-size:17px; font-weight:700; margin:24px 0 10px; }
+  /* ---- sections ---- */
+  section { padding-top:52px; scroll-margin-top:20px; }
+  .kicker { font-weight:800; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--wa-dark); margin:0 0 8px; }
+  h2 { font-size:clamp(22px,3.4vw,27px); line-height:1.25; font-weight:800; letter-spacing:-.01em;
+    margin:0 0 8px; color:var(--ink); text-wrap:balance; }
+  h2 .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;
+    border-radius:50%; background:var(--teal-dark); color:#fff; font-size:15px; font-weight:800;
+    margin-right:12px; vertical-align:-7px; }
+  .intro { color:var(--muted); font-size:17.5px; margin:0 0 24px; max-width:60ch; }
+  h3 { font-size:17px; font-weight:800; margin:26px 0 10px; color:var(--ink); }
   p { margin:0 0 14px; }
 
   /* ---- flow ---- */
   .flow { display:flex; flex-direction:column; gap:0; margin:0; }
-  .flow-step { display:grid; grid-template-columns:36px 1fr; gap:16px; padding:15px 0;
-    position:relative; }
-  .flow-step:not(:last-child)::after { content:""; position:absolute; left:17px; top:42px;
-    bottom:-7px; width:1px; background:var(--hairline-strong); }
-  .flow-num { width:34px; height:34px; border:1.5px solid var(--accent); display:grid; place-items:center;
-    font-family:var(--font-serif); font-size:14.5px; font-weight:700; z-index:1;
-    background:var(--surface); color:var(--accent-ink); }
-  .flow-body strong { display:block; font-size:17px; margin-bottom:2px; }
+  .flow-step { display:grid; grid-template-columns:38px 1fr; gap:16px; padding:16px 0; position:relative; }
+  .flow-step:not(:last-child)::after { content:""; position:absolute; left:19px; top:44px;
+    bottom:-8px; width:2px; background:var(--hairline); }
+  .flow-num { width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
+    font-size:15px; font-weight:800; z-index:1; color:#fff; background:var(--teal-dark); }
+  .flow-step:last-child .flow-num { background:var(--wa); }
+  .flow-body strong { display:block; font-size:17px; margin-bottom:2px; color:var(--ink); }
   .flow-body span { color:var(--muted); font-size:15px; }
 
   /* ---- tables ---- */
-  .tbl-wrap { overflow-x:auto; margin:6px 0 4px; border:1px solid var(--hairline-strong); }
+  .tbl-wrap { overflow-x:auto; margin:6px 0 4px; border:1px solid var(--hairline); border-radius:14px; }
   table { width:100%; border-collapse:collapse; font-size:15.5px; min-width:400px; }
-  th, td { text-align:left; padding:13px 16px; border-bottom:1px solid var(--hairline); vertical-align:top; }
-  th { font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--faint); font-weight:600; background:var(--surface-2); }
+  th, td { text-align:left; padding:14px 18px; border-bottom:1px solid var(--hairline); vertical-align:top; }
+  th { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint);
+    font-weight:700; background:var(--surface-2); }
   tr:last-child td { border-bottom:none; }
-  td .t { font-weight:700; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
-  tr.total td { font-weight:700; background:var(--surface-2); border-top:1px solid var(--hairline-strong); }
-  tr.total .t { font-size:17px; color:var(--gold); }
+  td .t { font-weight:800; color:var(--teal-ink); font-variant-numeric:tabular-nums; }
+  tr.total td { font-weight:800; background:var(--surface-2); }
+  tr.total .t { font-size:18px; color:var(--wa-dark); }
 
-  /* ---- notification exhibit ---- */
-  .exhibit { border:1px solid var(--hairline-strong); background:var(--surface); }
-  .exhibit-head { background:var(--surface-2); padding:10px 18px; border-bottom:1px solid var(--hairline-strong);
-    font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); }
-  .exhibit-body { padding:18px; }
-  .exhibit-body dl { margin:0; display:grid; grid-template-columns:140px 1fr; gap:8px 14px; }
-  .exhibit-body dt { color:var(--faint); font-size:14px; }
-  .exhibit-body dd { margin:0; font-weight:600; font-size:15.5px; }
+  /* ---- whatsapp mock ---- */
+  .phone { max-width:340px; background:var(--surface); border-radius:20px; overflow:hidden;
+    box-shadow:var(--shadow); border:1px solid var(--hairline); }
+  .phone-head { background:var(--wa-dark); color:#fff; padding:14px 16px; display:flex;
+    align-items:center; gap:10px; font-weight:700; font-size:15px; }
+  .phone-head .ic { width:30px; height:30px; border-radius:50%; background:#fff; display:grid;
+    place-items:center; flex:none; }
+  .phone-body { background:#E8DFD3; padding:18px 14px; }
+  .bubble { background:var(--wa-bubble); border-radius:10px 10px 10px 2px; padding:12px 14px 8px;
+    max-width:92%; box-shadow:0 1px 1px rgba(0,0,0,.08); }
+  .bubble b { display:block; font-size:15px; margin-bottom:6px; color:#111; }
+  .bubble .row { font-size:14px; color:#222; margin-bottom:2px; }
+  .bubble .row b.k { font-weight:700; }
+  .bubble .time { display:flex; justify-content:flex-end; align-items:center; gap:4px;
+    margin-top:6px; font-size:11px; color:#5c8a6b; }
 
   /* ---- requirements ---- */
   .reqs { list-style:none; margin:0; padding:0; counter-reset:req; }
-  .reqs li { counter-increment:req; display:grid; grid-template-columns:32px 1fr; gap:14px;
+  .reqs li { counter-increment:req; display:grid; grid-template-columns:34px 1fr; gap:14px;
     padding:16px 0; border-bottom:1px solid var(--hairline); }
   .reqs li:last-child { border-bottom:none; }
-  .reqs li::before { content:counter(req); font-family:var(--font-serif); font-weight:700;
-    color:var(--accent-ink); border:1px solid var(--accent); width:28px; height:28px;
-    display:flex; align-items:center; justify-content:center; font-size:14px; }
-  .reqs b { font-weight:700; display:block; margin-bottom:3px; }
+  .reqs li::before { content:counter(req); display:flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%; background:var(--surface-2); color:var(--teal-dark);
+    font-weight:800; font-size:14px; }
+  .reqs b { font-weight:800; display:block; margin-bottom:3px; color:var(--ink); }
   .reqs span.d { color:var(--muted); font-size:14.5px; display:block; }
 
-  .note { background:var(--surface-2); border-left:3px solid var(--gold);
-    padding:16px 20px; margin:22px 0; font-size:15.5px; }
+  .note { display:grid; grid-template-columns:auto 1fr; gap:12px; background:var(--surface-2);
+    border-radius:14px; padding:16px 20px; margin:22px 0; font-size:15.5px; }
+  .note .ic { color:var(--wa-dark); font-weight:800; }
   .note b { color:var(--ink); }
 
-  footer { margin-top:56px; padding-top:20px; border-top:2px solid var(--ink);
-    font-family:var(--font-serif); font-size:14px; color:var(--muted); }
-  footer .val { font-family:var(--font-sans); font-size:13px; color:var(--faint); margin-top:6px; }
+  footer { margin-top:60px; padding-top:26px; border-top:1px solid var(--hairline);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  footer .val { font-size:13.5px; color:var(--faint); }
 
-  a:focus-visible, nav.toc a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  a:focus-visible, nav.toc a:focus-visible { outline:2px solid var(--teal-dark); outline-offset:3px; }
+  @media (max-width:520px){ .phone{ max-width:100%; } }
   @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
-  @media print { body{ background:#fff; } }
 </style>
 
 <div class="wrap">
 
-  <div class="letterhead">
-    <span class="brand">INFLUENCE CHILE</span>
-    <span class="ref">Propuesta N.° 08-2026</span>
+  <div class="topbar">
+    <div class="logo"><b>Influence</b><small>CHILE</small></div>
+    <span class="tagpill">Propuesta de servicio</span>
   </div>
 
   <header>
-    <p class="eyebrow">Propuesta de Servicios</p>
-    <h1>Sistema de Captación y Derivación Automática de Clientes por WhatsApp</h1>
-    <p class="lede">Un sistema que recibe a cada persona interesada a través de un anuncio, revisa si cumple el perfil que usted necesita, y le avisa a usted por WhatsApp únicamente cuando corresponde — sin que usted deba revisar nada de forma manual.</p>
+    <h1>Un sistema para que le lleguen clientes listos, directo a su WhatsApp</h1>
+    <p class="lede">Usted no revisa formularios ni aprende ninguna herramienta nueva. Nosotros armamos y mantenemos todo: el anuncio, el formulario y el filtro. A usted solo le llega un WhatsApp cuando aparece una persona que realmente le sirve.</p>
 
-    <div class="docinfo">
-      <dl>
-        <div><dt>Preparado para</dt><dd>Asesora Previsional</dd></div>
-        <div><dt>Preparado por</dt><dd>Influence Chile</dd></div>
-        <div><dt>Fecha de emisión</dt><dd>31 de agosto de 2026</dd></div>
-        <div><dt>Vigencia de la propuesta</dt><dd>30 días</dd></div>
-      </dl>
+    <div class="meta-row">
+      <span><i class="dot"></i>Asesora Previsional</span>
+      <span>31 de agosto de 2026</span>
+      <span>Propuesta válida por 30 días</span>
     </div>
 
     <nav class="toc" aria-label="Contenido">
       <ol>
-        <li><a href="#como-funciona">Funcionamiento del sistema</a></li>
-        <li><a href="#quien-califica">Criterio de calificación</a></li>
-        <li><a href="#aviso">Notificación de ejemplo</a></li>
-        <li><a href="#necesitamos">Requisitos previos</a></li>
-        <li><a href="#inversion">Inversión</a></li>
+        <li><a href="#como-funciona">Cómo funciona</a></li>
+        <li><a href="#quien-califica">Quién le va a llegar</a></li>
+        <li><a href="#aviso">Así se ve el aviso</a></li>
+        <li><a href="#necesitamos">Lo que necesitamos de usted</a></li>
+        <li><a href="#inversion">La inversión</a></li>
       </ol>
     </nav>
   </header>
 
   <section id="como-funciona">
-    <p class="kicker">Descripción general</p>
-    <h2><span class="num">1</span>Funcionamiento del sistema</h2>
-    <p class="intro">El proceso consta de cuatro etapas sucesivas y completamente automáticas. Ninguna de ellas requiere intervención manual de su parte.</p>
+    <p class="kicker">En simple</p>
+    <h2><span class="num">1</span>Cómo funciona</h2>
+    <p class="intro">Cuatro pasos, uno detrás del otro, todos automáticos. Usted no hace ninguno a mano.</p>
 
     <div class="flow">
-      <div class="flow-step"><div class="flow-num">1</div><div class="flow-body"><strong>Publicación del anuncio</strong><span>Se publica en Facebook e Instagram, dirigido a personas con el perfil que usted define.</span></div></div>
-      <div class="flow-step"><div class="flow-num">2</div><div class="flow-body"><strong>Formulario de contacto</strong><span>La persona interesada completa sus datos: nombre, WhatsApp y renta líquida aproximada.</span></div></div>
-      <div class="flow-step"><div class="flow-num">3</div><div class="flow-body"><strong>Verificación automática</strong><span>El sistema evalúa si la renta declarada cumple el mínimo establecido, de manera uniforme para cada caso.</span></div></div>
-      <div class="flow-step"><div class="flow-num">4</div><div class="flow-body"><strong>Notificación a usted</strong><span>Cuando corresponde, usted recibe un mensaje de WhatsApp con los datos de esa persona, lista para ser contactada.</span></div></div>
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-body"><strong>Publicamos un anuncio en Facebook e Instagram</strong><span>Dirigido a las personas con el perfil que a usted le sirve para su asesoría.</span></div></div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-body"><strong>La persona interesada completa un formulario corto</strong><span>Su nombre, su WhatsApp y su renta aproximada — nada más.</span></div></div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-body"><strong>El sistema revisa si cumple el requisito de renta</strong><span>Siempre con la misma regla — nadie lo revisa a mano, así que nunca se le escapa uno ni le llega alguien que no corresponde.</span></div></div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-body"><strong>Si cumple, a usted le llega un WhatsApp al instante</strong><span>Con los datos de esa persona, lista para que usted la contacte y parta la conversación.</span></div></div>
     </div>
 
-    <div class="note">Cuando una persona no cumple el requisito, no se genera ninguna notificación. Ese registro queda archivado, por si resultara de utilidad para una gestión futura.</div>
+    <div class="note"><div class="ic">＋</div><div>Si la persona <b>no cumple</b> el requisito, a usted no le llega nada — no le hace perder tiempo. Ese contacto queda guardado en una lista, por si más adelante le sirve.</div></div>
   </section>
 
   <section id="quien-califica">
-    <p class="kicker">La condición del servicio</p>
-    <h2><span class="num">2</span>Criterio de calificación</h2>
-    <p class="intro">La notificación se genera exclusivamente cuando la persona declara una renta líquida mensual de <b>$2.000.000 o superior</b>. Este umbral fue definido en conjunto con usted y puede ajustarse antes de la puesta en marcha.</p>
+    <p class="kicker">El filtro</p>
+    <h2><span class="num">2</span>Quién le va a llegar</h2>
+    <p class="intro">Solo le avisamos cuando la persona declara una renta líquida de <b>$2.000.000 al mes o más</b>. Es el número que conversamos — si prefiere otro monto, lo cambiamos antes de partir.</p>
 
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Renta declarada</th><th>Resultado</th></tr></thead>
+        <thead><tr><th>Renta que declara</th><th>Qué pasa</th></tr></thead>
         <tbody>
-          <tr><td><b>$2.000.000 o superior</b></td><td>Se envía la notificación a usted de inmediato.</td></tr>
-          <tr><td>Inferior a $2.000.000</td><td>No se envía notificación. El registro queda archivado.</td></tr>
+          <tr><td><b>$2.000.000 o más</b></td><td>Le llega el WhatsApp a usted de inmediato.</td></tr>
+          <tr><td>Menos de $2.000.000</td><td>No le avisamos. Solo queda guardado en la lista.</td></tr>
         </tbody>
       </table>
     </div>
 
-    <p>La renta se solicita por tramos, no como cifra exacta, y este dato se utiliza únicamente para determinar si corresponde notificarle a usted. En ningún caso se comparte con terceros.</p>
+    <p>Le pedimos la renta en rangos, no el monto exacto, y ese dato solo se usa para decidir si le avisamos a usted. Nunca se comparte con nadie más.</p>
   </section>
 
   <section id="aviso">
-    <p class="kicker">Ejemplo concreto</p>
-    <h2><span class="num">3</span>Notificación de ejemplo</h2>
-    <p class="intro">A continuación se muestra, a modo de referencia, el mensaje exacto que usted recibiría por WhatsApp cuando una persona cumpla el criterio de calificación.</p>
+    <p class="kicker">Concreto</p>
+    <h2><span class="num">3</span>Así se ve el aviso que le llega</h2>
+    <p class="intro">Este es, tal cual, el mensaje que va a recibir en su WhatsApp cada vez que aparezca alguien que califica.</p>
 
-    <div class="exhibit">
-      <div class="exhibit-head">Mensaje automático de WhatsApp</div>
-      <div class="exhibit-body">
-        <dl>
-          <dt>Asunto</dt><dd>Nuevo contacto calificado</dd>
-          <dt>Nombre</dt><dd>María Pérez</dd>
-          <dt>WhatsApp</dt><dd>+56 9 1234 5678</dd>
-          <dt>Renta declarada</dt><dd>$2.000.000 o más</dd>
-          <dt>Fecha y hora</dt><dd>31-08-2026, 10:32 h</dd>
-        </dl>
+    <div class="phone">
+      <div class="phone-head">
+        <span class="ic">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M16 4C9.4 4 4 9.4 4 16c0 2.4.7 4.6 1.9 6.5L4.5 28l5.7-1.4C12 27.6 13.9 28 16 28c6.6 0 12-5.4 12-12S22.6 4 16 4Z" fill="#25D366"/><path d="M11.7 10.3c.3-.6.6-.6.9-.6h.7c.2 0 .5 0 .7.5.3.6 1 2 1 2.1.1.2.1.4 0 .6-.1.2-.2.3-.4.5-.2.2-.4.4-.5.6-.2.2-.4.4-.2.7.2.4 1 1.5 2.1 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.2.8-.1.2-.3.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 1 2.4 1.2.4.2.6.3.7.4.1.2.1 1-.3 2-.4 1-2.2 1.9-3 2-1 .1-1.8.1-3.6-.6-3-1.2-5-4.2-5.1-4.4-.2-.2-1.2-1.6-1.2-3.1 0-1.5.8-2.2 1-2.5Z" fill="#fff"/></svg>
+        </span>
+        WhatsApp — Usted
+      </div>
+      <div class="phone-body">
+        <div class="bubble">
+          <b>🔔 Nuevo cliente interesado</b>
+          <p class="row"><b class="k">Nombre:</b> María Pérez</p>
+          <p class="row"><b class="k">WhatsApp:</b> +56 9 1234 5678</p>
+          <p class="row"><b class="k">Renta declarada:</b> $2.000.000 o más</p>
+          <div class="time">10:32 <span style="color:var(--wa-check);">✓✓</span></div>
+        </div>
       </div>
     </div>
 
-    <p style="margin-top:20px;">A partir de esa notificación, usted se comunica directamente con la persona interesada e inicia la conversación por su cuenta.</p>
+    <p style="margin-top:22px;">Desde ahí, usted escribe directo a esa persona por WhatsApp y parte la conversación — igual que si le hubiera llegado por recomendación de un conocido.</p>
   </section>
 
   <section id="necesitamos">
-    <p class="kicker">Antes de la puesta en marcha</p>
-    <h2><span class="num">4</span>Requisitos previos</h2>
-    <p class="intro">La totalidad del desarrollo técnico está a cargo de Influence Chile. De su parte se requieren únicamente los siguientes cuatro puntos.</p>
+    <p class="kicker">Antes de partir</p>
+    <h2><span class="num">4</span>Lo que necesitamos de usted</h2>
+    <p class="intro">Todo lo técnico lo armamos nosotros. Solo necesitamos que usted haga estas cuatro cosas — ninguna requiere saber de tecnología.</p>
 
     <ol class="reqs">
-      <li><b>Número de WhatsApp exclusivo para el negocio</b><span class="d">Distinto del que usted utiliza en su vida personal. Nuestro equipo la acompaña en la activación; el trámite es gratuito y toma algunos días.</span></li>
-      <li><b>Vigencia de su inscripción como Asesora Previsional</b><span class="d">Ante la Comisión para el Mercado Financiero (CMF). Es un requisito para que Meta apruebe la publicación del anuncio.</span></li>
-      <li><b>Revisión y aprobación del texto definitivo</b><span class="d">Del anuncio y del formulario, antes de su publicación.</span></li>
-      <li><b>Confirmación del monto mínimo de renta</b><span class="d">Se sugiere $2.000.000; la decisión final corresponde a usted.</span></li>
+      <li><b>Un número de WhatsApp exclusivo para el negocio</b><span class="d">Distinto al que usa para hablar con su familia. Nosotros la guiamos paso a paso para activarlo — es gratis y toma unos días.</span></li>
+      <li><b>Confirmar que su inscripción como asesora previsional esté vigente</b><span class="d">Ante la Comisión para el Mercado Financiero (CMF), para que Meta apruebe el anuncio sin problemas.</span></li>
+      <li><b>Revisar y aprobar el texto final del anuncio y del formulario</b><span class="d">Se lo mostramos antes de publicar nada — usted da el visto bueno.</span></li>
+      <li><b>Confirmarnos el monto mínimo de renta que quiere pedir</b><span class="d">Le sugerimos $2.000.000, pero la decisión final es suya.</span></li>
     </ol>
   </section>
 
   <section id="inversion">
-    <p class="kicker">Detalle económico</p>
-    <h2><span class="num">5</span>Inversión</h2>
-    <p class="intro">La inversión se compone de un pago único de instalación y un abono mensual de mantención. A continuación, el detalle de cada concepto.</p>
+    <p class="kicker">Costo del servicio</p>
+    <h2><span class="num">5</span>La inversión</h2>
+    <p class="intro">Un pago único para dejar todo instalado, y una mensualidad para mantenerlo funcionando. Aquí el detalle de en qué se va cada peso.</p>
 
     <h3>Instalación · pago único</h3>
     <div class="tbl-wrap">
       <table>
         <tbody>
-          <tr><td>Configuración de la campaña en Meta Ads</td><td><span class="t">$150.000</span></td></tr>
-          <tr><td>Desarrollo del formulario de calificación</td><td><span class="t">$60.000</span></td></tr>
-          <tr><td>Configuración del sistema de verificación y notificación</td><td><span class="t">$100.000</span></td></tr>
-          <tr><td>Habilitación y aprobación de la plantilla de WhatsApp</td><td><span class="t">$40.000</span></td></tr>
+          <tr><td>Armado de la campaña en Meta Ads</td><td><span class="t">$150.000</span></td></tr>
+          <tr><td>Formulario con la pregunta de renta</td><td><span class="t">$60.000</span></td></tr>
+          <tr><td>Automatización (conecta el formulario, el filtro y el aviso)</td><td><span class="t">$100.000</span></td></tr>
+          <tr><td>Plantilla de WhatsApp y aprobación ante Meta</td><td><span class="t">$40.000</span></td></tr>
           <tr class="total"><td>Total instalación</td><td><span class="t">$350.000</span></td></tr>
         </tbody>
       </table>
     </div>
 
-    <h3>Mantención mensual</h3>
+    <h3>Mensualidad</h3>
     <div class="tbl-wrap">
       <table>
         <tbody>
           <tr><td>Gestión y optimización de la campaña en Meta Ads</td><td><span class="t">$150.000</span></td></tr>
-          <tr><td>Mantención del sistema de verificación y notificación</td><td><span class="t">$40.000</span></td></tr>
+          <tr><td>Mantención de la automatización y del aviso por WhatsApp</td><td><span class="t">$40.000</span></td></tr>
           <tr class="total"><td>Total mensual</td><td><span class="t">$190.000</span></td></tr>
         </tbody>
       </table>
     </div>
-    <p style="margin-top:14px;">El valor de gestión de Meta Ads corresponde a la tarifa habitual de Influence Chile. El componente de mantención es acotado, dado que el desarrollo del sistema ya se encuentra cubierto por el pago de instalación; la labor mensual consiste en su supervisión y ajustes menores.</p>
+    <p style="margin-top:14px;">La gestión de Meta Ads es la misma tarifa de siempre. Lo único nuevo es la mantención de la automatización, y es baja porque el trabajo grande ya está pagado en la instalación — en el mes a mes solo hay que revisarla y hacer ajustes menores.</p>
 
-    <div class="note">La inversión publicitaria en Meta (Facebook e Instagram) se paga directamente a esa plataforma, no a Influence Chile, y su monto queda a criterio de usted según el volumen de contactos que desee generar. Valores expresados <b>más IVA</b>.</div>
+    <div class="note"><div class="ic">i</div><div>Aparte de esto está lo que se gasta en publicidad en Meta — eso se paga directo a Meta, no a nosotros, y usted decide cuánto invertir según cuántos contactos quiera recibir al mes. Valores <b>más IVA</b>.</div></div>
   </section>
 
   <footer>
-    <p>Influence Chile — Agencia de Marketing</p>
-    <p class="val">influencechile.cl · contacto@influencechile.com · +56 9 6545 0723</p>
+    <div class="logo"><b>Influence</b><small>CHILE</small></div>
+    <span class="val">influencechile.cl · contacto@influencechile.com · +56 9 6545 0723</span>
   </footer>
 
 </div>
