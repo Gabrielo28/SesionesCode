@@ -1,0 +1,462 @@
+<title>Sistema de captación y filtro de leads por Meta Ads</title>
+<style>
+  :root {
+    --paper:#FBF9F6; --surface:#FFFFFF; --surface-2:#F4F1EB;
+    --ink:#1B1822; --muted:#6B6577; --faint:#948DA0;
+    --hairline:#E7E2DA; --hairline-strong:#D8D2C7;
+    --accent:#E23E6B; --accent-ink:#B12851; --accent-wash:#FBE9EF;
+    --c-ads:#2F6FED; --c-form:#7A4FD0; --c-db:#C87A18; --c-wa:#1B9E58;
+    --c-ads-wash:#E7EFFE; --c-form-wash:#EFEAFB; --c-db-wash:#FBF0DE; --c-wa-wash:#E4F5EC;
+    --shadow:0 1px 2px rgba(27,24,34,.04), 0 8px 24px rgba(27,24,34,.05);
+    --font-sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:"Cascadia Code",ui-monospace,Consolas,"SF Mono",Menlo,monospace;
+    --measure:730px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#15131A; --surface:#1E1B25; --surface-2:#26222F;
+      --ink:#F2EEE8; --muted:#A79FB2; --faint:#7C7488;
+      --hairline:#2E2A38; --hairline-strong:#3A3547;
+      --accent:#FF6088; --accent-ink:#FF83A2; --accent-wash:#2A1720;
+      --c-ads:#79A6FF; --c-form:#B79BF0; --c-db:#EEB25C; --c-wa:#54C98A;
+      --c-ads-wash:#141F32; --c-form-wash:#221B33; --c-db-wash:#2A2213; --c-wa-wash:#122A1E;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#FBF9F6; --surface:#FFFFFF; --surface-2:#F4F1EB;
+    --ink:#1B1822; --muted:#6B6577; --faint:#948DA0;
+    --hairline:#E7E2DA; --hairline-strong:#D8D2C7;
+    --accent:#E23E6B; --accent-ink:#B12851; --accent-wash:#FBE9EF;
+    --c-ads:#2F6FED; --c-form:#7A4FD0; --c-db:#C87A18; --c-wa:#1B9E58;
+    --c-ads-wash:#E7EFFE; --c-form-wash:#EFEAFB; --c-db-wash:#FBF0DE; --c-wa-wash:#E4F5EC;
+    --shadow:0 1px 2px rgba(27,24,34,.04), 0 8px 24px rgba(27,24,34,.05);
+  }
+  :root[data-theme="dark"] {
+    --paper:#15131A; --surface:#1E1B25; --surface-2:#26222F;
+    --ink:#F2EEE8; --muted:#A79FB2; --faint:#7C7488;
+    --hairline:#2E2A38; --hairline-strong:#3A3547;
+    --accent:#FF6088; --accent-ink:#FF83A2; --accent-wash:#2A1720;
+    --c-ads:#79A6FF; --c-form:#B79BF0; --c-db:#EEB25C; --c-wa:#54C98A;
+    --c-ads-wash:#141F32; --c-form-wash:#221B33; --c-db-wash:#2A2213; --c-wa-wash:#122A1E;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--font-sans); line-height:1.65; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:var(--measure); margin:0 auto; padding:0 24px 96px; }
+
+  header { padding:64px 0 40px; border-bottom:1px solid var(--hairline); }
+  .eyebrow { font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent-ink); margin:0 0 18px; font-weight:600; }
+  h1 { font-size:clamp(30px,5vw,46px); line-height:1.08; letter-spacing:-.02em;
+    font-weight:800; margin:0; text-wrap:balance; }
+  .lede { font-size:19px; color:var(--muted); margin:18px 0 0; max-width:56ch; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:26px;
+    font-family:var(--font-mono); font-size:12.5px; color:var(--faint); letter-spacing:.02em; }
+  .meta span { display:inline-flex; align-items:center; gap:7px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; }
+
+  nav.toc { margin:34px 0 0; }
+  nav.toc ol { list-style:none; margin:0; padding:0; counter-reset:toc;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:2px 26px; }
+  nav.toc a { counter-increment:toc; display:flex; gap:12px; align-items:baseline;
+    text-decoration:none; color:var(--ink); padding:8px 0; border-bottom:1px solid transparent;
+    font-size:15px; transition:color .15s; }
+  nav.toc a::before { content:counter(toc,decimal-leading-zero);
+    font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  nav.toc a:hover { color:var(--accent-ink); }
+
+  section { padding-top:60px; scroll-margin-top:24px; }
+  .kicker { font-family:var(--font-mono); font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--faint); margin:0 0 10px; }
+  h2 { font-size:clamp(23px,3.4vw,30px); line-height:1.15; letter-spacing:-.015em;
+    font-weight:750; margin:0 0 8px; text-wrap:balance; }
+  h2 .num { color:var(--accent); font-family:var(--font-mono); font-size:.62em;
+    font-weight:600; margin-right:12px; vertical-align:2px; }
+  .intro { color:var(--muted); font-size:17px; margin:0 0 26px; max-width:62ch; }
+  h3 { font-size:17px; font-weight:700; margin:30px 0 10px; letter-spacing:-.01em; }
+  p { margin:0 0 14px; }
+  a.inline { color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px;
+    text-decoration-thickness:1px; text-decoration-color:var(--hairline-strong); }
+
+  .flow { display:flex; flex-direction:column; gap:0; margin:0; }
+  .flow-step { display:grid; grid-template-columns:34px 1fr; gap:16px; padding:14px 0;
+    position:relative; }
+  .flow-step:not(:last-child)::after { content:""; position:absolute; left:16px; top:40px;
+    bottom:-6px; width:2px; background:var(--hairline); }
+  .flow-num { width:33px; height:33px; border-radius:50%; display:grid; place-items:center;
+    font-family:var(--font-mono); font-size:14px; font-weight:600; z-index:1;
+    background:var(--surface); border:2px solid var(--accent); color:var(--accent-ink); }
+  .flow-body strong { display:block; font-size:16px; }
+  .flow-body span { color:var(--muted); font-size:14.5px; }
+
+  .chip { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono);
+    font-size:11.5px; font-weight:600; letter-spacing:.02em; padding:3px 9px; border-radius:999px;
+    border:1px solid; white-space:nowrap; }
+  .chip::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .chip.ads  { color:var(--c-ads);  background:var(--c-ads-wash);  border-color:var(--c-ads); }
+  .chip.form { color:var(--c-form); background:var(--c-form-wash); border-color:var(--c-form); }
+  .chip.db   { color:var(--c-db);   background:var(--c-db-wash);   border-color:var(--c-db); }
+  .chip.wa   { color:var(--c-wa);   background:var(--c-wa-wash);   border-color:var(--c-wa); }
+
+  .cards { display:grid; grid-template-columns:1fr; gap:16px; }
+  .card { background:var(--surface); border:1px solid var(--hairline); border-radius:14px;
+    padding:22px 22px 24px; box-shadow:var(--shadow); }
+  .card h3 { margin:0 0 4px; font-size:18px; }
+  .card .tag { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--faint); }
+  .card ul { margin:14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .card li { display:flex; gap:10px; font-size:14.5px; color:var(--muted); }
+  .card li b { color:var(--ink); font-weight:600; }
+  .prc { font-family:var(--font-mono); font-size:13px; color:var(--ink); }
+  .best { margin-top:16px; padding-top:14px; border-top:1px dashed var(--hairline-strong);
+    font-size:14px; }
+  .best b { color:var(--accent-ink); }
+  .rec-flag { display:inline-block; font-family:var(--font-mono); font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase; font-weight:700; color:#fff;
+    background:var(--accent); padding:2px 8px; border-radius:6px; margin-left:8px; vertical-align:2px; }
+
+  .step { display:grid; grid-template-columns:1fr; gap:6px; padding:20px 0;
+    border-bottom:1px solid var(--hairline); }
+  .step-head { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .step-head .n { font-family:var(--font-mono); font-weight:700; color:var(--accent);
+    font-size:15px; }
+  .step-head h3 { margin:0; font-size:17px; }
+  .step p { margin:2px 0 0; color:var(--muted); font-size:15px; }
+  .state { font-family:var(--font-mono); font-size:12px; color:var(--faint); }
+  .state b { color:var(--ink); background:var(--surface-2); padding:1px 7px; border-radius:5px;
+    font-weight:600; border:1px solid var(--hairline); }
+
+  .tbl-wrap { overflow-x:auto; margin:6px 0 4px; border:1px solid var(--hairline);
+    border-radius:12px; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; min-width:480px; }
+  th, td { text-align:left; padding:12px 16px; border-bottom:1px solid var(--hairline);
+    vertical-align:top; }
+  th { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; background:var(--surface-2); }
+  tr:last-child td { border-bottom:none; }
+  td .t { font-family:var(--font-mono); color:var(--accent-ink); font-weight:600;
+    font-variant-numeric:tabular-nums; }
+
+  .copy { background:var(--surface); border:1px solid var(--hairline); border-radius:12px;
+    padding:0; overflow:hidden; box-shadow:var(--shadow); }
+  .copy + .copy { margin-top:16px; }
+  .copy-head { display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:12px 18px; background:var(--surface-2); border-bottom:1px solid var(--hairline); }
+  .copy-head .lbl { font-weight:700; font-size:14.5px; }
+  .copy-body { padding:18px; font-size:15px; }
+  .copy-body .subj { font-family:var(--font-mono); font-size:13px; color:var(--muted);
+    margin:0 0 12px; padding-bottom:12px; border-bottom:1px dashed var(--hairline-strong); }
+  .copy-body .subj b { color:var(--ink); }
+
+  .fields { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px;
+    margin:0 0 20px; padding:0; list-style:none; }
+  .fields li { background:var(--surface); border:1px solid var(--hairline); border-radius:10px;
+    padding:11px 14px; font-size:14.5px; display:flex; flex-direction:column; gap:2px; }
+  .fields .fl { font-weight:600; }
+  .fields .fh { font-size:12.5px; color:var(--faint); font-family:var(--font-mono); }
+  .req { color:var(--accent); }
+  .consent { background:var(--accent-wash); border:1px solid var(--accent);
+    border-radius:12px; padding:16px 18px; font-size:14.5px; }
+  .consent .lbl { font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent-ink); font-weight:700; display:block; margin-bottom:8px; }
+
+  .note { display:grid; grid-template-columns:auto 1fr; gap:14px; background:var(--surface-2);
+    border:1px solid var(--hairline); border-left:3px solid var(--accent); border-radius:10px;
+    padding:16px 18px; margin:20px 0; font-size:14.5px; }
+  .note .ic { font-family:var(--font-mono); font-weight:800; color:var(--accent);
+    font-size:16px; line-height:1.5; }
+  .note b { color:var(--ink); }
+
+  .check { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .check li { display:grid; grid-template-columns:24px 1fr; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--hairline); font-size:15px; align-items:baseline; }
+  .check li:last-child { border-bottom:none; }
+  .check .box { width:17px; height:17px; border:2px solid var(--hairline-strong);
+    border-radius:5px; margin-top:3px; }
+  .check li b { font-weight:600; }
+  .check li span { color:var(--muted); font-size:13.5px; display:block; }
+
+  footer { margin-top:64px; padding-top:24px; border-top:1px solid var(--hairline);
+    font-size:13px; color:var(--faint); display:flex; justify-content:space-between;
+    flex-wrap:wrap; gap:8px; font-family:var(--font-mono); letter-spacing:.02em; }
+
+  a:focus-visible, nav.toc a:focus-visible { outline:2px solid var(--accent); outline-offset:3px;
+    border-radius:4px; }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Propuesta de automatización · Captación de leads</p>
+    <h1>Sistema de captación y filtro de leads por Meta Ads</h1>
+    <p class="lede">Un embudo de cuatro pasos: el anuncio en Meta lleva a un formulario, el formulario filtra automáticamente por renta, cada lead queda registrado en una base de datos, y solo los que califican llegan por WhatsApp a [nombre de tu clienta] — lista la conversación, sin que ella revise nada a mano.</p>
+    <div class="meta">
+      <span><i class="dot"></i>[Nombre del negocio / clienta]</span>
+      <span>Propuesta de alcance acotado v1</span>
+      <span>31 ago 2026</span>
+    </div>
+
+    <nav class="toc" aria-label="Contenido">
+      <ol>
+        <li><a href="#resumen">Cómo funciona, en resumen</a></li>
+        <li><a href="#plataformas">Con qué plataforma montarlo</a></li>
+        <li><a href="#flujo">El flujo, paso a paso</a></li>
+        <li><a href="#calificacion">La regla de calificación</a></li>
+        <li><a href="#formulario">Formulario y consentimiento</a></li>
+        <li><a href="#textos">Anuncio, formulario y mensaje de WhatsApp</a></li>
+        <li><a href="#legal">Reglas técnicas y legales</a></li>
+        <li><a href="#costos">Costo mensual estimado</a></li>
+        <li><a href="#checklist">Checklist de puesta en marcha</a></li>
+      </ol>
+    </nav>
+  </header>
+
+  <section id="resumen">
+    <p class="kicker">Vista general</p>
+    <h2><span class="num">01</span>Cómo funciona, en resumen</h2>
+    <p class="intro">Cuatro pasos encadenados, sin intervención manual entre uno y otro. Los canales van marcados por color: <span class="chip ads">meta ads</span> <span class="chip form">formulario</span> <span class="chip db">base de datos</span> <span class="chip wa">whatsApp</span></p>
+
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-body"><strong>Se publica el anuncio en Meta Ads</strong><span>Facebook / Instagram, apuntando al formulario en vez de a un perfil o catálogo.</span></div></div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-body"><strong>El anuncio deriva a un formulario</strong><span>La persona interesada completa sus datos y responde la pregunta de renta.</span></div></div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-body"><strong>Filtro automático de calificación</strong><span>Se evalúa la respuesta: renta líquida ≥ $2.000.000 → califica. Menor a eso → no sirve para este servicio.</span></div></div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-body"><strong>Todo lead queda en la base de datos</strong><span>Califique o no, cada registro se guarda con su resultado (para métricas, remarketing y auditoría).</span></div></div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-body"><strong>Solo los que califican van por WhatsApp</strong><span>Le llega a [nombre de tu clienta] un mensaje con los datos del lead, listo para que ella lo contacte.</span></div></div>
+    </div>
+
+    <div class="note">
+      <div class="ic">→</div>
+      <div>Este es un alcance <b>acotado a propósito</b>: no incluye agente de calificación conversacional, agenda automática ni secuencias de re-contacto (eso existe como servicio aparte, ver nota al final). Aquí el objetivo único es: <b>anuncio → formulario → filtro → base de datos → aviso a la clienta.</b></div>
+    </div>
+  </section>
+
+  <section id="plataformas">
+    <p class="kicker">Decisión de herramienta</p>
+    <h2><span class="num">02</span>Con qué plataforma montarlo</h2>
+    <p class="intro">Hay dos formas de resolver el formulario, y la elección cambia todo lo demás: el <b>formulario nativo de Meta</b> (Instant Form / Lead Ads) es más barato por lead, pero no puede mostrarle un mensaje distinto a quien no califica. Una <b>landing propia con formulario externo</b> sí puede — y es la que recomendamos para este caso, porque la calificación es el corazón del servicio.</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Ruta A · Landing propia + formulario externo</span>
+        <h3>Página de aterrizaje + Tally o Typeform<span class="rec-flag">Recomendada</span></h3>
+        <ul>
+          <li><b>Por qué</b> — El formulario puede ramificar en el momento: si la renta declarada es menor a $2.000.000, muestra un mensaje de cierre distinto («gracias, en este momento no tenemos algo para tu perfil») en vez de fingir que sigue en carrera.</li>
+          <li><b>Costo</b> — <span class="prc">Tally: gratis casi sin límites · Typeform: gratis hasta 10 respuestas/mes, luego ≈ US$25/mes</span></li>
+          <li><b>Filtro</b> — Lo hace el propio formulario (lógica condicional) y lo reconfirma el automatizador antes de guardar y avisar.</li>
+          <li><b>Punto débil</b> — El costo por lead en el anuncio suele ser algo más alto que con Instant Form, porque exige salir de Meta y cargar una página.</li>
+        </ul>
+        <p class="best"><b>Mejor si:</b> te importa que la experiencia del formulario ya comunique la calificación, y quieres control total sobre las preguntas.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">Ruta B · Formulario nativo de Meta</span>
+        <h3>Instant Form (Lead Ads)</h3>
+        <ul>
+          <li><b>Por qué</b> — Se completa sin salir de Instagram/Facebook, con los datos ya precargados (nombre, teléfono) → mejor tasa de conversión y menor costo por lead.</li>
+          <li><b>Costo</b> — <span class="prc">Sin costo de plataforma; solo el gasto publicitario</span></li>
+          <li><b>Filtro</b> — Se agrega la pregunta de renta como respuesta de opción múltiple (ej. «Menos de $2.000.000» / «$2.000.000 o más»); el filtro real ocurre después, en la automatización, no en el formulario.</li>
+          <li><b>Punto débil</b> — Todos los que completan el formulario ven el mismo mensaje de cierre genérico de Meta, califiquen o no.</li>
+        </ul>
+        <p class="best"><b>Mejor si:</b> priorizas el menor costo por lead posible y no te importa que el filtro sea invisible para quien no calificó.</p>
+      </div>
+    </div>
+
+    <h3>Las otras piezas del sistema</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Pieza</th><th>Herramienta</th><th>Para qué</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Automatizador</b></td><td>Make.com (o Zapier)</td><td>Recibe la respuesta del formulario, aplica la regla de renta, escribe en la base de datos y — solo si califica — dispara el WhatsApp.</td></tr>
+          <tr><td><b>Base de datos</b></td><td>Google Sheets o Airtable</td><td>Una fila por lead, con su resultado (califica / no) y la fecha. Sirve para reportar y para armar públicos de remarketing.</td></tr>
+          <tr><td><b>Envío de WhatsApp</b></td><td>Módulo WhatsApp de Make, o Twilio</td><td>Manda el aviso al número de [nombre de tu clienta] con los datos del lead ya calificado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div class="ic">✓</div>
+      <div><b>Recomendación:</b> arranca con <b>Ruta A</b> (landing + Tally) + <b>Make.com</b> + <b>Google Sheets</b> + envío de WhatsApp por Make. Es la combinación más barata que igual permite mostrarle un cierre distinto a quien no califica, y todo el filtro queda en un solo lugar (el escenario de Make), fácil de ajustar si el umbral de renta cambia.</div>
+    </div>
+  </section>
+
+  <section id="flujo">
+    <p class="kicker">El recorrido del lead</p>
+    <h2><span class="num">03</span>El flujo, paso a paso</h2>
+    <p class="intro">Qué pasa exactamente en cada punto, y qué registra el sistema.</p>
+
+    <div class="step">
+      <div class="step-head"><span class="n">1</span><span class="chip ads">meta ads</span><h3>Anuncio en Meta Ads</h3></div>
+      <p>Campaña de conversión/tráfico en Facebook e Instagram con el botón de la publicación apuntando directo a la landing del formulario (no al perfil ni al catálogo).</p>
+      <p class="state">Estado → <b>Impresión / clic</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">2</span><span class="chip form">formulario</span><h3>Encuesta / formulario</h3></div>
+      <p>La persona completa nombre, contacto y la pregunta de renta líquida (en tramos, no en texto libre, para que el filtro sea exacto y sin ambigüedad).</p>
+      <p class="state">Estado → <b>Lead recibido</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">3</span><span class="chip db">base de datos</span><h3>Filtro y registro</h3></div>
+      <p>El automatizador evalúa la respuesta contra la regla (≥ $2.000.000 → califica) y escribe la fila en la base de datos con el resultado, tanto si califica como si no.</p>
+      <p class="state">Estado → <b>Calificado</b> o <b>No califica</b></p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="n">4</span><span class="chip wa">whatsApp</span><h3>Aviso a [nombre de tu clienta]</h3></div>
+      <p>Solo si el resultado es «Calificado», se dispara un WhatsApp a [nombre de tu clienta] con nombre, contacto y renta declarada del lead. Los que no califican no generan ningún aviso — quedan solo en la base de datos.</p>
+      <p class="state">Estado → <b>Notificado</b></p>
+    </div>
+  </section>
+
+  <section id="calificacion">
+    <p class="kicker">El corazón del sistema</p>
+    <h2><span class="num">04</span>La regla de calificación</h2>
+    <p class="intro">Una sola condición, aplicada siempre de la misma forma para que no dependa de criterio humano.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Respuesta del lead</th><th>Resultado</th><th>Qué pasa</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Renta líquida <b>≥ $2.000.000</b></td>
+            <td><span class="t">Califica</span></td>
+            <td>Se guarda en la base de datos y se envía el WhatsApp a [nombre de tu clienta] de inmediato.</td>
+          </tr>
+          <tr>
+            <td>Renta líquida <b>&lt; $2.000.000</b></td>
+            <td><span class="t">No califica</span></td>
+            <td>Se guarda en la base de datos (sin avisar por WhatsApp). Sirve para medir el costo por lead calificado y para excluir a este perfil de futuras campañas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div class="ic">!</div>
+      <div><b>Falta confirmar:</b> la moneda del umbral (se asume <b>pesos chilenos, mensual</b> — ajústalo si es otra moneda o periodicidad) y si «$2.000.000» es un piso único o hay otros filtros adicionales (edad, comuna, tipo de renta) que también deban aplicarse en el mismo paso.</div>
+    </div>
+  </section>
+
+  <section id="formulario">
+    <p class="kicker">La puerta de entrada</p>
+    <h2><span class="num">05</span>Formulario y consentimiento</h2>
+    <p class="intro">Campos mínimos para calificar y poder contactar. La renta es un dato sensible: se pide en tramos, nunca como monto exacto libre, y solo se usa para la calificación.</p>
+
+    <ul class="fields">
+      <li><span class="fl">Nombre y apellido <span class="req">*</span></span><span class="fh">texto</span></li>
+      <li><span class="fl">WhatsApp / teléfono <span class="req">*</span></span><span class="fh">+56 9 · con código país</span></li>
+      <li><span class="fl">Correo</span><span class="fh">email · opcional</span></li>
+      <li><span class="fl">Renta líquida mensual <span class="req">*</span></span><span class="fh">opción múltiple: menos de $2.000.000 / $2.000.000 o más</span></li>
+      <li><span class="fl">Comuna o ciudad</span><span class="fh">texto · opcional, si aplica al servicio</span></li>
+    </ul>
+
+    <div class="consent">
+      <span class="lbl">Casilla de consentimiento · obligatoria</span>
+      ☑ «Autorizo a [nombre de tu clienta / empresa] a contactarme por WhatsApp y a tratar mis datos personales, incluida la información de renta que declaro aquí, para evaluar mi solicitud, conforme a la Ley N.º 19.628. Puedo solicitar su eliminación cuando lo desee.»
+    </div>
+  </section>
+
+  <section id="textos">
+    <p class="kicker">Copys listos para usar</p>
+    <h2><span class="num">06</span>Anuncio, formulario y mensaje de WhatsApp</h2>
+    <p class="intro">Borradores para cargar tal cual y ajustar al tono de [nombre de tu clienta]. Reemplaza los corchetes por los datos reales.</p>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Pregunta de calificación · Formulario</span><span class="chip form">formulario</span></div>
+      <div class="copy-body">
+        <p>¿Cuál es tu renta líquida mensual aproximada?</p>
+        <p style="margin-top:-6px;color:var(--muted);font-size:14px;">◯ Menos de $2.000.000 &nbsp;&nbsp;◯ $2.000.000 o más</p>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Mensaje de cierre · No califica (solo Ruta A)</span><span class="chip form">formulario</span></div>
+      <div class="copy-body">
+        <p>¡Gracias por tu interés! Por ahora este servicio está pensado para un perfil de renta distinto al tuyo, así que no podremos contactarte por esta vía. Te invitamos a seguirnos para futuras oportunidades.</p>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div class="copy-head"><span class="lbl">Aviso automático · WhatsApp a [nombre de tu clienta]</span><span class="chip wa">whatsApp</span></div>
+      <div class="copy-body">
+        <p class="subj">Se envía de inmediato cuando un lead califica</p>
+        <p>🔔 <b>Nuevo lead calificado</b></p>
+        <p>Nombre: [Nombre]<br>WhatsApp: [Teléfono]<br>Renta declarada: $2.000.000 o más<br>Fecha: [fecha y hora]</p>
+        <p>Ver ficha completa en la base de datos: [link a la planilla]</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="legal">
+    <p class="kicker">Antes de lanzar</p>
+    <h2><span class="num">07</span>Reglas técnicas y legales</h2>
+    <p class="intro">Tres puntos que conviene resolver antes de encender el anuncio.</p>
+
+    <h3>1 · El aviso a [nombre de tu clienta] necesita un número de WhatsApp habilitado</h3>
+    <p>Si se envía por la <b>API oficial de WhatsApp Business</b> (recomendado para que no dependa de un celular encendido), el primer mensaje de cada conversación fuera de la ventana de 24 h debe ser una <b>plantilla aprobada por Meta</b>. Como este aviso es siempre igual (mismo formato, solo cambian los datos), se aprueba una sola vez y sirve para todos los leads.</p>
+
+    <h3>2 · La renta es un dato sensible</h3>
+    <p>Bajo la <b>Ley N.º 19.628</b>, un dato económico como la renta requiere trato especialmente cuidadoso: pedirla solo por tramos (nunca el monto exacto), guardar el mínimo necesario, y dejar clara la casilla de consentimiento de la sección 5. No se debe compartir la base de datos completa con terceros distintos de [nombre de tu clienta].</p>
+
+    <h3>3 · Qué pasa con los que no califican</h3>
+    <p>Quedan solo en la base de datos, sin aviso por WhatsApp ni seguimiento comercial. Si más adelante se quiere reactivarlos (por ejemplo, para otro servicio con un umbral de renta distinto), la base ya está lista para filtrarlos de nuevo sin pedirles los datos otra vez.</p>
+  </section>
+
+  <section id="costos">
+    <p class="kicker">Cuánto cuesta al mes</p>
+    <h2><span class="num">08</span>Costo mensual estimado</h2>
+    <p class="intro">Sin contar el gasto publicitario en Meta Ads, que se define aparte según el volumen de leads que se quiera generar.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Pieza</th><th>Herramienta</th><th>Costo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Landing + formulario con lógica condicional</td><td>Tally</td><td><span class="t">Gratis</span></td></tr>
+          <tr><td>Filtro automático + escritura en base de datos</td><td>Make.com</td><td><span class="t">Gratis hasta 1.000 operaciones/mes · luego ≈ US$9/mes</span></td></tr>
+          <tr><td>Base de datos</td><td>Google Sheets</td><td><span class="t">Gratis</span></td></tr>
+          <tr><td>Envío de WhatsApp a la clienta</td><td>API oficial vía Make, o Twilio</td><td><span class="t">Centavos por mensaje · primeras conversaciones del mes suelen ser gratis</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="intro" style="margin-top:16px;">Total real para operar el sistema: <b>menos de US$10 al mes</b> con volumen bajo-medio de leads.</p>
+  </section>
+
+  <section id="checklist">
+    <p class="kicker">Manos a la obra</p>
+    <h2><span class="num">09</span>Checklist de puesta en marcha</h2>
+    <p class="intro">Orden sugerido para construirlo.</p>
+
+    <ul class="check">
+      <li><span class="box"></span><span><b>Confirmar el umbral exacto</b> (moneda, periodicidad y si hay otros filtros además de la renta).</span></li>
+      <li><span class="box"></span><span><b>Armar la landing y el formulario</b> con la pregunta de renta en tramos y la casilla de consentimiento.</span></li>
+      <li><span class="box"></span><span><b>Conectar el formulario a Make.com</b> y crear el escenario: recibir respuesta → evaluar regla → escribir en Google Sheets → si califica, enviar WhatsApp.</span></li>
+      <li><span class="box"></span><span><b>Habilitar el número de WhatsApp de [nombre de tu clienta]</b> para el envío (API oficial o integración directa de Make).</span></li>
+      <li><span class="box"></span><span><b>Redactar y aprobar la plantilla del aviso de WhatsApp</b>, si se usa la API oficial.</span></li>
+      <li><span class="box"></span><span><b>Crear el anuncio en Meta Ads</b> apuntando a la landing, con la segmentación acordada.</span></li>
+      <li><span class="box"></span><span><b>Probar de punta a punta</b> con un lead de prueba: uno que califique y uno que no, verificando que solo el primero dispare el WhatsApp.</span></li>
+      <li><span class="box"></span><span><b>Lanzar</b> y revisar la base de datos la primera semana para ajustar el filtro si hace falta.</span></li>
+    </ul>
+
+    <div class="note">
+      <div class="ic">→</div>
+      <div>Si más adelante la clienta quiere que el sistema también <b>agende reuniones</b>, <b>reintente contactar a quien no responde</b> o <b>califique con más preguntas por un agente de WhatsApp</b>, eso es una extensión natural de este mismo flujo — se arma sobre la misma base de datos, sin rehacer nada.</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>[Nombre de tu agencia] · Propuesta de alcance acotado</span>
+    <span>Borrador v1 · 31 ago 2026</span>
+  </footer>
+
+</div>
