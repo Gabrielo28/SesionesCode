@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Propuesta Take a Break Eventos — Influence Chile</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pagina { width: 210mm; min-height: 297mm; padding: 18mm 16mm; page-break-after: always; position: relative; }
+  .pagina:last-child { page-break-after: auto; }
+
+  .portada { background: linear-gradient(155deg, #123638 0%, #12959C 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .portada .logo-fallback { font-size: 26pt; font-weight: 700; margin-bottom: 16mm; }
+  .portada .kicker { text-transform: uppercase; letter-spacing: .28em; font-size: 9pt; opacity: .75; margin-bottom: 6mm; }
+  .portada h1 { font-size: 32pt; line-height: 1.15; font-weight: 700; margin-bottom: 4mm; }
+  .portada h2 { font-size: 14pt; font-weight: 400; opacity: .9; margin-bottom: 14mm; max-width: 150mm; }
+  .portada .meta { font-size: 10pt; opacity: .8; line-height: 1.9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; }
+
+  h3.seccion { font-size: 20pt; color: #12959C; margin-bottom: 3mm; }
+  h3.seccion + .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 8mm; }
+  p.intro { font-size: 11pt; line-height: 1.65; color: #2c4a4c; margin-bottom: 8mm; }
+
+  .hallazgo { border-left: 3px solid #FF7B7B; padding: 0 0 0 6mm; margin-bottom: 7mm; }
+  .hallazgo h4 { font-size: 12.5pt; margin-bottom: 2mm; }
+  .hallazgo p { font-size: 10.5pt; line-height: 1.6; color: #2c4a4c; }
+  .hallazgo .impacto { display: inline-block; margin-top: 3mm; font-size: 9.5pt; background: #ffeaea; color: #c0392b; padding: 1.5mm 3mm; border-radius: 3px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 8mm; }
+  th { background: #12959C; color: #fff; padding: 3mm; text-align: left; font-weight: 600; font-size: 9.5pt; }
+  td { padding: 3mm; border-bottom: 1px solid #d7ebeb; }
+  tr.destacado td { background: #fff1f1; font-weight: 600; }
+
+  /* Diagrama de flujo */
+  .flujo { margin-bottom: 6mm; }
+  .paso { display: flex; gap: 5mm; margin-bottom: 3mm; align-items: stretch; }
+  .paso .num { flex: 0 0 9mm; height: 9mm; border-radius: 50%; background: #12959C; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11pt; }
+  .paso .caja { flex: 1; border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 3.5mm 5mm; }
+  .paso .caja h5 { font-size: 10.5pt; color: #123638; margin-bottom: 1mm; }
+  .paso .caja p { font-size: 9.5pt; color: #2c4a4c; line-height: 1.5; }
+  .flecha { text-align: center; color: #FF7B7B; font-size: 11pt; margin: -1mm 0 -1mm 4.5mm; }
+  .ramas { display: flex; gap: 4mm; margin: 2mm 0 4mm 14mm; }
+  .rama { flex: 1; border-radius: 5px; padding: 3.5mm 4.5mm; font-size: 9pt; line-height: 1.5; }
+  .rama.no-califica { background: #fff1f1; border: 1px solid #ffd3d3; color: #8a3a3a; }
+  .rama.si-califica { background: #e6f6f0; border: 1px solid #b9e8d3; color: #1f5c42; }
+  .rama strong { display: block; margin-bottom: 1mm; font-size: 9.5pt; }
+  .preguntas-reales { background: #123638; color: #fff; border-radius: 5px; padding: 5mm 6mm; margin: 2mm 0 4mm 14mm; font-size: 9pt; }
+  .preguntas-reales .etiqueta { text-transform: uppercase; letter-spacing: .12em; font-size: 7.5pt; opacity: .7; margin-bottom: 2.5mm; }
+  .preguntas-reales ol { padding-left: 4mm; line-height: 1.7; }
+
+  .planes { display: flex; gap: 4mm; margin-bottom: 8mm; }
+  .plan { flex: 1; border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 5mm; }
+  .plan.rec { border-color: #FF7B7B; border-width: 2.5px; background: #fffafa; }
+  .plan .badge { display: inline-block; background: #FF7B7B; color: #fff; font-size: 7.5pt; padding: 1mm 2.5mm; border-radius: 3px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2mm; }
+  .plan h4 { font-size: 12.5pt; color: #12959C; }
+  .plan .precio { font-size: 14pt; font-weight: 700; margin: 1mm 0 3mm; }
+  .plan .precio small { font-size: 8pt; font-weight: 400; color: #6b8b8c; display: block; }
+  .plan ul { list-style: none; font-size: 8.5pt; line-height: 1.6; color: #2c4a4c; }
+  .plan li::before { content: '▪'; color: #12959C; margin-right: 2mm; }
+
+  .nota { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; }
+  .nota strong { color: #12959C; }
+
+  .fase { display: flex; gap: 5mm; margin-bottom: 6mm; }
+  .fase .periodo { flex: 0 0 32mm; font-weight: 700; color: #12959C; font-size: 10.5pt; padding-top: 1mm; }
+  .fase ul { flex: 1; list-style: none; font-size: 10.5pt; line-height: 1.7; color: #2c4a4c; }
+  .fase li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
+
+  .total { background: linear-gradient(135deg, #123638, #12959C); color: #fff; border-radius: 6px; padding: 8mm; margin-bottom: 8mm; }
+  .total .fila { display: flex; justify-content: space-between; padding: 2.5mm 0; font-size: 11pt; border-bottom: 1px solid rgba(255,255,255,.18); }
+  .total .fila:last-child { border: 0; padding-top: 5mm; font-size: 15pt; font-weight: 700; }
+  .total .fila small { font-size: 8pt; opacity: .8; display: block; font-weight: 400; }
+
+  .cta { text-align: center; padding: 6mm 0 0; }
+  .cta h3 { font-size: 20pt; color: #12959C; margin-bottom: 3mm; }
+  .cta p { font-size: 11pt; color: #2c4a4c; line-height: 1.7; margin-bottom: 6mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
+  .firma { margin-top: 9mm; padding-top: 5mm; border-top: 1px solid #d7ebeb; font-size: 10pt; color: #2c4a4c; line-height: 1.8; text-align: center; }
+  .pie { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
+</style></head><body>
+
+<section class="pagina portada">
+  <div class="logo-fallback">influence</div>
+  <div class="kicker">Propuesta de automatización</div>
+  <h1>Take a Break Eventos</h1>
+  <h2>De responder cada lead a mano por WhatsApp y correo, a que el sistema conteste solo en segundos — con las mismas preguntas que hoy usan para cotizar.</h2>
+  <div class="meta">
+    Preparada para el equipo de Take a Break Eventos<br>
+    Eventos y arriendo de espacios · Instagram @takeabreakeventos<br>
+    Septiembre 2026
+  </div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Qué encontramos</h3><div class="linea"></div>
+  <p class="intro">Revisamos cómo llegan hoy los leads desde los anuncios de Instagram de Take a Break Eventos hasta que reciben una respuesta. Este es el cuello de botella real, no uno genérico: es el mismo que ustedes nos describieron.</p>
+
+  <div class="hallazgo">
+    <h4>1. Cada lead se responde a mano, copiando las mismas 4 preguntas</h4>
+    <p>Alguien ve el anuncio, escribe por Instagram o deja sus datos, y una persona del equipo tiene que abrir el chat, escribir "¿cuántas personas serían?, ¿qué fecha?, ¿en qué comuna?, ¿evento completo o Box Fiestas Patrias?" y esperar las respuestas antes de poder cotizar. Eso se repite lead por lead, en WhatsApp y en correo por separado.</p>
+    <span class="impacto">Minutos por lead que se multiplican por cada anuncio activo</span>
+  </div>
+  <div class="hallazgo">
+    <h4>2. El filtro de las 20 personas mínimas se aplica después de conversar, no antes</h4>
+    <p>Nos comentaron que si son menos de 20 personas, el servicio no aplica. Hoy ese descarte pasa después de escribir varios mensajes de ida y vuelta, en vez de resolverse automáticamente apenas la persona responde la primera pregunta.</p>
+    <span class="impacto">Tiempo del equipo gastado en leads que nunca iban a calificar</span>
+  </div>
+  <div class="hallazgo">
+    <h4>3. No queda un registro central de quién preguntó qué</h4>
+    <p>Las respuestas viven repartidas entre WhatsApp y bandejas de correo. No hay una planilla o panel que junte fecha del evento, comuna, cantidad de personas y si cotizaron Evento Completo o Box Fiestas Patrias — así que es difícil saber cuántos leads entran, cuántos califican y cuántos se cierran.</p>
+    <span class="impacto">Sin ese dato, no se puede medir si el anuncio realmente está funcionando</span>
+  </div>
+
+  <div class="nota"><strong>La buena noticia:</strong> el proceso ya está bien pensado — las 4 preguntas y la regla de las 20 personas son exactamente lo que hay que automatizar. No hay que inventar nada nuevo, solo hacer que el sistema lo haga solo.</div>
+  <div class="pie"><span>Influence Chile · Propuesta para Take a Break Eventos</span><span>2</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Cómo quedaría el flujo</h3><div class="linea"></div>
+  <p class="intro">El mismo camino que sigue un lead hoy, pero sin que nadie del equipo tenga que escribir el primer mensaje.</p>
+
+  <div class="flujo">
+    <div class="paso">
+      <div class="num">1</div>
+      <div class="caja">
+        <h5>Anuncio en Instagram</h5>
+        <p>La persona ve la publicidad de Take a Break Eventos y toca el botón de "Más información" o "Enviar mensaje".</p>
+      </div>
+    </div>
+    <div class="flecha">↓</div>
+    <div class="paso">
+      <div class="num">2</div>
+      <div class="caja">
+        <h5>Formulario de 4 preguntas</h5>
+        <p>Se abre automáticamente el mismo cuestionario que hoy se hace por chat, ahora como formulario (dentro de Instagram o en una página propia).</p>
+      </div>
+    </div>
+
+    <div class="preguntas-reales">
+      <div class="etiqueta">Las preguntas — tal como se usan hoy</div>
+      <ol>
+        <li>¿Cuántas personas aproximadamente serían?</li>
+        <li>¿Qué fecha tienen pensada?</li>
+        <li>¿En qué comuna sería el evento?</li>
+        <li>¿Cuál de las dos opciones te gustaría cotizar: Evento completo o Box Fiestas Patrias?</li>
+      </ol>
+    </div>
+
+    <div class="flecha">↓</div>
+    <div class="paso">
+      <div class="num">3</div>
+      <div class="caja">
+        <h5>El sistema decide solo</h5>
+        <p>Apenas responde la pregunta 1, la automatización revisa la cantidad de personas antes de seguir.</p>
+      </div>
+    </div>
+
+    <div class="ramas">
+      <div class="rama no-califica">
+        <strong>Menos de 20 personas</strong>
+        WhatsApp y/o correo automático explicando que el mínimo es 20 personas, sin que nadie del equipo tenga que escribir. Queda registrado como "no calificado", sin ocupar tiempo de nadie.
+      </div>
+      <div class="rama si-califica">
+        <strong>20 personas o más</strong>
+        Se envía WhatsApp y correo automático con la información de la opción elegida (Evento Completo o Box Fiestas Patrias), fecha y comuna ya confirmadas, listo para que el equipo solo cierre el detalle final.
+      </div>
+    </div>
+
+    <div class="flecha">↓</div>
+    <div class="paso">
+      <div class="num">4</div>
+      <div class="caja">
+        <h5>Registro y aviso al equipo</h5>
+        <p>Cada lead queda guardado en una planilla/panel (fecha, comuna, personas, opción, estado) y llega una notificación interna avisando que entró un lead calificado, listo para agendar.</p>
+      </div>
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Propuesta para Take a Break Eventos</span><span>3</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Los planes</h3><div class="linea"></div>
+  <p class="intro">Un costo único de implementación (armar y dejar andando el flujo) más una mantención mensual baja. Marcamos el que recomendamos para partir.</p>
+  <div class="planes">
+    <div class="plan">
+      <h4>Conexión</h4>
+      <div class="precio">$280.000<small>implementación única</small></div>
+      <div class="precio" style="font-size:11pt">$50.000<small>mantención mensual</small></div>
+      <ul>
+        <li>Formulario con las 4 preguntas conectado al anuncio de Instagram</li>
+        <li>Filtro automático del mínimo de 20 personas</li>
+        <li>Respuesta automática por WhatsApp <strong>o</strong> por correo (un solo canal)</li>
+        <li>Registro de leads en planilla compartida</li>
+      </ul>
+    </div>
+    <div class="plan rec">
+      <div class="badge">Recomendado</div>
+      <h4>Flujo Completo</h4>
+      <div class="precio">$420.000<small>implementación única</small></div>
+      <div class="precio" style="font-size:11pt">$90.000<small>mantención mensual</small></div>
+      <ul>
+        <li>Todo lo del plan Conexión</li>
+        <li>Respuesta automática por WhatsApp <strong>y</strong> por correo a la vez</li>
+        <li>Mensaje distinto según elijan Evento Completo o Box Fiestas Patrias</li>
+        <li>Aviso interno al equipo por cada lead calificado</li>
+        <li>Panel con reporte de leads: cuántos entran, cuántos califican, cuántos se cierran</li>
+        <li>1 ronda de ajuste de mensajes según los primeros resultados reales</li>
+      </ul>
+    </div>
+    <div class="plan">
+      <h4>Flujo + Pauta</h4>
+      <div class="precio">$420.000<small>implementación única</small></div>
+      <div class="precio" style="font-size:11pt">$90.000 + $150.000–$300.000<small>mantención + gestión de pauta</small></div>
+      <ul>
+        <li>Todo lo del plan Flujo Completo</li>
+        <li>Gestión de las campañas de Meta Ads que alimentan el formulario</li>
+        <li>Testeo de creativos y optimización semanal de la pauta</li>
+        <li>Reporte mensual cruzando inversión en pauta con leads calificados</li>
+      </ul>
+    </div>
+  </div>
+  <div class="nota"><strong>Por qué el plan Flujo Completo:</strong> el dolor que nos describieron no es solo "no tengo WhatsApp automático", es que hoy escriben dos veces (WhatsApp y correo) y deciden a mano qué oferta mandar. El plan Conexión resuelve solo un canal; Flujo + Pauta suma gestión de anuncios que hoy no era el problema. Flujo Completo ataca exactamente lo que están perdiendo: tiempo y respuesta lenta en ambos canales.</div>
+  <div class="pie"><span>Influence Chile · Propuesta para Take a Break Eventos</span><span>4</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Cómo lo hacemos</h3><div class="linea"></div>
+  <p class="intro">El flujo manual sigue funcionando mientras se arma el automático — nunca se corta la atención a leads reales.</p>
+  <div class="fase">
+    <div class="periodo">Semana 1</div>
+    <ul>
+      <li>Confirmar con ustedes el texto exacto de cada respuesta automática (rechazo por mínimo, Evento Completo, Box Fiestas Patrias)</li>
+      <li>Elegir el canal del formulario: dentro de Instagram (Meta Lead Ads) o landing propia</li>
+      <li>Conectar WhatsApp Business y la casilla de correo que van a usar</li>
+    </ul>
+  </div>
+  <div class="fase">
+    <div class="periodo">Semana 2</div>
+    <ul>
+      <li>Armar la automatización con las 4 preguntas y la regla de las 20 personas</li>
+      <li>Configurar el envío doble (WhatsApp + correo) y el aviso interno al equipo</li>
+      <li>Pruebas con leads simulados antes de tocar tráfico real</li>
+    </ul>
+  </div>
+  <div class="fase">
+    <div class="periodo">Semana 3</div>
+    <ul>
+      <li>Lanzamiento en paralelo al proceso manual actual, con un anuncio activo</li>
+      <li>Ajustes de mensajes según las primeras respuestas reales</li>
+    </ul>
+  </div>
+  <div class="fase">
+    <div class="periodo">Mes 2</div>
+    <ul>
+      <li>Se apaga la respuesta manual y queda 100% automático</li>
+      <li>Primer reporte: leads recibidos, calificados y descartados por mínimo</li>
+    </ul>
+  </div>
+  <div class="pie"><span>Influence Chile · Propuesta para Take a Break Eventos</span><span>5</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">La inversión</h3><div class="linea"></div>
+  <div class="total">
+    <div class="fila"><span>Implementación — Flujo Completo<small>Pago único, se factura al iniciar el proyecto</small></span><span>$420.000</span></div>
+    <div class="fila"><span>Mantención mensual<small>Ajustes, soporte y que el flujo siga funcionando sin fallas</small></span><span>$90.000 / mes</span></div>
+  </div>
+  <div class="nota">
+    <strong>Aparte de esto:</strong> el costo de la plataforma de WhatsApp Business API y del envío de correos corre por fuera (según volumen, suele ser de bajo costo mensual para el número de leads que manejan hoy). Si más adelante quieren sumar gestión de pauta, se agrega el plan Flujo + Pauta sin tener que rehacer nada de lo ya construido.<br><br>
+    <strong>Condiciones:</strong> facturación mensual para la mantención, sin permanencia mínima obligatoria.
+  </div>
+  <div class="cta">
+    <h3>¿Partimos?</h3>
+    <p>
+      El siguiente paso es una reunión de 20-30 minutos para confirmar<br>
+      los mensajes exactos de WhatsApp y correo, y definir fecha de inicio.
+    </p>
+    <div class="boton">+56 9 6545 0723</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong> · Influence Chile<br>
+      influencechile.cl · +56 9 6545 0723<br>
+      Instagram: @influence.chile
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Propuesta para Take a Break Eventos</span><span>6</span></div>
+</section>
+
+</body></html>
