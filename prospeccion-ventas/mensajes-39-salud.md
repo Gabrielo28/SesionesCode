@@ -4,7 +4,7 @@ Guion base en `08-prospeccion-automatizacion.md`. Reemplaza `[tu nombre]` antes 
 
 Link a mandar si responde que sí: `https://influencechile.cl/diagnostico-workflows.html`
 
-> **Nota:** Wizz es una healthtech multi-país (17 clínicas, Chile/Colombia/México) — vale la pena confirmar que no tenga ya un sistema propio de atención antes de escribirle, a diferencia del resto que son operaciones más chicas y locales.
+> **Nota sobre Wizz:** es una healthtech multi-país (17 clínicas, Chile/Colombia/México) — se revisó su sitio (wizz.life) y solo se encontró un link de WhatsApp de contacto manual, sin agendamiento online ni bot. Queda como buen candidato, pero por su escala vale la pena confirmar en la primera conversación si internamente ya tienen algo que el sitio no muestra.
 
 ---
 
@@ -16,14 +16,14 @@ Link a mandar si responde que sí: `https://influencechile.cl/diagnostico-workfl
 Web: https://auditron.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Auditron%20Chile%20S.A.
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Auditron Chile S.A. para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Bot de captura de datos en el sitio ("Completa tus datos" → "te comunicaremos con uno de nuestros asesores"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Clínica Las Mercedes — Melipilla (Centro médico / Clínica)
 Web: https://clinicalasmercedes.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Cl%C3%ADnica%20Las%20Mercedes
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clínica Las Mercedes para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl ("Agenda tu hora"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Medcorp S.A. — Santiago (Centro médico / Clínica)
@@ -37,12 +37,16 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Medcorp
 Web: https://oyedental.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=O%26E%20Dental
 
+> 🔸 **No se pudo verificar automáticamente:** el sitio devolvió error 503 (no disponible) en dos intentos — probar de nuevo más tarde o revisar manualmente.
+
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos O&E Dental para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
 ### Redental — Providencia (Centro médico / Clínica)
 Web: https://redental.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Redental
+
+> 🔸 **No se pudo verificar automáticamente:** el sitio no devolvió contenido legible en dos intentos — revisar manualmente antes de escribir.
 
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Redental para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
@@ -51,7 +55,7 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Redenta
 Web: https://meds.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Unidad%20Medicina%20Reproductiva%20Cl%C3%ADnica%20MEDS
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Unidad Medicina Reproductiva Clínica MEDS para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Agendamiento online real (botón "Agendar", "Reserva tu hora") más portal propio "Mi MEDS" para gestión de citas. No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Wizz — Santiago (Odontología)
@@ -88,6 +92,8 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=CORDILL
 Web: https://bien-estar.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Centro%20Integral%20Bien-Estar
 
+> 🔸 **No se pudo verificar automáticamente:** el sitio no devolvió contenido legible — revisar manualmente.
+
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Centro Integral Bien-Estar para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
@@ -109,12 +115,16 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Centro%
 Web: https://psicologoeduardoschilling.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Centro%20Ps.%20Eduardo%20Schilling
 
+> 🔸 **No se pudo verificar automáticamente:** el sitio devolvió error 403 (acceso denegado) — revisar manualmente.
+
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Centro Ps. Eduardo Schilling para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
 ### Centro Theraneeds — Santiago (Centro médico / Clínica)
 Web: https://theraneeds.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Centro%20Theraneeds
+
+> 🔸 **No se pudo verificar automáticamente:** el sitio devolvió error 503 (no disponible) en dos intentos — revisar manualmente.
 
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Centro Theraneeds para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
@@ -129,12 +139,14 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Clinica
 Web: https://clinicalosleones.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Clinica%20los%20Leones
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clinica los Leones para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Sistemas de reserva online integrados para consulta, exámenes y telemedicina. No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Clínica Dental CEOS — Providencia (Centro médico / Clínica)
 Web: https://ceos.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Cl%C3%ADnica%20Dental%20CEOS
+
+> 🔸 **No se pudo verificar automáticamente:** el sitio está detrás de una verificación anti-bot similar a Dermacross — revisar manualmente.
 
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clínica Dental CEOS para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
@@ -142,6 +154,8 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Cl%C3%A
 ### Clínica Dermacorss — Vitacura (Centro médico / Clínica)
 Web: https://dermacross.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Cl%C3%ADnica%20Dermacorss
+
+> 🔸 **No se pudo verificar automáticamente:** el sitio está detrás de una verificación anti-bot ("please wait while your request is being verified") — revisar manualmente.
 
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clínica Dermacorss para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
@@ -171,7 +185,7 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Dentist
 Web: https://institutochilenodeneurologia.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Instituto%20Chileno%20de%20Neurolog%C3%ADa
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Instituto Chileno de Neurología para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl (sitio real: icn.cl). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Laboratorio Diagnomed — sin dato (Centro médico / Clínica)
@@ -230,7 +244,7 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=AccuHea
 Web: https://ageback.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Ageback%20Clinica%20Medica%20Estetica
 
-> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Ageback Clinica Medica Estetica para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+> ⚠️ **YA TIENE resuelto esto** — Agenda online funcional vía la plataforma reservo.cl ("AGENDA ONLINE"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
 
 
 ### Blancodent, SOCIEDAD ODONTOLOGICA CHILENA SPA — sin dato (Centro médico / Clínica)
@@ -265,6 +279,8 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Institu
 Web: https://jcmsalud.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=JCM%20Salud%20Centro%20M%C3%A9dico
 
+> 🔸 **No se pudo verificar automáticamente:** el dominio jcmsalud.cl no resuelve (no existe en DNS) — confirmar si la empresa sigue operando antes de escribir, puede haber cerrado o cambiado de sitio.
+
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos JCM Salud Centro Médico para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
@@ -287,3 +303,14 @@ Web: https://medisis.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=medical%20ltda.
 
 > Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos medical ltda. para un tema de redes, y nos dimos cuenta de que también podíamos ayudarles con algo distinto: automatizar la atención por WhatsApp y el agendamiento, que en clínicas suele ser un dolor grande. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
+
+
+---
+
+## Resultado de la verificación (post-corrección)
+
+Se revisó el sitio web de las 37 empresas que tenían `web` en el CSV (2 de las 39 no tenían sitio registrado). Criterio: se buscó **automatización real** (agendamiento online funcional, chatbot, bot de WhatsApp con respuesta automática) — un simple link de WhatsApp para chatear manualmente NO cuenta como "ya resuelto", porque eso es justo el problema que se ofrece solucionar.
+
+- **6 YA TIENEN algo resuelto** (marcadas arriba con ⚠️): Auditron Chile S.A., Unidad Medicina Reproductiva Clínica MEDS, Clínica Las Mercedes, Clinica los Leones, Instituto Chileno de Neurología, Ageback Clinica Medica Estetica. Todas tienen agendamiento online funcional (varias vía la misma plataforma externa, reservo.cl) — el pitch de "automatizar el agendamiento" no aplica tal cual; si se contacta, conviene un ángulo distinto (seguimiento de leads, reportería) en vez de descartarlas de plano.
+- **8 no se pudieron verificar** (marcadas con 🔸): por error del servidor, protección anti-bot, o contenido vacío en el momento de revisar. Una de ellas (JCM Salud) tiene un dominio que ni siquiera resuelve — posible cierre, hay que confirmar antes de escribir.
+- **25 quedaron confirmadas como buenos candidatos**: se revisó su sitio y no se encontró automatización real, solo canales manuales (WhatsApp de contacto, formularios estándar, llamada telefónica) — el mensaje del guion aplica tal cual.
