@@ -16,14 +16,18 @@ Link a mandar si responde que sí: `https://influencechile.cl/diagnostico-workfl
 Web: https://auditron.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Auditron%20Chile%20S.A.
 
-> ⚠️ **YA TIENE resuelto esto** — Bot de captura de datos en el sitio ("Completa tus datos" → "te comunicaremos con uno de nuestros asesores"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Bot de captura de datos en el sitio ("Completa tus datos" → "te comunicaremos con uno de nuestros asesores"). El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Auditron Chile S.A. para un tema de redes. Vimos que ya tienen un sistema de captura de datos en el sitio para derivar a un asesor — eso ya resuelve harto. Lo que solemos ver después de ese primer contacto es que el seguimiento de quien preguntó y no siguió avanzando queda manual. Armamos un diagnóstico gratis de 2 minutos enfocado en eso — ¿te lo mando para que lo veas?
 
 
 ### Clínica Las Mercedes — Melipilla (Centro médico / Clínica)
 Web: https://clinicalasmercedes.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Cl%C3%ADnica%20Las%20Mercedes
 
-> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl ("Agenda tu hora"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl ("Agenda tu hora"). El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clínica Las Mercedes para un tema de redes. Vimos que ya tienen agendamiento online, pero el sitio menciona que responden consultas en menos de 24 horas — ahí es donde probablemente se estén perdiendo pacientes que preguntan y no quieren esperar tanto. Armamos un diagnóstico gratis de 2 minutos enfocado en la atención por WhatsApp — ¿te lo mando para que lo veas?
 
 
 ### Medcorp S.A. — Santiago (Centro médico / Clínica)
@@ -55,7 +59,9 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Redenta
 Web: https://meds.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Unidad%20Medicina%20Reproductiva%20Cl%C3%ADnica%20MEDS
 
-> ⚠️ **YA TIENE resuelto esto** — Agendamiento online real (botón "Agendar", "Reserva tu hora") más portal propio "Mi MEDS" para gestión de citas. No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Agendamiento online real (botón "Agendar", "Reserva tu hora") más portal propio "Mi MEDS" para gestión de citas. El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Unidad Medicina Reproductiva Clínica MEDS para un tema de redes. Vimos que ya tienen agendamiento online y el portal Mi MEDS, así que la agenda la tienen resuelta. Donde solemos ver espacio en clínicas con este nivel de sistema es en la reportería interna — juntar los datos que ya existen en un resumen sin armarlo a mano cada semana. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
 ### Wizz — Santiago (Odontología)
@@ -139,7 +145,9 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Clinica
 Web: https://clinicalosleones.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Clinica%20los%20Leones
 
-> ⚠️ **YA TIENE resuelto esto** — Sistemas de reserva online integrados para consulta, exámenes y telemedicina. No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Sistemas de reserva online integrados para consulta, exámenes y telemedicina. El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Clinica los Leones para un tema de redes. Vimos que ya tienen reserva online para consulta, exámenes y telemedicina — bastante más avanzado que la mayoría. Con varios sistemas de reserva en paralelo, lo que solemos ver es que coordinar la información entre áreas se vuelve manual. Armamos un diagnóstico gratis de 2 minutos para revisar eso — ¿te lo mando para que lo veas?
 
 
 ### Clínica Dental CEOS — Providencia (Centro médico / Clínica)
@@ -185,7 +193,9 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Dentist
 Web: https://institutochilenodeneurologia.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Instituto%20Chileno%20de%20Neurolog%C3%ADa
 
-> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl (sitio real: icn.cl). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Reserva de hora online funcional vía la plataforma reservo.cl (sitio real: icn.cl). El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Instituto Chileno de Neurología para un tema de redes. Vimos que ya tienen reserva de hora online, así que la agenda la tienen resuelta. Donde solemos encontrar espacio en centros con este nivel de sistema es en el seguimiento de quien consulta y no alcanza a agendar en el momento. Armamos un diagnóstico gratis de 2 minutos — ¿te lo mando para que lo veas?
 
 
 ### Laboratorio Diagnomed — sin dato (Centro médico / Clínica)
@@ -244,7 +254,9 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=AccuHea
 Web: https://ageback.cl
 Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=Ageback%20Clinica%20Medica%20Estetica
 
-> ⚠️ **YA TIENE resuelto esto** — Agenda online funcional vía la plataforma reservo.cl ("AGENDA ONLINE"). No usar este pitch tal cual; si se contacta, hay que buscar otro ángulo (ej. seguimiento de leads, reportería) o descartar.
+> ⚠️ **YA TIENE resuelto esto** — Agenda online funcional vía la plataforma reservo.cl ("AGENDA ONLINE"). El mensaje de abajo ya viene ajustado para no ofrecer lo que ya tienen — pivota a otro ángulo en vez de agenda.
+
+> Hola, soy [tu nombre] de Influence Chile. Te escribo porque hace un tiempo revisamos Ageback Clínica Médica Estética para un tema de redes. Vimos que ya tienen agenda online, lo cual es un buen punto de partida. En estética, lo que más se pierde no es la agenda sino el seguimiento de quien pregunta por un tratamiento y no reserva de inmediato. Armamos un diagnóstico gratis de 2 minutos enfocado en eso — ¿te lo mando para que lo veas?
 
 
 ### Blancodent, SOCIEDAD ODONTOLOGICA CHILENA SPA — sin dato (Centro médico / Clínica)
@@ -311,6 +323,6 @@ Buscar en Instagram: https://www.instagram.com/explore/search/keyword/?q=medical
 
 Se revisó el sitio web de las 37 empresas que tenían `web` en el CSV (2 de las 39 no tenían sitio registrado). Criterio: se buscó **automatización real** (agendamiento online funcional, chatbot, bot de WhatsApp con respuesta automática) — un simple link de WhatsApp para chatear manualmente NO cuenta como "ya resuelto", porque eso es justo el problema que se ofrece solucionar.
 
-- **6 YA TIENEN algo resuelto** (marcadas arriba con ⚠️): Auditron Chile S.A., Unidad Medicina Reproductiva Clínica MEDS, Clínica Las Mercedes, Clinica los Leones, Instituto Chileno de Neurología, Ageback Clinica Medica Estetica. Todas tienen agendamiento online funcional (varias vía la misma plataforma externa, reservo.cl) — el pitch de "automatizar el agendamiento" no aplica tal cual; si se contacta, conviene un ángulo distinto (seguimiento de leads, reportería) en vez de descartarlas de plano.
+- **6 YA TIENEN algo resuelto** (marcadas arriba con ⚠️): Auditron Chile S.A., Unidad Medicina Reproductiva Clínica MEDS, Clínica Las Mercedes, Clinica los Leones, Instituto Chileno de Neurología, Ageback Clinica Medica Estetica. Todas tienen agendamiento online funcional (varias vía la misma plataforma externa, reservo.cl) — el pitch de "automatizar el agendamiento" no aplica tal cual, así que cada una lleva un mensaje distinto que reconoce lo que ya tienen y pivota a otro ángulo (seguimiento de leads, reportería, gestión interna) en vez del genérico.
 - **8 no se pudieron verificar** (marcadas con 🔸): por error del servidor, protección anti-bot, o contenido vacío en el momento de revisar. Una de ellas (JCM Salud) tiene un dominio que ni siquiera resuelve — posible cierre, hay que confirmar antes de escribir.
 - **25 quedaron confirmadas como buenos candidatos**: se revisó su sitio y no se encontró automatización real, solo canales manuales (WhatsApp de contacto, formularios estándar, llamada telefónica) — el mensaje del guion aplica tal cual.
