@@ -1,0 +1,11 @@
+{
+  "name": "agente-multi-nicho",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Motor de generacion y aprobacion de contenido para redes sociales, multi-negocio y multi-nicho (Capa A).",
+  "main": "server/server.js",
+  "scripts": {
+    "seed": "node server/seed.js",
+    "start": "node server/seed.js && node server/server.js"
+  }
+}

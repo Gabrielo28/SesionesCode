@@ -1,0 +1,4 @@
+# Datos generados en tiempo de ejecución (negocios y contenido) — no se suben.
+# node server/seed.js los vuelve a crear.
+data/negocios/*.json
+data/contenido/*.json
