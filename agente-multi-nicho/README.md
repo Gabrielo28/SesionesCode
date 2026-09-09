@@ -38,6 +38,9 @@ Para volver a sembrar sin levantar el servidor: `npm run seed`.
   según el enfoque de cada pieza.
 - **Nuevo negocio** — alta desde el panel (botón "+" junto al selector), sin
   tocar código ni scripts: nombre, nicho y los datos reales del negocio.
+- **Configuración** — editar el nombre y los datos de un negocio existente,
+  o eliminarlo (borra también su contenido y sus fotos). El nicho no se
+  puede cambiar una vez creado.
 - **Selector de negocio** — cambia entre negocios de nichos distintos sin
   recargar la página; cada uno tiene su propio banco de contenido y sus
   propias fotos.
@@ -75,7 +78,6 @@ data/
   de Meta, sujeto a App Review y Business Verification; luego otras redes).
 - **Capa C** — autoservicio de cobro (Stripe) y login propio por negocio
   (hoy cualquiera que abra el panel ve todos los negocios — no hay cuentas).
-- Editar o eliminar un negocio ya creado (hoy solo se puede dar de alta).
 
 Ver el documento de arquitectura y el prototipo visual compartidos en la
 conversación para el detalle completo de estas capas.

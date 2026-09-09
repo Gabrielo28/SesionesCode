@@ -196,3 +196,18 @@ dialog#dialog-nuevo-negocio input:focus, dialog#dialog-nuevo-negocio select:focu
 .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .dialog-actions .btn-ghost { padding: 9px 16px; }
 .dialog-actions .btn-approve { padding: 9px 18px; flex: none; }
+
+/* --- configuración --- */
+.config-form { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
+.config-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
+.config-form input {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--ink);
+  font-family: inherit; font-size: 13px; padding: 9px 11px;
+}
+.config-form input:focus { outline: 1px solid var(--amber); }
+.config-error { color: var(--coral); font-size: 12px; margin: 0; }
+.config-ok { color: var(--green); font-size: 12px; margin: 0; }
+.config-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.config-actions .btn-approve { padding: 10px 20px; flex: none; }
+.btn-danger { background: transparent; border: 1px solid var(--coral); color: var(--coral); font-weight: 600; font-size: 12.5px; padding: 9px 16px; border-radius: 7px; }
+.btn-danger:hover { background: var(--coral); color: #161310; }

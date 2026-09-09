@@ -149,6 +149,28 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, negocio);
         }
 
+        // PUT /api/negocios/:id  { nombre, datos }
+        if (parts.length === 3 && req.method === 'PUT') {
+          const body = await readBody(req);
+          const nombre = (body.nombre || '').trim();
+          if (!nombre) return sendJSON(res, 400, { error: 'Falta el nombre del negocio' });
+          negocio.nombre = nombre;
+          negocio.datos = {
+            precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
+            unidad: body.datos && body.datos.unidad ? String(body.datos.unidad).trim() : '',
+            promo: body.datos && body.datos.promo ? String(body.datos.promo).trim() : '',
+            productoDestacado: body.datos && body.datos.productoDestacado ? String(body.datos.productoDestacado).trim() : '',
+          };
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocio);
+        }
+
+        // DELETE /api/negocios/:id
+        if (parts.length === 3 && req.method === 'DELETE') {
+          store.deleteNegocio(negocioId);
+          return sendJSON(res, 200, { ok: true });
+        }
+
         // GET /api/negocios/:id/contenido
         if (parts[3] === 'contenido' && parts.length === 4 && req.method === 'GET') {
           return sendJSON(res, 200, store.getContenido(negocioId));

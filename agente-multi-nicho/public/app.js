@@ -285,11 +285,23 @@
     cont.innerHTML = nichoActual.categoriasFoto.map(fotoCategoriaHTML).join('');
   }
 
+  function renderConfig() {
+    if (!negocioActual) return;
+    $('#config-nombre').value = negocioActual.nombre || '';
+    $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
+    $('#config-unidad').value = (negocioActual.datos && negocioActual.datos.unidad) || '';
+    $('#config-promo').value = (negocioActual.datos && negocioActual.datos.promo) || '';
+    $('#config-producto').value = (negocioActual.datos && negocioActual.datos.productoDestacado) || '';
+    $('#config-error').hidden = true;
+    $('#config-ok').hidden = true;
+  }
+
   function render() {
     renderStats();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
+    else if (vistaActual === 'config') renderConfig();
   }
 
   function leerArchivoComoBase64(file) {
@@ -313,6 +325,32 @@
   async function borrarFoto(categoria, archivo) {
     fotos = await api(`/api/negocios/${negocioActual.id}/fotos/${categoria}/${archivo}`, { method: 'DELETE' });
     renderFotos();
+  }
+
+  async function guardarConfig(datos) {
+    negocioActual = await api(`/api/negocios/${negocioActual.id}`, { method: 'PUT', body: JSON.stringify(datos) });
+    negocios = await api('/api/negocios');
+    $('#negocio-select').innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
+    $('#negocio-select').value = negocioActual.id;
+    $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
+  }
+
+  async function eliminarNegocioActual() {
+    const idBorrado = negocioActual.id;
+    await api(`/api/negocios/${idBorrado}`, { method: 'DELETE' });
+    negocios = await api('/api/negocios');
+    if (negocios.length) {
+      $('#negocio-select').innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
+      await loadNegocio(negocios[0].id);
+    } else {
+      negocioActual = null;
+      $('#negocio-select').innerHTML = '';
+      $('#switcher-badge').textContent = '--';
+      $('#switcher-niche').textContent = '-';
+      contenido = [];
+      render();
+      $('#cola-grid').innerHTML = '<p class="empty-state">No hay negocios todavía. Usa el botón "+" para crear el primero.</p>';
+    }
   }
 
   // ---------- acciones ----------
@@ -397,6 +435,7 @@
         $('#view-cola').hidden = vistaActual !== 'cola';
         $('#view-calendario').hidden = vistaActual !== 'calendario';
         $('#view-fotos').hidden = vistaActual !== 'fotos';
+        $('#view-config').hidden = vistaActual !== 'config';
         render();
       });
     });
@@ -412,6 +451,33 @@
       const btn = e.target.closest('[data-borrar-categoria]');
       if (!btn) return;
       borrarFoto(btn.dataset.borrarCategoria, btn.dataset.borrarArchivo).catch((err) => alert('No se pudo borrar: ' + err.message));
+    });
+
+    // configuración: guardar cambios / eliminar negocio
+    $('#form-config').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('#config-error').hidden = true;
+      $('#config-ok').hidden = true;
+      try {
+        await guardarConfig({
+          nombre: $('#config-nombre').value,
+          datos: {
+            precioDesde: $('#config-precio').value,
+            unidad: $('#config-unidad').value,
+            promo: $('#config-promo').value,
+            productoDestacado: $('#config-producto').value,
+          },
+        });
+        $('#config-ok').hidden = false;
+      } catch (err) {
+        $('#config-error').textContent = err.message;
+        $('#config-error').hidden = false;
+      }
+    });
+    $('#btn-eliminar-negocio').addEventListener('click', () => {
+      if (!negocioActual) return;
+      const confirmado = confirm(`¿Eliminar "${negocioActual.nombre}"? Se borra su contenido y sus fotos. Esta acción no se puede deshacer.`);
+      if (confirmado) eliminarNegocioActual().catch((err) => alert('No se pudo eliminar: ' + err.message));
     });
 
     // diálogo: nuevo negocio

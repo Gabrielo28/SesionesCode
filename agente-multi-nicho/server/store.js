@@ -63,6 +63,12 @@ function saveContenido(negocioId, items) {
   return items;
 }
 
+function deleteNegocio(negocioId) {
+  fs.rmSync(negocioPath(negocioId), { force: true });
+  fs.rmSync(contenidoPath(negocioId), { force: true });
+  fs.rmSync(path.join(FOTOS_DIR, negocioId), { recursive: true, force: true });
+}
+
 // --- fotos: data/fotos/<negocioId>/<categoria>/<archivo> ---
 
 function negocioFotosDir(negocioId) {
@@ -102,6 +108,7 @@ module.exports = {
   saveNegocio,
   getContenido,
   saveContenido,
+  deleteNegocio,
   listFotos,
   addFoto,
   deleteFoto,
