@@ -6,6 +6,7 @@
   "main": "server/server.js",
   "scripts": {
     "seed": "node server/seed.js",
-    "start": "node server/seed.js && node server/server.js"
+    "start": "node server/server.js",
+    "dev": "node server/seed.js && node server/server.js"
   }
 }

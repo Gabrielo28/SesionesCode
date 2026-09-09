@@ -15,14 +15,30 @@ Requiere Node 18+ (usa `fetch` nativo). Sin dependencias externas.
 
 ```bash
 cd agente-multi-nicho
-npm start
+npm run dev
 ```
 
-Esto siembra 3 negocios de ejemplo (uno por nicho: turismo, panadería,
-clínica dental) la primera vez, y levanta el servidor en
-[http://localhost:5180](http://localhost:5180).
+`dev` siembra 3 negocios de ejemplo (uno por nicho: turismo, panadería,
+clínica dental) y levanta el servidor en
+[http://localhost:5180](http://localhost:5180). Para un servidor real
+(sin negocios de ejemplo falsos) usar `npm start`, que no siembra nada —
+los negocios se crean desde el panel con el botón "+".
 
-Para volver a sembrar sin levantar el servidor: `npm run seed`.
+Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
+
+## Antes de ponerlo en un servidor público
+
+Por defecto el panel queda **abierto a cualquiera con el link** — no hay
+usuarios ni contraseña. Definir `ACCESS_KEY` lo protege con una clave
+única (mismo patrón que el `ADMIN_TOKEN` de Colchones Yolé): el navegador
+pide usuario y contraseña, y solo importa la contraseña.
+
+```bash
+ACCESS_KEY=una-clave-larga-y-dificil-de-adivinar npm start
+```
+
+Sin `ACCESS_KEY`, el servidor arranca igual pero avisa en la consola que
+quedó abierto — pensado solo para probar en el propio computador.
 
 ## Qué incluye
 

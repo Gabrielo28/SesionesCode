@@ -4,6 +4,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { URL } = require('url');
 
 const store = require('./store');
@@ -11,7 +12,33 @@ const { listNichos, getNicho } = require('./nichos');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 
 const PORT = process.env.PORT || 5180;
+const ACCESS_KEY = process.env.ACCESS_KEY || '';
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+
+// Compara con largo fijo (sha256) para no filtrar la clave por tiempo de respuesta.
+function claveValida(intentada) {
+  const a = crypto.createHash('sha256').update(String(intentada)).digest();
+  const b = crypto.createHash('sha256').update(ACCESS_KEY).digest();
+  return crypto.timingSafeEqual(a, b);
+}
+
+function pedirClave(res) {
+  res.writeHead(401, {
+    'WWW-Authenticate': 'Basic realm="Agente Multi-Nicho"',
+    'Content-Type': 'text/plain; charset=utf-8',
+  });
+  res.end('Acceso restringido. Pide la clave a quien administra este negocio.');
+}
+
+function autenticado(req) {
+  if (!ACCESS_KEY) return true; // sin ACCESS_KEY configurada, queda abierto (solo para desarrollo local)
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Basic ')) return false;
+  const decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
+  const idx = decoded.indexOf(':');
+  const password = idx === -1 ? decoded : decoded.slice(idx + 1);
+  return claveValida(password);
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -97,6 +124,8 @@ function encontrarItem(items, itemId) {
 }
 
 const server = http.createServer(async (req, res) => {
+  if (!autenticado(req)) return pedirClave(res);
+
   const url = new URL(req.url, `http://${req.headers.host}`);
   const parts = url.pathname.split('/').filter(Boolean);
 
@@ -296,5 +325,8 @@ server.listen(PORT, () => {
   console.log(`Agente Multi-Nicho corriendo en http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) {
     console.log('ANTHROPIC_API_KEY no configurada: "Otra versión" solo rota entre variantes precalculadas.');
+  }
+  if (!ACCESS_KEY) {
+    console.log('ACCESS_KEY no configurada: el panel queda abierto a cualquiera con el link. No usar así en un servidor público.');
   }
 });
