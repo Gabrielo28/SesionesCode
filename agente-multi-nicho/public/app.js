@@ -50,9 +50,18 @@
   }
 
   // ---------- render: cola ----------
-  function pickFotoFilename(categoria) {
+  function hashString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  // Reparte las piezas entre las fotos disponibles de su categoría en vez de
+  // repetir siempre la primera (candado anti-repetición simple).
+  function pickFotoFilename(categoria, itemId) {
     const arr = fotos[categoria];
-    return arr && arr.length ? arr[0] : null;
+    if (!arr || !arr.length) return null;
+    return arr[hashString(itemId) % arr.length];
   }
 
   function drawCardCanvas(canvas) {
@@ -112,7 +121,7 @@
     const dateShort = item.date.split(' - ').slice(0, 2).join(' - ');
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
-    const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto) : null;
+    const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
     const fotoUrl = fotoNombre ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}` : null;
     const canvasW = 480;
     const canvasH = isPost ? 600 : 854;

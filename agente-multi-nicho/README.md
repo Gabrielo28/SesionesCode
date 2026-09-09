@@ -75,8 +75,7 @@ data/
   de Meta, sujeto a App Review y Business Verification; luego otras redes).
 - **Capa C** — autoservicio de cobro (Stripe) y login propio por negocio
   (hoy cualquiera que abra el panel ve todos los negocios — no hay cuentas).
-- Rotar entre varias fotos de una misma categoría en vez de usar siempre la
-  primera (hoy `pickFotoFilename` en `public/app.js` toma la primera).
+- Editar o eliminar un negocio ya creado (hoy solo se puede dar de alta).
 
 Ver el documento de arquitectura y el prototipo visual compartidos en la
 conversación para el detalle completo de estas capas.
