@@ -45,19 +45,25 @@ a { color: var(--amber); }
   height: 64px; flex-shrink: 0; border-bottom: 1px solid var(--border); display: flex;
   align-items: center; justify-content: space-between; padding: 0 28px; gap: 20px;
 }
-.switcher { display: flex; align-items: center; gap: 10px; }
+.switcher { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.switcher > div { min-width: 0; }
+.switcher .badge { flex-shrink: 0; }
 .switcher .badge {
   width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
   font-family: 'JetBrains Mono', monospace; font-size: 12px; background: #2a3a2c; color: #9fcf8a;
 }
 .switcher select {
   appearance: none; background: transparent; border: none; color: var(--ink); font-family: inherit;
-  font-weight: 600; font-size: 13.5px; padding-right: 18px;
+  font-weight: 600; font-size: 13.5px; padding-right: 18px; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6357' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right center; background-size: 14px;
 }
 .switcher select:focus { outline: none; }
-.switcher .niche { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); letter-spacing: 0.03em; }
+.switcher .niche {
+  display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint);
+  letter-spacing: 0.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .btn-icon {
   width: 26px; height: 26px; border-radius: 6px; background: transparent; border: 1px solid var(--border);
   color: var(--ink-dim); font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
@@ -121,7 +127,7 @@ a { color: var(--amber); }
 }
 .card-textarea:focus { outline: 1px solid var(--amber); }
 
-.card-actions { display: flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 4px; }
+.card-actions { display: flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 4px; flex-wrap: wrap; row-gap: 6px; }
 .btn-approve { flex: 1; background: var(--amber); border: none; color: #161310; font-weight: 600; font-size: 12px; padding: 8px 0; border-radius: 6px; }
 .btn-ghost { background: transparent; border: 1px solid var(--border); color: #d8d2c4; font-size: 11.5px; padding: 8px 10px; border-radius: 6px; white-space: nowrap; }
 .btn-text { background: transparent; border: none; color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 8px 2px; text-decoration: underline; white-space: nowrap; }
@@ -191,9 +197,10 @@ dialog#dialog-nuevo-negocio input, dialog#dialog-nuevo-negocio select {
 }
 dialog#dialog-nuevo-negocio input:focus, dialog#dialog-nuevo-negocio select:focus { outline: 1px solid var(--amber); }
 .form-row { display: flex; gap: 12px; }
-.form-row label { flex: 1; }
+.form-row label { flex: 1; min-width: 0; }
+.form-row input { min-width: 0; }
 .dialog-error { color: var(--coral); font-size: 12px; margin: 0; }
-.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
 .dialog-actions .btn-ghost { padding: 9px 16px; }
 .dialog-actions .btn-approve { padding: 9px 18px; flex: none; }
 
@@ -207,7 +214,39 @@ dialog#dialog-nuevo-negocio input:focus, dialog#dialog-nuevo-negocio select:focu
 .config-form input:focus { outline: 1px solid var(--amber); }
 .config-error { color: var(--coral); font-size: 12px; margin: 0; }
 .config-ok { color: var(--green); font-size: 12px; margin: 0; }
-.config-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.config-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; flex-wrap: wrap; gap: 12px; }
 .config-actions .btn-approve { padding: 10px 20px; flex: none; }
 .btn-danger { background: transparent; border: 1px solid var(--coral); color: var(--coral); font-weight: 600; font-size: 12.5px; padding: 9px 16px; border-radius: 7px; }
 .btn-danger:hover { background: var(--coral); color: #161310; }
+
+/* --- pantallas medianas: el calendario es lo primero que necesita más aire --- */
+@media (max-width: 900px) {
+  .cal-body { flex-direction: column; gap: 20px; }
+  .cal-detail {
+    width: auto; margin: 0; border-left: none; border-top: 1px solid var(--border);
+    padding: 18px 0 0;
+  }
+}
+
+/* --- pantallas angostas (celular) --- */
+@media (max-width: 760px) {
+  .rail { width: 56px; padding: 16px 0; }
+  .rail .logo { width: 28px; height: 28px; margin-bottom: 14px; }
+  .rail-btn { width: 34px; height: 34px; margin-bottom: 6px; }
+  .rail-btn svg { width: 17px; height: 17px; }
+
+  .topbar {
+    height: auto; flex-wrap: wrap; align-items: flex-start; row-gap: 10px; padding: 14px 16px;
+  }
+  .switcher { flex: 1 1 100%; }
+  .stats { flex: 1 1 100%; flex-wrap: wrap; row-gap: 10px; }
+  .stat { align-items: flex-start; }
+  #btn-generar { flex: 1 1 100%; text-align: center; order: 1; }
+
+  .view { padding: 18px 16px 28px; gap: 16px; }
+
+  .cal-grid { grid-auto-rows: minmax(64px, 1fr); }
+  .cal-chip span.txt { display: none; } /* en celdas angostas solo queda el punto de color y la hora */
+
+  .form-row { flex-direction: column; gap: 14px; }
+}
