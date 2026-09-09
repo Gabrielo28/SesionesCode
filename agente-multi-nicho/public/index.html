@@ -18,7 +18,7 @@
       <button class="rail-btn" data-view="calendario" title="Calendario">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5 H20.5"/><path d="M8 3 V6.5 M16 3 V6.5"/></svg>
       </button>
-      <button class="rail-btn" title="Marca (próximamente)" disabled>
+      <button class="rail-btn" data-view="fotos" title="Fotos del negocio">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 L4 15 L14 5 L18 9 L8 19 Z"/><path d="M13 6 L17 10"/></svg>
       </button>
       <button class="rail-btn spacer" title="Configuración (próximamente)" disabled>
@@ -34,6 +34,7 @@
             <select id="negocio-select"></select>
             <span class="niche" id="switcher-niche">-</span>
           </div>
+          <button id="btn-nuevo-negocio" class="btn-icon" title="Nuevo negocio">+</button>
         </div>
         <div class="stats">
           <div class="stat amber"><b id="stat-pendientes">0</b><span>Pendientes</span></div>
@@ -72,8 +73,47 @@
           </div>
         </div>
       </section>
+
+      <section id="view-fotos" class="view" hidden>
+        <div>
+          <h1>Fotos del negocio</h1>
+          <p class="sub">El contenido usa estas fotos según la categoría de cada pieza. Sin foto, la tarjeta muestra un color de marcador.</p>
+        </div>
+        <div id="fotos-categorias"></div>
+      </section>
     </div>
   </div>
+
+  <dialog id="dialog-nuevo-negocio">
+    <form id="form-nuevo-negocio" method="dialog">
+      <h2>Nuevo negocio</h2>
+      <label>Nombre
+        <input type="text" id="input-nombre" required placeholder="Ej: Cabañas Los Alerces">
+      </label>
+      <label>Nicho
+        <select id="input-nicho" required></select>
+      </label>
+      <div class="form-row">
+        <label>Precio desde
+          <input type="text" id="input-precio" placeholder="$XX.XXX">
+        </label>
+        <label>Unidad
+          <input type="text" id="input-unidad" placeholder="noche, combo, sesión...">
+        </label>
+      </div>
+      <label>Promoción vigente
+        <input type="text" id="input-promo" placeholder="Ej: 15% de descuento en temporada baja">
+      </label>
+      <label>Producto o servicio destacado
+        <input type="text" id="input-producto" placeholder="Ej: domo con tina caliente">
+      </label>
+      <p class="dialog-error" id="dialog-error" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" id="btn-cancelar-negocio" class="btn-ghost">Cancelar</button>
+        <button type="submit" class="btn-approve" id="btn-crear-negocio">Crear negocio</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="app.js"></script>
 </body>

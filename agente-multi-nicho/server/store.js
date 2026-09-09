@@ -8,8 +8,9 @@ const path = require('path');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const NEGOCIOS_DIR = path.join(DATA_DIR, 'negocios');
 const CONTENIDO_DIR = path.join(DATA_DIR, 'contenido');
+const FOTOS_DIR = path.join(DATA_DIR, 'fotos');
 
-for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR]) {
+for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -62,10 +63,48 @@ function saveContenido(negocioId, items) {
   return items;
 }
 
+// --- fotos: data/fotos/<negocioId>/<categoria>/<archivo> ---
+
+function negocioFotosDir(negocioId) {
+  return path.join(FOTOS_DIR, negocioId);
+}
+
+function listFotos(negocioId) {
+  const dir = negocioFotosDir(negocioId);
+  const resultado = {};
+  if (!fs.existsSync(dir)) return resultado;
+  for (const categoria of fs.readdirSync(dir)) {
+    const catDir = path.join(dir, categoria);
+    if (!fs.statSync(catDir).isDirectory()) continue;
+    resultado[categoria] = fs.readdirSync(catDir).sort();
+  }
+  return resultado;
+}
+
+function addFoto(negocioId, categoria, filename, buffer) {
+  const dir = path.join(negocioFotosDir(negocioId), categoria);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, filename), buffer);
+}
+
+function deleteFoto(negocioId, categoria, filename) {
+  const filePath = path.join(negocioFotosDir(negocioId), categoria, filename);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+}
+
+function fotoAbsolutePath(negocioId, categoria, filename) {
+  return path.join(negocioFotosDir(negocioId), categoria, filename);
+}
+
 module.exports = {
   listNegocios,
   getNegocio,
   saveNegocio,
   getContenido,
   saveContenido,
+  listFotos,
+  addFoto,
+  deleteFoto,
+  fotoAbsolutePath,
+  FOTOS_DIR,
 };

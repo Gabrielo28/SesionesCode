@@ -133,6 +133,7 @@ function generarBanco(negocio, cantidad = 6, startIndex = 0) {
       headline: headlineSet[idx % headlineSet.length],
       tag: enfoque.label,
       enfoqueId: enfoque.id,
+      categoriaFoto: enfoque.categoriaFoto || (nicho.categoriasFoto && nicho.categoriasFoto[0]) || null,
       date: dateLabel,
       hueFrom: hue[0],
       hueTo: hue[1],

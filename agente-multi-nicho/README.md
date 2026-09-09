@@ -26,15 +26,21 @@ Para volver a sembrar sin levantar el servidor: `npm run seed`.
 
 ## Qué incluye
 
-- **Cola de aprobación** — tarjetas con el diseño del post (foto real del
-  negocio + texto encima, aquí simulado con un degradé mientras no hay carga
-  de fotos), su enfoque, fecha programada y estado. Aprobar, rechazar,
-  deshacer, pedir otra versión y editar el texto a mano funcionan de verdad
-  contra la API.
+- **Cola de aprobación** — tarjetas con el diseño real del post: si hay una
+  foto cargada para su categoría, un `<canvas>` la compone con logo y texto
+  encima (igual que el programa original); si no, muestra un degradé de
+  marcador. Aprobar, rechazar, deshacer, pedir otra versión y editar el
+  texto a mano funcionan de verdad contra la API.
 - **Calendario** — las mismas publicaciones ubicadas en su fecha, con un
   panel de detalle al hacer clic.
+- **Fotos del negocio** — subir y borrar fotos por categoría (las categorías
+  las define la plantilla del nicho); el contenido las usa automáticamente
+  según el enfoque de cada pieza.
+- **Nuevo negocio** — alta desde el panel (botón "+" junto al selector), sin
+  tocar código ni scripts: nombre, nicho y los datos reales del negocio.
 - **Selector de negocio** — cambia entre negocios de nichos distintos sin
-  recargar la página; cada uno tiene su propio banco de contenido.
+  recargar la página; cada uno tiene su propio banco de contenido y sus
+  propias fotos.
 
 ## Cómo genera el contenido
 
@@ -60,16 +66,17 @@ server/
 public/
   index.html, app.js, styles.css   El panel (cola + calendario)
 data/
-  negocios/, contenido/            JSON generado en tiempo de ejecución (no se sube)
+  negocios/, contenido/, fotos/    Datos y fotos en tiempo de ejecución (no se sube)
 ```
 
 ## Qué falta (siguientes capas)
 
 - **Capa B** — conectores de publicación automática (Instagram vía Graph API
   de Meta, sujeto a App Review y Business Verification; luego otras redes).
-- **Capa C** — autoservicio de alta de negocio y cobro (Stripe).
-- Subida real de fotos y composición del diseño final en canvas (hoy la
-  vista previa usa un degradé de marcador de posición).
+- **Capa C** — autoservicio de cobro (Stripe) y login propio por negocio
+  (hoy cualquiera que abra el panel ve todos los negocios — no hay cuentas).
+- Rotar entre varias fotos de una misma categoría en vez de usar siempre la
+  primera (hoy `pickFotoFilename` en `public/app.js` toma la primera).
 
 Ver el documento de arquitectura y el prototipo visual compartidos en la
 conversación para el detalle completo de estas capas.

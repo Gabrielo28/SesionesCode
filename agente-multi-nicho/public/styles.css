@@ -58,6 +58,12 @@ a { color: var(--amber); }
 }
 .switcher select:focus { outline: none; }
 .switcher .niche { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); letter-spacing: 0.03em; }
+.btn-icon {
+  width: 26px; height: 26px; border-radius: 6px; background: transparent; border: 1px solid var(--border);
+  color: var(--ink-dim); font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  margin-left: 4px;
+}
+.btn-icon:hover { color: var(--amber); border-color: var(--amber); }
 
 .stats { display: flex; align-items: center; gap: 26px; }
 .stat { display: flex; flex-direction: column; align-items: flex-end; }
@@ -82,6 +88,7 @@ a { color: var(--amber); }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
 
 .card-media { position: relative; width: 100%; overflow: hidden; }
+.card-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .card-media.post { aspect-ratio: 4 / 5; }
 .card-media.historia { aspect-ratio: 9 / 16; }
 .card-texture { position: absolute; inset: 0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 6px); }
@@ -150,3 +157,42 @@ a { color: var(--amber); }
 .cal-detail .row { display: flex; align-items: center; gap: 8px; }
 .cal-detail .tagpill { font-size: 10.5px; color: var(--ink-dim); border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; align-self: flex-start; }
 .cal-detail .detail-text { font-size: 13px; line-height: 1.55; color: #f0ebe0; margin: 2px 0 0; }
+
+/* --- fotos --- */
+#fotos-categorias { display: flex; flex-direction: column; gap: 26px; }
+.foto-cat h2 { font-size: 13px; font-weight: 600; margin: 0 0 3px; text-transform: capitalize; }
+.foto-cat .foto-cat-sub { font-size: 11.5px; color: var(--ink-faint); margin: 0 0 12px; }
+.foto-strip { display: flex; flex-wrap: wrap; gap: 12px; }
+.foto-thumb { position: relative; width: 120px; height: 120px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.foto-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto-thumb button {
+  position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; border: none;
+  background: rgba(10,9,7,0.75); color: #f3ede1; font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center;
+}
+.foto-add {
+  width: 120px; height: 120px; border-radius: 8px; border: 1px dashed var(--border); background: transparent;
+  color: var(--ink-faint); font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.foto-add:hover { color: var(--amber); border-color: var(--amber); }
+.foto-add input { display: none; }
+
+/* --- diálogo nuevo negocio --- */
+dialog#dialog-nuevo-negocio {
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 12px;
+  padding: 0; width: 420px; max-width: 90vw;
+}
+dialog#dialog-nuevo-negocio::backdrop { background: rgba(10, 9, 7, 0.6); }
+dialog#dialog-nuevo-negocio form { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+dialog#dialog-nuevo-negocio h2 { margin: 0 0 4px; font-size: 16px; }
+dialog#dialog-nuevo-negocio label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
+dialog#dialog-nuevo-negocio input, dialog#dialog-nuevo-negocio select {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--ink);
+  font-family: inherit; font-size: 13px; padding: 8px 10px;
+}
+dialog#dialog-nuevo-negocio input:focus, dialog#dialog-nuevo-negocio select:focus { outline: 1px solid var(--amber); }
+.form-row { display: flex; gap: 12px; }
+.form-row label { flex: 1; }
+.dialog-error { color: var(--coral); font-size: 12px; margin: 0; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.dialog-actions .btn-ghost { padding: 9px 16px; }
+.dialog-actions .btn-approve { padding: 9px 18px; flex: none; }

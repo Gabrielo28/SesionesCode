@@ -2,3 +2,4 @@
 # node server/seed.js los vuelve a crear.
 data/negocios/*.json
 data/contenido/*.json
+data/fotos/
