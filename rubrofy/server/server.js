@@ -1,4 +1,4 @@
-// Servidor del Agente Multi-Nicho. Node puro, sin dependencias externas
+// Servidor de Rubrofy. Node puro, sin dependencias externas
 // (mismo criterio que colchones-yole): un archivo sirve la web y la API.
 
 const http = require('http');
@@ -24,7 +24,7 @@ function claveValida(intentada) {
 
 function pedirClave(res) {
   res.writeHead(401, {
-    'WWW-Authenticate': 'Basic realm="Agente Multi-Nicho"',
+    'WWW-Authenticate': 'Basic realm="Rubrofy"',
     'Content-Type': 'text/plain; charset=utf-8',
   });
   res.end('Acceso restringido. Pide la clave a quien administra este negocio.');
@@ -322,7 +322,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Agente Multi-Nicho corriendo en http://localhost:${PORT}`);
+  console.log(`Rubrofy corriendo en http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) {
     console.log('ANTHROPIC_API_KEY no configurada: "Otra versión" solo rota entre variantes precalculadas.');
   }

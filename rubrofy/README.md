@@ -1,4 +1,4 @@
-# Agente Multi-Nicho — Capa A
+# Rubrofy — Capa A
 
 Motor de generación y aprobación de contenido para redes sociales: genera un
 banco de publicaciones con datos reales del negocio, el dueño aprueba (o pide
@@ -9,12 +9,15 @@ aprobación externa, por eso ya es una app que corre y se puede probar hoy.
 No está atada a un rubro: agregar un nicho nuevo es escribir su plantilla en
 `server/nichos.js` (calendario, enfoques, tono), no tocar el motor.
 
+**Dominio:** rubrofy.com (comprado). Falta apuntarlo al hosting cuando el
+proyecto se despliegue en Railway.
+
 ## Cómo correrlo
 
 Requiere Node 18+ (usa `fetch` nativo). Sin dependencias externas.
 
 ```bash
-cd agente-multi-nicho
+cd rubrofy
 npm run dev
 ```
 
