@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg: #161310;
-  --surface: #201c17;
-  --rail: #1a1712;
+  --bg: #1c160f;
+  --surface: #241d15;
+  --rail: #201911;
   --border: #3a332a;
   --ink: #f3ede1;
   --ink-dim: #9c9385;
@@ -15,7 +15,13 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: 'Instrument Sans', sans-serif; }
+html, body {
+  margin: 0; height: 100%; color: var(--ink); font-family: 'Instrument Sans', sans-serif;
+  background:
+    radial-gradient(ellipse 1000px 700px at 12% -8%, rgba(230, 162, 58, 0.14), transparent 55%),
+    radial-gradient(ellipse 900px 650px at 105% 105%, rgba(221, 106, 82, 0.09), transparent 60%),
+    var(--bg);
+}
 button { font: inherit; cursor: pointer; }
 a { color: var(--amber); }
 
