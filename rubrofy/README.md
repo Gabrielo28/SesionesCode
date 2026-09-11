@@ -12,6 +12,11 @@ No está atada a un rubro: agregar un nicho nuevo es escribir su plantilla en
 **Dominio:** rubrofy.com (comprado). Falta apuntarlo al hosting cuando el
 proyecto se despliegue en Railway.
 
+**Marca:** logo e ícono ya aplicados (`public/icon-*.png`, `favicon-32.png`,
+`apple-touch-icon.png`, `manifest.json`) — el monograma "R" con la franja
+roja de "rubricación" dentro de un marco tipo cámara, guiño sutil a
+Instagram sin copiar su marca.
+
 ## Cómo correrlo
 
 Requiere Node 18+ (usa `fetch` nativo). Sin dependencias externas.
