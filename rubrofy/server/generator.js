@@ -27,9 +27,9 @@ const HEADLINES = {
 };
 
 const HUES = {
-  turismo: [['#3a4a3c', '#151d16'], ['#2c3a4a', '#0f151d']],
-  panaderia: [['#4a3c2c', '#1d160f'], ['#4a4230', '#1d1a10']],
-  clinica_dental: [['#244042', '#0d1a1b'], ['#2c3a4a', '#0f151d']],
+  turismo: [['#5a3d1e', '#20140a'], ['#5c2c1e', '#22100a']],
+  panaderia: [['#5a4526', '#20160a'], ['#5c3a1e', '#22140a']],
+  clinica_dental: [['#4a3624', '#1c130a'], ['#5c2f22', '#22120a']],
 };
 
 const d = (n) => (n.datos || {});
