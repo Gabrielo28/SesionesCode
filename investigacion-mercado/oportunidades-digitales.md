@@ -132,13 +132,61 @@ se pueden vender por separado o como combo "Ads a cobro" a un mismo cliente.)*
   requiere mucho más que complejidad de build, requiere distribución. Mejor jugar en nichos
   desatendidos (3.1, 3.2, 3.3) que en la categoría genérica.
 
-## 4. Próximos pasos sugeridos
+## 4. Checklist para replicar 3.1 (el embudo de Make) en un cliente nuevo
 
-1. Validar 3.1 (sponsors) ofreciéndoselo a 1-2 clubes más además de Curacaví FC, para confirmar
+Lo único que cambia entre clientes es la encuesta, la condición y el mensaje. La estructura del
+escenario de Make se copia tal cual. Antes de cotizar o construir, levantar esto con el cliente:
+
+**A. Sobre el anuncio y el lead**
+1. ¿Dónde corre la pauta hoy — Meta Ads, TikTok Ads, formulario propio en su web? (define el
+   disparador del escenario: Lead Ads de Meta, webhook, Google Sheet, etc.)
+2. ¿Cuántos leads reciben por semana hoy sin calificar? (sirve para dimensionar el ahorro de horas
+   y justificar el precio frente al cliente).
+
+**B. Sobre la encuesta de calificación**
+3. ¿Cuál es el perfil de cliente que **sí** quieren atender? Pedir que lo digan en sus propias
+   palabras (ej. "dueños de casa en la RM", "empresas de más de 10 empleados", "mujeres 25-45 con
+   presupuesto sobre $X").
+4. De ese perfil, ¿qué 2-3 preguntas cerradas (opción múltiple, no texto libre) permiten
+   detectarlo? Texto libre complica la evaluación automática de la condición — evitarlo salvo que
+   se sume clasificación con IA (eso sube la complejidad, cotizar aparte).
+5. ¿Ya tienen una encuesta o formulario armado (Google Forms, Typeform, etc.) o hay que crearlo
+   desde cero?
+
+**C. Sobre la condición de calificación**
+6. Traducir el perfil del punto 3 en una regla explícita y verificable con las respuestas del
+   punto 4 (ej.: "califica si respuesta 1 = Sí Y respuesta 2 ∈ {opción A, opción B}"). Si el
+   cliente no puede dar una regla clara, ese es el primer problema a resolver — sin regla clara no
+   hay automatización posible.
+7. ¿Qué pasa con los leads que **no** califican? (nada, van a una lista para nutrir después, o un
+   mensaje distinto). Definirlo evita que se pierdan silenciosamente.
+
+**D. Sobre el WhatsApp automático**
+8. ¿Envían desde WhatsApp Business normal, o ya tienen (o están dispuestos a pagar) WhatsApp
+   Business API vía un proveedor (Twilio, 360dialog, etc.)? Esto determina si el mensaje puede
+   salir 100% automático o necesita un paso semi-manual.
+9. Texto del mensaje: debe estar aprobado como plantilla si se usa la API — pedirlo con
+   anticipación, la aprobación de Meta puede tardar días.
+10. ¿Quién recibe la notificación interna cuando entra un lead calificado (vendedor, dueño)? El
+    valor real del embudo es que alguien humano actúe rápido sobre el lead caliente — sin esto el
+    automatismo no vende nada.
+
+**E. Entregable y precio**
+- Con las respuestas A-D se arma el escenario de Make (clonando el existente) y se cotiza:
+  setup fee según cuántas preguntas/condiciones no triviales haya, más mensualidad de
+  mantenimiento. Verticales con preguntas simples (2 preguntas, condición binaria) son casi
+  copiar-pegar; verticales con reglas más finas (varias condiciones combinadas, distintos mensajes
+  según segmento) suben el setup fee proporcionalmente.
+
+## 5. Próximos pasos sugeridos
+
+1. Usar la checklist de la sección 4 con el próximo prospecto que ya invierta en Ads, para
+   convertir 3.1 en una oferta concreta (no solo una idea en el papel).
+2. Validar 3.2 (sponsors) ofreciéndoselo a 1-2 clubes más además de Curacaví FC, para confirmar
    disposición a pagar antes de invertir en generalizar el código.
-2. Si Colchones Yolé pasa a producción real (ver `RESUMEN-PROYECTO.md`), documentar cuánto
-   esfuerzo tomó adaptarlo — eso da el costo real de replicar 3.2 para el siguiente cliente.
-3. Mantener este documento como registro vivo: cada vez que se investigue un nuevo problema,
+3. Si Colchones Yolé pasa a producción real (ver `RESUMEN-PROYECTO.md`), documentar cuánto
+   esfuerzo tomó adaptarlo — eso da el costo real de replicar 3.3 para el siguiente cliente.
+4. Mantener este documento como registro vivo: cada vez que se investigue un nuevo problema,
    agregarlo acá con el mismo formato (dolor / solución / complejidad / monetización / encaje).
 
 ---
