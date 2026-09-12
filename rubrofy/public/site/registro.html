@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crea tu cuenta — Rubrofy</title>
+  <link rel="icon" href="/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .registro-wrap { max-width: 480px; margin: 0 auto; padding: 56px 24px 80px; }
+    .registro-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .registro-card h1 { font-size: 22px; margin: 0 0 2px; }
+    .registro-card .sub { margin: 0 0 6px; font-size: 13.5px; color: var(--ink-dim); }
+    .registro-card label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-dim); }
+    .registro-card input, .registro-card select {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink);
+      font-family: inherit; font-size: 14px; padding: 10px 12px;
+    }
+    .registro-card input:focus, .registro-card select:focus { outline: 1px solid var(--amber); }
+    .form-row { display: flex; gap: 12px; }
+    .form-row label { flex: 1; min-width: 0; }
+    .registro-error { color: var(--coral); font-size: 12.5px; margin: 0; }
+    .registro-nota { font-size: 12px; color: var(--ink-faint); margin: 0; }
+    .registro-nota a { color: var(--amber); }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap topinner">
+      <a class="brand" href="/">
+        <img src="/icon-512.png" alt="Rubrofy">
+        Rubrofy
+      </a>
+      <a class="btn btn-ghost" href="/app">Iniciar sesión</a>
+    </div>
+  </header>
+
+  <div class="registro-wrap">
+    <div class="registro-card">
+      <div>
+        <h1>Crea tu cuenta</h1>
+        <p class="sub">Un negocio, una cuenta. Sin tarjeta para empezar.</p>
+      </div>
+      <form id="form-registro">
+        <label>Nombre del negocio
+          <input type="text" id="reg-nombre" required placeholder="Ej: Cabañas Los Alerces">
+        </label>
+        <label>Rubro
+          <select id="reg-nicho" required></select>
+        </label>
+        <label>Email
+          <input type="email" id="reg-email" required autocomplete="username">
+        </label>
+        <label>Clave (mínimo 8 caracteres)
+          <input type="password" id="reg-password" required minlength="8" autocomplete="new-password">
+        </label>
+        <div class="form-row">
+          <label>Precio desde
+            <input type="text" id="reg-precio" placeholder="$XX.XXX">
+          </label>
+          <label>Unidad
+            <input type="text" id="reg-unidad" placeholder="noche, combo, sesión...">
+          </label>
+        </div>
+        <label>Promoción vigente
+          <input type="text" id="reg-promo" placeholder="Ej: 15% de descuento en temporada baja">
+        </label>
+        <label>Producto o servicio destacado
+          <input type="text" id="reg-producto" placeholder="Ej: domo con tina caliente">
+        </label>
+        <p class="registro-error" id="registro-error" hidden></p>
+        <button type="submit" class="btn btn-primary" id="btn-registro" style="margin-top:6px;">Crear negocio</button>
+        <p class="registro-nota">¿Ya tienes cuenta? <a href="/app">Inicia sesión</a>.</p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var $ = function (sel) { return document.querySelector(sel); };
+
+      fetch('/api/nichos').then(function (r) { return r.json(); }).then(function (nichos) {
+        $('#reg-nicho').innerHTML = nichos.map(function (n) {
+          return '<option value="' + n.id + '">' + n.nombre + '</option>';
+        }).join('');
+      });
+
+      $('#form-registro').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var btn = $('#btn-registro');
+        var errorEl = $('#registro-error');
+        errorEl.hidden = true;
+        btn.disabled = true;
+        fetch('/api/auth/registro', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' },
+          body: JSON.stringify({
+            nombre: $('#reg-nombre').value,
+            nicho: $('#reg-nicho').value,
+            email: $('#reg-email').value,
+            password: $('#reg-password').value,
+            datos: {
+              precioDesde: $('#reg-precio').value,
+              unidad: $('#reg-unidad').value,
+              promo: $('#reg-promo').value,
+              productoDestacado: $('#reg-producto').value,
+            },
+          }),
+        }).then(function (res) {
+          if (!res.ok) return res.json().then(function (d) { throw new Error(d.error || 'No se pudo crear la cuenta'); });
+          window.location.href = '/app';
+        }).catch(function (err) {
+          errorEl.textContent = err.message;
+          errorEl.hidden = false;
+          btn.disabled = false;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -26,6 +26,7 @@ button { font: inherit; cursor: pointer; }
 a { color: var(--amber); }
 
 .app { display: flex; height: 100vh; overflow: hidden; }
+.app[hidden] { display: none; }
 
 /* --- rail --- */
 .rail {
@@ -59,14 +60,10 @@ a { color: var(--amber); }
   width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
   font-family: 'JetBrains Mono', monospace; font-size: 12px; background: #2a3a2c; color: #9fcf8a;
 }
-.switcher select {
-  appearance: none; background: transparent; border: none; color: var(--ink); font-family: inherit;
-  font-weight: 600; font-size: 13.5px; padding-right: 18px; max-width: 100%;
+.switcher .negocio-nombre {
+  display: block; font-weight: 600; font-size: 13.5px; max-width: 100%;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6357' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right center; background-size: 14px;
 }
-.switcher select:focus { outline: none; }
 .switcher .niche {
   display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint);
   letter-spacing: 0.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -189,27 +186,31 @@ a { color: var(--amber); }
 .foto-add:hover { color: var(--amber); border-color: var(--amber); }
 .foto-add input { display: none; }
 
-/* --- diálogo nuevo negocio --- */
-dialog#dialog-nuevo-negocio {
-  background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 12px;
-  padding: 0; width: 420px; max-width: 90vw;
-}
-dialog#dialog-nuevo-negocio::backdrop { background: rgba(10, 9, 7, 0.6); }
-dialog#dialog-nuevo-negocio form { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
-dialog#dialog-nuevo-negocio h2 { margin: 0 0 4px; font-size: 16px; }
-dialog#dialog-nuevo-negocio label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
-dialog#dialog-nuevo-negocio input, dialog#dialog-nuevo-negocio select {
-  background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--ink);
-  font-family: inherit; font-size: 13px; padding: 8px 10px;
-}
-dialog#dialog-nuevo-negocio input:focus, dialog#dialog-nuevo-negocio select:focus { outline: 1px solid var(--amber); }
 .form-row { display: flex; gap: 12px; }
 .form-row label { flex: 1; min-width: 0; }
 .form-row input { min-width: 0; }
-.dialog-error { color: var(--coral); font-size: 12px; margin: 0; }
-.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
-.dialog-actions .btn-ghost { padding: 9px 16px; }
-.dialog-actions .btn-approve { padding: 9px 18px; flex: none; }
+
+/* --- login --- */
+.login-view {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.login-view[hidden] { display: none; }
+.login-form {
+  width: 360px; max-width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px 28px; display: flex; flex-direction: column; gap: 14px; text-align: center;
+}
+.login-logo { border-radius: 10px; margin: 0 auto 4px; }
+.login-form h1 { margin: 0; font-size: 19px; }
+.login-form .sub { margin: 0 0 6px; font-size: 12.5px; color: var(--ink-dim); }
+.login-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); text-align: left; }
+.login-form input {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--ink);
+  font-family: inherit; font-size: 13px; padding: 9px 11px;
+}
+.login-form input:focus { outline: 1px solid var(--amber); }
+.login-error { color: var(--coral); font-size: 12px; margin: 0; }
+.login-note { margin: 4px 0 0; font-size: 12px; color: var(--ink-dim); }
+.login-note a { color: var(--amber); }
 
 /* --- configuración --- */
 .config-form { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }

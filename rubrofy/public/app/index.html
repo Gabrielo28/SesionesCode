@@ -11,7 +11,24 @@
   <link rel="stylesheet" href="/app/styles.css">
 </head>
 <body>
-  <div class="app">
+  <section id="view-login" class="login-view" hidden>
+    <form id="form-login" class="login-form">
+      <img src="/app/icon-192.png" width="44" height="44" alt="Rubrofy" class="login-logo">
+      <h1>Entrar a Rubrofy</h1>
+      <p class="sub">Cada negocio tiene su propia cuenta.</p>
+      <label>Email
+        <input type="email" id="login-email" required autocomplete="username">
+      </label>
+      <label>Clave
+        <input type="password" id="login-password" required autocomplete="current-password">
+      </label>
+      <p class="login-error" id="login-error" hidden></p>
+      <button type="submit" class="btn-approve" id="btn-login">Entrar</button>
+      <p class="login-note">¿No tienes cuenta? <a href="/registro.html">Crea tu negocio en Rubrofy</a>.</p>
+    </form>
+  </section>
+
+  <div class="app" id="view-app" hidden>
     <nav class="rail">
       <div class="logo">
         <img src="/app/icon-192.png" width="34" height="34" alt="Rubrofy">
@@ -35,16 +52,16 @@
         <div class="switcher">
           <div class="badge" id="switcher-badge">--</div>
           <div>
-            <select id="negocio-select"></select>
+            <span class="negocio-nombre" id="switcher-nombre">-</span>
             <span class="niche" id="switcher-niche">-</span>
           </div>
-          <button id="btn-nuevo-negocio" class="btn-icon" title="Nuevo negocio">+</button>
         </div>
         <div class="stats">
           <div class="stat amber"><b id="stat-pendientes">0</b><span>Pendientes</span></div>
           <div class="stat green"><b id="stat-aprobados">0</b><span>Aprobados</span></div>
           <div class="stat"><b id="stat-total">0</b><span>En cola</span></div>
           <button id="btn-generar">+ Generar más contenido</button>
+          <button id="btn-logout" class="btn-icon" title="Cerrar sesión">⏻</button>
         </div>
       </header>
 
@@ -119,37 +136,6 @@
       </section>
     </div>
   </div>
-
-  <dialog id="dialog-nuevo-negocio">
-    <form id="form-nuevo-negocio" method="dialog">
-      <h2>Nuevo negocio</h2>
-      <label>Nombre
-        <input type="text" id="input-nombre" required placeholder="Ej: Cabañas Los Alerces">
-      </label>
-      <label>Nicho
-        <select id="input-nicho" required></select>
-      </label>
-      <div class="form-row">
-        <label>Precio desde
-          <input type="text" id="input-precio" placeholder="$XX.XXX">
-        </label>
-        <label>Unidad
-          <input type="text" id="input-unidad" placeholder="noche, combo, sesión...">
-        </label>
-      </div>
-      <label>Promoción vigente
-        <input type="text" id="input-promo" placeholder="Ej: 15% de descuento en temporada baja">
-      </label>
-      <label>Producto o servicio destacado
-        <input type="text" id="input-producto" placeholder="Ej: domo con tina caliente">
-      </label>
-      <p class="dialog-error" id="dialog-error" hidden></p>
-      <div class="dialog-actions">
-        <button type="button" id="btn-cancelar-negocio" class="btn-ghost">Cancelar</button>
-        <button type="submit" class="btn-approve" id="btn-crear-negocio">Crear negocio</button>
-      </div>
-    </form>
-  </dialog>
 
   <script src="/app/app.js"></script>
 </body>

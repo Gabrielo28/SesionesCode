@@ -4,8 +4,6 @@
   const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
   const MESES_LARGO = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
 
-  let nichosMap = {};
-  let negocios = [];
   let negocioActual = null;
   let nichoActual = null; // plantilla completa del nicho del negocio actual (enfoques, categoriasFoto)
   let contenido = [];
@@ -29,7 +27,11 @@
       opts.headers
     );
     const res = await fetch(path, Object.assign({}, opts, { headers }));
-    if (!res.ok) throw new Error('Error de API (' + res.status + ') en ' + path);
+    if (!res.ok) {
+      const err = new Error('Error de API (' + res.status + ') en ' + path);
+      err.status = res.status;
+      throw err;
+    }
     return res.json();
   }
 
@@ -332,30 +334,20 @@
     renderFotos();
   }
 
+  function actualizarSwitcher() {
+    $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
+    $('#switcher-nombre').textContent = negocioActual.nombre || '-';
+    $('#switcher-niche').textContent = (nichoActual && nichoActual.nombre ? nichoActual.nombre : negocioActual.nicho).toUpperCase();
+  }
+
   async function guardarConfig(datos) {
     negocioActual = await api(`/api/negocios/${negocioActual.id}`, { method: 'PUT', body: JSON.stringify(datos) });
-    negocios = await api('/api/negocios');
-    $('#negocio-select').innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-    $('#negocio-select').value = negocioActual.id;
-    $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
+    actualizarSwitcher();
   }
 
   async function eliminarNegocioActual() {
-    const idBorrado = negocioActual.id;
-    await api(`/api/negocios/${idBorrado}`, { method: 'DELETE' });
-    negocios = await api('/api/negocios');
-    if (negocios.length) {
-      $('#negocio-select').innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-      await loadNegocio(negocios[0].id);
-    } else {
-      negocioActual = null;
-      $('#negocio-select').innerHTML = '';
-      $('#switcher-badge').textContent = '--';
-      $('#switcher-niche').textContent = '-';
-      contenido = [];
-      render();
-      $('#cola-grid').innerHTML = '<p class="empty-state">No hay negocios todavía. Usa el botón "+" para crear el primero.</p>';
-    }
+    await api(`/api/negocios/${negocioActual.id}`, { method: 'DELETE' });
+    mostrarLogin();
   }
 
   // ---------- acciones ----------
@@ -394,42 +386,59 @@
     }
   }
 
-  // ---------- negocio / init ----------
-  async function loadNegocio(id) {
-    negocioActual = await api('/api/negocios/' + id);
+  // ---------- login / sesión ----------
+  function mostrarLogin(mensaje) {
+    negocioActual = null;
+    $('#view-app').hidden = true;
+    $('#view-login').hidden = false;
+    $('#login-error').hidden = !mensaje;
+    if (mensaje) $('#login-error').textContent = mensaje;
+    $('#login-email').focus();
+  }
+
+  async function mostrarApp() {
     const [contenidoData, nichoData, fotosData] = await Promise.all([
-      api('/api/negocios/' + id + '/contenido'),
-      api('/api/negocios/' + id + '/nicho'),
-      api('/api/negocios/' + id + '/fotos'),
+      api('/api/negocios/' + negocioActual.id + '/contenido'),
+      api('/api/negocios/' + negocioActual.id + '/nicho'),
+      api('/api/negocios/' + negocioActual.id + '/fotos'),
     ]);
     contenido = contenidoData;
     nichoActual = nichoData;
     fotos = fotosData;
     editingIds.clear();
     calSelectedId = null;
-    $('#negocio-select').value = id;
-    $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
-    $('#switcher-niche').textContent = (nichosMap[negocioActual.nicho] || negocioActual.nicho).toUpperCase();
+    actualizarSwitcher();
+    $('#view-login').hidden = true;
+    $('#view-app').hidden = false;
     render();
   }
 
-  async function crearNegocio(datos) {
-    const nuevo = await api('/api/negocios', { method: 'POST', body: JSON.stringify(datos) });
-    negocios = await api('/api/negocios');
-    $('#negocio-select').innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-    await loadNegocio(nuevo.id);
+  async function iniciarSesion(email, password) {
+    negocioActual = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    await mostrarApp();
+  }
+
+  async function cerrarSesion() {
+    await api('/api/auth/logout', { method: 'POST' });
+    mostrarLogin();
   }
 
   async function init() {
-    const [nichos, listaNegocios] = await Promise.all([api('/api/nichos'), api('/api/negocios')]);
-    nichosMap = Object.fromEntries(nichos.map((n) => [n.id, n.nombre]));
-    negocios = listaNegocios;
-
-    const select = $('#negocio-select');
-    select.innerHTML = negocios.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-    select.addEventListener('change', () => loadNegocio(select.value));
-
-    if (negocios.length) await loadNegocio(negocios[0].id);
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = $('#btn-login');
+      btn.disabled = true;
+      try {
+        await iniciarSesion($('#login-email').value.trim(), $('#login-password').value);
+      } catch (err) {
+        mostrarLogin(err.status === 401 ? 'Email o clave incorrectos.' : 'No se pudo iniciar sesión.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    $('#btn-logout').addEventListener('click', () => {
+      cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
+    });
 
     // navegación entre vistas
     document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
@@ -481,41 +490,8 @@
     });
     $('#btn-eliminar-negocio').addEventListener('click', () => {
       if (!negocioActual) return;
-      const confirmado = confirm(`¿Eliminar "${negocioActual.nombre}"? Se borra su contenido y sus fotos. Esta acción no se puede deshacer.`);
+      const confirmado = confirm(`¿Eliminar "${negocioActual.nombre}"? Se borra tu cuenta, tu contenido y tus fotos. Esta acción no se puede deshacer.`);
       if (confirmado) eliminarNegocioActual().catch((err) => alert('No se pudo eliminar: ' + err.message));
-    });
-
-    // diálogo: nuevo negocio
-    const dialog = $('#dialog-nuevo-negocio');
-    $('#btn-nuevo-negocio').addEventListener('click', () => {
-      $('#form-nuevo-negocio').reset();
-      $('#dialog-error').hidden = true;
-      $('#input-nicho').innerHTML = nichos.map((n) => `<option value="${n.id}">${escapeHtml(n.nombre)}</option>`).join('');
-      dialog.showModal();
-    });
-    $('#btn-cancelar-negocio').addEventListener('click', () => dialog.close());
-    $('#form-nuevo-negocio').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = $('#btn-crear-negocio');
-      btn.disabled = true;
-      try {
-        await crearNegocio({
-          nombre: $('#input-nombre').value,
-          nicho: $('#input-nicho').value,
-          datos: {
-            precioDesde: $('#input-precio').value,
-            unidad: $('#input-unidad').value,
-            promo: $('#input-promo').value,
-            productoDestacado: $('#input-producto').value,
-          },
-        });
-        dialog.close();
-      } catch (err) {
-        $('#dialog-error').textContent = err.message;
-        $('#dialog-error').hidden = false;
-      } finally {
-        btn.disabled = false;
-      }
     });
 
     $('#btn-generar').addEventListener('click', generarMas);
@@ -550,6 +526,13 @@
       calSelectedId = chip.dataset.id;
       renderCalendario();
     });
+
+    try {
+      negocioActual = await api('/api/me');
+      await mostrarApp();
+    } catch (err) {
+      mostrarLogin();
+    }
   }
 
   init().catch((err) => {

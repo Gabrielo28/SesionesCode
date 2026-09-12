@@ -16,9 +16,11 @@ proyecto se despliegue en Railway.
 "rubricación" dentro de un marco tipo cámara, guiño sutil a Instagram sin
 copiar su marca.
 
-**Sitio y panel son cosas separadas:** `rubrofy.com` (público, sin clave) es
-la landing de marketing; `rubrofy.com/app` es el panel donde se gestiona el
-contenido, protegido con `ACCESS_KEY` cuando está configurada.
+**Sitio y panel son cosas separadas:** `rubrofy.com` (público) es la landing
+de marketing; `rubrofy.com/app` es el panel. Es self-service: cada negocio
+crea su propia cuenta en `rubrofy.com/registro.html` (nombre, rubro, email
+y clave) y solo ve su propio contenido — no hay una clave maestra que vea
+todos los negocios juntos.
 
 ## Cómo correrlo
 
@@ -31,27 +33,34 @@ npm run dev
 
 `dev` siembra 3 negocios de ejemplo (uno por nicho: turismo, panadería,
 clínica dental) y levanta el servidor en
-[http://localhost:5180](http://localhost:5180). Para un servidor real
-(sin negocios de ejemplo falsos) usar `npm start`, que no siembra nada —
-los negocios se crean desde el panel con el botón "+".
+[http://localhost:5180](http://localhost:5180). La clave de los 3 es
+`rubrofy123` — entra en `/app` con cualquiera de estos emails:
+
+- `demo-turismo@rubrofy.com`
+- `demo-panaderia@rubrofy.com`
+- `demo-clinica@rubrofy.com`
+
+Para un servidor real (sin negocios de ejemplo falsos) usar `npm start`,
+que no siembra nada — cada negocio se crea desde `/registro.html`.
 
 Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
 
 ## Antes de ponerlo en un servidor público
 
-La landing (`/`) siempre es pública — es la página de marketing, no debe
-pedir clave. Por defecto el panel (`/app`, `/api`, `/fotos`) queda
-**abierto a cualquiera con el link** — no hay usuarios ni contraseña.
-Definir `ACCESS_KEY` lo protege con una clave única (mismo patrón que el
-`ADMIN_TOKEN` de Colchones Yolé): el navegador pide usuario y contraseña,
-y solo importa la contraseña.
+Definir `SESSION_SECRET` (una cadena larga y al azar) antes de arrancar en
+producción:
 
 ```bash
-ACCESS_KEY=una-clave-larga-y-dificil-de-adivinar npm start
+SESSION_SECRET=una-cadena-larga-y-al-azar npm start
 ```
 
-Sin `ACCESS_KEY`, el servidor arranca igual pero avisa en la consola que
-quedó abierto — pensado solo para probar en el propio computador.
+Sin `SESSION_SECRET`, el servidor genera una al azar en cada arranque —
+funciona igual, pero todas las sesiones activas se cierran cada vez que el
+proceso se reinicia (redeploy, crash, etc.). Con la variable fija, las
+sesiones sobreviven un reinicio del servidor.
+
+Las contraseñas se guardan con `scrypt` (costoso de romper por fuerza
+bruta), nunca en texto plano.
 
 ## Qué incluye
 
@@ -65,14 +74,12 @@ quedó abierto — pensado solo para probar en el propio computador.
 - **Fotos del negocio** — subir y borrar fotos por categoría (las categorías
   las define la plantilla del nicho); el contenido las usa automáticamente
   según el enfoque de cada pieza.
-- **Nuevo negocio** — alta desde el panel (botón "+" junto al selector), sin
-  tocar código ni scripts: nombre, nicho y los datos reales del negocio.
-- **Configuración** — editar el nombre y los datos de un negocio existente,
-  o eliminarlo (borra también su contenido y sus fotos). El nicho no se
-  puede cambiar una vez creado.
-- **Selector de negocio** — cambia entre negocios de nichos distintos sin
-  recargar la página; cada uno tiene su propio banco de contenido y sus
-  propias fotos.
+- **Registro self-service** — cada negocio crea su cuenta en `/registro.html`
+  (nombre, rubro, email, clave y sus datos reales), sin tocar código ni
+  scripts.
+- **Configuración** — editar el nombre y los datos del negocio, o eliminar
+  la cuenta (borra también su contenido, sus fotos y cierra la sesión). El
+  nicho no se puede cambiar una vez creado.
 
 ## Cómo genera el contenido
 
@@ -91,13 +98,14 @@ ANTHROPIC_API_KEY=sk-ant-... npm start
 ```
 server/
   server.js     API REST + servidor estático (Node puro, sin dependencias)
+  auth.js       Contraseñas (scrypt) y sesiones firmadas (HMAC) por negocio
   store.js      Persistencia en JSON (negocios y contenido) — swap a Postgres futuro
   nichos.js     Plantillas por nicho: calendario, enfoques, tono
   generator.js  Genera el banco de contenido (plantillas + hook a Claude)
   seed.js       Crea los negocios de ejemplo
 public/
-  site/         Landing pública (rubrofy.com) — marketing, sin clave
-  app/          El panel (rubrofy.com/app) — cola, calendario, fotos, config
+  site/         Landing pública (rubrofy.com) — marketing + registro, sin sesión
+  app/          El panel (rubrofy.com/app) — login, cola, calendario, fotos, config
 data/
   negocios/, contenido/, fotos/    Datos y fotos en tiempo de ejecución (no se sube)
 ```
@@ -106,8 +114,8 @@ data/
 
 - **Capa B** — conectores de publicación automática (Instagram vía Graph API
   de Meta, sujeto a App Review y Business Verification; luego otras redes).
-- **Capa C** — autoservicio de cobro (Stripe) y login propio por negocio
-  (hoy cualquiera que abra el panel ve todos los negocios — no hay cuentas).
+- **Capa C** — autoservicio de cobro (Stripe). El login self-service por
+  negocio ya está — falta cobrar por la suscripción.
 
 Ver el documento de arquitectura y el prototipo visual compartidos en la
 conversación para el detalle completo de estas capas.

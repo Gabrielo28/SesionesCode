@@ -4,47 +4,32 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { URL } = require('url');
 
 const store = require('./store');
+const auth = require('./auth');
 const { listNichos, getNicho } = require('./nichos');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 
 const PORT = process.env.PORT || 5180;
-const ACCESS_KEY = process.env.ACCESS_KEY || '';
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
 const APP_DIR = path.join(__dirname, '..', 'public', 'app');
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Compara con largo fijo (sha256) para no filtrar la clave por tiempo de respuesta.
-function claveValida(intentada) {
-  const a = crypto.createHash('sha256').update(String(intentada)).digest();
-  const b = crypto.createHash('sha256').update(ACCESS_KEY).digest();
-  return crypto.timingSafeEqual(a, b);
+// El acceso es self-service: cada negocio es su propia cuenta (email +
+// clave), no hay una clave maestra que vea todos los negocios juntos.
+function sesionActual(req) {
+  return auth.verificarSesion(auth.leerCookie(req, 'rubrofy_sesion'));
 }
 
-function pedirClave(res) {
-  res.writeHead(401, {
-    'WWW-Authenticate': 'Basic realm="Rubrofy"',
-    'Content-Type': 'text/plain; charset=utf-8',
-  });
-  res.end('Acceso restringido. Pide la clave a quien administra este negocio.');
+function noAutorizado(res) {
+  sendJSON(res, 401, { error: 'No autorizado' });
 }
 
-function autenticado(req) {
-  if (!ACCESS_KEY) return true; // sin ACCESS_KEY configurada, queda abierto (solo para desarrollo local)
-  const header = req.headers.authorization || '';
-  if (!header.startsWith('Basic ')) return false;
-  const decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
-  const idx = decoded.indexOf(':');
-  const password = idx === -1 ? decoded : decoded.slice(idx + 1);
-  return claveValida(password);
-}
-
-// Basic Auth reenvía credenciales cacheadas a cualquier origen — sin esto, un
-// <form> en un sitio ajeno podría aprobar/crear/generar contenido con la
-// sesión de alguien más (CSRF). Un formulario HTML plano no puede agregar
-// esta cabecera ni mandar JSON, así que exigir ambas cosas lo bloquea.
+// Sesión por cookie (en vez de Basic Auth) tiene el mismo problema de CSRF:
+// el navegador la reenvía sola a cualquier origen. Un <form> ajeno no puede
+// agregar esta cabecera custom ni mandar JSON, así que exigir ambas bloquea
+// esa clase de ataque en toda mutación bajo /api.
 const CSRF_HEADER = 'x-rubrofy-panel';
 
 function peticionLegitima(req) {
@@ -92,14 +77,25 @@ function idUnico(base) {
   return id;
 }
 
-function sendJSON(res, status, data) {
+function sendJSON(res, status, data, extraHeaders) {
   const body = JSON.stringify(data);
-  res.writeHead(status, {
+  res.writeHead(status, Object.assign({
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
     'X-Content-Type-Options': 'nosniff',
-  });
+  }, extraHeaders));
   res.end(body);
+}
+
+// Datos públicos de un negocio (nunca el hash/salt de su clave).
+function negocioPublico(negocio) {
+  const { auth: _auth, ...resto } = negocio;
+  return resto;
+}
+
+function buscarNegocioPorEmail(email) {
+  const buscado = String(email || '').trim().toLowerCase();
+  return store.listNegocios().find((n) => n.email === buscado) || null;
 }
 
 function notFound(res) {
@@ -150,11 +146,6 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const parts = url.pathname.split('/').filter(Boolean);
 
-  // La página pública (rubrofy.com) no pide clave; el panel (/app), la API
-  // y las fotos de los negocios sí, cuando ACCESS_KEY está configurada.
-  const requiereClave = parts[0] === 'api' || parts[0] === 'app' || parts[0] === 'fotos';
-  if (requiereClave && !autenticado(req)) return pedirClave(res);
-
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
   if (parts[0] === 'api' && mutando && !peticionLegitima(req)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
@@ -163,29 +154,31 @@ const server = http.createServer(async (req, res) => {
   try {
     // --- API ---
     if (parts[0] === 'api') {
-      // GET /api/nichos
+      // GET /api/nichos — pública: la necesita el formulario de registro.
       if (parts[1] === 'nichos' && parts.length === 2 && req.method === 'GET') {
         return sendJSON(res, 200, listNichos());
       }
 
-      // GET /api/negocios
-      if (parts[1] === 'negocios' && parts.length === 2 && req.method === 'GET') {
-        return sendJSON(res, 200, store.listNegocios());
-      }
-
-      // POST /api/negocios  { nombre, nicho, datos }
-      if (parts[1] === 'negocios' && parts.length === 2 && req.method === 'POST') {
+      // POST /api/auth/registro  { nombre, nicho, email, password, datos }
+      if (parts[1] === 'auth' && parts[2] === 'registro' && parts.length === 3 && req.method === 'POST') {
         const body = await readBody(req);
         const nombre = (body.nombre || '').trim();
         const nichoId = body.nicho;
+        const email = String(body.email || '').trim().toLowerCase();
+        const password = String(body.password || '');
         if (!nombre) return sendJSON(res, 400, { error: 'Falta el nombre del negocio' });
         if (!getNicho(nichoId)) return sendJSON(res, 400, { error: 'Nicho inválido' });
+        if (!EMAIL_RE.test(email)) return sendJSON(res, 400, { error: 'Email inválido' });
+        if (password.length < 8) return sendJSON(res, 400, { error: 'La clave debe tener al menos 8 caracteres' });
+        if (buscarNegocioPorEmail(email)) return sendJSON(res, 409, { error: 'Ya existe una cuenta con ese email' });
 
         const id = idUnico(slugify(nombre));
         const negocio = {
           id,
           nombre,
           nicho: nichoId,
+          email,
+          auth: auth.hashPassword(password),
           marca: { color: '#e6a23a' },
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
@@ -196,17 +189,42 @@ const server = http.createServer(async (req, res) => {
         };
         store.saveNegocio(negocio);
         store.saveContenido(id, generarBanco(negocio, 6, 0));
-        return sendJSON(res, 201, negocio);
+        const cookie = auth.cookieSesion(req, auth.crearSesion(id));
+        return sendJSON(res, 201, negocioPublico(negocio), { 'Set-Cookie': cookie });
+      }
+
+      // POST /api/auth/login  { email, password }
+      if (parts[1] === 'auth' && parts[2] === 'login' && parts.length === 3 && req.method === 'POST') {
+        const body = await readBody(req);
+        const negocio = buscarNegocioPorEmail(body.email);
+        const claveOk = negocio && negocio.auth && auth.verifyPassword(String(body.password || ''), negocio.auth.salt, negocio.auth.hash);
+        if (!claveOk) return sendJSON(res, 401, { error: 'Email o clave incorrectos' });
+        const cookie = auth.cookieSesion(req, auth.crearSesion(negocio.id));
+        return sendJSON(res, 200, negocioPublico(negocio), { 'Set-Cookie': cookie });
+      }
+
+      // POST /api/auth/logout
+      if (parts[1] === 'auth' && parts[2] === 'logout' && parts.length === 3 && req.method === 'POST') {
+        return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
+      }
+
+      // GET /api/me — el negocio de la sesión actual, o 401 si no hay sesión.
+      if (parts[1] === 'me' && parts.length === 2 && req.method === 'GET') {
+        const negocioId = sesionActual(req);
+        const negocio = negocioId && store.getNegocio(negocioId);
+        if (!negocio) return noAutorizado(res);
+        return sendJSON(res, 200, negocioPublico(negocio));
       }
 
       if (parts[1] === 'negocios' && parts.length >= 3) {
         const negocioId = parts[2];
+        if (sesionActual(req) !== negocioId) return noAutorizado(res);
         const negocio = store.getNegocio(negocioId);
         if (!negocio) return sendJSON(res, 404, { error: 'Negocio no encontrado' });
 
         // GET /api/negocios/:id
         if (parts.length === 3 && req.method === 'GET') {
-          return sendJSON(res, 200, negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
         }
 
         // PUT /api/negocios/:id  { nombre, datos }
@@ -222,13 +240,13 @@ const server = http.createServer(async (req, res) => {
             productoDestacado: body.datos && body.datos.productoDestacado ? String(body.datos.productoDestacado).trim() : '',
           };
           store.saveNegocio(negocio);
-          return sendJSON(res, 200, negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
         }
 
         // DELETE /api/negocios/:id
         if (parts.length === 3 && req.method === 'DELETE') {
           store.deleteNegocio(negocioId);
-          return sendJSON(res, 200, { ok: true });
+          return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
         }
 
         // GET /api/negocios/:id/contenido
@@ -334,6 +352,7 @@ const server = http.createServer(async (req, res) => {
     // --- fotos subidas: /fotos/:negocioId/:categoria/:archivo ---
     if (parts[0] === 'fotos' && parts.length === 4 && req.method === 'GET') {
       const [, negocioId, categoria, archivo] = parts;
+      if (sesionActual(req) !== negocioId) return notFound(res);
       const filePath = store.fotoAbsolutePath(
         path.basename(negocioId),
         path.basename(categoria),
@@ -370,8 +389,5 @@ server.listen(PORT, () => {
   console.log(`Rubrofy corriendo en http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) {
     console.log('ANTHROPIC_API_KEY no configurada: "Otra versión" solo rota entre variantes precalculadas.');
-  }
-  if (!ACCESS_KEY) {
-    console.log('ACCESS_KEY no configurada: el panel queda abierto a cualquiera con el link. No usar así en un servidor público.');
   }
 });

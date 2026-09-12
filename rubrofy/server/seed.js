@@ -1,15 +1,23 @@
 // Crea negocios de ejemplo (uno por nicho) con su banco de contenido inicial.
 // Correr una vez: node server/seed.js  (no borra negocios existentes con el mismo id
 // si ya tienen contenido generado, para no perder aprobaciones al reiniciar).
+//
+// Rubrofy es self-service: cada negocio es su propia cuenta (email + clave).
+// La clave de los 3 negocios de ejemplo es siempre "rubrofy123" — solo para
+// probar en local, nunca se usa en un negocio real creado desde /registro.
 
 const store = require('./store');
+const auth = require('./auth');
 const { generarBanco } = require('./generator');
+
+const CLAVE_DEMO = 'rubrofy123';
 
 const NEGOCIOS_EJEMPLO = [
   {
     id: 'domo-bosque-sur',
     nombre: 'Domo Bosque Sur',
     nicho: 'turismo',
+    email: 'demo-turismo@rubrofy.com',
     marca: { color: '#7fae6b' },
     datos: {
       precioDesde: '$89.000',
@@ -22,6 +30,7 @@ const NEGOCIOS_EJEMPLO = [
     id: 'panaderia-migas',
     nombre: 'Panadería Migas',
     nicho: 'panaderia',
+    email: 'demo-panaderia@rubrofy.com',
     marca: { color: '#e6a23a' },
     datos: {
       precioDesde: '$2.500',
@@ -34,6 +43,7 @@ const NEGOCIOS_EJEMPLO = [
     id: 'clinica-sonrisa-sur',
     nombre: 'Clínica Sonrisa Sur',
     nicho: 'clinica_dental',
+    email: 'demo-clinica@rubrofy.com',
     marca: { color: '#7d93a8' },
     datos: {
       precioDesde: '$45.000',
@@ -45,7 +55,10 @@ const NEGOCIOS_EJEMPLO = [
 
 for (const negocio of NEGOCIOS_EJEMPLO) {
   const existente = store.getNegocio(negocio.id);
-  if (!existente) store.saveNegocio(negocio);
+  if (!existente) {
+    negocio.auth = auth.hashPassword(CLAVE_DEMO);
+    store.saveNegocio(negocio);
+  }
 
   const contenidoExistente = store.getContenido(negocio.id);
   if (contenidoExistente.length === 0) {
@@ -58,3 +71,5 @@ for (const negocio of NEGOCIOS_EJEMPLO) {
 }
 
 console.log('Negocios de ejemplo listos:', NEGOCIOS_EJEMPLO.map((n) => n.id).join(', '));
+console.log(`Inicia sesión en /app con cualquiera de estos emails y la clave "${CLAVE_DEMO}":`);
+for (const n of NEGOCIOS_EJEMPLO) console.log(`  - ${n.email}`);
