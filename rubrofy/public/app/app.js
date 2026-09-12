@@ -23,7 +23,12 @@
   }
 
   async function api(path, opts) {
-    const res = await fetch(path, Object.assign({ headers: { 'content-type': 'application/json' } }, opts));
+    opts = opts || {};
+    const headers = Object.assign(
+      { 'content-type': 'application/json', 'x-rubrofy-panel': '1' },
+      opts.headers
+    );
+    const res = await fetch(path, Object.assign({}, opts, { headers }));
     if (!res.ok) throw new Error('Error de API (' + res.status + ') en ' + path);
     return res.json();
   }

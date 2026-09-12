@@ -41,6 +41,21 @@ function autenticado(req) {
   return claveValida(password);
 }
 
+// Basic Auth reenvía credenciales cacheadas a cualquier origen — sin esto, un
+// <form> en un sitio ajeno podría aprobar/crear/generar contenido con la
+// sesión de alguien más (CSRF). Un formulario HTML plano no puede agregar
+// esta cabecera ni mandar JSON, así que exigir ambas cosas lo bloquea.
+const CSRF_HEADER = 'x-rubrofy-panel';
+
+function peticionLegitima(req) {
+  if (req.headers[CSRF_HEADER] !== '1') return false;
+  if (req.method === 'POST' || req.method === 'PUT') {
+    const tipo = (req.headers['content-type'] || '').split(';')[0].trim();
+    if (tipo !== 'application/json') return false;
+  }
+  return true;
+}
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -79,7 +94,11 @@ function idUnico(base) {
 
 function sendJSON(res, status, data) {
   const body = JSON.stringify(data);
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': Buffer.byteLength(body) });
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Length': Buffer.byteLength(body),
+    'X-Content-Type-Options': 'nosniff',
+  });
   res.end(body);
 }
 
@@ -115,7 +134,10 @@ function serveStatic(res, baseDir, rel) {
   fs.readFile(filePath, (err, content) => {
     if (err) return notFound(res);
     const ext = path.extname(filePath);
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    res.writeHead(200, {
+      'Content-Type': MIME[ext] || 'application/octet-stream',
+      'X-Content-Type-Options': 'nosniff',
+    });
     res.end(content);
   });
 }
@@ -132,6 +154,11 @@ const server = http.createServer(async (req, res) => {
   // y las fotos de los negocios sí, cuando ACCESS_KEY está configurada.
   const requiereClave = parts[0] === 'api' || parts[0] === 'app' || parts[0] === 'fotos';
   if (requiereClave && !autenticado(req)) return pedirClave(res);
+
+  const mutando = req.method !== 'GET' && req.method !== 'HEAD';
+  if (parts[0] === 'api' && mutando && !peticionLegitima(req)) {
+    return sendJSON(res, 403, { error: 'Solicitud rechazada' });
+  }
 
   try {
     // --- API ---
@@ -240,7 +267,12 @@ const server = http.createServer(async (req, res) => {
 
         // DELETE /api/negocios/:id/fotos/:categoria/:archivo
         if (parts[3] === 'fotos' && parts.length === 6 && req.method === 'DELETE') {
-          const [, , , , categoria, archivo] = parts;
+          const nicho = getNicho(negocio.nicho);
+          const categoria = path.basename(parts[4]);
+          const archivo = path.basename(parts[5]);
+          if (!nicho.categoriasFoto.includes(categoria)) {
+            return sendJSON(res, 400, { error: 'Categoría de foto inválida' });
+          }
           store.deleteFoto(negocioId, categoria, archivo);
           return sendJSON(res, 200, store.listFotos(negocioId));
         }
@@ -311,7 +343,10 @@ const server = http.createServer(async (req, res) => {
       return fs.readFile(filePath, (err, content) => {
         if (err) return notFound(res);
         const ext = path.extname(filePath).toLowerCase();
-        res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+        res.writeHead(200, {
+          'Content-Type': MIME[ext] || 'application/octet-stream',
+          'X-Content-Type-Options': 'nosniff',
+        });
         res.end(content);
       });
     }
@@ -327,7 +362,7 @@ const server = http.createServer(async (req, res) => {
     return notFound(res);
   } catch (err) {
     console.error(err);
-    sendJSON(res, 500, { error: 'Error interno', detalle: err.message });
+    sendJSON(res, 500, { error: 'Error interno' });
   }
 });
 
