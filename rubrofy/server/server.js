@@ -13,7 +13,8 @@ const { generarBanco, generarVarianteConClaude } = require('./generator');
 
 const PORT = process.env.PORT || 5180;
 const ACCESS_KEY = process.env.ACCESS_KEY || '';
-const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
+const APP_DIR = path.join(__dirname, '..', 'public', 'app');
 
 // Compara con largo fijo (sha256) para no filtrar la clave por tiempo de respuesta.
 function claveValida(intentada) {
@@ -106,10 +107,10 @@ function readBody(req, maxBytes) {
   });
 }
 
-function serveStatic(req, res, pathname) {
-  const rel = pathname === '/' ? '/index.html' : pathname;
-  const filePath = path.join(PUBLIC_DIR, rel);
-  if (!filePath.startsWith(PUBLIC_DIR)) return notFound(res);
+function serveStatic(res, baseDir, rel) {
+  const relLimpio = rel === '' || rel === '/' ? '/index.html' : rel;
+  const filePath = path.join(baseDir, relLimpio);
+  if (!filePath.startsWith(baseDir)) return notFound(res);
 
   fs.readFile(filePath, (err, content) => {
     if (err) return notFound(res);
@@ -124,10 +125,13 @@ function encontrarItem(items, itemId) {
 }
 
 const server = http.createServer(async (req, res) => {
-  if (!autenticado(req)) return pedirClave(res);
-
   const url = new URL(req.url, `http://${req.headers.host}`);
   const parts = url.pathname.split('/').filter(Boolean);
+
+  // La página pública (rubrofy.com) no pide clave; el panel (/app), la API
+  // y las fotos de los negocios sí, cuando ACCESS_KEY está configurada.
+  const requiereClave = parts[0] === 'api' || parts[0] === 'app' || parts[0] === 'fotos';
+  if (requiereClave && !autenticado(req)) return pedirClave(res);
 
   try {
     // --- API ---
@@ -313,7 +317,13 @@ const server = http.createServer(async (req, res) => {
     }
 
     // --- estáticos ---
-    if (req.method === 'GET') return serveStatic(req, res, url.pathname);
+    if (req.method === 'GET') {
+      if (parts[0] === 'app') {
+        const rel = '/' + parts.slice(1).join('/');
+        return serveStatic(res, APP_DIR, rel);
+      }
+      return serveStatic(res, SITE_DIR, url.pathname);
+    }
     return notFound(res);
   } catch (err) {
     console.error(err);

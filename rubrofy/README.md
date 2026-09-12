@@ -12,10 +12,13 @@ No está atada a un rubro: agregar un nicho nuevo es escribir su plantilla en
 **Dominio:** rubrofy.com (comprado). Falta apuntarlo al hosting cuando el
 proyecto se despliegue en Railway.
 
-**Marca:** logo e ícono ya aplicados (`public/icon-*.png`, `favicon-32.png`,
-`apple-touch-icon.png`, `manifest.json`) — el monograma "R" con la franja
-roja de "rubricación" dentro de un marco tipo cámara, guiño sutil a
-Instagram sin copiar su marca.
+**Marca:** logo e ícono ya aplicados — el monograma "R" con la franja de
+"rubricación" dentro de un marco tipo cámara, guiño sutil a Instagram sin
+copiar su marca.
+
+**Sitio y panel son cosas separadas:** `rubrofy.com` (público, sin clave) es
+la landing de marketing; `rubrofy.com/app` es el panel donde se gestiona el
+contenido, protegido con `ACCESS_KEY` cuando está configurada.
 
 ## Cómo correrlo
 
@@ -36,10 +39,12 @@ Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
 
 ## Antes de ponerlo en un servidor público
 
-Por defecto el panel queda **abierto a cualquiera con el link** — no hay
-usuarios ni contraseña. Definir `ACCESS_KEY` lo protege con una clave
-única (mismo patrón que el `ADMIN_TOKEN` de Colchones Yolé): el navegador
-pide usuario y contraseña, y solo importa la contraseña.
+La landing (`/`) siempre es pública — es la página de marketing, no debe
+pedir clave. Por defecto el panel (`/app`, `/api`, `/fotos`) queda
+**abierto a cualquiera con el link** — no hay usuarios ni contraseña.
+Definir `ACCESS_KEY` lo protege con una clave única (mismo patrón que el
+`ADMIN_TOKEN` de Colchones Yolé): el navegador pide usuario y contraseña,
+y solo importa la contraseña.
 
 ```bash
 ACCESS_KEY=una-clave-larga-y-dificil-de-adivinar npm start
@@ -91,7 +96,8 @@ server/
   generator.js  Genera el banco de contenido (plantillas + hook a Claude)
   seed.js       Crea los negocios de ejemplo
 public/
-  index.html, app.js, styles.css   El panel (cola + calendario)
+  site/         Landing pública (rubrofy.com) — marketing, sin clave
+  app/          El panel (rubrofy.com/app) — cola, calendario, fotos, config
 data/
   negocios/, contenido/, fotos/    Datos y fotos en tiempo de ejecución (no se sube)
 ```
