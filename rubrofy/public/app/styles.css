@@ -212,6 +212,20 @@ a { color: var(--amber); }
 .login-note { margin: 4px 0 0; font-size: 12px; color: var(--ink-dim); }
 .login-note a { color: var(--amber); }
 
+/* --- conexión con Instagram --- */
+.ig-card {
+  max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;
+}
+.ig-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ig-card-head h2 { margin: 0; font-size: 14px; }
+.ig-estado {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,0.06); color: var(--ink-faint);
+}
+.ig-estado.conectado { background: rgba(63,191,95,0.16); color: var(--green); }
+.ig-card .config-form { max-width: none; }
+
 /* --- configuración --- */
 .config-form { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
 .config-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }

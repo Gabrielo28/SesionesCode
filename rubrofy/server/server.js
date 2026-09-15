@@ -10,6 +10,7 @@ const store = require('./store');
 const auth = require('./auth');
 const { listNichos, getNicho } = require('./nichos');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
+const { publicarEnInstagram } = require('./instagram');
 
 const PORT = process.env.PORT || 5180;
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
@@ -87,10 +88,20 @@ function sendJSON(res, status, data, extraHeaders) {
   res.end(body);
 }
 
-// Datos públicos de un negocio (nunca el hash/salt de su clave).
+// Datos públicos de un negocio (nunca la clave ni el token de Instagram).
 function negocioPublico(negocio) {
-  const { auth: _auth, ...resto } = negocio;
+  const { auth: _auth, instagram, ...resto } = negocio;
+  resto.instagramConectado = !!(instagram && instagram.accessToken);
   return resto;
+}
+
+// URL absoluta y pública del propio servidor, para construir el enlace que
+// Instagram usa para descargar una foto al publicar. Usa PUBLIC_URL si está
+// configurada (recomendado en producción); si no, la deduce del request.
+function urlBase(req) {
+  if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, '');
+  const proto = req.headers['x-forwarded-proto'] || 'http';
+  return `${proto}://${req.headers.host}`;
 }
 
 function buscarNegocioPorEmail(email) {
@@ -140,6 +151,46 @@ function serveStatic(res, baseDir, rel) {
 
 function encontrarItem(items, itemId) {
   return items.find((it) => it.id === itemId);
+}
+
+// Mismo criterio anti-repetición que usa el panel (public/app/app.js) para
+// repartir varias fotos de una categoría entre distintas piezas de contenido.
+function hashString(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+function elegirFoto(negocioId, categoria, itemId) {
+  const disponibles = (store.listFotos(negocioId)[categoria]) || [];
+  if (!disponibles.length) return null;
+  return disponibles[hashString(itemId) % disponibles.length];
+}
+
+// Al aprobar, si el negocio ya conectó Instagram y la pieza tiene una foto
+// real asignada, se publica de verdad. Si falta cualquiera de las dos cosas,
+// queda aprobada igual pero sin publicación automática (no es un error).
+async function intentarPublicarEnInstagram(req, negocio, item) {
+  if (!negocio.instagram || !negocio.instagram.accessToken) {
+    return { intentado: false, motivo: 'Instagram no está conectado' };
+  }
+  const archivo = item.categoriaFoto ? elegirFoto(negocio.id, item.categoriaFoto, item.id) : null;
+  if (!archivo) {
+    return { intentado: false, motivo: 'Esta pieza no tiene una foto real asignada todavía' };
+  }
+
+  const token = auth.crearTokenFoto(negocio.id, item.categoriaFoto, archivo);
+  const imageUrl = `${urlBase(req)}/fotos/${negocio.id}/${item.categoriaFoto}/${archivo}?t=${token}`;
+  const caption = item.variants[item.variantIndex];
+
+  const resultado = await publicarEnInstagram({
+    userId: negocio.instagram.userId,
+    accessToken: negocio.instagram.accessToken,
+    imageUrl,
+    caption,
+  });
+
+  return { intentado: true, publicadoEl: new Date().toISOString(), ...resultado };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -249,6 +300,25 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
         }
 
+        // PUT /api/negocios/:id/instagram  { userId, accessToken }
+        if (parts[3] === 'instagram' && parts.length === 4 && req.method === 'PUT') {
+          const body = await readBody(req);
+          const userId = String(body.userId || '').trim();
+          const accessToken = String(body.accessToken || '').trim();
+          if (!/^[0-9]+$/.test(userId)) return sendJSON(res, 400, { error: 'ID de usuario de Instagram inválido' });
+          if (!accessToken) return sendJSON(res, 400, { error: 'Falta el token de acceso' });
+          negocio.instagram = { userId, accessToken, conectadoEl: new Date().toISOString() };
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
+        // DELETE /api/negocios/:id/instagram
+        if (parts[3] === 'instagram' && parts.length === 4 && req.method === 'DELETE') {
+          delete negocio.instagram;
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
         // GET /api/negocios/:id/contenido
         if (parts[3] === 'contenido' && parts.length === 4 && req.method === 'GET') {
           return sendJSON(res, 200, store.getContenido(negocioId));
@@ -316,6 +386,7 @@ const server = http.createServer(async (req, res) => {
 
           if (accion === 'aprobar' && req.method === 'POST') {
             item.status = 'aprobado';
+            item.instagram = await intentarPublicarEnInstagram(req, negocio, item);
           } else if (accion === 'rechazar' && req.method === 'POST') {
             item.status = 'rechazado';
           } else if (accion === 'deshacer' && req.method === 'POST') {
@@ -352,7 +423,9 @@ const server = http.createServer(async (req, res) => {
     // --- fotos subidas: /fotos/:negocioId/:categoria/:archivo ---
     if (parts[0] === 'fotos' && parts.length === 4 && req.method === 'GET') {
       const [, negocioId, categoria, archivo] = parts;
-      if (sesionActual(req) !== negocioId) return notFound(res);
+      const tokenFoto = url.searchParams.get('t');
+      const autorizadoPorToken = tokenFoto && auth.verificarTokenFoto(tokenFoto, negocioId, categoria, archivo);
+      if (sesionActual(req) !== negocioId && !autorizadoPorToken) return notFound(res);
       const filePath = store.fotoAbsolutePath(
         path.basename(negocioId),
         path.basename(categoria),

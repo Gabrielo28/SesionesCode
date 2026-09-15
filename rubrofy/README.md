@@ -1,10 +1,13 @@
-# Rubrofy — Capa A
+# Rubrofy
 
 Motor de generación y aprobación de contenido para redes sociales: genera un
 banco de publicaciones con datos reales del negocio, el dueño aprueba (o pide
-otra versión, o edita el texto a mano), y queda listo para publicar. Esta es
-la **Capa A** del producto — no depende de la API de Meta ni de ninguna
-aprobación externa, por eso ya es una app que corre y se puede probar hoy.
+otra versión, o edita el texto a mano), y si el negocio conectó su Instagram,
+al aprobar se publica de verdad. La aprobación humana (**Capa A**) funciona
+sin depender de nada externo; la publicación real (**Capa B**) usa la API de
+Instagram y hoy está probada con cuentas agregadas como tester en la app de
+Meta — abrirla a cualquier negocio sin agregarlo a mano requiere que Meta
+apruebe la app (App Review + Business Verification).
 
 No está atada a un rubro: agregar un nicho nuevo es escribir su plantilla en
 `server/nichos.js` (calendario, enfoques, tono), no tocar el motor.
@@ -62,6 +65,12 @@ sesiones sobreviven un reinicio del servidor.
 Las contraseñas se guardan con `scrypt` (costoso de romper por fuerza
 bruta), nunca en texto plano.
 
+Definir también `PUBLIC_URL` (ej. `https://rubrofy.com`) para que el enlace
+temporal que se le manda a Instagram para descargar cada foto apunte al
+dominio público real y no a la URL interna del servidor. Sin esta variable,
+la usa deducida del request — funciona igual en producción normalmente, pero
+`PUBLIC_URL` es más confiable detrás de balanceadores/proxies.
+
 ## Qué incluye
 
 - **Cola de aprobación** — tarjetas con el diseño real del post: si hay una
@@ -80,6 +89,13 @@ bruta), nunca en texto plano.
 - **Configuración** — editar el nombre y los datos del negocio, o eliminar
   la cuenta (borra también su contenido, sus fotos y cierra la sesión). El
   nicho no se puede cambiar una vez creado.
+- **Conexión con Instagram y publicación real** — cada negocio conecta su
+  cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
+  Configuración. Al aprobar una pieza que tiene una foto real asignada, se
+  publica de verdad vía la Instagram Graph API; si falla, la pieza queda
+  igual como aprobada y el error se muestra en la tarjeta, sin bloquear el
+  flujo. Sin conexión, o sin foto real, aprobar solo marca la pieza como
+  aprobada (como antes).
 
 ## Cómo genera el contenido
 
@@ -98,7 +114,8 @@ ANTHROPIC_API_KEY=sk-ant-... npm start
 ```
 server/
   server.js     API REST + servidor estático (Node puro, sin dependencias)
-  auth.js       Contraseñas (scrypt) y sesiones firmadas (HMAC) por negocio
+  auth.js       Contraseñas (scrypt), sesiones firmadas y token temporal de foto
+  instagram.js  Publicación real vía Instagram Graph API
   store.js      Persistencia en JSON (negocios y contenido) — swap a Postgres futuro
   nichos.js     Plantillas por nicho: calendario, enfoques, tono
   generator.js  Genera el banco de contenido (plantillas + hook a Claude)
@@ -112,8 +129,13 @@ data/
 
 ## Qué falta (siguientes capas)
 
-- **Capa B** — conectores de publicación automática (Instagram vía Graph API
-  de Meta, sujeto a App Review y Business Verification; luego otras redes).
+- **Capa B** — la publicación real a Instagram ya funciona (probada de punta
+  a punta), pero conectar la cuenta hoy es manual: el negocio pide su ID y
+  token siguiendo los pasos de Meta (agregar la app como tester, generar el
+  token) y los pega en Configuración. Para que cualquier negocio conecte su
+  Instagram con un botón (sin pasar por el panel de Meta) hace falta App
+  Review + Business Verification, y armar el flujo de login con Instagram
+  (OAuth) en vez del campo manual.
 - **Capa C** — autoservicio de cobro (Stripe). El login self-service por
   negocio ya está — falta cobrar por la suscripción.
 

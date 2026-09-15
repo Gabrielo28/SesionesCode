@@ -41,6 +41,21 @@
     return { color: 'var(--amber)', label: 'Pendiente' };
   }
 
+  // Qué mostrar en la tarjeta ya decidida: si Instagram está conectado y la
+  // pieza tenía foto real, dice si la publicación de verdad funcionó o no.
+  function notaAprobacion(item) {
+    if (item.status !== 'aprobado') return { color: 'var(--coral)', texto: 'No se publicará' };
+    const dateShort = item.date.split(' - ').slice(0, 2).join(' - ');
+    const ig = item.instagram;
+    if (!ig || !ig.intentado) {
+      return { color: 'var(--ink-faint)', texto: 'Aprobado &middot; ' + escapeHtml(dateShort) };
+    }
+    if (ig.ok) {
+      return { color: 'var(--green)', texto: 'Publicado en Instagram &middot; ' + escapeHtml(dateShort) };
+    }
+    return { color: 'var(--coral)', texto: 'Error al publicar: ' + escapeHtml(ig.error || 'desconocido') };
+  }
+
   function parseItemDate(dateStr) {
     const [ddMes, hora] = dateStr.split(' - ');
     const [ddStr, mes] = ddMes.split(' ');
@@ -125,7 +140,6 @@
     const isPost = item.aspect.trim().startsWith('4');
     const isPending = item.status === 'pendiente';
     const isEditing = editingIds.has(item.id);
-    const dateShort = item.date.split(' - ').slice(0, 2).join(' - ');
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
     const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
@@ -159,7 +173,7 @@
             </div>
           ` : `
             <div class="card-note">
-              <span class="note-text" style="color:${meta.color}">${item.status === 'aprobado' ? 'Se publica automático &middot; ' + escapeHtml(dateShort) : 'No se publicará'}</span>
+              <span class="note-text" style="color:${notaAprobacion(item).color}">${notaAprobacion(item).texto}</span>
               <button data-action="undo" data-id="${item.id}">Deshacer</button>
             </div>
           `}
@@ -301,6 +315,13 @@
     $('#config-producto').value = (negocioActual.datos && negocioActual.datos.productoDestacado) || '';
     $('#config-error').hidden = true;
     $('#config-ok').hidden = true;
+
+    const conectado = !!negocioActual.instagramConectado;
+    $('#ig-estado').textContent = conectado ? 'Conectado' : 'Sin conectar';
+    $('#ig-estado').classList.toggle('conectado', conectado);
+    $('#form-instagram').hidden = conectado;
+    $('#btn-desconectar-ig').hidden = !conectado;
+    $('#ig-error').hidden = true;
   }
 
   function render() {
@@ -465,6 +486,31 @@
       const btn = e.target.closest('[data-borrar-categoria]');
       if (!btn) return;
       borrarFoto(btn.dataset.borrarCategoria, btn.dataset.borrarArchivo).catch((err) => alert('No se pudo borrar: ' + err.message));
+    });
+
+    // conexión con Instagram
+    $('#form-instagram').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.submitter;
+      $('#ig-error').hidden = true;
+      btn.disabled = true;
+      try {
+        negocioActual = await api(`/api/negocios/${negocioActual.id}/instagram`, {
+          method: 'PUT',
+          body: JSON.stringify({ userId: $('#ig-user-id').value.trim(), accessToken: $('#ig-token').value.trim() }),
+        });
+        renderConfig();
+      } catch (err) {
+        $('#ig-error').textContent = 'No se pudo conectar: revisa el ID y el token.';
+        $('#ig-error').hidden = false;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    $('#btn-desconectar-ig').addEventListener('click', async () => {
+      if (!confirm('¿Desconectar Instagram? Las próximas aprobaciones no se publicarán solas.')) return;
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/instagram`, { method: 'DELETE' });
+      renderConfig();
     });
 
     // configuración: guardar cambios / eliminar negocio

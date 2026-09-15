@@ -108,6 +108,28 @@
           <h1>Configuración del negocio</h1>
           <p class="sub">El nicho no se puede cambiar aquí: define qué categorías de foto y calendario usa este negocio.</p>
         </div>
+
+        <div class="ig-card" id="ig-card">
+          <div class="ig-card-head">
+            <h2>Conexión con Instagram</h2>
+            <span class="ig-estado" id="ig-estado">Sin conectar</span>
+          </div>
+          <p class="sub">Cuando está conectado, aprobar una pieza con foto real la publica directo en Instagram.</p>
+          <form id="form-instagram" class="config-form" hidden>
+            <label>ID de usuario de Instagram
+              <input type="text" id="ig-user-id" required placeholder="Ej: 17841401589133267">
+            </label>
+            <label>Token de acceso
+              <input type="password" id="ig-token" required placeholder="Token de la API de Instagram">
+            </label>
+            <p class="config-error" id="ig-error" hidden></p>
+            <div class="config-actions">
+              <button type="submit" class="btn-approve">Conectar Instagram</button>
+            </div>
+          </form>
+          <button type="button" class="btn-danger" id="btn-desconectar-ig" hidden>Desconectar Instagram</button>
+        </div>
+
         <form id="form-config" class="config-form">
           <label>Nombre
             <input type="text" id="config-nombre" required>

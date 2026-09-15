@@ -47,6 +47,32 @@ function verificarSesion(token) {
   return negocioId;
 }
 
+// Token de corta duración para exponer UNA foto puntual sin sesión —
+// Instagram necesita descargar la imagen desde un servidor público para
+// poder publicarla, así que en vez de abrir /fotos entero, generamos un
+// enlace temporal (5 min) válido solo para ese archivo exacto.
+const FOTO_TOKEN_MINUTOS = 5;
+
+function crearTokenFoto(negocioId, categoria, archivo) {
+  const vence = Date.now() + FOTO_TOKEN_MINUTOS * 60 * 1000;
+  const payload = `${negocioId}/${categoria}/${archivo}.${vence}`;
+  return `${vence}.${firmar(payload)}`;
+}
+
+function verificarTokenFoto(token, negocioId, categoria, archivo) {
+  if (!token) return false;
+  const partes = String(token).split('.');
+  if (partes.length !== 2) return false;
+  const [venceStr, firma] = partes;
+  if (!/^[0-9]+$/.test(venceStr) || !/^[a-f0-9]{64}$/.test(firma)) return false;
+  if (Number(venceStr) < Date.now()) return false;
+
+  const payload = `${negocioId}/${categoria}/${archivo}.${venceStr}`;
+  const esperada = Buffer.from(firmar(payload), 'hex');
+  const recibida = Buffer.from(firma, 'hex');
+  return esperada.length === recibida.length && crypto.timingSafeEqual(esperada, recibida);
+}
+
 function leerCookie(req, nombre) {
   const header = req.headers.cookie || '';
   for (const parte of header.split(';')) {
@@ -63,4 +89,7 @@ function cookieSesion(req, token) {
   return `rubrofy_sesion=${token || ''}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
 }
 
-module.exports = { hashPassword, verifyPassword, crearSesion, verificarSesion, leerCookie, cookieSesion };
+module.exports = {
+  hashPassword, verifyPassword, crearSesion, verificarSesion, leerCookie, cookieSesion,
+  crearTokenFoto, verificarTokenFoto,
+};
