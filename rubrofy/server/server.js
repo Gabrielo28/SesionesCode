@@ -8,7 +8,7 @@ const { URL } = require('url');
 
 const store = require('./store');
 const auth = require('./auth');
-const { listNichos, getNicho } = require('./nichos');
+const { generarEstrategia } = require('./estrategia');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 const { publicarEnInstagram } = require('./instagram');
 
@@ -205,29 +205,26 @@ const server = http.createServer(async (req, res) => {
   try {
     // --- API ---
     if (parts[0] === 'api') {
-      // GET /api/nichos — pública: la necesita el formulario de registro.
-      if (parts[1] === 'nichos' && parts.length === 2 && req.method === 'GET') {
-        return sendJSON(res, 200, listNichos());
-      }
-
-      // POST /api/auth/registro  { nombre, nicho, email, password, datos }
+      // POST /api/auth/registro  { nombre, rubro, email, password, datos }
       if (parts[1] === 'auth' && parts[2] === 'registro' && parts.length === 3 && req.method === 'POST') {
         const body = await readBody(req);
         const nombre = (body.nombre || '').trim();
-        const nichoId = body.nicho;
+        const rubro = String(body.rubro || '').trim();
         const email = String(body.email || '').trim().toLowerCase();
         const password = String(body.password || '');
         if (!nombre) return sendJSON(res, 400, { error: 'Falta el nombre del negocio' });
-        if (!getNicho(nichoId)) return sendJSON(res, 400, { error: 'Nicho inválido' });
+        if (!rubro) return sendJSON(res, 400, { error: 'Falta describir el rubro del negocio' });
+        if (rubro.length > 300) return sendJSON(res, 400, { error: 'La descripción del rubro es muy larga' });
         if (!EMAIL_RE.test(email)) return sendJSON(res, 400, { error: 'Email inválido' });
         if (password.length < 8) return sendJSON(res, 400, { error: 'La clave debe tener al menos 8 caracteres' });
         if (buscarNegocioPorEmail(email)) return sendJSON(res, 409, { error: 'Ya existe una cuenta con ese email' });
 
         const id = idUnico(slugify(nombre));
+        const estrategia = await generarEstrategia({ nombre, rubro });
         const negocio = {
           id,
           nombre,
-          nicho: nichoId,
+          estrategia,
           email,
           auth: auth.hashPassword(password),
           marca: { color: '#e6a23a' },
@@ -239,7 +236,7 @@ const server = http.createServer(async (req, res) => {
           },
         };
         store.saveNegocio(negocio);
-        store.saveContenido(id, generarBanco(negocio, 6, 0));
+        store.saveContenido(id, await generarBanco(negocio, 6, 0));
         const cookie = auth.cookieSesion(req, auth.crearSesion(id));
         return sendJSON(res, 201, negocioPublico(negocio), { 'Set-Cookie': cookie });
       }
@@ -324,10 +321,9 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, store.getContenido(negocioId));
         }
 
-        // GET /api/negocios/:id/nicho  (plantilla completa: enfoques + categorías de foto)
-        if (parts[3] === 'nicho' && parts.length === 4 && req.method === 'GET') {
-          const nicho = getNicho(negocio.nicho);
-          return sendJSON(res, 200, nicho);
+        // GET /api/negocios/:id/estrategia  (plantilla completa: enfoques + categorías de foto)
+        if (parts[3] === 'estrategia' && parts.length === 4 && req.method === 'GET') {
+          return sendJSON(res, 200, negocio.estrategia);
         }
 
         // GET /api/negocios/:id/fotos
@@ -337,10 +333,9 @@ const server = http.createServer(async (req, res) => {
 
         // POST /api/negocios/:id/fotos  { categoria, filename, dataBase64 }
         if (parts[3] === 'fotos' && parts.length === 4 && req.method === 'POST') {
-          const nicho = getNicho(negocio.nicho);
           const body = await readBody(req, 15e6);
           const categoria = body.categoria;
-          if (!nicho.categoriasFoto.includes(categoria)) {
+          if (!negocio.estrategia.categoriasFoto.includes(categoria)) {
             return sendJSON(res, 400, { error: 'Categoría de foto inválida' });
           }
           const extOriginal = path.extname(body.filename || '').toLowerCase();
@@ -355,10 +350,9 @@ const server = http.createServer(async (req, res) => {
 
         // DELETE /api/negocios/:id/fotos/:categoria/:archivo
         if (parts[3] === 'fotos' && parts.length === 6 && req.method === 'DELETE') {
-          const nicho = getNicho(negocio.nicho);
           const categoria = path.basename(parts[4]);
           const archivo = path.basename(parts[5]);
-          if (!nicho.categoriasFoto.includes(categoria)) {
+          if (!negocio.estrategia.categoriasFoto.includes(categoria)) {
             return sendJSON(res, 400, { error: 'Categoría de foto inválida' });
           }
           store.deleteFoto(negocioId, categoria, archivo);
@@ -370,7 +364,7 @@ const server = http.createServer(async (req, res) => {
           const body = await readBody(req);
           const cantidad = Number(body.cantidad) || 6;
           const actuales = store.getContenido(negocioId);
-          const nuevos = generarBanco(negocio, cantidad, actuales.length);
+          const nuevos = await generarBanco(negocio, cantidad, actuales.length);
           const items = actuales.concat(nuevos);
           store.saveContenido(negocioId, items);
           return sendJSON(res, 200, items);

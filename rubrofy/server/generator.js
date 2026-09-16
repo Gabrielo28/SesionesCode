@@ -1,95 +1,21 @@
 // Motor de generación de contenido.
-// Por defecto usa plantillas de texto (gratis, sin llamadas externas).
-// Si hay ANTHROPIC_API_KEY configurada, "Otra versión" puede pedirle a
-// Claude una variante nueva en vez de solo rotar las precalculadas.
+// La plantilla de cada negocio (tono, enfoques, categorías de foto) sale de
+// su propia `estrategia` (ver server/estrategia.js), generada por Claude a
+// partir de su rubro — no de una tabla fija por nicho. Con ANTHROPIC_API_KEY
+// configurada, Claude también escribe los titulares y captions reales del
+// banco inicial; sin key, usa plantillas genéricas con los datos del negocio.
 
-const { getNicho } = require('./nichos');
+const MODEL = 'claude-haiku-4-5-20251001';
 
-const HEADLINES = {
-  turismo: {
-    experiencia: ['DESCONECTA\nDE VERDAD', 'ASÍ SE VIVE\nAQUÍ'],
-    precio: ['RESERVA\nCON DESCUENTO', 'TARIFA DE\nTEMPORADA'],
-    urgencia: ['QUEDAN POCAS\nFECHAS', 'SE ESTÁ\nAGOTANDO'],
-    recinto: ['CONOCE\nEL LUGAR', 'CADA RINCÓN\nCUENTA'],
-  },
-  panaderia: {
-    producto: ['RECIÉN\nHORNEADO', 'HOY SALIÓ\nDEL HORNO'],
-    precio: ['PROMO\nDE LA SEMANA', 'PRECIO\nESPECIAL'],
-    urgencia: ['STOCK\nLIMITADO', 'ÚLTIMAS\nUNIDADES'],
-    proceso: ['ASÍ LO\nHACEMOS', 'DESDE CERO\nCADA DÍA'],
-  },
-  clinica_dental: {
-    servicio: ['TU SONRISA\nEN BUENAS MANOS', 'SIN LETRA\nCHICA'],
-    precio: ['PLANES\nDISPONIBLES', 'EVALUACIÓN\nINCLUIDA'],
-    confianza: ['CONFÍA EN\nTU EQUIPO', 'TECNOLOGÍA\nQUE TRANQUILIZA'],
-    recordatorio: ['AGENDA TU\nCONTROL', 'UN CHEQUEO\na TIEMPO'],
-  },
-};
-
-const HUES = {
-  turismo: [['#5a3d1e', '#20140a'], ['#5c2c1e', '#22100a']],
-  panaderia: [['#5a4526', '#20160a'], ['#5c3a1e', '#22140a']],
-  clinica_dental: [['#4a3624', '#1c130a'], ['#5c2f22', '#22120a']],
-};
-
-const d = (n) => (n.datos || {});
-
-const CAPTIONS = {
-  turismo: {
-    experiencia: [
-      (n) => `Desconecta de verdad: así se vive una estadía en ${n.nombre}.`,
-      (n) => `El silencio, el paisaje, el detalle. Eso es ${n.nombre}.`,
-    ],
-    precio: [
-      (n) => `Reserva hoy y aprovecha ${d(n).promo || 'nuestras tarifas de temporada'}. Desde ${d(n).precioDesde || 'consulta valores'} la ${d(n).unidad || 'noche'}.`,
-      (n) => `${d(n).promo ? d(n).promo + '. ' : ''}Cupos disponibles esta semana en ${n.nombre}.`,
-    ],
-    urgencia: [
-      (n) => `Quedan pocas fechas disponibles este mes en ${n.nombre}. No las dejes pasar.`,
-      (n) => `Se están agotando los cupos del fin de semana. Reserva antes de que se acaben.`,
-    ],
-    recinto: [
-      (n) => `Conoce por dentro uno de los espacios más pedidos de ${n.nombre}.`,
-      (n) => `Cada rincón de ${n.nombre} está pensado para desconectar.`,
-    ],
-  },
-  panaderia: {
-    producto: [
-      (n) => `Hoy salió del horno: ${d(n).productoDestacado || 'nuestro producto estrella'}. Ven a probarlo fresco.`,
-      (n) => `${d(n).productoDestacado || 'Nuestro producto estrella'}, recién horneado, todos los días en ${n.nombre}.`,
-    ],
-    precio: [
-      (n) => `${d(n).promo || 'Promoción de la semana'} en ${n.nombre}. Desde ${d(n).precioDesde || 'consulta valores'}.`,
-      (n) => `Este ${d(n).unidad || 'combo'} tiene precio especial toda la semana. Solo en ${n.nombre}.`,
-    ],
-    urgencia: [
-      (n) => `Producción limitada del día. Cuando se acaba, se acaba.`,
-      (n) => `Últimas unidades de hoy. Mañana volvemos a hornear desde temprano.`,
-    ],
-    proceso: [
-      (n) => `Así preparamos cada mañana lo que vas a comer hoy en ${n.nombre}.`,
-      (n) => `Ingredientes simples, proceso artesanal. Así hacemos las cosas en ${n.nombre}.`,
-    ],
-  },
-  clinica_dental: {
-    servicio: [
-      (n) => `¿Sabes en qué consiste realmente ${d(n).productoDestacado || 'un tratamiento dental'}? Te lo explicamos simple.`,
-      (n) => `En ${n.nombre} explicamos cada tratamiento antes de empezar. Sin letra chica.`,
-    ],
-    precio: [
-      (n) => `${d(n).promo || 'Plan de pago disponible'} para tu tratamiento. Consulta valores en ${n.nombre}.`,
-      (n) => `Desde ${d(n).precioDesde || 'consulta valores'}, con evaluación incluida.`,
-    ],
-    confianza: [
-      (n) => `Equipo y tecnología pensados para que la visita al dentista deje de darte miedo.`,
-      (n) => `Más de una razón para confiar en ${n.nombre} para tu salud dental.`,
-    ],
-    recordatorio: [
-      (n) => `Un control a tiempo evita tratamientos más grandes después. Agenda tu hora en ${n.nombre}.`,
-      (n) => `¿Cuánto hace que no te haces un chequeo? Este es tu recordatorio.`,
-    ],
-  },
-};
+// Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
+// hay una foto real todavía. Ya no depende del rubro (antes había un set de
+// colores por nicho) — rota por el índice de la pieza.
+const HUES = [
+  ['#5a3d1e', '#20140a'],
+  ['#5c2c1e', '#22100a'],
+  ['#5a4526', '#20160a'],
+  ['#4a3624', '#1c130a'],
+];
 
 const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 const pad2 = (n) => (n < 10 ? '0' + n : '' + n);
@@ -98,49 +24,134 @@ function formatDate(date) {
   return pad2(date.getDate()) + ' ' + MESES[date.getMonth()];
 }
 
+function headlineGenerico(enfoque) {
+  const palabras = enfoque.label.toUpperCase().split(/\s+/);
+  const mitad = Math.ceil(palabras.length / 2);
+  const l1 = palabras.slice(0, mitad).join(' ');
+  const l2 = palabras.slice(mitad).join(' ');
+  return l2 ? `${l1}\n${l2}` : l1;
+}
+
+function captionGenerico(enfoque, negocio) {
+  const d = negocio.datos || {};
+  if (enfoque.id === 'precio' || /precio|promo/i.test(enfoque.id)) {
+    return `${d.promo || 'Promoción disponible'} en ${negocio.nombre}.` +
+      (d.precioDesde ? ` Desde ${d.precioDesde}${d.unidad ? ' ' + d.unidad : ''}.` : '');
+  }
+  if (enfoque.id === 'urgencia' || /urgen/i.test(enfoque.id)) {
+    return `Cupos limitados esta semana en ${negocio.nombre}. No te quedes fuera.`;
+  }
+  return `${enfoque.label}: ${d.productoDestacado ? d.productoDestacado + ', en ' : ''}${negocio.nombre}.`;
+}
+
+function extraerJSONArray(texto) {
+  const inicio = texto.indexOf('[');
+  const fin = texto.lastIndexOf(']');
+  if (inicio === -1 || fin === -1) return null;
+  try {
+    return JSON.parse(texto.slice(inicio, fin + 1));
+  } catch (err) {
+    return null;
+  }
+}
+
+// Pide a Claude titulares + captions reales para un lote de piezas nuevas,
+// en una sola llamada. Devuelve null si no hay API key o si algo falla — el
+// llamador cae de vuelta a las plantillas genéricas.
+async function generarLoteConClaude(negocio, enfoquesDelLote) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+
+  const estrategia = negocio.estrategia;
+  const lista = enfoquesDelLote
+    .map((e, i) => `${i + 1}. Enfoque "${e.label}": ${e.pista}`)
+    .join('\n');
+
+  const prompt =
+    `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
+    `Tono: ${estrategia.tono}. Datos reales del negocio, úsalos solo si son útiles y nunca inventes ` +
+    `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.\n\n` +
+    `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por cada enfoque, en este orden:\n${lista}\n\n` +
+    `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
+    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación"}]\n` +
+    `El "headline" es un titular tipo cartel, máximo 4-5 palabras en total, en dos líneas separadas por \\n, ` +
+    `todo en mayúsculas. El "caption" es el texto real de la publicación, tono natural, sin hashtags excesivos, máximo 220 caracteres.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 200 * enfoquesDelLote.length,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const texto = data && data.content && data.content[0] && data.content[0].text;
+    const parsed = texto && extraerJSONArray(texto);
+    if (!Array.isArray(parsed) || parsed.length !== enfoquesDelLote.length) return null;
+    if (!parsed.every((p) => p && typeof p.headline === 'string' && typeof p.caption === 'string')) return null;
+    return parsed;
+  } catch (err) {
+    return null;
+  }
+}
+
 // cantidad: cuántas piezas nuevas generar.
 // startIndex: desde dónde seguir la rotación de enfoques (para que "generar más" no repita
 // exactamente lo mismo que ya existe en la cola).
-function generarBanco(negocio, cantidad = 6, startIndex = 0) {
-  const nicho = getNicho(negocio.nicho);
-  if (!nicho) throw new Error('Nicho desconocido: ' + negocio.nicho);
+async function generarBanco(negocio, cantidad = 6, startIndex = 0) {
+  const estrategia = negocio.estrategia;
+  if (!estrategia) throw new Error('El negocio no tiene una estrategia de contenido');
 
-  const enfoques = nicho.enfoques;
-  const hues = HUES[negocio.nicho] || [['#333', '#111']];
+  const enfoques = estrategia.enfoques;
   const hoy = new Date();
-  const items = [];
+  const plan = [];
 
   for (let i = 0; i < cantidad; i++) {
     const idx = startIndex + i;
     const enfoque = enfoques[idx % enfoques.length];
     const esHistoria = idx % 3 === 2;
-
     const fecha = new Date(hoy);
     fecha.setDate(hoy.getDate() + 2 + idx * 2);
     const hora = esHistoria ? '18:30' : '09:00';
-    const dateLabel = `${formatDate(fecha)} - ${hora} - ${esHistoria ? 'Historia' : 'Post'}`;
+    plan.push({
+      idx,
+      enfoque,
+      esHistoria,
+      dateLabel: `${formatDate(fecha)} - ${hora} - ${esHistoria ? 'Historia' : 'Post'}`,
+      hue: HUES[idx % HUES.length],
+    });
+  }
 
-    const headlineSet = HEADLINES[negocio.nicho][enfoque.id] || ['CONTENIDO\nNUEVO'];
-    const captionTemplates = CAPTIONS[negocio.nicho][enfoque.id] || [() => `Novedades en ${negocio.nombre}.`];
-    const hue = hues[idx % hues.length];
+  const lote = await generarLoteConClaude(negocio, plan.map((p) => p.enfoque));
 
-    items.push({
-      id: `${negocio.id}-${Date.now()}-${idx}`,
+  return plan.map((p, i) => {
+    const generado = lote && lote[i];
+    const headline = generado ? generado.headline : headlineGenerico(p.enfoque);
+    const caption = generado ? generado.caption : captionGenerico(p.enfoque, negocio);
+    return {
+      id: `${negocio.id}-${Date.now()}-${p.idx}`,
       status: 'pendiente',
       variantIndex: 0,
       editing: false,
-      aspect: esHistoria ? '9 / 16' : '4 / 5',
-      headline: headlineSet[idx % headlineSet.length],
-      tag: enfoque.label,
-      enfoqueId: enfoque.id,
-      categoriaFoto: enfoque.categoriaFoto || (nicho.categoriasFoto && nicho.categoriasFoto[0]) || null,
-      date: dateLabel,
-      hueFrom: hue[0],
-      hueTo: hue[1],
-      variants: captionTemplates.map((fn) => fn(negocio)),
-    });
-  }
-  return items;
+      aspect: p.esHistoria ? '9 / 16' : '4 / 5',
+      headline,
+      tag: p.enfoque.label,
+      enfoqueId: p.enfoque.id,
+      categoriaFoto: p.enfoque.categoriaFoto || estrategia.categoriasFoto[0] || null,
+      date: p.dateLabel,
+      hueFrom: p.hue[0],
+      hueTo: p.hue[1],
+      variants: [caption],
+    };
+  });
 }
 
 // Pide a Claude una variante nueva para "Otra versión" cuando ya no quedan
@@ -150,12 +161,12 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
-  const nicho = getNicho(negocio.nicho);
-  const enfoque = nicho.enfoques.find((e) => e.id === enfoqueId) || nicho.enfoques[0];
+  const estrategia = negocio.estrategia;
+  const enfoque = estrategia.enfoques.find((e) => e.id === enfoqueId) || estrategia.enfoques[0];
 
   const prompt =
-    `Eres el redactor de contenido de "${negocio.nombre}", un negocio de ${nicho.nombre.toLowerCase()}. ` +
-    `Tono: ${nicho.tono}. Escribe UNA sola publicación nueva para Instagram con enfoque "${enfoque.label}" ` +
+    `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
+    `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
     `${JSON.stringify(negocio.datos || {})}. No repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
@@ -169,7 +180,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODEL,
         max_tokens: 200,
         messages: [{ role: 'user', content: prompt }],
       }),

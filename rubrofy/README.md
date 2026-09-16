@@ -9,8 +9,10 @@ Instagram y hoy está probada con cuentas agregadas como tester en la app de
 Meta — abrirla a cualquier negocio sin agregarlo a mano requiere que Meta
 apruebe la app (App Review + Business Verification).
 
-No está atada a un rubro: agregar un nicho nuevo es escribir su plantilla en
-`server/nichos.js` (calendario, enfoques, tono), no tocar el motor.
+No está atada a un rubro: al registrarse, cada negocio describe con sus
+propias palabras a qué se dedica, y Claude genera su estrategia de
+contenido (tono, enfoques y categorías de foto) a la medida — no hay una
+lista fija de rubros ni una plantilla que tocar para sumar uno nuevo.
 
 **Dominio:** rubrofy.com (comprado). Falta apuntarlo al hosting cuando el
 proyecto se despliegue en Railway.
@@ -21,9 +23,9 @@ copiar su marca.
 
 **Sitio y panel son cosas separadas:** `rubrofy.com` (público) es la landing
 de marketing; `rubrofy.com/app` es el panel. Es self-service: cada negocio
-crea su propia cuenta en `rubrofy.com/registro.html` (nombre, rubro, email
-y clave) y solo ve su propio contenido — no hay una clave maestra que vea
-todos los negocios juntos.
+crea su propia cuenta en `rubrofy.com/registro.html` (nombre, una
+descripción libre de su rubro, email y clave) y solo ve su propio
+contenido — no hay una clave maestra que vea todos los negocios juntos.
 
 ## Cómo correrlo
 
@@ -34,7 +36,7 @@ cd rubrofy
 npm run dev
 ```
 
-`dev` siembra 3 negocios de ejemplo (uno por nicho: turismo, panadería,
+`dev` siembra 3 negocios de ejemplo (uno por rubro: turismo, panadería,
 clínica dental) y levanta el servidor en
 [http://localhost:5180](http://localhost:5180). La clave de los 3 es
 `rubrofy123` — entra en `/app` con cualquiera de estos emails:
@@ -84,11 +86,12 @@ la usa deducida del request — funciona igual en producción normalmente, pero
   las define la plantilla del nicho); el contenido las usa automáticamente
   según el enfoque de cada pieza.
 - **Registro self-service** — cada negocio crea su cuenta en `/registro.html`
-  (nombre, rubro, email, clave y sus datos reales), sin tocar código ni
-  scripts.
+  (nombre, una descripción libre de su rubro, email, clave y sus datos
+  reales), sin tocar código ni scripts. Al crear la cuenta, Claude genera
+  su estrategia de contenido a la medida (ver más abajo).
 - **Configuración** — editar el nombre y los datos del negocio, o eliminar
   la cuenta (borra también su contenido, sus fotos y cierra la sesión). El
-  nicho no se puede cambiar una vez creado.
+  rubro y su estrategia de contenido no se pueden cambiar una vez creados.
 - **Conexión con Instagram y publicación real** — cada negocio conecta su
   cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
   Configuración. Al aprobar una pieza que tiene una foto real asignada, se
@@ -99,11 +102,21 @@ la usa deducida del request — funciona igual en producción normalmente, pero
 
 ## Cómo genera el contenido
 
-Por defecto usa plantillas de texto con los datos reales del negocio
-(`server/generator.js`) — costo $0, sin llamadas externas. Si se define la
-variable de entorno `ANTHROPIC_API_KEY`, el botón "Otra versión" puede
-pedirle a Claude una variante nueva una vez que se agotan las precalculadas;
-sin la key, simplemente vuelve a rotar entre las que ya existen.
+La IA es el cerebro: al registrarse, cada negocio escribe con sus propias
+palabras a qué se dedica, y `server/estrategia.js` le pide a Claude que
+diseñe su estrategia de contenido (tono, 4 enfoques con su intención, y
+las categorías de foto que tiene sentido que ese negocio suba) — así se
+adapta a cualquier rubro, no solo a una lista fija de nichos.
+
+Con esa estrategia, `server/generator.js` le pide a Claude que escriba los
+titulares y captions reales del banco inicial (una sola llamada por lote).
+El botón "Otra versión" también le pide a Claude una variante nueva una vez
+que se agotan las precalculadas.
+
+Sin `ANTHROPIC_API_KEY` configurada, todo esto cae a un modo genérico sin
+costo ni llamadas externas: una estrategia de respaldo razonable (enfoques
+de producto/precio/urgencia/detrás de escena) y captions con plantillas de
+texto que usan los datos reales del negocio.
 
 ```bash
 ANTHROPIC_API_KEY=sk-ant-... npm start
@@ -117,9 +130,9 @@ server/
   auth.js       Contraseñas (scrypt), sesiones firmadas y token temporal de foto
   instagram.js  Publicación real vía Instagram Graph API
   store.js      Persistencia en JSON (negocios y contenido) — swap a Postgres futuro
-  nichos.js     Plantillas por nicho: calendario, enfoques, tono
-  generator.js  Genera el banco de contenido (plantillas + hook a Claude)
-  seed.js       Crea los negocios de ejemplo
+  estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro
+  generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
+  seed.js       Crea los negocios de ejemplo (con estrategias ya escritas a mano)
 public/
   site/         Landing pública (rubrofy.com) — marketing + registro, sin sesión
   app/          El panel (rubrofy.com/app) — login, cola, calendario, fotos, config

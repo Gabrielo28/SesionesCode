@@ -5,7 +5,7 @@
   const MESES_LARGO = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
 
   let negocioActual = null;
-  let nichoActual = null; // plantilla completa del nicho del negocio actual (enfoques, categoriasFoto)
+  let nichoActual = null; // estrategia de contenido del negocio actual (enfoques, categoriasFoto)
   let contenido = [];
   let fotos = {}; // { categoria: [nombresDeArchivo] }
   let vistaActual = 'cola';
@@ -358,7 +358,8 @@
   function actualizarSwitcher() {
     $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
     $('#switcher-nombre').textContent = negocioActual.nombre || '-';
-    $('#switcher-niche').textContent = (nichoActual && nichoActual.nombre ? nichoActual.nombre : negocioActual.nicho).toUpperCase();
+    const rubro = negocioActual.estrategia && negocioActual.estrategia.rubro;
+    $('#switcher-niche').textContent = (rubro || '').toUpperCase();
   }
 
   async function guardarConfig(datos) {
@@ -418,13 +419,13 @@
   }
 
   async function mostrarApp() {
-    const [contenidoData, nichoData, fotosData] = await Promise.all([
+    const [contenidoData, estrategiaData, fotosData] = await Promise.all([
       api('/api/negocios/' + negocioActual.id + '/contenido'),
-      api('/api/negocios/' + negocioActual.id + '/nicho'),
+      api('/api/negocios/' + negocioActual.id + '/estrategia'),
       api('/api/negocios/' + negocioActual.id + '/fotos'),
     ]);
     contenido = contenidoData;
-    nichoActual = nichoData;
+    nichoActual = estrategiaData;
     fotos = fotosData;
     editingIds.clear();
     calSelectedId = null;
