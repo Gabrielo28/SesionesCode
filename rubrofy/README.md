@@ -118,8 +118,13 @@ costo ni llamadas externas: una estrategia de respaldo razonable (enfoques
 de producto/precio/urgencia/detrás de escena) y captions con plantillas de
 texto que usan los datos reales del negocio.
 
+Por defecto usa Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) — rápido y
+barato, pensado para textos cortos. Se puede cambiar por otro modelo con
+`ANTHROPIC_MODEL` (por ejemplo un Sonnet u Opus, si se prefiere mejor
+calidad de escritura a cambio de más costo por llamada):
+
 ```bash
-ANTHROPIC_API_KEY=sk-ant-... npm start
+ANTHROPIC_API_KEY=sk-ant-... ANTHROPIC_MODEL=claude-sonnet-5 npm start
 ```
 
 ## Estructura

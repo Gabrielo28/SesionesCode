@@ -5,7 +5,7 @@
 // para poder adaptarse a cualquier tipo de negocio. Sin ANTHROPIC_API_KEY
 // (o si Claude falla) usa una plantilla genérica razonable como respaldo.
 
-const MODEL = 'claude-haiku-4-5-20251001';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
 function estrategiaGenerica(rubro) {
   return {

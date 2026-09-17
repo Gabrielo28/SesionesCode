@@ -5,7 +5,7 @@
 // configurada, Claude también escribe los titulares y captions reales del
 // banco inicial; sin key, usa plantillas genéricas con los datos del negocio.
 
-const MODEL = 'claude-haiku-4-5-20251001';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
 // Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
 // hay una foto real todavía. Ya no depende del rubro (antes había un set de
