@@ -229,11 +229,11 @@ a { color: var(--amber); }
 /* --- configuración --- */
 .config-form { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
 .config-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
-.config-form input {
+.config-form input, .config-form select {
   background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--ink);
   font-family: inherit; font-size: 13px; padding: 9px 11px;
 }
-.config-form input:focus { outline: 1px solid var(--amber); }
+.config-form input:focus, .config-form select:focus { outline: 1px solid var(--amber); }
 .config-error { color: var(--coral); font-size: 12px; margin: 0; }
 .config-ok { color: var(--green); font-size: 12px; margin: 0; }
 .config-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; flex-wrap: wrap; gap: 12px; }

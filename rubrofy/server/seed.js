@@ -22,6 +22,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Domo Bosque Sur',
     email: 'demo-turismo@rubrofy.com',
     marca: { color: '#7fae6b' },
+    estiloImagen: 'limpia',
     estrategia: {
       rubro: 'turismo y hospedaje: domos y cabañas para desconectar',
       tono: 'cercano y evocador, que venda la experiencia de desconectar',
@@ -45,6 +46,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Panadería Migas',
     email: 'demo-panaderia@rubrofy.com',
     marca: { color: '#e6a23a' },
+    estiloImagen: 'limpia',
     estrategia: {
       rubro: 'panadería y pastelería de barrio',
       tono: 'cálido y casero, con olor a recién horneado',
@@ -68,6 +70,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Clínica Sonrisa Sur',
     email: 'demo-clinica@rubrofy.com',
     marca: { color: '#7d93a8' },
+    estiloImagen: 'limpia',
     estrategia: {
       rubro: 'clínica dental',
       tono: 'profesional y tranquilizador, sin tecnicismos innecesarios',

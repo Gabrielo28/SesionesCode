@@ -11,6 +11,7 @@ const auth = require('./auth');
 const { generarEstrategia } = require('./estrategia');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 const { publicarEnInstagram } = require('./instagram');
+const { generarImagenIA } = require('./imagenes');
 
 const PORT = process.env.PORT || 5180;
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
@@ -56,6 +57,7 @@ const MIME = {
 };
 
 const FOTO_EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+const ESTILOS_IMAGEN = ['limpia', 'texto'];
 
 function slugify(str) {
   const base = String(str || '')
@@ -168,19 +170,36 @@ function elegirFoto(negocioId, categoria, itemId) {
 }
 
 // Al aprobar, si el negocio ya conectó Instagram y la pieza tiene una foto
-// real asignada, se publica de verdad. Si falta cualquiera de las dos cosas,
-// queda aprobada igual pero sin publicación automática (no es un error).
+// asignada (real, o generada por IA como respaldo), se publica de verdad.
+// Si falta cualquiera de las dos cosas, queda aprobada igual pero sin
+// publicación automática (no es un error).
 async function intentarPublicarEnInstagram(req, negocio, item) {
   if (!negocio.instagram || !negocio.instagram.accessToken) {
     return { intentado: false, motivo: 'Instagram no está conectado' };
   }
-  const archivo = item.categoriaFoto ? elegirFoto(negocio.id, item.categoriaFoto, item.id) : null;
-  if (!archivo) {
-    return { intentado: false, motivo: 'Esta pieza no tiene una foto real asignada todavía' };
+
+  let categoria = item.categoriaFoto;
+  let archivo = categoria ? elegirFoto(negocio.id, categoria, item.id) : null;
+  let generadaPorIA = false;
+
+  if (!archivo && process.env.OPENAI_API_KEY) {
+    if (!store.tieneFotoIA(negocio.id, item.id)) {
+      const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
+      if (buffer) store.guardarFotoIA(negocio.id, item.id, buffer);
+    }
+    if (store.tieneFotoIA(negocio.id, item.id)) {
+      categoria = '_ia';
+      archivo = item.id + '.png';
+      generadaPorIA = true;
+    }
   }
 
-  const token = auth.crearTokenFoto(negocio.id, item.categoriaFoto, archivo);
-  const imageUrl = `${urlBase(req)}/fotos/${negocio.id}/${item.categoriaFoto}/${archivo}?t=${token}`;
+  if (!archivo) {
+    return { intentado: false, motivo: 'Esta pieza no tiene una foto asignada todavía' };
+  }
+
+  const token = auth.crearTokenFoto(negocio.id, categoria, archivo);
+  const imageUrl = `${urlBase(req)}/fotos/${negocio.id}/${categoria}/${archivo}?t=${token}`;
   const caption = item.variants[item.variantIndex];
 
   const resultado = await publicarEnInstagram({
@@ -190,7 +209,7 @@ async function intentarPublicarEnInstagram(req, negocio, item) {
     caption,
   });
 
-  return { intentado: true, publicadoEl: new Date().toISOString(), ...resultado };
+  return { intentado: true, publicadoEl: new Date().toISOString(), generadaPorIA, ...resultado };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -228,6 +247,7 @@ const server = http.createServer(async (req, res) => {
           email,
           auth: auth.hashPassword(password),
           marca: { color: '#e6a23a' },
+          estiloImagen: 'limpia',
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
             unidad: body.datos && body.datos.unidad ? String(body.datos.unidad).trim() : '',
@@ -275,11 +295,14 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, negocioPublico(negocio));
         }
 
-        // PUT /api/negocios/:id  { nombre, datos }
+        // PUT /api/negocios/:id  { nombre, datos, estiloImagen }
         if (parts.length === 3 && req.method === 'PUT') {
           const body = await readBody(req);
           const nombre = (body.nombre || '').trim();
           if (!nombre) return sendJSON(res, 400, { error: 'Falta el nombre del negocio' });
+          if (body.estiloImagen && !ESTILOS_IMAGEN.includes(body.estiloImagen)) {
+            return sendJSON(res, 400, { error: 'Estilo de imagen inválido' });
+          }
           negocio.nombre = nombre;
           negocio.datos = {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
@@ -287,6 +310,7 @@ const server = http.createServer(async (req, res) => {
             promo: body.datos && body.datos.promo ? String(body.datos.promo).trim() : '',
             productoDestacado: body.datos && body.datos.productoDestacado ? String(body.datos.productoDestacado).trim() : '',
           };
+          if (body.estiloImagen) negocio.estiloImagen = body.estiloImagen;
           store.saveNegocio(negocio);
           return sendJSON(res, 200, negocioPublico(negocio));
         }
@@ -402,6 +426,16 @@ const server = http.createServer(async (req, res) => {
                 item.variantIndex = 0; // sin API key: vuelve a rotar desde la primera
               }
             }
+          } else if (accion === 'imagen' && req.method === 'POST') {
+            if (!process.env.OPENAI_API_KEY) {
+              return sendJSON(res, 400, { error: 'La generación de imágenes con IA no está configurada' });
+            }
+            if (!store.tieneFotoIA(negocioId, item.id)) {
+              const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
+              if (!buffer) return sendJSON(res, 502, { error: 'No se pudo generar la imagen con IA' });
+              store.guardarFotoIA(negocioId, item.id, buffer);
+            }
+            item.imagenIA = true;
           } else {
             return sendJSON(res, 400, { error: 'Acción o método inválido' });
           }
@@ -420,12 +454,12 @@ const server = http.createServer(async (req, res) => {
       const tokenFoto = url.searchParams.get('t');
       const autorizadoPorToken = tokenFoto && auth.verificarTokenFoto(tokenFoto, negocioId, categoria, archivo);
       if (sesionActual(req) !== negocioId && !autorizadoPorToken) return notFound(res);
-      const filePath = store.fotoAbsolutePath(
-        path.basename(negocioId),
-        path.basename(categoria),
-        path.basename(archivo)
-      );
-      if (!filePath.startsWith(store.FOTOS_DIR)) return notFound(res);
+      const esGenerada = categoria === '_ia';
+      const filePath = esGenerada
+        ? store.fotoIAAbsolutePath(path.basename(negocioId), path.basename(archivo, '.png'))
+        : store.fotoAbsolutePath(path.basename(negocioId), path.basename(categoria), path.basename(archivo));
+      const dirPermitido = esGenerada ? store.FOTOS_IA_DIR : store.FOTOS_DIR;
+      if (!filePath.startsWith(dirPermitido)) return notFound(res);
       return fs.readFile(filePath, (err, content) => {
         if (err) return notFound(res);
         const ext = path.extname(filePath).toLowerCase();
@@ -458,5 +492,10 @@ server.listen(PORT, () => {
     console.log(`Usando modelo ${process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001'} para estrategia y contenido.`);
   } else {
     console.log('ANTHROPIC_API_KEY no configurada: estrategia y contenido usan las plantillas genéricas de respaldo.');
+  }
+  if (process.env.OPENAI_API_KEY) {
+    console.log(`Usando modelo ${process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1'} para fotos generadas por IA.`);
+  } else {
+    console.log('OPENAI_API_KEY no configurada: sin foto real ni generada, las piezas muestran un degradé de marcador.');
   }
 });

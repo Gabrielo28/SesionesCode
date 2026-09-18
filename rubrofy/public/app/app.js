@@ -51,7 +51,8 @@
       return { color: 'var(--ink-faint)', texto: 'Aprobado &middot; ' + escapeHtml(dateShort) };
     }
     if (ig.ok) {
-      return { color: 'var(--green)', texto: 'Publicado en Instagram &middot; ' + escapeHtml(dateShort) };
+      const conFoto = ig.generadaPorIA ? ' (foto generada por IA)' : '';
+      return { color: 'var(--green)', texto: 'Publicado en Instagram' + conFoto + ' &middot; ' + escapeHtml(dateShort) };
     }
     return { color: 'var(--coral)', texto: 'Error al publicar: ' + escapeHtml(ig.error || 'desconocido') };
   }
@@ -143,7 +144,9 @@
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
     const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
-    const fotoUrl = fotoNombre ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}` : null;
+    const fotoUrl = fotoNombre
+      ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}`
+      : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png` : null);
     const canvasW = 480;
     const canvasH = isPost ? 600 : 854;
 
@@ -168,6 +171,7 @@
             <div class="card-actions">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
               <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
+              ${!fotoUrl ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
             </div>
@@ -313,6 +317,7 @@
     $('#config-unidad').value = (negocioActual.datos && negocioActual.datos.unidad) || '';
     $('#config-promo').value = (negocioActual.datos && negocioActual.datos.promo) || '';
     $('#config-producto').value = (negocioActual.datos && negocioActual.datos.productoDestacado) || '';
+    $('#config-estilo-imagen').value = negocioActual.estiloImagen || 'limpia';
     $('#config-error').hidden = true;
     $('#config-ok').hidden = true;
 
@@ -528,6 +533,7 @@
             promo: $('#config-promo').value,
             productoDestacado: $('#config-producto').value,
           },
+          estiloImagen: $('#config-estilo-imagen').value,
         });
         $('#config-ok').hidden = false;
       } catch (err) {
@@ -564,6 +570,21 @@
       if (accion === 'reject') return accionSimple('rechazar', id);
       if (accion === 'undo') return accionSimple('deshacer', id);
       if (accion === 'regenerate') return accionSimple('regenerar', id);
+      if (accion === 'imagen') {
+        const textoOriginal = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Generando...';
+        try {
+          await accionSimple('imagen', id);
+        } catch (err) {
+          alert(err.status === 400
+            ? 'La generación de imágenes con IA no está configurada en este servidor.'
+            : 'No se pudo generar la imagen con IA. Intenta de nuevo.');
+          btn.disabled = false;
+          btn.textContent = textoOriginal;
+        }
+        return;
+      }
     });
 
     // delegación de eventos en el calendario

@@ -148,6 +148,12 @@
           <label>Producto o servicio destacado
             <input type="text" id="config-producto">
           </label>
+          <label>Fotos generadas por IA (cuando no hay una foto real subida)
+            <select id="config-estilo-imagen">
+              <option value="limpia">Foto limpia, sin texto</option>
+              <option value="texto">Con el titular incrustado en la imagen</option>
+            </select>
+          </label>
           <p class="config-error" id="config-error" hidden></p>
           <p class="config-ok" id="config-ok" hidden>Guardado.</p>
           <div class="config-actions">

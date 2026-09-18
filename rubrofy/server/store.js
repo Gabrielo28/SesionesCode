@@ -9,8 +9,9 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const NEGOCIOS_DIR = path.join(DATA_DIR, 'negocios');
 const CONTENIDO_DIR = path.join(DATA_DIR, 'contenido');
 const FOTOS_DIR = path.join(DATA_DIR, 'fotos');
+const FOTOS_IA_DIR = path.join(DATA_DIR, 'fotos-ia');
 
-for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR]) {
+for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR, FOTOS_IA_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -67,6 +68,7 @@ function deleteNegocio(negocioId) {
   fs.rmSync(negocioPath(negocioId), { force: true });
   fs.rmSync(contenidoPath(negocioId), { force: true });
   fs.rmSync(path.join(FOTOS_DIR, negocioId), { recursive: true, force: true });
+  fs.rmSync(path.join(FOTOS_IA_DIR, negocioId), { recursive: true, force: true });
 }
 
 // --- fotos: data/fotos/<negocioId>/<categoria>/<archivo> ---
@@ -102,6 +104,24 @@ function fotoAbsolutePath(negocioId, categoria, filename) {
   return path.join(negocioFotosDir(negocioId), categoria, filename);
 }
 
+// --- fotos generadas por IA: data/fotos-ia/<negocioId>/<itemId>.png ---
+// Una por pieza de contenido (no por categoría) — cada pieza tiene su propio
+// enfoque y headline, así que su foto de respaldo generada es única.
+
+function fotoIAAbsolutePath(negocioId, itemId) {
+  return path.join(FOTOS_IA_DIR, negocioId, itemId + '.png');
+}
+
+function tieneFotoIA(negocioId, itemId) {
+  return fs.existsSync(fotoIAAbsolutePath(negocioId, itemId));
+}
+
+function guardarFotoIA(negocioId, itemId, buffer) {
+  const dir = path.join(FOTOS_IA_DIR, negocioId);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(fotoIAAbsolutePath(negocioId, itemId), buffer);
+}
+
 module.exports = {
   listNegocios,
   getNegocio,
@@ -113,5 +133,9 @@ module.exports = {
   addFoto,
   deleteFoto,
   fotoAbsolutePath,
+  tieneFotoIA,
+  guardarFotoIA,
+  fotoIAAbsolutePath,
   FOTOS_DIR,
+  FOTOS_IA_DIR,
 };

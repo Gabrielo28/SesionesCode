@@ -83,8 +83,9 @@ la usa deducida del request — funciona igual en producción normalmente, pero
 - **Calendario** — las mismas publicaciones ubicadas en su fecha, con un
   panel de detalle al hacer clic.
 - **Fotos del negocio** — subir y borrar fotos por categoría (las categorías
-  las define la plantilla del nicho); el contenido las usa automáticamente
-  según el enfoque de cada pieza.
+  las define la estrategia del negocio); el contenido las usa automáticamente
+  según el enfoque de cada pieza. Si una pieza no tiene foto real todavía,
+  se puede generar una con IA como respaldo (ver más abajo).
 - **Registro self-service** — cada negocio crea su cuenta en `/registro.html`
   (nombre, una descripción libre de su rubro, email, clave y sus datos
   reales), sin tocar código ni scripts. Al crear la cuenta, Claude genera
@@ -94,11 +95,19 @@ la usa deducida del request — funciona igual en producción normalmente, pero
   rubro y su estrategia de contenido no se pueden cambiar una vez creados.
 - **Conexión con Instagram y publicación real** — cada negocio conecta su
   cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
-  Configuración. Al aprobar una pieza que tiene una foto real asignada, se
-  publica de verdad vía la Instagram Graph API; si falla, la pieza queda
-  igual como aprobada y el error se muestra en la tarjeta, sin bloquear el
-  flujo. Sin conexión, o sin foto real, aprobar solo marca la pieza como
-  aprobada (como antes).
+  Configuración. Al aprobar una pieza que tiene una foto asignada (real, o
+  generada por IA como respaldo), se publica de verdad vía la Instagram
+  Graph API; si falla, la pieza queda igual como aprobada y el error se
+  muestra en la tarjeta, sin bloquear el flujo. Sin conexión, o sin foto,
+  aprobar solo marca la pieza como aprobada (como antes).
+- **Fotos generadas por IA** — cuando una pieza no tiene una foto real
+  subida para su categoría, se puede pedir una foto generada por IA
+  (botón "Generar foto con IA" en la tarjeta, o automáticamente al aprobar
+  si Instagram está conectado). Requiere `OPENAI_API_KEY`; sin ella, la
+  pieza sigue mostrando el degradé de marcador de siempre. En Configuración,
+  cada negocio elige si esa foto generada debe quedar limpia (sin texto) o
+  con el titular incrustado como una gráfica de marketing — nunca reemplaza
+  una foto real ya subida.
 
 ## Cómo genera el contenido
 
@@ -127,6 +136,20 @@ calidad de escritura a cambio de más costo por llamada):
 ANTHROPIC_API_KEY=sk-ant-... ANTHROPIC_MODEL=claude-sonnet-5 npm start
 ```
 
+## Cómo genera las fotos por IA
+
+Es un proveedor separado (OpenAI) con su propio costo, aparte del de
+Claude — por eso es una variable de entorno distinta. Sin `OPENAI_API_KEY`
+configurada, esta función queda desactivada por completo (el botón
+"Generar foto con IA" muestra un error, y al aprobar sin foto real sigue
+funcionando igual que siempre, sin publicar).
+
+```bash
+OPENAI_API_KEY=sk-... npm start
+```
+
+Por defecto usa `gpt-image-1`; se puede cambiar con `OPENAI_IMAGE_MODEL`.
+
 ## Estructura
 
 ```
@@ -134,7 +157,8 @@ server/
   server.js     API REST + servidor estático (Node puro, sin dependencias)
   auth.js       Contraseñas (scrypt), sesiones firmadas y token temporal de foto
   instagram.js  Publicación real vía Instagram Graph API
-  store.js      Persistencia en JSON (negocios y contenido) — swap a Postgres futuro
+  imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
+  store.js      Persistencia en JSON (negocios, contenido y fotos) — swap a Postgres futuro
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro
   generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
   seed.js       Crea los negocios de ejemplo (con estrategias ya escritas a mano)
@@ -142,7 +166,7 @@ public/
   site/         Landing pública (rubrofy.com) — marketing + registro, sin sesión
   app/          El panel (rubrofy.com/app) — login, cola, calendario, fotos, config
 data/
-  negocios/, contenido/, fotos/    Datos y fotos en tiempo de ejecución (no se sube)
+  negocios/, contenido/, fotos/, fotos-ia/    Datos y fotos en tiempo de ejecución (no se sube)
 ```
 
 ## Qué falta (siguientes capas)
