@@ -14,6 +14,7 @@
 | [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
 | [mensajes-lote1-frio.md](mensajes-lote1-frio.md) | Primer lote (15 empresas) de prospección fría verificada de `leads-automatizacion-chile.csv`, con mensaje listo para copiar y pegar |
+| [mensajes-lote2-frio.md](mensajes-lote2-frio.md) | Segundo lote (15 empresas) de prospección fría verificada, con mensaje y solución sugerida del catálogo real para cada una |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
 | [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 43 empresas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal — se suma semanalmente por búsqueda automática |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
