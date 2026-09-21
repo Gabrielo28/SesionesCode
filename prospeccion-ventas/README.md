@@ -16,6 +16,7 @@
 | [mensajes-lote1-frio.md](mensajes-lote1-frio.md) | Primer lote (15 empresas) de prospección fría verificada de `leads-automatizacion-chile.csv`, con mensaje listo para copiar y pegar |
 | [mensajes-lote2-frio.md](mensajes-lote2-frio.md) | Segundo lote (15 empresas) de prospección fría verificada, con mensaje y solución sugerida del catálogo real para cada una |
 | [mensajes-lote3-frio.md](mensajes-lote3-frio.md) | Tercer y último lote (13 empresas) — completa la revisión de las 43 filas del CSV, con mensaje y solución sugerida |
+| [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 de las 43 empresas — confirma o corrige las notas de cautela de los 3 lotes |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
 | [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 43 empresas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal — se suma semanalmente por búsqueda automática |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |

@@ -165,11 +165,10 @@ diferenciado, todo el contacto cae al mismo canal manual.
 
 ### 13. Avanzo Consultora — Consultoría de RR.HH. para pymes, Santiago
 **Web:** https://avanzoconsultora.cl | **Canal:** WhatsApp (publicado) o LinkedIn
-**Solución sugerida:** Automatización de procesos (con cautela — ver nota).
-**Nota:** el sitio solo muestra un contacto identificado ("Marcela G."), lo que sugiere un equipo
-muy chico. Confirmar en LinkedIn que hay más de una persona detrás antes de escribir — si es un
-solo profesional independiente, cae en el descarte del ICP (`07-icp-automatizacion.md`: "no hay a
-quién devolverle horas").
+**Solución sugerida:** Automatización de procesos.
+**Verificado (Apollo, 21-sep-2026):** equipo real de 10 personas, no es profesional
+independiente — la nota de cautela original (solo se veía un contacto en el sitio) queda
+descartada. Lista para contactar sin reservas.
 
 > Hola [nombre], vi que Avanzo apoya a pymes en gestión de personas con un enfoque bien directo y
 > consultivo. Trabajamos con consultoras de RR.HH. en automatizar la parte repetitiva del proceso
@@ -202,8 +201,8 @@ día hábil"), sin autoservicio para solicitudes de auditoría.
 ## Resumen del lote
 
 - **15 empresas revisadas**, ninguna con automatización real — todas listas para contactar
-- **14 sin reservas** + **1 con nota de cautela** (Avanzo Consultora — confirmar tamaño de equipo
-  antes de escribir, riesgo de ser profesional independiente)
+- **15 sin reservas** (Avanzo Consultora se confirmó vía Apollo el 21-sep-2026: equipo real de 10
+  personas, no es profesional independiente — ver `apollo-enriquecimiento-empresas.md`)
 - Cubre la meta semanal de 15 contactos fríos de `08-prospeccion-automatizacion.md`
 - Quedan **13 empresas** sin revisar en `leads-automatizacion-chile.csv`: Pro Casa, Golden
   Propiedades, Deluno Propiedades y Quinta Propiedades (sin web propia — requieren buscar el dato

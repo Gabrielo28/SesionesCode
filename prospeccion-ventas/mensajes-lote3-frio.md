@@ -98,21 +98,14 @@ un solo profesional independiente, cae en el descarte del ICP (`07-icp-automatiz
 > automatizar esa primera respuesta sin perder el trato personalizado. Armamos un diagnóstico
 > gratis de 2 minutos — ¿te interesa verlo? https://influencechile.cl/diagnostico-workflows.html
 
-### 7. Kreston MCA Chile — Auditoría y consultoría, Santiago
-**Web:** https://krestonmca.cl/ | **Canal:** LinkedIn / email
-**Solución sugerida:** Automatización de procesos — atienden "empresas de todos los sectores",
-contacto 100% manual (formulario, teléfono, horario de oficina).
-**Nota de cautela — la más importante del lote:** son la oficina chilena de **Kreston Global**,
-red internacional con 830 oficinas en 114 países. El ICP (`07-icp-automatizacion.md`) descarta
-explícitamente "filiales de multinacionales" porque suelen tener ciclo de venta larguísimo y
-sistemas propios ya definidos a nivel de red. No se pudo confirmar el tamaño real de la oficina
-local — **antes de escribir, revisar LinkedIn de la oficina Chile específicamente** (no la red
-global) para decidir si de verdad encaja como boutique o si es mejor descartarla.
-
-> Hola [nombre], vi que la oficina de Kreston MCA en Chile atiende empresas de distintos sectores,
-> pero el contacto sigue siendo manual (formulario, teléfono, horario de oficina). Trabajamos con
-> firmas de auditoría y consultoría en automatizar ese primer filtro. Armamos un diagnóstico
-> gratis de 2 minutos — ¿te interesa verlo? https://influencechile.cl/diagnostico-workflows.html
+### 7. ~~Kreston MCA Chile~~ — DESCARTADA (verificado vía Apollo, 21-sep-2026)
+**Web:** https://krestonmca.cl/
+La nota de cautela original quedó confirmada: Apollo muestra que es propiedad directa de
+**Kreston Global** (`owned_by_organization`), con **más de 35 profesionales** en oficinas de
+Santiago y Concepción — no es una firma boutique local, es la filial chilena de una red
+internacional con 830 oficinas en 114 países. Cae en el descarte explícito del ICP
+(`07-icp-automatizacion.md`: "filiales de multinacionales... ya tienen sistemas propios, ciclo de
+venta larguísimo"). **No contactar** — ver `apollo-enriquecimiento-empresas.md` para el detalle.
 
 ---
 
@@ -121,9 +114,9 @@ global) para decidir si de verdad encaja como boutique o si es mejor descartarla
 | Empresa | Rubro | Problema |
 |---|---|---|
 | Pro Casa | Inmobiliaria (red de corredores independientes), Santiago | No se encontró un sitio web propio — solo aparece mencionada en blogs de ranking de terceros. Sin sitio no se puede aplicar el criterio de verificación. |
-| Golden Propiedades | Inmobiliaria, Santiago | El sitio (goldenpropiedades.cl) devuelve error 503 en dos intentos separados |
-| Quinta Propiedades | Inmobiliaria, Valparaíso | El dominio (quintapropiedades.cl) no resuelve (DNS) en dos intentos separados |
-| Home Key Propiedades | Inmobiliaria, Concepción | El sitio devuelve contenido vacío en dos intentos separados |
+| Golden Propiedades | Inmobiliaria, Santiago | El sitio (goldenpropiedades.cl) devuelve error 503 en dos intentos separados. Apollo confirma 4 empleados (boutique, sin problema de tamaño) |
+| Quinta Propiedades | Inmobiliaria, Valparaíso | El dominio (quintapropiedades.cl) no resuelve (DNS) en dos intentos separados. Apollo muestra **1 solo empleado** — probable profesional independiente, cae en el descarte del ICP; no priorizar aunque se resuelva el sitio |
+| Home Key Propiedades | Inmobiliaria, Concepción | El sitio devuelve contenido vacío en dos intentos separados. Apollo confirma 3 empleados (boutique, sin problema de tamaño) |
 | HB Estudio Contable | Contable/tributario, Viña del Mar | El sitio devuelve error 500 en dos intentos separados |
 | Admincondominios.cl | Administración de condominios, Chile | El sitio devuelve error 500 en dos intentos separados |
 
@@ -135,13 +128,20 @@ por redes sociales, o haber cerrado).
 
 ## Resumen del lote y del CSV completo
 
-- **7 listas** para contactar (4 sin reservas, 3 con nota de cautela por posible descarte del ICP)
-- **6 no verificables** — 1 sin sitio propio, 5 por caída del sitio en dos intentos
+- **6 listas** para contactar (4 sin reservas, 2 con nota de cautela) — Kreston MCA Chile se
+  descartó el 21-sep-2026 tras verificar con Apollo que es filial de una red internacional
+- **6 no verificables** — 1 sin sitio propio, 5 por caída del sitio en dos intentos (2 de ellas
+  ahora con tamaño de equipo confirmado vía Apollo, ver tabla arriba)
 - Con este lote se revisaron **las 43 empresas** de `leads-automatizacion-chile.csv`:
   - **Lote 1:** 15 empresas → 10 listas + 2 adaptadas + 3 no verificables
-  - **Lote 2:** 15 empresas → 14 listas + 1 con nota de cautela
-  - **Lote 3:** 13 empresas → 7 listas (3 con nota de cautela) + 6 no verificables
-  - **Total:** 31 mensajes listos para enviar, 9 no verificables (revisar a mano antes de
-    contactar), 3 con nota de cautela adicional por posible descarte del ICP
+  - **Lote 2:** 15 empresas → 15 listas (Avanzo Consultora confirmada sin reservas vía Apollo)
+  - **Lote 3:** 13 empresas → 6 listas (2 con nota de cautela, 1 descartada) + 6 no verificables
+  - **Total:** 33 mensajes listos para enviar, 9 no verificables (revisar a mano antes de
+    contactar), 1 descartada, 2 con nota de cautela adicional por posible descarte del ICP
+- El 21 de septiembre de 2026 se enriquecieron 42 de estas empresas con Apollo.io (26
+  matchearon) — ver `apollo-enriquecimiento-empresas.md` para el detalle completo, incluyendo dos
+  correcciones de ángulo (Grupo Insurex resultó mucho más grande de lo asumido; MisAbogados es una
+  plataforma legal-tech con financiamiento, no un estudio tradicional) sobre empresas ya
+  contactadas en lotes anteriores.
 - Las empresas nuevas que se sigan sumando en la búsqueda semanal automática van generando lotes
   siguientes con el mismo proceso.
