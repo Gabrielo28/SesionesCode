@@ -12,6 +12,8 @@ const { generarEstrategia } = require('./estrategia');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 const { publicarEnInstagram } = require('./instagram');
 const { generarImagenIA } = require('./imagenes');
+const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
+const stripe = require('./stripe');
 
 const PORT = process.env.PORT || 5180;
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
@@ -90,10 +92,14 @@ function sendJSON(res, status, data, extraHeaders) {
   res.end(body);
 }
 
-// Datos públicos de un negocio (nunca la clave ni el token de Instagram).
+// Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
+// los IDs internos de Stripe).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram, ...resto } = negocio;
+  const { auth: _auth, instagram, stripe: stripeInfo, ...resto } = negocio;
   resto.instagramConectado = !!(instagram && instagram.accessToken);
+  resto.plan = negocio.plan || 'gratis';
+  resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
+  resto.fotosIADisponibles = fotosIADisponibles(negocio);
   return resto;
 }
 
@@ -169,6 +175,36 @@ function elegirFoto(negocioId, categoria, itemId) {
   return disponibles[hashString(itemId) % disponibles.length];
 }
 
+// Cuota mensual de fotos generadas por IA (la trae el plan del negocio, ver
+// server/planes.js). Se resetea sola cada mes calendario — no hay cron ni
+// tarea de fondo, solo se compara contra el mes guardado la próxima vez que
+// se usa.
+function mesActual() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function fotosIADisponibles(negocio) {
+  const cuota = getPlan(negocio.plan).cuotaFotosIA;
+  if (!cuota) return 0;
+  const uso = negocio.usoFotosIA && negocio.usoFotosIA.mes === mesActual() ? negocio.usoFotosIA.cantidad : 0;
+  return Math.max(0, cuota - uso);
+}
+
+function registrarUsoFotoIA(negocio) {
+  const mes = mesActual();
+  if (!negocio.usoFotosIA || negocio.usoFotosIA.mes !== mes) negocio.usoFotosIA = { mes, cantidad: 0 };
+  negocio.usoFotosIA.cantidad += 1;
+}
+
+function buscarNegocioPorStripeCustomerId(customerId) {
+  return store.listNegocios().find((n) => n.stripe && n.stripe.customerId === customerId) || null;
+}
+
+function buscarNegocioPorStripeSubscriptionId(subscriptionId) {
+  return store.listNegocios().find((n) => n.stripe && n.stripe.subscriptionId === subscriptionId) || null;
+}
+
 // Al aprobar, si el negocio ya conectó Instagram y la pieza tiene una foto
 // asignada (real, o generada por IA como respaldo), se publica de verdad.
 // Si falta cualquiera de las dos cosas, queda aprobada igual pero sin
@@ -183,9 +219,13 @@ async function intentarPublicarEnInstagram(req, negocio, item) {
   let generadaPorIA = false;
 
   if (!archivo && process.env.OPENAI_API_KEY) {
-    if (!store.tieneFotoIA(negocio.id, item.id)) {
+    if (!store.tieneFotoIA(negocio.id, item.id) && fotosIADisponibles(negocio) > 0) {
       const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
-      if (buffer) store.guardarFotoIA(negocio.id, item.id, buffer);
+      if (buffer) {
+        store.guardarFotoIA(negocio.id, item.id, buffer);
+        registrarUsoFotoIA(negocio);
+        store.saveNegocio(negocio);
+      }
     }
     if (store.tieneFotoIA(negocio.id, item.id)) {
       categoria = '_ia';
@@ -216,14 +256,78 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const parts = url.pathname.split('/').filter(Boolean);
 
+  // El webhook de Stripe es una mutación legítima que no viene del panel
+  // (no puede llevar la cabecera custom): se autentica con su propia firma
+  // HMAC en vez del esquema anti-CSRF de /api.
+  const esWebhookStripe = parts[0] === 'api' && parts[1] === 'stripe' && parts[2] === 'webhook';
+
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
-  if (parts[0] === 'api' && mutando && !peticionLegitima(req)) {
+  if (parts[0] === 'api' && mutando && !esWebhookStripe && !peticionLegitima(req)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
   }
 
   try {
     // --- API ---
     if (parts[0] === 'api') {
+      // POST /api/stripe/webhook — eventos de Stripe (checkout completado,
+      // suscripción actualizada/cancelada). Necesita el cuerpo crudo exacto
+      // para verificar la firma, así que no pasa por readBody (que ya
+      // parsea a JSON).
+      if (esWebhookStripe && req.method === 'POST') {
+        const raw = await new Promise((resolve, reject) => {
+          let data = '';
+          req.on('data', (chunk) => { data += chunk; if (data.length > 1e6) req.destroy(); });
+          req.on('end', () => resolve(data));
+          req.on('error', reject);
+        });
+        const firmaOk = stripe.verificarFirmaWebhook(raw, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET);
+        if (!firmaOk) return sendJSON(res, 400, { error: 'Firma inválida' });
+
+        let evento;
+        try {
+          evento = JSON.parse(raw);
+        } catch (err) {
+          return sendJSON(res, 400, { error: 'JSON inválido' });
+        }
+
+        if (evento.type === 'checkout.session.completed') {
+          const session = evento.data.object;
+          const negocioId = session.client_reference_id || (session.metadata && session.metadata.negocioId);
+          const planId = session.metadata && session.metadata.planId;
+          const negocio = negocioId && store.getNegocio(negocioId);
+          if (negocio && planId) {
+            negocio.stripe = {
+              customerId: session.customer,
+              subscriptionId: session.subscription,
+              estado: 'active',
+            };
+            negocio.plan = planId;
+            store.saveNegocio(negocio);
+          }
+        } else if (evento.type === 'customer.subscription.updated' || evento.type === 'customer.subscription.deleted') {
+          const sub = evento.data.object;
+          const negocio = buscarNegocioPorStripeSubscriptionId(sub.id) || buscarNegocioPorStripeCustomerId(sub.customer);
+          if (negocio) {
+            const activa = sub.status === 'active' || sub.status === 'trialing';
+            const priceId = sub.items && sub.items.data && sub.items.data[0] && sub.items.data[0].price && sub.items.data[0].price.id;
+            negocio.stripe = {
+              customerId: sub.customer,
+              subscriptionId: sub.id,
+              estado: sub.status,
+            };
+            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : 'gratis';
+            store.saveNegocio(negocio);
+          }
+        }
+
+        return sendJSON(res, 200, { recibido: true });
+      }
+
+      // GET /api/planes — pública: la necesita el sitio y el panel para mostrar precios.
+      if (parts[1] === 'planes' && parts.length === 2 && req.method === 'GET') {
+        return sendJSON(res, 200, listPlanesPublico());
+      }
+
       // POST /api/auth/registro  { nombre, rubro, email, password, datos }
       if (parts[1] === 'auth' && parts[2] === 'registro' && parts.length === 3 && req.method === 'POST') {
         const body = await readBody(req);
@@ -247,6 +351,7 @@ const server = http.createServer(async (req, res) => {
           email,
           auth: auth.hashPassword(password),
           marca: { color: '#e6a23a' },
+          plan: 'gratis',
           estiloImagen: 'limpia',
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
@@ -317,6 +422,9 @@ const server = http.createServer(async (req, res) => {
 
         // DELETE /api/negocios/:id
         if (parts.length === 3 && req.method === 'DELETE') {
+          if (negocio.stripe && negocio.stripe.subscriptionId) {
+            await stripe.cancelarSuscripcion(negocio.stripe.subscriptionId);
+          }
           store.deleteNegocio(negocioId);
           return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
         }
@@ -338,6 +446,44 @@ const server = http.createServer(async (req, res) => {
           delete negocio.instagram;
           store.saveNegocio(negocio);
           return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
+        // POST /api/negocios/:id/checkout  { plan: 'pro' | 'estudio' }
+        // Crea una sesión de Stripe Checkout y devuelve su URL; el negocio
+        // pasa de plan al confirmar el pago, vía el webhook (no acá).
+        if (parts[3] === 'checkout' && parts.length === 4 && req.method === 'POST') {
+          const body = await readBody(req);
+          const planId = body.plan;
+          const priceId = stripePriceId(planId);
+          if (!priceId) return sendJSON(res, 400, { error: 'Ese plan no está disponible todavía' });
+
+          const base = urlBase(req);
+          const resultado = await stripe.crearCheckoutSession({
+            priceId,
+            negocioId,
+            planId,
+            successUrl: `${base}/app?checkout=exito`,
+            cancelUrl: `${base}/app?checkout=cancelado`,
+            customerId: negocio.stripe && negocio.stripe.customerId,
+            email: negocio.email,
+          });
+          if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+          return sendJSON(res, 200, { url: resultado.data.url });
+        }
+
+        // POST /api/negocios/:id/portal — enlace al Billing Portal de Stripe
+        // (cambiar tarjeta, cancelar) para negocios que ya tienen una
+        // suscripción; Stripe se encarga de esa pantalla, no nosotros.
+        if (parts[3] === 'portal' && parts.length === 4 && req.method === 'POST') {
+          if (!negocio.stripe || !negocio.stripe.customerId) {
+            return sendJSON(res, 400, { error: 'Todavía no tienes una suscripción para gestionar' });
+          }
+          const resultado = await stripe.crearPortalSession({
+            customerId: negocio.stripe.customerId,
+            returnUrl: `${urlBase(req)}/app`,
+          });
+          if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+          return sendJSON(res, 200, { url: resultado.data.url });
         }
 
         // GET /api/negocios/:id/contenido
@@ -427,13 +573,21 @@ const server = http.createServer(async (req, res) => {
               }
             }
           } else if (accion === 'imagen' && req.method === 'POST') {
+            if (!getPlan(negocio.plan).cuotaFotosIA) {
+              return sendJSON(res, 403, { error: 'Las fotos generadas por IA están disponibles en el plan Estudio' });
+            }
             if (!process.env.OPENAI_API_KEY) {
               return sendJSON(res, 400, { error: 'La generación de imágenes con IA no está configurada' });
             }
             if (!store.tieneFotoIA(negocioId, item.id)) {
+              if (fotosIADisponibles(negocio) <= 0) {
+                return sendJSON(res, 403, { error: 'Ya usaste tu cuota de fotos con IA de este mes' });
+              }
               const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
               if (!buffer) return sendJSON(res, 502, { error: 'No se pudo generar la imagen con IA' });
               store.guardarFotoIA(negocioId, item.id, buffer);
+              registrarUsoFotoIA(negocio);
+              store.saveNegocio(negocio);
             }
             item.imagenIA = true;
           } else {
@@ -497,5 +651,13 @@ server.listen(PORT, () => {
     console.log(`Usando modelo ${process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1'} para fotos generadas por IA.`);
   } else {
     console.log('OPENAI_API_KEY no configurada: sin foto real ni generada, las piezas muestran un degradé de marcador.');
+  }
+  if (process.env.STRIPE_SECRET_KEY) {
+    const planesDisponibles = listPlanesPublico().filter((p) => p.disponible && p.id !== 'gratis').map((p) => p.id);
+    console.log(planesDisponibles.length
+      ? `Stripe configurado — planes de pago disponibles: ${planesDisponibles.join(', ')}.`
+      : 'Stripe configurado, pero falta STRIPE_PRICE_PRO / STRIPE_PRICE_ESTUDIO: nadie puede suscribirse todavía.');
+  } else {
+    console.log('STRIPE_SECRET_KEY no configurada: todos los negocios operan en el plan gratis.');
   }
 });

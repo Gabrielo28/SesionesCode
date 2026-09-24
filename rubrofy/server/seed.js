@@ -9,6 +9,11 @@
 // Sus estrategias están escritas a mano (no generadas por Claude) para que
 // sembrar los ejemplos sea instantáneo y no dependa de ANTHROPIC_API_KEY —
 // un negocio real sí genera la suya en /registro.html vía server/estrategia.js.
+//
+// Cada uno queda en un plan distinto a propósito, para poder ver los tres
+// niveles en un solo `npm run dev`: Domo Bosque Sur = Estudio (texto + fotos
+// IA), Panadería Migas = Pro (solo texto IA), Clínica Sonrisa Sur = Gratis
+// (plantillas, sin IA) — ver server/planes.js.
 
 const store = require('./store');
 const auth = require('./auth');
@@ -22,6 +27,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Domo Bosque Sur',
     email: 'demo-turismo@rubrofy.com',
     marca: { color: '#7fae6b' },
+    plan: 'estudio',
     estiloImagen: 'limpia',
     estrategia: {
       rubro: 'turismo y hospedaje: domos y cabañas para desconectar',
@@ -46,6 +52,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Panadería Migas',
     email: 'demo-panaderia@rubrofy.com',
     marca: { color: '#e6a23a' },
+    plan: 'pro',
     estiloImagen: 'limpia',
     estrategia: {
       rubro: 'panadería y pastelería de barrio',
@@ -70,6 +77,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Clínica Sonrisa Sur',
     email: 'demo-clinica@rubrofy.com',
     marca: { color: '#7d93a8' },
+    plan: 'gratis',
     estiloImagen: 'limpia',
     estrategia: {
       rubro: 'clínica dental',
@@ -110,7 +118,7 @@ async function main() {
 
   console.log('Negocios de ejemplo listos:', NEGOCIOS_EJEMPLO.map((n) => n.id).join(', '));
   console.log(`Inicia sesión en /app con cualquiera de estos emails y la clave "${CLAVE_DEMO}":`);
-  for (const n of NEGOCIOS_EJEMPLO) console.log(`  - ${n.email}`);
+  for (const n of NEGOCIOS_EJEMPLO) console.log(`  - ${n.email} (plan ${n.plan})`);
 }
 
 main();

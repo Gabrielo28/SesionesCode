@@ -8,6 +8,7 @@
   let nichoActual = null; // estrategia de contenido del negocio actual (enfoques, categoriasFoto)
   let contenido = [];
   let fotos = {}; // { categoria: [nombresDeArchivo] }
+  let planesInfo = []; // catálogo de planes (ver /api/planes) — precios y disponibilidad
   let vistaActual = 'cola';
   let calSelectedId = null;
   const editingIds = new Set();
@@ -327,6 +328,59 @@
     $('#form-instagram').hidden = conectado;
     $('#btn-desconectar-ig').hidden = !conectado;
     $('#ig-error').hidden = true;
+
+    renderPlan();
+  }
+
+  function formatoCLP(monto) {
+    return monto ? '$' + monto.toLocaleString('es-CL') + '/mes' : 'Gratis';
+  }
+
+  function renderPlan() {
+    const cont = $('#plan-card');
+    if (!cont || !negocioActual) return;
+    const planActualId = negocioActual.plan || 'gratis';
+    const indiceActual = planesInfo.findIndex((p) => p.id === planActualId);
+
+    const filas = planesInfo.map((p, i) => {
+      const esActual = p.id === planActualId;
+      let boton = '';
+      if (esActual) {
+        boton = '<span class="ig-estado conectado">Plan actual</span>';
+      } else if (i < indiceActual) {
+        // Bajar de plan se hace desde "Gestionar suscripción" (Billing Portal), no con un checkout nuevo.
+        boton = '';
+      } else if (!p.disponible) {
+        boton = '<button type="button" class="btn-ghost" disabled title="Todavía no configurado">Próximamente</button>';
+      } else {
+        boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">Actualizar a ${escapeHtml(p.nombre)}</button>`;
+      }
+      const detalle = p.usaIA
+        ? (p.cuotaFotosIA ? `Texto con IA + ${p.cuotaFotosIA} fotos con IA/mes` : 'Texto con IA')
+        : 'Plantillas, sin IA';
+      return `
+        <div class="plan-row${esActual ? ' plan-row-actual' : ''}">
+          <div>
+            <strong>${escapeHtml(p.nombre)}</strong>
+            <span class="sub">${detalle} · ${formatoCLP(p.precioClp)}</span>
+          </div>
+          ${boton}
+        </div>
+      `;
+    }).join('');
+
+    const cuota = planesInfo.find((p) => p.id === planActualId);
+    const usoFotos = cuota && cuota.cuotaFotosIA
+      ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
+      : '';
+
+    cont.innerHTML = `
+      <div class="ig-card-head"><h2>Plan</h2></div>
+      ${filas}
+      ${usoFotos}
+      <p class="config-error" id="plan-error" hidden></p>
+      ${negocioActual.tieneSuscripcionStripe ? '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>' : ''}
+    `;
   }
 
   function render() {
@@ -424,20 +478,37 @@
   }
 
   async function mostrarApp() {
-    const [contenidoData, estrategiaData, fotosData] = await Promise.all([
+    const [contenidoData, estrategiaData, fotosData, planesData] = await Promise.all([
       api('/api/negocios/' + negocioActual.id + '/contenido'),
       api('/api/negocios/' + negocioActual.id + '/estrategia'),
       api('/api/negocios/' + negocioActual.id + '/fotos'),
+      api('/api/planes'),
     ]);
     contenido = contenidoData;
     nichoActual = estrategiaData;
     fotos = fotosData;
+    planesInfo = planesData;
     editingIds.clear();
     calSelectedId = null;
     actualizarSwitcher();
     $('#view-login').hidden = true;
     $('#view-app').hidden = false;
     render();
+    avisarRetornoCheckout();
+  }
+
+  // Tras volver de Stripe Checkout (éxito o cancelado), refresca el negocio
+  // por si el webhook ya actualizó el plan, avisa, y limpia la URL.
+  async function avisarRetornoCheckout() {
+    const params = new URLSearchParams(window.location.search);
+    const resultado = params.get('checkout');
+    if (!resultado) return;
+    history.replaceState(null, '', window.location.pathname);
+    if (resultado === 'exito') {
+      negocioActual = await api('/api/me');
+      render();
+      alert('¡Listo! Tu plan es ' + (negocioActual.plan || 'gratis') + '.');
+    }
   }
 
   async function iniciarSesion(email, password) {
@@ -517,6 +588,27 @@
       if (!confirm('¿Desconectar Instagram? Las próximas aprobaciones no se publicarán solas.')) return;
       negocioActual = await api(`/api/negocios/${negocioActual.id}/instagram`, { method: 'DELETE' });
       renderConfig();
+    });
+
+    // plan: subir de plan (Stripe Checkout) o gestionar la suscripción (Billing Portal)
+    $('#plan-card').addEventListener('click', async (e) => {
+      const btnCheckout = e.target.closest('[data-checkout-plan]');
+      const btnPortal = e.target.closest('[data-action="portal"]');
+      if (!btnCheckout && !btnPortal) return;
+      const btn = btnCheckout || btnPortal;
+      const errorEl = $('#plan-error');
+      errorEl.hidden = true;
+      btn.disabled = true;
+      try {
+        const resultado = btnCheckout
+          ? await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: btnCheckout.dataset.checkoutPlan }) })
+          : await api(`/api/negocios/${negocioActual.id}/portal`, { method: 'POST' });
+        window.location.href = resultado.url;
+      } catch (err) {
+        errorEl.textContent = 'No se pudo continuar. Intenta de nuevo en un momento.';
+        errorEl.hidden = false;
+        btn.disabled = false;
+      }
     });
 
     // configuración: guardar cambios / eliminar negocio

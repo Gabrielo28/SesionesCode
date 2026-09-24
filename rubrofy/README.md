@@ -27,6 +27,12 @@ crea su propia cuenta en `rubrofy.com/registro.html` (nombre, una
 descripción libre de su rubro, email y clave) y solo ve su propio
 contenido — no hay una clave maestra que vea todos los negocios juntos.
 
+**Modelo de negocio:** freemium por niveles, por negocio. El plan Gratis usa
+solo plantillas (sin IA, sin costo) y sirve de puerta de entrada; los planes
+Pro y Estudio agregan generación con Claude y, en Estudio, una cuota de
+fotos generadas por IA — ver `server/planes.js` y la sección de Stripe más
+abajo.
+
 ## Cómo correrlo
 
 Requiere Node 18+ (usa `fetch` nativo). Sin dependencias externas.
@@ -39,11 +45,13 @@ npm run dev
 `dev` siembra 3 negocios de ejemplo (uno por rubro: turismo, panadería,
 clínica dental) y levanta el servidor en
 [http://localhost:5180](http://localhost:5180). La clave de los 3 es
-`rubrofy123` — entra en `/app` con cualquiera de estos emails:
+`rubrofy123` — entra en `/app` con cualquiera de estos emails. Cada uno
+queda a propósito en un plan distinto, para ver los tres niveles sin tocar
+Stripe:
 
-- `demo-turismo@rubrofy.com`
-- `demo-panaderia@rubrofy.com`
-- `demo-clinica@rubrofy.com`
+- `demo-turismo@rubrofy.com` — plan Estudio (texto + fotos con IA)
+- `demo-panaderia@rubrofy.com` — plan Pro (solo texto con IA)
+- `demo-clinica@rubrofy.com` — plan Gratis (plantillas, sin IA)
 
 Para un servidor real (sin negocios de ejemplo falsos) usar `npm start`,
 que no siembra nada — cada negocio se crea desde `/registro.html`.
@@ -103,11 +111,15 @@ la usa deducida del request — funciona igual en producción normalmente, pero
 - **Fotos generadas por IA** — cuando una pieza no tiene una foto real
   subida para su categoría, se puede pedir una foto generada por IA
   (botón "Generar foto con IA" en la tarjeta, o automáticamente al aprobar
-  si Instagram está conectado). Requiere `OPENAI_API_KEY`; sin ella, la
-  pieza sigue mostrando el degradé de marcador de siempre. En Configuración,
-  cada negocio elige si esa foto generada debe quedar limpia (sin texto) o
-  con el titular incrustado como una gráfica de marketing — nunca reemplaza
-  una foto real ya subida.
+  si Instagram está conectado). Requiere `OPENAI_API_KEY` y el plan
+  Estudio; sin ellos, la pieza sigue mostrando el degradé de marcador de
+  siempre. En Configuración, cada negocio elige si esa foto generada debe
+  quedar limpia (sin texto) o con el titular incrustado como una gráfica de
+  marketing — nunca reemplaza una foto real ya subida.
+- **Plan y cobro** — en Configuración, cada negocio ve su plan actual, sube
+  a Pro o Estudio (Stripe Checkout) o gestiona su suscripción (Billing
+  Portal). El plan Gratis usa solo plantillas; Pro y Estudio habilitan la
+  IA de texto, y Estudio agrega una cuota mensual de fotos con IA.
 
 ## Cómo genera el contenido
 
@@ -150,6 +162,47 @@ OPENAI_API_KEY=sk-... npm start
 
 Por defecto usa `gpt-image-1`; se puede cambiar con `OPENAI_IMAGE_MODEL`.
 
+## Planes y cobro (Stripe)
+
+Todo negocio nace en el plan **Gratis** (sin tarjeta, como dice el
+formulario de registro). Para subir a **Pro** o **Estudio** desde
+Configuración, el panel abre una sesión de Stripe Checkout; Stripe cobra la
+suscripción y avisa al servidor por webhook cuándo se activó, canceló o
+falló el pago — el servidor nunca ve ni guarda el número de tarjeta.
+"Gestionar suscripción" (cambiar tarjeta, cancelar) abre el Billing Portal
+de Stripe, así que tampoco hace falta construir esa pantalla.
+
+Los precios y cuotas están en `server/planes.js` — cambiarlos ahí no
+requiere tocar Stripe ni el resto del código, salvo que cambie qué plan
+corresponde a qué precio (ver más abajo).
+
+Para activarlo:
+
+1. Crear una cuenta de Stripe (modo de prueba sirve para no cobrar de
+   verdad todavía) y conseguir la clave secreta en el Dashboard.
+2. Correr el script que crea los dos planes pagados como productos/precios
+   de Stripe:
+   ```bash
+   STRIPE_SECRET_KEY=sk_test_... node scripts/setup-stripe.js
+   ```
+   Imprime los IDs de precio (`price_...`) para las variables de abajo.
+3. En el Dashboard de Stripe, agregar un endpoint de webhook apuntando a
+   `https://tu-dominio.com/api/stripe/webhook`, con los eventos
+   `checkout.session.completed`, `customer.subscription.updated` y
+   `customer.subscription.deleted`. Copiar el "Signing secret" que muestra.
+4. Arrancar el servidor con todo junto:
+   ```bash
+   STRIPE_SECRET_KEY=sk_test_... \
+   STRIPE_WEBHOOK_SECRET=whsec_... \
+   STRIPE_PRICE_PRO=price_... \
+   STRIPE_PRICE_ESTUDIO=price_... \
+   npm start
+   ```
+
+Sin `STRIPE_SECRET_KEY`, todos los negocios quedan en el plan Gratis y los
+botones de "Actualizar" muestran "Próximamente" — no rompe nada, solo no
+se puede cobrar todavía.
+
 ## Estructura
 
 ```
@@ -161,10 +214,14 @@ server/
   store.js      Persistencia en JSON (negocios, contenido y fotos) — swap a Postgres futuro
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro
   generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
+  planes.js     Definición de los planes (precio, cuotas) — la única tabla que hay que tocar para cambiar precios
+  stripe.js     Cliente mínimo de Stripe por REST (checkout, billing portal, verificación de webhook)
   seed.js       Crea los negocios de ejemplo (con estrategias ya escritas a mano)
+scripts/
+  setup-stripe.js  Crea los productos/precios de los planes pagados en Stripe (correr una vez)
 public/
   site/         Landing pública (rubrofy.com) — marketing + registro, sin sesión
-  app/          El panel (rubrofy.com/app) — login, cola, calendario, fotos, config
+  app/          El panel (rubrofy.com/app) — login, cola, calendario, fotos, config, plan
 data/
   negocios/, contenido/, fotos/, fotos-ia/    Datos y fotos en tiempo de ejecución (no se sube)
 ```
@@ -178,8 +235,11 @@ data/
   Instagram con un botón (sin pasar por el panel de Meta) hace falta App
   Review + Business Verification, y armar el flujo de login con Instagram
   (OAuth) en vez del campo manual.
-- **Capa C** — autoservicio de cobro (Stripe). El login self-service por
-  negocio ya está — falta cobrar por la suscripción.
+- **Capa C** — el cobro ya funciona (Checkout + Billing Portal + webhook,
+  ver la sección de Stripe más arriba); falta correr `setup-stripe.js` y
+  configurar las variables de entorno en el servidor real para activarlo en
+  producción, y decidir si BYOK (que un negocio use su propia key de
+  Anthropic/OpenAI para saltarse la cuota) vale la pena construir.
 
 Ver el documento de arquitectura y el prototipo visual compartidos en la
 conversación para el detalle completo de estas capas.

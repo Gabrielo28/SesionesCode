@@ -2,8 +2,9 @@
 // La plantilla de cada negocio (tono, enfoques, categorías de foto) sale de
 // su propia `estrategia` (ver server/estrategia.js), generada por Claude a
 // partir de su rubro — no de una tabla fija por nicho. Con ANTHROPIC_API_KEY
-// configurada, Claude también escribe los titulares y captions reales del
-// banco inicial; sin key, usa plantillas genéricas con los datos del negocio.
+// configurada Y un plan pagado (ver server/planes.js), Claude también
+// escribe los titulares y captions reales; en el plan gratis, o sin key,
+// usa plantillas genéricas con los datos del negocio.
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
@@ -60,7 +61,7 @@ function extraerJSONArray(texto) {
 // llamador cae de vuelta a las plantillas genéricas.
 async function generarLoteConClaude(negocio, enfoquesDelLote) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey || negocio.plan === 'gratis') return null;
 
   const estrategia = negocio.estrategia;
   const lista = enfoquesDelLote
@@ -159,7 +160,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0) {
 // el llamador debe tener un plan B (rotar de nuevo desde el principio).
 async function generarVarianteConClaude(negocio, enfoqueId, previas) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey || negocio.plan === 'gratis') return null;
 
   const estrategia = negocio.estrategia;
   const enfoque = estrategia.enfoques.find((e) => e.id === enfoqueId) || estrategia.enfoques[0];

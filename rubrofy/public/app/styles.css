@@ -226,6 +226,16 @@ a { color: var(--amber); }
 .ig-estado.conectado { background: rgba(63,191,95,0.16); color: var(--green); }
 .ig-card .config-form { max-width: none; }
 
+/* --- plan --- */
+.plan-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 0; border-top: 1px solid var(--border);
+}
+.plan-row:first-of-type { border-top: none; }
+.plan-row strong { font-size: 13px; }
+.plan-row .sub { display: block; font-size: 11.5px; color: var(--ink-dim); margin-top: 2px; }
+.plan-row-actual strong { color: var(--amber); }
+
 /* --- configuración --- */
 .config-form { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
 .config-form label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
