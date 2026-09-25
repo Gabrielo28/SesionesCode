@@ -6,6 +6,9 @@
 >
 > Septiembre 2026.
 
+> **Actualización:** ya existe Rubrofy, que implementa buena parte de esta propuesta. El plan
+> vigente, ajustado a ese código, está en [RUBROFY-PLAN.md](RUBROFY-PLAN.md).
+
 ---
 
 ## 1. La propuesta en una frase
