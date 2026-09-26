@@ -389,3 +389,12 @@ a { color: var(--amber); }
 .tabla-ads th { color: var(--ink-faint); font-weight: 500; }
 .tabla-sub { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); }
 #meta-card code { font-size: 11px; color: var(--ink); }
+
+/* --- competencia --- */
+.comp-agregar { display: flex; gap: 8px; }
+.comp-agregar input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--ink); font: inherit; font-size: 13px; padding: 7px 10px; width: 240px; }
+.comp-propio td { background: rgba(255, 172, 43, 0.06); }
+.comp-acciones { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+.comp-error { color: var(--coral); }
+.tabla-ads .sube { color: var(--green); }
+.tabla-ads .baja { color: var(--coral); }

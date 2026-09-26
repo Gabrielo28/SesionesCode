@@ -270,6 +270,18 @@
   secciones.metaAds = seccionAds('Publicidad en Meta', 'compras, formularios y conversaciones');
   secciones.googleAds = seccionAds('Publicidad en Google', 'conversiones');
 
+  secciones.competencia = (datos) => {
+    const div = document.createElement('section');
+    div.className = 'card';
+    div.innerHTML = `<h2>Tu cuenta frente a la competencia</h2>
+      <p class="nota">Datos públicos de Instagram. Interacción = me gusta + comentarios promedio de las últimas 12 publicaciones.</p>
+      <table class="tabla"><thead><tr><th>Cuenta</th><th>Seguidores</th><th>Variación 30 días</th><th>Posts 30 días</th><th>Interacción / post</th></tr></thead>
+      <tbody>${datos.filas.map((f) => `<tr><td>${f.propio ? '<b>Tú</b>' : '@' + e(f.username)}</td><td>${n(f.seguidores)}</td>
+        <td>${f.variacionSeguidores == null ? '–' : (f.variacionSeguidores > 0 ? '+' : '') + n(f.variacionSeguidores)}</td>
+        <td>${f.posts30d == null ? '–' : f.posts30d}</td><td>${n(f.interaccionPromedio)}</td></tr>`).join('')}</tbody></table>`;
+    return div;
+  };
+
   window.RubrofyInforme = { secciones, kpi, variacionHTML };
   iniciar();
 })();

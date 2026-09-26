@@ -17,6 +17,7 @@ const analitica = require('./analitica');
 const informe = require('./informe');
 const meta = require('./meta');
 const google = require('./google');
+const competencia = require('./competencia');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -398,9 +399,22 @@ const sincronizador = analitica.crearSincronizador({
     if (fuente === 'google_ads') {
       return plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
     }
+    if (fuente === 'competencia') {
+      return plan.competencia && !!(negocio.meta && negocio.meta.igUserId && negocio.meta.estado !== 'reconectar');
+    }
     return false;
   },
-  fuentes: { meta_ads: (id) => meta.sincronizarAds(id), google_ads: (id) => google.sincronizar(id) },
+  fuentes: {
+    meta_ads: (id) => meta.sincronizarAds(id),
+    google_ads: (id) => google.sincronizar(id),
+    competencia: (id) => competencia.sincronizar(id),
+  },
+});
+
+informe.registrarSeccion('competencia', (negocio) => {
+  if (!getPlan(negocio.plan).competencia || !negocio.meta || !negocio.meta.igUserId) return null;
+  const c = competencia.comparacion(negocio);
+  return c.filas.length > 1 ? c : null;
 });
 
 informe.registrarSeccion('googleAds', (negocio, desde, hasta) => {
@@ -909,6 +923,36 @@ const server = http.createServer(async (req, res) => {
             delete fresco.meta;
             store.saveNegocio(fresco);
             return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
+        }
+
+        // Competencia en Instagram (plan Estudio, requiere la conexión con Meta):
+        //   GET    /api/negocios/:id/competencia
+        //   POST   /api/negocios/:id/competencia { username }
+        //   DELETE /api/negocios/:id/competencia/:username
+        //   POST   /api/negocios/:id/competencia/sincronizar
+        if (parts[3] === 'competencia') {
+          if (!getPlan(negocio.plan).competencia) return sendJSON(res, 403, { error: 'Competencia está disponible en el plan Estudio' });
+          if (!negocio.meta || !negocio.meta.igUserId) {
+            return sendJSON(res, 400, { error: 'Conecta Meta en Configuración y elige tu cuenta de Instagram para seguir a tu competencia' });
+          }
+          const vista = () => ({ comparacion: competencia.comparacion(store.getNegocio(negocioId)), sync: analitica.estadoSync(negocioId, 'competencia') });
+          if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vista());
+          if (parts.length === 4 && req.method === 'POST') {
+            const body = await readBody(req);
+            const r = await competencia.agregar(negocio, body.username);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 201, vista());
+          }
+          if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
+            const r = await sincronizador.sincronizarAhora(negocioId, 'competencia');
+            if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
+            return sendJSON(res, 200, vista());
+          }
+          if (parts.length === 5 && req.method === 'DELETE') {
+            competencia.quitar(negocioId, decodeURIComponent(parts[4]));
+            return sendJSON(res, 200, vista());
           }
           return sendJSON(res, 400, { error: 'Acción inválida' });
         }

@@ -231,6 +231,23 @@ Ads), y se suma al informe mensual. **Solo lectura.**
   El permiso `adwords` es "sensible": hasta que Google verifique la app,
   admite 100 usuarios y muestra la pantalla de "app no verificada".
 
+## Competencia (server/competencia.js)
+
+En el plan Estudio, Resultados → **Competencia** compara la cuenta del
+negocio con hasta 5 competidores: seguidores y su variación en 30 días,
+publicaciones de los últimos 30 días, interacción promedio por post (me
+gusta + comentarios de los últimos 12), su mejor post reciente y un enlace
+a sus anuncios activos en la Biblioteca de Anuncios de Meta. También va en
+el informe mensual.
+
+Usa Business Discovery, que solo existe en la API de Instagram con inicio
+de sesión de **Facebook**: por eso depende de la conexión con Meta (y de
+elegir ahí la cuenta de Instagram del negocio). Solo funciona con cuentas
+profesionales y entrega datos públicos (no el alcance de otros). Los
+anuncios de la competencia no se leen por API porque, en Chile, la API de
+la Biblioteca de Anuncios solo incluye anuncios políticos; se enlaza la
+búsqueda pública. Una foto por competidor al día (1 llamada cada uno).
+
 ## Mi estilo (server/estilo.js)
 
 El negocio le muestra a Rubrofy el contenido que ya hace para que la IA
@@ -400,6 +417,7 @@ server/
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
   google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
+  competencia.js Seguimiento de competidores en Instagram (Business Discovery)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
