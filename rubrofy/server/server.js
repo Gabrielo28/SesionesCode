@@ -9,7 +9,8 @@ const { URL } = require('url');
 const store = require('./store');
 const auth = require('./auth');
 const { generarEstrategia } = require('./estrategia');
-const { generarBanco, generarVarianteConClaude } = require('./generator');
+const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
+const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
 const analitica = require('./analitica');
@@ -797,6 +798,67 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, items);
         }
 
+        // "Mi estilo": ejemplos del contenido que ya hace el negocio y la guía
+        // de estilo que la IA sintetiza de ellos (y el dueño puede corregir).
+        //   GET    /api/negocios/:id/estilo
+        //   PUT    /api/negocios/:id/estilo { general, porFormato }
+        //   POST   /api/negocios/:id/estilo/referencias { formato, texto, nota, imagenBase64, filename }
+        //   DELETE /api/negocios/:id/estilo/referencias/:refId
+        //   POST   /api/negocios/:id/estilo/importar   — desde su Instagram
+        //   POST   /api/negocios/:id/estilo/analizar   — guía con IA (planes con IA)
+        if (parts[3] === 'estilo') {
+          const vistaEstilo = (n) => ({
+            referencias: estilo.listar(negocioId),
+            estilo: n.estilo || null,
+            mezcla: estilo.mezcla(negocioId),
+            puedeAnalizar: getPlan(n.plan).usaIA,
+            iaConfigurada: !!process.env.ANTHROPIC_API_KEY,
+            instagramConectado: !!(n.instagram && n.instagram.accessToken),
+          });
+          if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vistaEstilo(negocio));
+          if (parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            const fresco = store.getNegocio(negocioId);
+            fresco.estilo = estilo.normalizarGuia(body, fresco.estilo);
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, vistaEstilo(fresco));
+          }
+          if (parts[4] === 'referencias' && parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req, 8e6);
+            const r = estilo.agregar(negocioId, body);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 201, vistaEstilo(negocio));
+          }
+          if (parts[4] === 'referencias' && parts.length === 6 && req.method === 'DELETE') {
+            if (!estilo.borrar(negocioId, parts[5])) return sendJSON(res, 404, { error: 'Ejemplo no encontrado' });
+            return sendJSON(res, 200, vistaEstilo(negocio));
+          }
+          if (parts[4] === 'importar' && parts.length === 5 && req.method === 'POST') {
+            if (!negocio.instagram || !negocio.instagram.accessToken) {
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para importar tus publicaciones' });
+            }
+            try {
+              const r = await estilo.importarDeInstagram(negocio);
+              return sendJSON(res, 200, Object.assign(vistaEstilo(negocio), { importadas: r.nuevas }));
+            } catch (err) {
+              return sendJSON(res, 502, { error: 'No se pudo leer tu Instagram: ' + err.message });
+            }
+          }
+          if (parts[4] === 'analizar' && parts.length === 5 && req.method === 'POST') {
+            if (!getPlan(negocio.plan).usaIA) return sendJSON(res, 403, { error: 'El análisis de estilo con IA está en los planes Pro y Estudio' });
+            if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
+            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+            const r = await estilo.analizar(negocio, process.env.ANTHROPIC_API_KEY);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            registrarUsoIA(negocioId, 'usoTextosIA', 1);
+            const fresco = store.getNegocio(negocioId);
+            fresco.estilo = r.estilo;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, vistaEstilo(fresco));
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
+        }
+
         // Informe mensual (planes con Resultados):
         //   GET  /api/negocios/:id/informe?mes=AAAA-MM
         //   POST /api/negocios/:id/informe/conclusion { mes } — (re)genera la conclusión
@@ -1008,6 +1070,8 @@ const server = http.createServer(async (req, res) => {
             aplicar = (it) => {
               it.formato = body.formato;
               it.aspect = FORMATOS[body.formato].aspect;
+              const enfoque = (negocio.estrategia.enfoques || []).find((e) => e.id === it.enfoqueId) || { label: it.tag || 'la publicación', categoriaFoto: it.categoriaFoto };
+              it.idea = ideaGenerica(body.formato, enfoque);
               programacion.asegurarPublicarEl(it);
               it.date = programacion.etiquetaFecha(it.publicarEl, FORMATOS[body.formato].etiqueta);
               descartarContenedor(it);
@@ -1048,7 +1112,7 @@ const server = http.createServer(async (req, res) => {
               if (usaIA && textosIADisponibles(negocio) <= 0) {
                 return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
               }
-              const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants) : null;
+              const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants, formatoDe(item)) : null;
               if (nueva) {
                 registrarUsoIA(negocioId, 'usoTextosIA', 1);
                 aplicar = (it) => { it.variants.push(nueva); it.variantIndex = it.variants.length - 1; };
@@ -1095,6 +1159,19 @@ const server = http.createServer(async (req, res) => {
       }
 
       return notFound(res);
+    }
+
+    // --- imágenes de "Mi estilo": /referencias/:negocioId/:archivo (solo con sesión) ---
+    if (parts[0] === 'referencias' && parts.length === 3 && req.method === 'GET') {
+      const [, negocioId, archivo] = parts;
+      if (sesionActual(req) !== negocioId) return notFound(res);
+      const filePath = estilo.imagenAbsoluta(negocioId, archivo);
+      if (!filePath.startsWith(estilo.REFERENCIAS_DIR)) return notFound(res);
+      return fs.readFile(filePath, (err, content) => {
+        if (err) return notFound(res);
+        res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath).toLowerCase()] || 'image/jpeg', 'X-Content-Type-Options': 'nosniff' });
+        res.end(content);
+      });
     }
 
     // --- videos: /videos/:negocioId/:archivo --- (sesión del negocio, o

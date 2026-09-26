@@ -42,6 +42,9 @@
       <button class="rail-btn" data-view="fotos" title="Fotos del negocio">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 L4 15 L14 5 L18 9 L8 19 Z"/><path d="M13 6 L17 10"/></svg>
       </button>
+      <button class="rail-btn" data-view="estilo" title="Mi estilo">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg>
+      </button>
       <button class="rail-btn" data-view="resultados" title="Resultados">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg>
       </button>
@@ -104,6 +107,14 @@
           <p class="sub">El contenido usa estas fotos según la categoría de cada pieza. Sin foto, la tarjeta muestra un color de marcador.</p>
         </div>
         <div id="fotos-categorias"></div>
+      </section>
+
+      <section id="view-estilo" class="view" hidden>
+        <div>
+          <h1>Mi estilo</h1>
+          <p class="sub">Muéstrale a Rubrofy el contenido que ya haces — posts, carruseles, reels e historias — y aprenderá a escribir y proponer contenido como el tuyo.</p>
+        </div>
+        <div id="estilo" class="estilo"></div>
       </section>
 
       <section id="view-resultados" class="view" hidden>
@@ -181,6 +192,7 @@
 
   <script src="/app/graficos.js"></script>
   <script src="/app/resultados.js"></script>
+  <script src="/app/estilo.js"></script>
   <script src="/app/app.js"></script>
 </body>
 </html>

@@ -8,6 +8,32 @@
 
 const { fechaProgramada, etiquetaFecha } = require('./programacion');
 const aprendizaje = require('./aprendizaje');
+const estilo = require('./estilo');
+
+const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
+
+// Idea de respaldo (sin IA) de qué mostrar en cada formato.
+function ideaGenerica(formato, enfoque) {
+  const tema = enfoque.label.toLowerCase();
+  if (formato === 'reel') return `Video vertical de 10-20 s sobre "${tema}": una toma general, un detalle de cerca y cierre con el titular en pantalla.`;
+  if (formato === 'carrusel') return `3 a 5 láminas sobre "${tema}": portada con el titular, 2-3 láminas con fotos o datos, y una última con el llamado a la acción.`;
+  if (formato === 'historia') return `Foto o video vertical sobre "${tema}" con el titular y un sticker de encuesta o de enlace.`;
+  return `Una foto de "${enfoque.categoriaFoto || tema}" con buena luz, con el titular sobre la imagen.`;
+}
+
+// Guía de estilo del negocio y ejemplos del mismo formato ("Mi estilo").
+function bloqueEstilo(negocio, formatos) {
+  const partes = [];
+  const g = negocio.estilo;
+  if (g && g.general) partes.push(`Estilo del negocio (respétalo): ${g.general}`);
+  for (const f of new Set(formatos)) {
+    const lineas = [];
+    if (g && g.porFormato && g.porFormato[f]) lineas.push(`guía: ${g.porFormato[f]}`);
+    for (const ej of estilo.ejemplos(negocio.id, f)) lineas.push(`ejemplo real: ${ej}`);
+    if (lineas.length) partes.push(`${estilo.ETIQUETAS[f]}:\n` + lineas.map((l) => `- ${l}`).join('\n'));
+  }
+  return partes.length ? '\n\nAsí publica este negocio (imita el estilo, no copies los textos):\n' + partes.join('\n') : '';
+}
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
@@ -55,25 +81,29 @@ function extraerJSONArray(texto) {
 // Pide a Claude titulares + captions reales para un lote de piezas nuevas,
 // en una sola llamada. Devuelve null si no hay API key o si algo falla — el
 // llamador cae de vuelta a las plantillas genéricas.
-async function generarLoteConClaude(negocio, enfoquesDelLote, ctx) {
+async function generarLoteConClaude(negocio, piezas, ctx) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
   const estrategia = negocio.estrategia;
-  const lista = enfoquesDelLote
-    .map((e, i) => `${i + 1}. Enfoque "${e.label}": ${e.pista}`)
+  const enfoquesDelLote = piezas;
+  const lista = piezas
+    .map((p, i) => `${i + 1}. ${estilo.ETIQUETAS[p.formato]} — enfoque "${p.enfoque.label}": ${p.enfoque.pista}`)
     .join('\n');
 
   const prompt =
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Datos reales del negocio, úsalos solo si son útiles y nunca inventes ` +
     `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.` +
-    (ctx ? aprendizaje.textoParaPrompt(ctx) : '') + '\n\n' +
-    `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por cada enfoque, en este orden:\n${lista}\n\n` +
+    (ctx ? aprendizaje.textoParaPrompt(ctx) : '') +
+    bloqueEstilo(negocio, piezas.map((p) => p.formato)) + '\n\n' +
+    `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por línea, con el formato y enfoque indicados, en este orden:\n${lista}\n\n` +
     `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
-    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación"}]\n` +
+    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación", "idea": "qué mostrar"}]\n` +
     `El "headline" es un titular tipo cartel, máximo 4-5 palabras en total, en dos líneas separadas por \\n, ` +
-    `todo en mayúsculas. El "caption" es el texto real de la publicación, tono natural, sin hashtags excesivos, máximo 220 caracteres.`;
+    `todo en mayúsculas. El "caption" es el texto real de la publicación, tono natural, sin hashtags excesivos, máximo 220 caracteres ` +
+    `(en historias puede ser una frase corta). La "idea" dice en máximo 200 caracteres qué mostrar: qué foto usar en un post, ` +
+    `qué va en cada lámina de un carrusel, las tomas de un reel o qué mostrar y qué sticker usar en una historia.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -85,7 +115,7 @@ async function generarLoteConClaude(negocio, enfoquesDelLote, ctx) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 200 * enfoquesDelLote.length,
+        max_tokens: 300 * enfoquesDelLote.length,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -123,24 +153,29 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
   const horaPost = (ctx && ctx.horario && ctx.horario.hora) || '09:00';
   const plan = [];
 
+  // Formatos según la mezcla que el negocio mostró en "Mi estilo" (o el
+  // patrón de siempre si todavía no mostró suficientes ejemplos).
+  const formatos = estilo.planFormatos(negocio.id, cantidad, startIndex);
   for (let i = 0; i < cantidad; i++) {
     const idx = startIndex + i;
     const enfoque = enfoques[idx % enfoques.length];
-    const esHistoria = idx % 3 === 2;
+    const formato = formatos[i];
+    const esHistoria = formato === 'historia';
     // Fecha real en la hora del negocio (ver server/programacion.js): es la
     // que usa el publicador para publicar la pieza una vez aprobada.
     const publicarEl = fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : horaPost);
     plan.push({
       idx,
       enfoque,
+      formato,
       esHistoria,
       publicarEl,
-      dateLabel: etiquetaFecha(publicarEl, esHistoria ? 'Historia' : 'Post'),
+      dateLabel: etiquetaFecha(publicarEl, estilo.ETIQUETAS[formato]),
       hue: HUES[idx % HUES.length],
     });
   }
 
-  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan.map((p) => p.enfoque), ctx);
+  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan, ctx);
 
   return plan.map((p, i) => {
     const generado = lote && lote[i];
@@ -151,8 +186,10 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       status: 'pendiente',
       variantIndex: 0,
       editing: false,
-      aspect: p.esHistoria ? '9 / 16' : '4 / 5',
-      formato: p.esHistoria ? 'historia' : 'post',
+      aspect: ASPECTO[p.formato],
+      formato: p.formato,
+      idea: generado && typeof generado.idea === 'string' && generado.idea.trim()
+        ? generado.idea.trim().slice(0, 300) : ideaGenerica(p.formato, p.enfoque),
       headline,
       tag: p.enfoque.label,
       enfoqueId: p.enfoque.id,
@@ -181,7 +218,7 @@ function ordenarEnfoques(enfoques, ctx) {
 // Pide a Claude una variante nueva para "Otra versión" cuando ya no quedan
 // variantes precalculadas. Devuelve null si no hay API key o si algo falla —
 // el llamador debe tener un plan B (rotar de nuevo desde el principio).
-async function generarVarianteConClaude(negocio, enfoqueId, previas) {
+async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = 'post') {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
@@ -190,9 +227,9 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas) {
 
   const prompt =
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
-    `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram con enfoque "${enfoque.label}" ` +
+    `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram (${estilo.ETIQUETAS[formato] || 'Post'}) con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
-    `${JSON.stringify(negocio.datos || {})}.` + aprendizajeSeguro(negocio) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
+    `${JSON.stringify(negocio.datos || {})}.` + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
 
   try {
@@ -226,4 +263,4 @@ function aprendizajeSeguro(negocio) {
   }
 }
 
-module.exports = { generarBanco, generarVarianteConClaude };
+module.exports = { generarBanco, generarVarianteConClaude, ideaGenerica };

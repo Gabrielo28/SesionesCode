@@ -256,6 +256,7 @@
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
+          ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
           ${isPending ? `
             <div class="card-actions">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
@@ -493,7 +494,7 @@
     `;
   }
 
-  const VISTAS = ['cola', 'calendario', 'fotos', 'resultados', 'config'];
+  const VISTAS = ['cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
   function irAVista(vista) {
     vistaActual = vista;
@@ -508,6 +509,9 @@
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
     else if (vistaActual === 'config') renderConfig();
+    else if (vistaActual === 'estilo') {
+      window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
+    }
     else if (vistaActual === 'resultados') {
       window.RubrofyResultados.render($('#resultados'), { api, negocio: negocioActual, planes: planesInfo, irA: irAVista });
     }

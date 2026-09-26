@@ -185,6 +185,28 @@ Requiere que el token de Instagram tenga el permiso
 la publicación sigue funcionando igual. Una sincronización usa unas 30 a 45
 llamadas (el límite de Meta es ~200 por hora por cuenta).
 
+## Mi estilo (server/estilo.js)
+
+El negocio le muestra a Rubrofy el contenido que ya hace para que la IA
+aprenda su estilo:
+
+- **Importar de Instagram**: trae de un clic las últimas 30 publicaciones
+  y las historias activas (texto, formato e imagen o portada), sin
+  duplicar lo ya importado.
+- **Agregar a mano**: formato (post, carrusel, reel o historia), texto,
+  captura opcional y una nota ("así hacemos las promos de los viernes").
+  Hasta 60 ejemplos por negocio.
+- **Guía de estilo**: en Pro y Estudio, "Analizar mi estilo con IA" hace
+  que Claude estudie los ejemplos (incluidas hasta 6 imágenes) y escriba
+  una guía general y por formato (usa 1 de la cuota mensual). El dueño la
+  puede corregir y su versión manda.
+
+El generador usa la guía y 2 ejemplos reales del mismo formato en cada
+lote, reparte los formatos en la misma proporción que muestran los
+ejemplos (con 5 o más) y propone para cada pieza la **idea** de qué
+mostrar (la foto de un post, las láminas de un carrusel, las tomas de un
+reel, el sticker de una historia), que se ve en la tarjeta.
+
 ## Informe mensual (server/informe.js, /app/informe.html)
 
 Desde Resultados, "Informe mensual" abre una página lista para imprimir o
@@ -329,6 +351,7 @@ server/
   analitica.js  Sincroniza métricas de Instagram y calcula Resultados (resumen, enfoques, mejor horario)
   aprendizaje.js Lo que la IA aprende de cada negocio (aprobaciones, correcciones, resultados)
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
+  estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
