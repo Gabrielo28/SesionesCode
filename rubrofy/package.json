@@ -8,5 +8,8 @@
     "seed": "node server/seed.js",
     "start": "node server/server.js",
     "dev": "node server/seed.js && node server/server.js"
+  },
+  "engines": {
+    "node": ">=22.13"
   }
 }

@@ -35,7 +35,8 @@ abajo.
 
 ## Cómo correrlo
 
-Requiere Node 18+ (usa `fetch` nativo). Sin dependencias externas.
+Requiere Node 22.13+ (usa `fetch` nativo y la base de datos SQLite que
+trae Node, `node:sqlite`). Sin dependencias externas.
 
 ```bash
 cd rubrofy
@@ -59,6 +60,15 @@ que no siembra nada — cada negocio se crea desde `/registro.html`.
 Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
 
 ## Antes de ponerlo en un servidor público
+
+**Datos persistentes:** todo vive en `data/` — la base `data/rubrofy.db`
+(negocios, colas de contenido, métricas) y las fotos y videos subidos. En
+Railway el disco se borra en cada deploy, así que hay que montar un
+**Volume** en la carpeta `data` del servicio (o apuntar `RUBROFY_DB` a una
+ruta dentro del Volume). Si hay datos de una versión anterior en archivos
+JSON (`data/negocios/`, `data/contenido/`), se migran solos a la base la
+primera vez que arranca, y las carpetas viejas quedan como respaldo
+(`*.migrado-<fecha>`).
 
 Definir `SESSION_SECRET` (una cadena larga y al azar) antes de arrancar en
 producción:
@@ -275,7 +285,7 @@ server/
   publicador.js Proceso de fondo: publica lo programado, reintenta y renueva tokens
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
-  store.js      Persistencia en JSON (negocios, contenido y fotos) — swap a Postgres futuro
+  store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro
   generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
   planes.js     Definición de los planes (precio, cuotas) — la única tabla que hay que tocar para cambiar precios

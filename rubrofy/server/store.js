@@ -1,9 +1,23 @@
-// Capa de datos: negocios y contenido guardados como JSON en disco.
-// Cambiar a Postgres más adelante significa reescribir este archivo,
-// no tocar server.js ni generator.js — toda la app pasa por estas funciones.
+// Capa de datos. Negocios y colas de contenido viven en SQLite (el módulo
+// node:sqlite que trae Node desde la 22.13: cero dependencias, mismo
+// criterio que el resto del proyecto); fotos y videos siguen como archivos
+// en data/. Toda la app pasa por estas funciones: cambiar a Postgres más
+// adelante significa reescribir este archivo, no server.js ni el resto.
+//
+// Las funciones son síncronas a propósito: un leer-modificar-guardar sin
+// `await` entre medio no se intercala con otros requests (ver publicador.js).
 
 const fs = require('fs');
 const path = require('path');
+
+// node:sqlite avisa en cada arranque que es "experimental"; se silencia solo
+// ese aviso para no ensuciar los logs.
+const emitirAviso = process.emitWarning;
+process.emitWarning = function (aviso, ...resto) {
+  if (String(aviso && aviso.message ? aviso.message : aviso).includes('SQLite is an experimental')) return;
+  return emitirAviso.call(process, aviso, ...resto);
+};
+const { DatabaseSync } = require('node:sqlite');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const NEGOCIOS_DIR = path.join(DATA_DIR, 'negocios');
@@ -11,63 +25,112 @@ const CONTENIDO_DIR = path.join(DATA_DIR, 'contenido');
 const FOTOS_DIR = path.join(DATA_DIR, 'fotos');
 const FOTOS_IA_DIR = path.join(DATA_DIR, 'fotos-ia');
 const VIDEOS_DIR = path.join(DATA_DIR, 'videos');
+const DB_PATH = process.env.RUBROFY_DB || path.join(DATA_DIR, 'rubrofy.db');
 
-for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR, FOTOS_IA_DIR, VIDEOS_DIR]) {
+for (const dir of [DATA_DIR, FOTOS_DIR, FOTOS_IA_DIR, VIDEOS_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-function readJSON(filePath, fallback) {
+const db = new DatabaseSync(DB_PATH);
+db.exec(`
+  PRAGMA journal_mode = WAL;
+  PRAGMA busy_timeout = 5000;
+  PRAGMA foreign_keys = ON;
+  CREATE TABLE IF NOT EXISTS negocios (
+    id TEXT PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    email TEXT,
+    doc TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS negocios_email ON negocios (email);
+  CREATE TABLE IF NOT EXISTS contenido (
+    negocio_id TEXT PRIMARY KEY,
+    items TEXT NOT NULL
+  );
+`);
+
+const sql = {
+  listNegocios: db.prepare('SELECT doc FROM negocios ORDER BY nombre COLLATE NOCASE'),
+  getNegocio: db.prepare('SELECT doc FROM negocios WHERE id = ?'),
+  saveNegocio: db.prepare(`INSERT INTO negocios (id, nombre, email, doc) VALUES (?, ?, ?, ?)
+    ON CONFLICT (id) DO UPDATE SET nombre = excluded.nombre, email = excluded.email, doc = excluded.doc`),
+  deleteNegocio: db.prepare('DELETE FROM negocios WHERE id = ?'),
+  getContenido: db.prepare('SELECT items FROM contenido WHERE negocio_id = ?'),
+  saveContenido: db.prepare(`INSERT INTO contenido (negocio_id, items) VALUES (?, ?)
+    ON CONFLICT (negocio_id) DO UPDATE SET items = excluded.items`),
+  deleteContenido: db.prepare('DELETE FROM contenido WHERE negocio_id = ?'),
+};
+
+// Varias escrituras como una sola: si algo falla a mitad, no queda nada a medias.
+function transaccion(fn) {
+  db.exec('BEGIN');
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const resultado = fn();
+    db.exec('COMMIT');
+    return resultado;
   } catch (err) {
-    if (err.code === 'ENOENT') return fallback;
+    db.exec('ROLLBACK');
     throw err;
   }
 }
 
-function writeJSONAtomic(filePath, data) {
-  const tmpPath = filePath + '.tmp-' + process.pid + '-' + Date.now();
-  fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2));
-  fs.renameSync(tmpPath, filePath);
-}
-
-function negocioPath(id) {
-  return path.join(NEGOCIOS_DIR, id + '.json');
-}
-function contenidoPath(id) {
-  return path.join(CONTENIDO_DIR, id + '.json');
-}
-
 function listNegocios() {
-  return fs
-    .readdirSync(NEGOCIOS_DIR)
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => readJSON(path.join(NEGOCIOS_DIR, f), null))
-    .filter(Boolean)
-    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+  return sql.listNegocios.all().map((fila) => JSON.parse(fila.doc));
 }
 
 function getNegocio(id) {
-  return readJSON(negocioPath(id), null);
+  const fila = sql.getNegocio.get(String(id));
+  return fila ? JSON.parse(fila.doc) : null;
 }
 
 function saveNegocio(negocio) {
-  writeJSONAtomic(negocioPath(negocio.id), negocio);
+  sql.saveNegocio.run(negocio.id, negocio.nombre || '', negocio.email || null, JSON.stringify(negocio));
   return negocio;
 }
 
 function getContenido(negocioId) {
-  return readJSON(contenidoPath(negocioId), []);
+  const fila = sql.getContenido.get(String(negocioId));
+  return fila ? JSON.parse(fila.items) : [];
 }
 
 function saveContenido(negocioId, items) {
-  writeJSONAtomic(contenidoPath(negocioId), items);
+  sql.saveContenido.run(negocioId, JSON.stringify(items));
   return items;
 }
 
+// Migración única desde la versión con archivos JSON: si la base está vacía
+// y existen data/negocios/*.json, se importan en una transacción y las
+// carpetas viejas quedan renombradas como respaldo (no se borran).
+function migrarDesdeJSON() {
+  if (!fs.existsSync(NEGOCIOS_DIR)) return;
+  const yaHayDatos = db.prepare('SELECT COUNT(*) AS n FROM negocios').get().n > 0;
+  if (yaHayDatos) return;
+  const archivos = fs.readdirSync(NEGOCIOS_DIR).filter((f) => f.endsWith('.json'));
+  if (!archivos.length) return;
+
+  transaccion(() => {
+    for (const archivo of archivos) {
+      const negocio = JSON.parse(fs.readFileSync(path.join(NEGOCIOS_DIR, archivo), 'utf8'));
+      saveNegocio(negocio);
+      const contenidoArchivo = path.join(CONTENIDO_DIR, archivo);
+      if (fs.existsSync(contenidoArchivo)) {
+        saveContenido(negocio.id, JSON.parse(fs.readFileSync(contenidoArchivo, 'utf8')));
+      }
+    }
+  });
+  const sufijo = '.migrado-' + new Date().toISOString().slice(0, 10);
+  fs.renameSync(NEGOCIOS_DIR, NEGOCIOS_DIR + sufijo);
+  if (fs.existsSync(CONTENIDO_DIR)) fs.renameSync(CONTENIDO_DIR, CONTENIDO_DIR + sufijo);
+  console.log(`Base de datos: se migraron ${archivos.length} negocio(s) desde los archivos JSON (respaldo en data/*${sufijo}).`);
+}
+migrarDesdeJSON();
+
 function deleteNegocio(negocioId) {
-  fs.rmSync(negocioPath(negocioId), { force: true });
-  fs.rmSync(contenidoPath(negocioId), { force: true });
+  transaccion(() => {
+    for (const borrar of alBorrarNegocio) borrar(negocioId);
+    sql.deleteContenido.run(negocioId);
+    sql.deleteNegocio.run(negocioId);
+  });
   fs.rmSync(path.join(FOTOS_DIR, negocioId), { recursive: true, force: true });
   fs.rmSync(path.join(FOTOS_IA_DIR, negocioId), { recursive: true, force: true });
   fs.rmSync(path.join(VIDEOS_DIR, negocioId), { recursive: true, force: true });
@@ -140,7 +203,17 @@ function borrarVideo(negocioId, archivo) {
   if (archivo) fs.rmSync(videoAbsolutePath(negocioId, archivo), { force: true });
 }
 
+// Otros módulos (analítica, ads...) guardan tablas propias por negocio y se
+// registran acá para que al eliminar una cuenta no quede nada suyo.
+const alBorrarNegocio = [];
+function registrarLimpieza(fn) {
+  alBorrarNegocio.push(fn);
+}
+
 module.exports = {
+  db,
+  transaccion,
+  registrarLimpieza,
   listNegocios,
   getNegocio,
   saveNegocio,
