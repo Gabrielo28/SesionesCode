@@ -13,6 +13,7 @@ const { generarBanco, generarVarianteConClaude } = require('./generator');
 const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
 const analitica = require('./analitica');
+const informe = require('./informe');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -579,6 +580,20 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, negocioPublico(negocio));
       }
 
+      // GET /api/negocios/:id/informe?mes=AAAA-MM&t=... — informe compartido
+      // por enlace firmado (sin sesión): lo puede abrir el cliente de una
+      // agencia o un socio. Solo lectura, solo ese mes, vence a los 30 días.
+      if (parts[1] === 'negocios' && parts[3] === 'informe' && parts.length === 4 && req.method === 'GET'
+        && url.searchParams.get('t') && sesionActual(req) !== parts[2]) {
+        const mes = url.searchParams.get('mes');
+        const negocioCompartido = store.getNegocio(parts[2]);
+        if (!negocioCompartido || !informe.mesValido(mes)
+          || !auth.verificarTokenFoto(url.searchParams.get('t'), parts[2], 'informe', mes)) {
+          return sendJSON(res, 404, { error: 'El enlace no es válido o ya venció' });
+        }
+        return sendJSON(res, 200, Object.assign(informe.datos(negocioCompartido, mes, estadisticasAprobacion), { compartido: true }));
+      }
+
       if (parts[1] === 'negocios' && parts.length >= 3) {
         const negocioId = parts[2];
         if (sesionActual(req) !== negocioId) return noAutorizado(res);
@@ -780,6 +795,44 @@ const server = http.createServer(async (req, res) => {
           const items = store.getContenido(negocioId).concat(nuevos);
           store.saveContenido(negocioId, items);
           return sendJSON(res, 200, items);
+        }
+
+        // Informe mensual (planes con Resultados):
+        //   GET  /api/negocios/:id/informe?mes=AAAA-MM
+        //   POST /api/negocios/:id/informe/conclusion { mes } — (re)genera la conclusión
+        //   POST /api/negocios/:id/informe/enlace { mes }     — enlace para compartir (30 días)
+        if (parts[3] === 'informe') {
+          if (!getPlan(negocio.plan).analitica) {
+            return sendJSON(res, 403, { error: 'El informe mensual está disponible en los planes Pro y Estudio' });
+          }
+          if (parts.length === 4 && req.method === 'GET') {
+            const mes = url.searchParams.get('mes') || informe.mesActual();
+            if (!informe.mesValido(mes)) return sendJSON(res, 400, { error: 'Mes inválido' });
+            return sendJSON(res, 200, informe.datos(negocio, mes, estadisticasAprobacion));
+          }
+          if (parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req);
+            const mes = body.mes || informe.mesActual();
+            if (!informe.mesValido(mes)) return sendJSON(res, 400, { error: 'Mes inválido' });
+            if (parts[4] === 'conclusion') {
+              const plan = getPlan(negocio.plan);
+              const conIA = plan.usaIA && textosIADisponibles(negocio) > 0;
+              const d = informe.datos(negocio, mes, estadisticasAprobacion);
+              const r = await informe.generarConclusion(negocio, mes, d, conIA);
+              if (r.origen === 'ia') registrarUsoIA(negocioId, 'usoTextosIA', 1);
+              return sendJSON(res, 200, informe.datos(store.getNegocio(negocioId), mes, estadisticasAprobacion));
+            }
+            if (parts[4] === 'enlace') {
+              const minutos = 30 * 24 * 60;
+              const t = auth.crearTokenFoto(negocioId, 'informe', mes, minutos);
+              const base = process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : urlBase(req);
+              return sendJSON(res, 200, {
+                url: `${base}/app/informe.html?n=${encodeURIComponent(negocioId)}&mes=${mes}&t=${t}`,
+                venceEl: new Date(Date.now() + minutos * 60000).toISOString(),
+              });
+            }
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
         }
 
         // GET /api/negocios/:id/analitica?dias=30 — Resultados del período.

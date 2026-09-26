@@ -168,8 +168,11 @@
 
   // Mapa de calor día × franja: más interacción = más claro (en fondo oscuro
   // la escala secuencial se invierte). Celdas sin posts quedan vacías.
+  // Rampa por defecto: fondo oscuro (más = más claro). El informe impreso
+  // pasa la suya para fondo blanco (más = más oscuro).
   const RAMPA = ['#3b2a17', '#6a4a1b', '#9a6619', '#cc7f14', '#f3a33a'];
-  function mapaCalor(celdas, filas, columnas) {
+  function mapaCalor(celdas, filas, columnas, rampa) {
+    const RAMPA_USADA = rampa || RAMPA;
     const div = document.createElement('div');
     div.className = 'viz-calor';
     const valores = celdas.filter((c) => c.promedio != null).map((c) => c.promedio);
@@ -177,8 +180,8 @@
     const max = Math.max(...valores);
     const tono = (v) => {
       if (v == null) return null;
-      if (max === min) return RAMPA[2];
-      return RAMPA[Math.min(RAMPA.length - 1, Math.floor(((v - min) / (max - min)) * RAMPA.length))];
+      if (max === min) return RAMPA_USADA[2];
+      return RAMPA_USADA[Math.min(RAMPA_USADA.length - 1, Math.floor(((v - min) / (max - min)) * RAMPA_USADA.length))];
     };
     let html = '<span></span>' + columnas.map((c) => `<span class="viz-calor-col">${escapar(c.label)}</span>`).join('');
     for (const f of filas) {

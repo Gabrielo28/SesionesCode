@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Informe mensual · Rubrofy</title>
+  <link rel="icon" href="/app/favicon-32.png">
+  <link rel="stylesheet" href="/app/informe.css">
+</head>
+<body>
+  <div class="barra no-imprimir">
+    <a href="/app" class="volver">← Volver al panel</a>
+    <label>Mes <select id="mes"></select></label>
+    <button id="btn-conclusion" hidden>Generar conclusión</button>
+    <button id="btn-enlace" hidden>Copiar enlace para compartir</button>
+    <button id="btn-imprimir" class="primario">Imprimir / guardar PDF</button>
+    <span id="barra-msg"></span>
+  </div>
+
+  <main id="informe">
+    <p class="cargando">Cargando informe…</p>
+  </main>
+
+  <script src="/app/graficos.js"></script>
+  <script src="/app/informe.js"></script>
+</body>
+</html>

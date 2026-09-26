@@ -80,6 +80,7 @@
         </div>
         <span class="res-estado">${estado}</span>
         <button class="btn-ghost" data-res="sync">Actualizar ahora</button>
+        <a class="btn-approve res-informe" href="/app/informe.html" target="_blank" rel="noopener">Informe mensual</a>
       </div>
       ${errorSync}
       <div class="kpis">

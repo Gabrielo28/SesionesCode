@@ -185,6 +185,23 @@ Requiere que el token de Instagram tenga el permiso
 la publicación sigue funcionando igual. Una sincronización usa unas 30 a 45
 llamadas (el límite de Meta es ~200 por hora por cuenta).
 
+## Informe mensual (server/informe.js, /app/informe.html)
+
+Desde Resultados, "Informe mensual" abre una página lista para imprimir o
+guardar como PDF (A4, fondo claro): conclusión, indicadores con la
+variación frente al mes anterior, alcance e interacciones diarias, qué
+enfoques funcionaron, cuándo publicar, las publicaciones con más
+interacción, lo publicado con Rubrofy y cuánto se aprobó sin cambios.
+
+- **Conclusión** ("Qué pasó / Qué funcionó / Qué haremos el próximo mes"):
+  la escribe Claude a partir de los datos del informe (usa 1 de la cuota
+  mensual de piezas con IA) y se guarda; sin IA, o si Claude no responde,
+  queda un resumen automático armado con reglas.
+- **Compartir**: "Copiar enlace" genera un enlace firmado de solo lectura
+  para ese mes, válido 30 días, que se abre sin iniciar sesión (para el
+  cliente de una agencia o un socio).
+- Otros módulos agregan sus secciones con `informe.registrarSeccion()`.
+
 ## Cómo publica (server/publicador.js)
 
 Un proceso dentro del mismo servidor revisa cada 30 segundos las piezas
@@ -311,6 +328,7 @@ server/
   publicador.js Proceso de fondo: publica lo programado, reintenta y renueva tokens
   analitica.js  Sincroniza métricas de Instagram y calcula Resultados (resumen, enfoques, mejor horario)
   aprendizaje.js Lo que la IA aprende de cada negocio (aprobaciones, correcciones, resultados)
+  informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
