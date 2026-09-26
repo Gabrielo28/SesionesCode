@@ -198,7 +198,7 @@ async function sincronizar(negocioId) {
         store.saveNegocio(n);
       }
     }
-    const detalle = tipo === 'token' ? 'Google revocó el permiso o venció. Vuelve a conectar Google Ads en Configuración.'
+    const detalle = tipo === 'token' ? 'Google revocó el permiso o venció. Vuelve a conectar Google Ads en Conexiones y ajustes.'
       : (tipo === 'permiso' ? 'Google Ads no permite leer esta cuenta con el acceso actual (revisa el acceso a la API del proyecto de Google Cloud o los permisos del usuario).' : err.message);
     analitica.registrarSync(negocioId, 'google_ads', tipo, detalle);
     return { ok: false, error: detalle, tipo };

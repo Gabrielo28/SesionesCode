@@ -155,6 +155,35 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Bienvenida, estrategia y plan semanal (server/plan-contenido.js, public/app/bienvenida.js)
+
+Al registrarse ya no se genera contenido de inmediato. La primera vez que el
+negocio entra al panel, una **bienvenida** de 5 pasos le pregunta:
+
+1. **Tu negocio**: precio, unidad, producto destacado, promoción, a quién le
+   habla y qué lo hace distinto.
+2. **Objetivo y tono**: vender más, más reservas o consultas, ganar
+   seguidores, fidelizar o dar a conocer la marca (uno o dos), y cómo quiere
+   sonar.
+3. **Cuánto publicar**: posts, carruseles, reels e historias por semana (con
+   ritmos sugeridos) y la hora de los posts.
+4. **Tu estrategia**: Claude la propone con todo lo anterior (resumen, tono y
+   enfoques) y el dueño la ajusta a mano.
+5. **Conexiones**: dónde conectar Instagram, Meta Ads y Google Ads. Termina
+   generando la primera semana según el plan.
+
+Después todo se cambia en **Estrategia**. **Generar semana** crea exactamente
+la mezcla del plan (máximo 12 por vez) y la reparte en la semana, después de
+lo que ya está programado: las piezas del feed parejas en los 7 días y las
+historias aparte, a las 18:30. **Inicio** muestra los primeros pasos
+pendientes (conectar Instagram, subir fotos, Mi estilo...), lo próximo que
+se publica y el plan.
+
+API: `GET /api/plan-contenido` (opciones), `PUT /api/negocios/:id/plan-contenido`,
+`PUT /api/negocios/:id/estrategia`, `POST /api/negocios/:id/estrategia/generar`
+(mantiene las categorías de foto; máx. 10 por hora), `POST /api/negocios/:id/bienvenida`
+y `POST /api/negocios/:id/generar { segunPlan: true }`.
+
 ## Resultados y aprendizaje (server/analitica.js, server/aprendizaje.js)
 
 En los planes Pro y Estudio, con Instagram conectado, Rubrofy sincroniza

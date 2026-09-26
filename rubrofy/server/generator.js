@@ -10,6 +10,7 @@ const { fechaProgramada, etiquetaFecha } = require('./programacion');
 const aprendizaje = require('./aprendizaje');
 const estilo = require('./estilo');
 const guardian = require('./guardian');
+const planContenido = require('./plan-contenido');
 
 const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
 
@@ -96,6 +97,7 @@ async function generarLoteConClaude(negocio, piezas, ctx) {
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Datos reales del negocio, úsalos solo si son útiles y nunca inventes ` +
     `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.` +
+    (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') +
     (ctx ? aprendizaje.textoParaPrompt(ctx) : '') +
     bloqueEstilo(negocio, piezas.map((p) => p.formato)) + '\n\n' +
     `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por línea, con el formato y enfoque indicados, en este orden:\n${lista}\n\n` +
@@ -151,12 +153,16 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     ctx = null; // sin datos todavía: se genera como siempre
   }
   const enfoques = ordenarEnfoques(estrategia.enfoques, ctx);
-  const horaPost = (ctx && ctx.horario && ctx.horario.hora) || '09:00';
+  const pc = negocio.planContenido || null;
+  // Hora de los posts: la que eligió el negocio, si no la que mejor le
+  // funciona según sus resultados, si no las 9:00.
+  const horaPost = (pc && pc.hora) || (ctx && ctx.horario && ctx.horario.hora) || '09:00';
   const plan = [];
 
-  // Formatos según la mezcla que el negocio mostró en "Mi estilo" (o el
-  // patrón de siempre si todavía no mostró suficientes ejemplos).
-  const formatos = estilo.planFormatos(negocio.id, cantidad, startIndex);
+  // Formatos: los del plan semanal del negocio; si no tiene, la mezcla que
+  // mostró en "Mi estilo" (o el patrón de siempre).
+  const formatos = estilo.planFormatos(negocio.id, cantidad, startIndex, planContenido.mezcla(pc));
+  const fechas = pc ? fechasSegunPlan(formatos, pc, opciones.diaInicio || 1) : null;
   for (let i = 0; i < cantidad; i++) {
     const idx = startIndex + i;
     const enfoque = enfoques[idx % enfoques.length];
@@ -164,7 +170,9 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     const esHistoria = formato === 'historia';
     // Fecha real en la hora del negocio (ver server/programacion.js): es la
     // que usa el publicador para publicar la pieza una vez aprobada.
-    const publicarEl = fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : horaPost);
+    const publicarEl = fechas
+      ? fechaProgramada(fechas[i], esHistoria ? '18:30' : horaPost)
+      : fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : horaPost);
     plan.push({
       idx,
       enfoque,
@@ -206,6 +214,21 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
   });
 }
 
+// Días (desde hoy) de cada pieza según el plan semanal: las del feed (post,
+// carrusel, reel) se reparten parejo en la semana y las historias aparte,
+// así una historia puede salir el mismo día que un post. Si el lote trae más
+// piezas que una semana, sigue en la semana siguiente.
+function fechasSegunPlan(formatos, pc, diaInicio) {
+  const feed = ['post', 'carrusel', 'reel'].reduce((s, f) => s + (pc.semanal[f] || 0), 0) || 1;
+  const historias = pc.semanal.historia || 1;
+  let nFeed = 0;
+  let nHist = 0;
+  return formatos.map((f) => {
+    if (f === 'historia') return diaInicio + Math.floor((nHist++ * 7) / historias);
+    return diaInicio + Math.floor((nFeed++ * 7) / feed);
+  });
+}
+
 // Con un enfoque ganador claro, la rotación lo repite: [ganador, A, B,
 // ganador, C, ...]. Sin datos, la rotación es la de siempre.
 function ordenarEnfoques(enfoques, ctx) {
@@ -231,7 +254,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram (${estilo.ETIQUETAS[formato] || 'Post'}) con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
-    `${JSON.stringify(negocio.datos || {})}.` + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
+    `${JSON.stringify(negocio.datos || {})}.` + (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
 
   try {

@@ -32,7 +32,7 @@
       d = await ctx.api(`/api/negocios/${ctx.negocio.id}/${f.ruta}?dias=${dias[fuente]}`);
     } catch (err) {
       const irConfig = err.status === 400;
-      cont.innerHTML = aviso(`${G().escapar(err.mensaje || 'No se pudieron cargar los datos.')}${irConfig ? ' <button class="btn-approve estilo-btn" data-ir="config">Ir a Configuración</button>' : ''}`, err.status === 403 ? '' : 'error');
+      cont.innerHTML = aviso(`${G().escapar(err.mensaje || 'No se pudieron cargar los datos.')}${irConfig ? ' <button class="btn-approve estilo-btn" data-ir="config">Ir a Conexiones</button>' : ''}`, err.status === 403 ? '' : 'error');
       const b = cont.querySelector('[data-ir]');
       if (b) b.addEventListener('click', () => ctx.irA('config'));
       return;

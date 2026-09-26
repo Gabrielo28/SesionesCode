@@ -178,7 +178,7 @@ async function sincronizarAds(negocioId) {
     }
     const detalle = tipo === 'permiso'
       ? 'El token de Meta no tiene permiso para leer la cuenta publicitaria (ads_read) o no tienes acceso a ella.'
-      : (tipo === 'token' ? 'El token de Meta venció o fue revocado. Pega uno nuevo en Configuración.' : err.message);
+      : (tipo === 'token' ? 'El token de Meta venció o fue revocado. Pega uno nuevo en Conexiones y ajustes.' : err.message);
     analitica.registrarSync(negocioId, 'meta_ads', tipo, detalle);
     return { ok: false, error: detalle, tipo };
   }

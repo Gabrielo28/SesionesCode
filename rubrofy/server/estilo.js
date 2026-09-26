@@ -166,8 +166,10 @@ function mezcla(negocioId) {
 // Formatos para un lote de `cantidad` piezas siguiendo la mezcla del
 // negocio (reparto por mayor resto, intercalado para no agrupar iguales).
 // Sin mezcla: el patrón de siempre (post, post, historia...).
-function planFormatos(negocioId, cantidad, startIndex) {
-  const m = mezcla(negocioId);
+// mezclaFija: la mezcla que el negocio eligió en su plan de contenido; manda
+// sobre la que se deduce de sus ejemplos.
+function planFormatos(negocioId, cantidad, startIndex, mezclaFija) {
+  const m = mezclaFija || mezcla(negocioId);
   if (!m) return Array.from({ length: cantidad }, (_, i) => ((startIndex + i) % 3 === 2 ? 'historia' : 'post'));
   const exactos = FORMATOS.map((f) => ({ f, v: (m[f] / 100) * cantidad }));
   const base = exactos.map((x) => ({ f: x.f, n: Math.floor(x.v), resto: x.v - Math.floor(x.v) }));

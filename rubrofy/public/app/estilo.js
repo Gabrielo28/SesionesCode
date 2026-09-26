@@ -41,7 +41,7 @@
       <div class="res-controles">
         ${d.instagramConectado
           ? '<button class="btn-approve estilo-btn" data-estilo="importar">Importar mis publicaciones de Instagram</button>'
-          : '<span class="res-estado">Conecta Instagram en Configuración para importar tus publicaciones de un clic.</span>'}
+          : '<span class="res-estado">Conecta Instagram en Conexiones y ajustes para importar tus publicaciones de un clic.</span>'}
         <span class="res-estado" data-msg></span>
       </div>
       <div class="res-aviso">${mezcla}</div>

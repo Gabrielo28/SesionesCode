@@ -8,7 +8,8 @@ const { URL } = require('url');
 
 const store = require('./store');
 const auth = require('./auth');
-const { generarEstrategia } = require('./estrategia');
+const { generarEstrategia, editar: editarEstrategia } = require('./estrategia');
+const planContenido = require('./plan-contenido');
 const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
 const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
@@ -38,6 +39,8 @@ const MAX_PIEZAS_POR_GENERACION = 12;
 // cuentan los intentos fallidos, para no molestar a quien entra bien.
 const limiteRegistro = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 const limiteLoginFallido = crearLimitador({ max: 10, ventanaMs: 15 * 60 * 1000 });
+// Regenerar la estrategia llama a Claude: tope por negocio.
+const limiteEstrategia = crearLimitador({ max: 10, ventanaMs: 60 * 60 * 1000 });
 
 // Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
 // cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
@@ -173,6 +176,19 @@ function urlBase(req) {
   if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/$/, '');
   const proto = req.headers['x-forwarded-proto'] || 'http';
   return `${proto}://${req.headers.host}`;
+}
+
+// Primer día libre después de lo que ya está en la cola sin publicar, para
+// que "generar la semana" siga donde termina lo anterior y no la pise.
+function diaSiguienteDeLaCola(items, ahora = Date.now()) {
+  let ultimo = 0;
+  for (const it of items) {
+    if (it.status === 'rechazado' || (it.publicacion && it.publicacion.estado === 'publicada')) continue;
+    const t = Date.parse(it.publicarEl || '');
+    if (t > ultimo) ultimo = t;
+  }
+  if (!ultimo || ultimo <= ahora) return 1;
+  return Math.max(1, Math.ceil((ultimo - ahora) / 86400000) + 1);
 }
 
 function buscarNegocioPorEmail(email) {
@@ -558,6 +574,11 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, { recibido: true });
       }
 
+      // GET /api/plan-contenido — opciones de la bienvenida (objetivos, tonos, ritmos).
+      if (parts[1] === 'plan-contenido' && parts.length === 2 && req.method === 'GET') {
+        return sendJSON(res, 200, planContenido.catalogo());
+      }
+
       // GET /api/planes — pública: la necesita el sitio y el panel para mostrar precios.
       if (parts[1] === 'planes' && parts.length === 2 && req.method === 'GET') {
         return sendJSON(res, 200, listPlanesPublico());
@@ -602,7 +623,8 @@ const server = http.createServer(async (req, res) => {
           },
         };
         store.saveNegocio(negocio);
-        store.saveContenido(id, await generarBanco(negocio, 6, 0));
+        // Sin contenido todavía: la bienvenida del panel pregunta objetivo,
+        // público y cuánto publicar, y con eso genera la primera semana.
         const cookie = auth.cookieSesion(req, auth.crearSesion(id));
         return sendJSON(res, 201, negocioPublico(negocio), { 'Set-Cookie': cookie });
       }
@@ -836,6 +858,58 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, negocio.estrategia);
         }
 
+        // PUT /api/negocios/:id/estrategia  { resumen, tono, enfoques } — cambios a mano
+        if (parts[3] === 'estrategia' && parts.length === 4 && req.method === 'PUT') {
+          const r = editarEstrategia(negocio.estrategia, await readBody(req));
+          if (r.error) return sendJSON(res, 400, { error: r.error });
+          negocio.estrategia = r.estrategia;
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocio.estrategia);
+        }
+
+        // POST /api/negocios/:id/estrategia/generar — la IA la vuelve a
+        // proponer con el plan de contenido actual. Mantiene las categorías
+        // de foto para no dejar fotos subidas sin categoría.
+        if (parts[3] === 'estrategia' && parts[4] === 'generar' && parts.length === 5 && req.method === 'POST') {
+          const espera = limiteEstrategia.esperaSegundos(negocioId);
+          if (espera) return sendJSON(res, 429, { error: 'Ya propusiste varias estrategias esta hora. Intenta más tarde.' }, { 'Retry-After': String(espera) });
+          limiteEstrategia.registrar(negocioId);
+          const nueva = await generarEstrategia({
+            nombre: negocio.nombre,
+            rubro: negocio.estrategia.rubro,
+            plan: negocio.planContenido,
+            categoriasFoto: negocio.estrategia.categoriasFoto,
+          });
+          const actual = store.getNegocio(negocioId); // releído: Claude tarda
+          actual.estrategia = nueva;
+          store.saveNegocio(actual);
+          return sendJSON(res, 200, nueva);
+        }
+
+        // PUT /api/negocios/:id/plan-contenido  { objetivos, publico, diferenciador, tono, semanal, hora }
+        if (parts[3] === 'plan-contenido' && parts.length === 4 && req.method === 'PUT') {
+          const r = planContenido.normalizar(await readBody(req));
+          if (r.error) return sendJSON(res, 400, { error: r.error });
+          negocio.planContenido = r.plan;
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
+        // POST /api/negocios/:id/bienvenida  { reemplazar } — termina la
+        // bienvenida. Con reemplazar, saca de la cola las piezas pendientes
+        // que nadie tocó (se generaron antes de conocer el plan del negocio).
+        if (parts[3] === 'bienvenida' && parts.length === 4 && req.method === 'POST') {
+          const body = await readBody(req);
+          if (!negocio.planContenido) negocio.planContenido = planContenido.normalizar({ objetivos: ['ventas'], semanal: planContenido.SEMANAL_POR_DEFECTO }).plan;
+          negocio.bienvenidaCompletada = new Date().toISOString();
+          store.saveNegocio(negocio);
+          if (body.reemplazar) {
+            store.saveContenido(negocioId, store.getContenido(negocioId).filter((it) =>
+              !(it.status === 'pendiente' && !it.editado && !it.publicacion && (it.variants || []).length <= 1)));
+          }
+          return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
         // GET /api/negocios/:id/fotos
         if (parts[3] === 'fotos' && parts.length === 4 && req.method === 'GET') {
           return sendJSON(res, 200, store.listFotos(negocioId));
@@ -872,7 +946,9 @@ const server = http.createServer(async (req, res) => {
         // POST /api/negocios/:id/generar  { cantidad }
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
           const body = await readBody(req);
-          let cantidad = Math.min(Math.max(Math.floor(Number(body.cantidad)) || 6, 1), MAX_PIEZAS_POR_GENERACION);
+          // segunPlan: una semana del plan de contenido del negocio.
+          const porPlan = body.segunPlan && negocio.planContenido ? planContenido.totalSemanal(negocio.planContenido) : 0;
+          let cantidad = Math.min(Math.max(Math.floor(Number(porPlan || body.cantidad)) || 6, 1), MAX_PIEZAS_POR_GENERACION);
           const usaIA = getPlan(negocio.plan).usaIA;
           if (usaIA) {
             const disponibles = textosIADisponibles(negocio);
@@ -881,8 +957,10 @@ const server = http.createServer(async (req, res) => {
             }
             cantidad = Math.min(cantidad, disponibles);
           }
-          const nuevos = await generarBanco(negocio, cantidad, store.getContenido(negocioId).length, { usarIA: usaIA });
+          const existentes = store.getContenido(negocioId);
+          const nuevos = await generarBanco(negocio, cantidad, existentes.length, { usarIA: usaIA, diaInicio: diaSiguienteDeLaCola(existentes) });
           registrarUsoIA(negocioId, 'usoTextosIA', nuevos.filter((n) => n.generadoConIA).length);
+          nuevos.sort((a, b) => Date.parse(a.publicarEl) - Date.parse(b.publicarEl)); // en la cola, por fecha
           // Se relee la cola después de esperar a Claude, para no pisar lo que
           // el negocio aprobó o editó mientras tanto.
           const items = store.getContenido(negocioId).concat(nuevos);
@@ -955,7 +1033,7 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'competencia') {
           if (!getPlan(negocio.plan).competencia) return sendJSON(res, 403, { error: 'Competencia está disponible en el plan Estudio' });
           if (!negocio.meta || !negocio.meta.igUserId) {
-            return sendJSON(res, 400, { error: 'Conecta Meta en Configuración y elige tu cuenta de Instagram para seguir a tu competencia' });
+            return sendJSON(res, 400, { error: 'Conecta Meta en Conexiones y ajustes y elige tu cuenta de Instagram para seguir a tu competencia' });
           }
           const vista = () => ({ comparacion: competencia.comparacion(store.getNegocio(negocioId)), sync: analitica.estadoSync(negocioId, 'competencia') });
           if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vista());
@@ -1011,7 +1089,7 @@ const server = http.createServer(async (req, res) => {
             return sendJSON(res, 200, negocioPublico(n));
           }
           if (parts[3] === 'google-ads') {
-            if (!negocio.google || !negocio.google.customerId) return sendJSON(res, 400, { error: 'Conecta Google Ads en Configuración' });
+            if (!negocio.google || !negocio.google.customerId) return sendJSON(res, 400, { error: 'Conecta Google Ads en Conexiones y ajustes' });
             if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
               const r = await sincronizador.sincronizarAhora(negocioId, 'google_ads');
               if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
@@ -1035,7 +1113,7 @@ const server = http.createServer(async (req, res) => {
         // POST /api/negocios/:id/ads/sincronizar
         if (parts[3] === 'ads') {
           if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Meta Ads está disponible en el plan Estudio' });
-          if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Configuración' });
+          if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Conexiones y ajustes' });
           if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
             const r = await sincronizador.sincronizarAhora(negocioId, 'meta_ads');
             if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
@@ -1090,7 +1168,7 @@ const server = http.createServer(async (req, res) => {
           }
           if (parts[4] === 'importar' && parts.length === 5 && req.method === 'POST') {
             if (!negocio.instagram || !negocio.instagram.accessToken) {
-              return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para importar tus publicaciones' });
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para importar tus publicaciones' });
             }
             try {
               const r = await estilo.importarDeInstagram(negocio);
@@ -1164,7 +1242,7 @@ const server = http.createServer(async (req, res) => {
           }
           if (parts[4] === 'sincronizar' && parts.length === 5 && req.method === 'POST') {
             if (!negocio.instagram || !negocio.instagram.accessToken) {
-              return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para ver tus resultados' });
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para ver tus resultados' });
             }
             const r = await sincronizador.sincronizarAhora(negocioId);
             if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
@@ -1307,7 +1385,7 @@ const server = http.createServer(async (req, res) => {
           } else if ((accion === 'publicar-ahora' || accion === 'reintentar') && req.method === 'POST') {
             if (item.status !== 'aprobado') return sendJSON(res, 400, { error: 'Primero aprueba la pieza' });
             if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
-            if (!igConectado) return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para publicar' });
+            if (!igConectado) return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para publicar' });
             if (seEstaPublicando) return ocupada();
             aplicar = (it) => {
               const ahora = new Date().toISOString();

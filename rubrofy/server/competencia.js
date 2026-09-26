@@ -110,7 +110,7 @@ async function agregar(negocio, usernameCrudo) {
     bd = await consultar(negocio, username);
   } catch (err) {
     const m = mensajeDeError(err);
-    return { error: m === 'token' ? 'Meta rechazó el token: vuelve a conectar Meta en Configuración' : m };
+    return { error: m === 'token' ? 'Meta rechazó el token: vuelve a conectar Meta en Conexiones y ajustes' : m };
   }
   if (!bd) return { error: 'Cuenta no encontrada o no es profesional (empresa o creador)' };
   sql.agregar.run(negocio.id, username, new Date().toISOString());
@@ -137,7 +137,7 @@ async function sincronizar(negocioId) {
       if (m === 'token') {
         negocio.meta.estado = 'reconectar';
         store.saveNegocio(negocio);
-        analitica.registrarSync(negocioId, 'competencia', 'token', 'El token de Meta venció o fue revocado. Pega uno nuevo en Configuración.');
+        analitica.registrarSync(negocioId, 'competencia', 'token', 'El token de Meta venció o fue revocado. Pega uno nuevo en Conexiones y ajustes.');
         return { ok: false, tipo: 'token' };
       }
       sql.error.run(m, negocioId, c.username);

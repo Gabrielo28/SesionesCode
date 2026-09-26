@@ -10,7 +10,7 @@
       pintar(cont, await ctx.api(`/api/negocios/${ctx.negocio.id}/competencia`), ctx);
     } catch (err) {
       cont.innerHTML = `<div class="res-aviso ${err.status === 400 ? '' : 'error'}">${G().escapar(err.mensaje || 'No se pudo cargar.')}
-        ${err.status === 400 ? '<button class="btn-approve estilo-btn" data-ir="config">Ir a Configuración</button>' : ''}</div>`;
+        ${err.status === 400 ? '<button class="btn-approve estilo-btn" data-ir="config">Ir a Conexiones</button>' : ''}</div>`;
       const b = cont.querySelector('[data-ir]');
       if (b) b.addEventListener('click', () => ctx.irA('config'));
     }

@@ -45,7 +45,7 @@
       return;
     }
     if (!negocio.instagramConectado) {
-      cont.innerHTML = aviso('Conecta Instagram en Configuración para empezar a medir tus resultados. <button class="btn-approve" data-res="config">Conectar</button>');
+      cont.innerHTML = aviso('Conecta Instagram en Conexiones y ajustes para empezar a medir tus resultados. <button class="btn-approve" data-res="config">Conectar</button>');
       cont.querySelector('[data-res="config"]').addEventListener('click', () => irA('config'));
       return;
     }

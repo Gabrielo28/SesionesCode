@@ -9,7 +9,7 @@
   let contenido = [];
   let fotos = {}; // { categoria: [nombresDeArchivo] }
   let planesInfo = []; // catálogo de planes (ver /api/planes) — precios y disponibilidad
-  let vistaActual = 'cola';
+  let vistaActual = 'inicio';
   let calSelectedId = null;
   const editingIds = new Set();
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
@@ -99,7 +99,7 @@
     if (pub.estado === 'programada' && pub.procesando) return { color: 'var(--amber)', texto: 'Instagram está procesando el video&hellip;' };
     if (pub.estado === 'fallida') return { color: 'var(--coral)', texto: 'No se publicó: ' + escapeHtml(pub.motivo || 'error desconocido') };
     if (negocioActual.instagramEstado === 'reconectar') {
-      return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Configuración' };
+      return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Conexiones y ajustes' };
     }
     if (pub.intentos) {
       return { color: 'var(--amber)', texto: `Reintento ${pub.intentos} a las ${escapeHtml(horaCorta(pub.proximoIntento))} &middot; ${escapeHtml(pub.ultimoError || '')}` };
@@ -646,7 +646,7 @@
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
+  const VISTAS = ['inicio', 'estrategia', 'cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -688,6 +688,61 @@
       window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
     }
     else if (vistaActual === 'resultados') renderResultados();
+    else if (vistaActual === 'inicio') window.RubrofyInicio.render($('#inicio'), ctxPanel()).catch(() => {});
+    else if (vistaActual === 'estrategia') window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
+  }
+
+  // Lo que necesitan Inicio, Estrategia y la bienvenida del resto del panel.
+  function ctxPanel() {
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    return {
+      api,
+      negocio: negocioActual,
+      contenido,
+      fotos,
+      estrategia: nichoActual,
+      planActual: negocioActual.planContenido || null,
+      planIncluye: (clave) => !!plan[clave],
+      fechaCorta,
+      irA: irAVista,
+      abrirBienvenida,
+      abrirGenerar,
+      guardarDatos: (datos) => guardarConfig({ nombre: negocioActual.nombre, datos, estiloImagen: negocioActual.estiloImagen }),
+      setNegocio: (n) => { negocioActual = n; actualizarSwitcher(); },
+      setEstrategia: (e) => { nichoActual = e; negocioActual.estrategia = e; },
+    };
+  }
+
+  // Bienvenida: se abre sola mientras el negocio no la termine.
+  function abrirBienvenida() {
+    const base = ctxPanel();
+    window.RubrofyBienvenida.abrir(Object.assign({}, base, {
+      negocio: () => negocioActual,
+      estrategia: () => nichoActual,
+      generarSemana: () => generarSemana(),
+      alTerminar: (generado) => { window.RubrofyInicio.invalidar(); irAVista(generado ? 'cola' : 'inicio'); },
+    })).catch(() => {});
+  }
+
+  // "Generar semana": muestra qué se va a crear según el plan y lo genera.
+  function abrirGenerar() {
+    const dlg = $('#dlg-generar');
+    const pc = negocioActual.planContenido;
+    const total = pc ? Object.values(pc.semanal).reduce((a, b) => a + b, 0) : 6;
+    $('#dlg-generar-texto').innerHTML = pc
+      ? window.RubrofyPlan.textoTotal(pc.semanal) + (total > 12 ? '. Se crean 12 por vez: vuelve a generar para completar la semana.' : '.')
+      : 'Se crearán 6 publicaciones. Define tu plan en <b>Estrategia</b> para elegir cuántos posts, carruseles, reels e historias quieres.';
+    $('#dlg-generar-fechas').textContent = 'Siguen después de lo que ya tienes programado y llegan a Por aprobar.';
+    $('#dlg-generar-error').hidden = true;
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+
+  async function generarSemana() {
+    contenido = await api(`/api/negocios/${negocioActual.id}/generar`, {
+      method: 'POST',
+      body: JSON.stringify(negocioActual.planContenido ? { segunPlan: true } : { cantidad: 6 }),
+    });
+    render();
   }
 
   function leerArchivoComoBase64(file) {
@@ -763,20 +818,20 @@
   }
 
   async function generarMas() {
-    const btn = $('#btn-generar');
-    btn.disabled = true;
-    btn.textContent = 'Generando...';
+    const btn = $('#dlg-generar-ok');
+    const btnTop = $('#btn-generar');
+    btn.disabled = true; btnTop.disabled = true;
+    btn.textContent = 'Generando…';
     try {
-      contenido = await api(`/api/negocios/${negocioActual.id}/generar`, {
-        method: 'POST',
-        body: JSON.stringify({ cantidad: 6 }),
-      });
-      render();
+      await generarSemana();
+      $('#dlg-generar').close();
+      irAVista('cola');
     } catch (err) {
-      alert(err.mensaje || 'No se pudo generar contenido. Intenta de nuevo.');
+      $('#dlg-generar-error').textContent = err.mensaje || 'No se pudo generar contenido. Intenta de nuevo.';
+      $('#dlg-generar-error').hidden = false;
     } finally {
-      btn.disabled = false;
-      btn.textContent = '+ Generar más contenido';
+      btn.disabled = false; btnTop.disabled = false;
+      btn.textContent = 'Generar';
     }
   }
 
@@ -806,9 +861,11 @@
     actualizarSwitcher();
     $('#view-login').hidden = true;
     $('#view-app').hidden = false;
-    render();
+    vistaActual = 'inicio';
+    irAVista('inicio');
     avisarRetornoCheckout();
     avisarRetornoGoogle();
+    if (!negocioActual.bienvenidaCompletada && !new URLSearchParams(window.location.search).get('google')) abrirBienvenida();
   }
 
   // Vuelta de "Iniciar sesión con Google": avisa el resultado y abre Configuración.
@@ -986,7 +1043,10 @@
       if (confirmado) eliminarNegocioActual().catch((err) => alert('No se pudo eliminar: ' + err.message));
     });
 
-    $('#btn-generar').addEventListener('click', generarMas);
+    $('#btn-generar').addEventListener('click', abrirGenerar);
+    $('#dlg-generar-ok').addEventListener('click', generarMas);
+    $('#dlg-generar-cancelar').addEventListener('click', () => $('#dlg-generar').close());
+    $('#dlg-generar-plan').addEventListener('click', () => { $('#dlg-generar').close(); irAVista('estrategia'); });
 
     // delegación de eventos en la cola
     $('#cola-grid').addEventListener('click', async (e) => {
