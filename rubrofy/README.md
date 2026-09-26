@@ -89,7 +89,8 @@ dominio público real y no a la URL interna del servidor. Sin esta variable,
 el publicador usa la URL desde la que se aprobó cada pieza — funciona, pero
 `PUBLIC_URL` es más confiable detrás de balanceadores/proxies.
 
-Opcionales del publicador: `RUBROFY_TZ` (zona horaria de las fechas de
+Opcionales: `META_GRAPH_VERSION` (versión de la Graph API de Meta, por
+defecto `v25.0`), `RUBROFY_TZ` (zona horaria de las fechas de
 publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
 (cada cuántos segundos revisa lo programado, por defecto 30).
 
@@ -120,6 +121,13 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   llega el momento, con su foto real o una generada por IA como respaldo.
   Ver "Cómo publica" más abajo. Sin Instagram conectado, aprobar solo marca
   la pieza como aprobada.
+- **Formatos** — cada pieza puede ser Post (una foto), Carrusel (de 2 a
+  10 fotos de su categoría), Reel (video 9:16 subido a la tarjeta,
+  obligatorio) o Historia (foto, o video si se sube uno). El formato se
+  elige en la tarjeta; los videos pesan hasta 100 MB (`MAX_VIDEO_MB`) y
+  se guardan en `data/videos/`. Meta procesa los videos unos minutos antes
+  de poder publicarlos: el publicador consulta el estado cada minuto sin
+  gastar reintentos.
 - **Fecha y hora editables** — se cambian tocando la fecha en la tarjeta.
   "Publicar ahora" adelanta una programada; "Reintentar" vuelve a intentar
   una que falló.
@@ -155,6 +163,9 @@ en Instagram, luego publicarlo). Lo que hace ante cada problema:
 | El servidor se cae a mitad de una publicación | Al arrancar, la pieza vuelve a programada y se retoma con su contenedor |
 | Token vencido o revocado | El negocio queda en "Reconectar" (aviso en Configuración y en las tarjetas); sus piezas esperan sin gastar reintentos y se publican solas al pegar un token nuevo |
 | Contenido inválido (ej. texto demasiado largo) o pieza sin foto | "No se publicó" con el motivo, sin reintentos automáticos |
+| Reel o historia con video en proceso | Consulta el estado cada minuto (hasta 15 veces) sin gastar reintentos |
+| Meta no pudo procesar el video | "No se publicó" con el detalle de Meta; al reintentar se crea un contenedor nuevo con el video actual |
+| Un reintento encuentra que el post ya se había publicado | Se marca publicada, sin publicar de nuevo |
 
 El token de Instagram (dura 60 días) se renueva solo: el primero a las
 24 horas de conectado y después cada 7 días.

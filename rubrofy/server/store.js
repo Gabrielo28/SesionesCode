@@ -10,8 +10,9 @@ const NEGOCIOS_DIR = path.join(DATA_DIR, 'negocios');
 const CONTENIDO_DIR = path.join(DATA_DIR, 'contenido');
 const FOTOS_DIR = path.join(DATA_DIR, 'fotos');
 const FOTOS_IA_DIR = path.join(DATA_DIR, 'fotos-ia');
+const VIDEOS_DIR = path.join(DATA_DIR, 'videos');
 
-for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR, FOTOS_IA_DIR]) {
+for (const dir of [NEGOCIOS_DIR, CONTENIDO_DIR, FOTOS_DIR, FOTOS_IA_DIR, VIDEOS_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -69,6 +70,7 @@ function deleteNegocio(negocioId) {
   fs.rmSync(contenidoPath(negocioId), { force: true });
   fs.rmSync(path.join(FOTOS_DIR, negocioId), { recursive: true, force: true });
   fs.rmSync(path.join(FOTOS_IA_DIR, negocioId), { recursive: true, force: true });
+  fs.rmSync(path.join(VIDEOS_DIR, negocioId), { recursive: true, force: true });
 }
 
 // --- fotos: data/fotos/<negocioId>/<categoria>/<archivo> ---
@@ -122,6 +124,22 @@ function guardarFotoIA(negocioId, itemId, buffer) {
   fs.writeFileSync(fotoIAAbsolutePath(negocioId, itemId), buffer);
 }
 
+// --- videos de Reels/historias: data/videos/<negocioId>/<itemId>.<ext> ---
+// Uno por pieza. Se escriben por streaming desde server.js (pueden pesar
+// decenas de MB), así que acá solo se resuelven rutas y se borran.
+
+function videoDir(negocioId) {
+  return path.join(VIDEOS_DIR, negocioId);
+}
+
+function videoAbsolutePath(negocioId, archivo) {
+  return path.join(videoDir(negocioId), archivo);
+}
+
+function borrarVideo(negocioId, archivo) {
+  if (archivo) fs.rmSync(videoAbsolutePath(negocioId, archivo), { force: true });
+}
+
 module.exports = {
   listNegocios,
   getNegocio,
@@ -136,6 +154,10 @@ module.exports = {
   tieneFotoIA,
   guardarFotoIA,
   fotoIAAbsolutePath,
+  videoDir,
+  videoAbsolutePath,
+  borrarVideo,
   FOTOS_DIR,
   FOTOS_IA_DIR,
+  VIDEOS_DIR,
 };

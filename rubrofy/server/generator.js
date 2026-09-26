@@ -140,6 +140,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       variantIndex: 0,
       editing: false,
       aspect: p.esHistoria ? '9 / 16' : '4 / 5',
+      formato: p.esHistoria ? 'historia' : 'post',
       headline,
       tag: p.enfoque.label,
       enfoqueId: p.enfoque.id,

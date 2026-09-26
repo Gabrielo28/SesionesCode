@@ -53,8 +53,10 @@ function verificarSesion(token) {
 // enlace temporal (5 min) válido solo para ese archivo exacto.
 const FOTO_TOKEN_MINUTOS = 5;
 
-function crearTokenFoto(negocioId, categoria, archivo) {
-  const vence = Date.now() + FOTO_TOKEN_MINUTOS * 60 * 1000;
+// `minutos`: los videos usan un plazo más largo, porque Meta puede tardar
+// en descargarlos mientras procesa un Reel.
+function crearTokenFoto(negocioId, categoria, archivo, minutos = FOTO_TOKEN_MINUTOS) {
+  const vence = Date.now() + minutos * 60 * 1000;
   const payload = `${negocioId}/${categoria}/${archivo}.${vence}`;
   return `${vence}.${firmar(payload)}`;
 }

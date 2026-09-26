@@ -96,6 +96,7 @@
       return { color: 'var(--ink-faint)', texto: 'Aprobado &middot; ' + escapeHtml(dateShort) + sinIG };
     }
     if (pub.estado === 'publicando') return { color: 'var(--amber)', texto: 'Publicando en Instagram&hellip;' };
+    if (pub.estado === 'programada' && pub.procesando) return { color: 'var(--amber)', texto: 'Instagram está procesando el video&hellip;' };
     if (pub.estado === 'fallida') return { color: 'var(--coral)', texto: 'No se publicó: ' + escapeHtml(pub.motivo || 'error desconocido') };
     if (negocioActual.instagramEstado === 'reconectar') {
       return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Configuración' };
@@ -184,6 +185,25 @@
     img.src = canvas.dataset.src;
   }
 
+  const FORMATOS = { post: 'Post', carrusel: 'Carrusel', reel: 'Reel', historia: 'Historia' };
+
+  function formatoDe(item) {
+    if (item.formato && FORMATOS[item.formato]) return item.formato;
+    return item.aspect && item.aspect.trim().startsWith('9') ? 'historia' : 'post';
+  }
+
+  async function subirVideo(id, file) {
+    const res = await fetch(`/api/negocios/${negocioActual.id}/contenido/${id}/video`, {
+      method: 'POST',
+      headers: { 'content-type': file.type || 'video/mp4', 'x-rubrofy-panel': '1' },
+      body: file,
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'No se pudo subir el video');
+    }
+  }
+
   function cardHTML(item) {
     const meta = statusMeta(item.status);
     const caption = item.variants[item.variantIndex];
@@ -194,6 +214,8 @@
     const publicada = (pub && pub.estado === 'publicada') || !!(item.instagram && item.instagram.ok);
     const publicando = !!(pub && pub.estado === 'publicando');
     const puedeCambiarFecha = !publicada && !publicando && item.status !== 'rechazado';
+    const formato = formatoDe(item);
+    const conVideo = formato === 'reel' || formato === 'historia';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
     const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
@@ -221,6 +243,16 @@
                 ? `<button class="card-date card-date-btn" data-action="fecha" data-id="${item.id}" title="Cambiar fecha y hora">${escapeHtml(item.date)}</button>`
                 : `<span class="card-date">${escapeHtml(item.date)}</span>`)}
           </div>
+          ${puedeCambiarFecha ? `
+            <div class="card-formato">
+              <select data-formato-id="${item.id}" aria-label="Formato de publicación">
+                ${Object.keys(FORMATOS).map((f) => `<option value="${f}"${f === formato ? ' selected' : ''}>${FORMATOS[f]}</option>`).join('')}
+              </select>
+              ${conVideo ? (item.video
+                ? `<span class="card-video-ok">Video cargado (${(item.video.bytes / 1048576).toFixed(1)} MB)</span><button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
+                : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>`) : ''}
+              ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
+            </div>` : ''}
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
@@ -780,6 +812,15 @@
         btn.disabled = true;
         return accionConAviso('reintentar', id);
       }
+      if (accion === 'quitar-video') {
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video`, { method: 'DELETE' });
+          await refreshContenido();
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo quitar el video.');
+        }
+        return;
+      }
       if (accion === 'fecha') {
         fechaEditIds.add(id);
         renderCola();
@@ -815,6 +856,31 @@
 
     // cambio de fecha y hora de una pieza (selector abierto desde la tarjeta)
     $('#cola-grid').addEventListener('change', async (e) => {
+      const selFormato = e.target.closest('select[data-formato-id]');
+      if (selFormato) {
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${selFormato.dataset.formatoId}/formato`, {
+            method: 'PUT',
+            body: JSON.stringify({ formato: selFormato.value }),
+          });
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo cambiar el formato.');
+        }
+        await refreshContenido().catch(() => {});
+        return;
+      }
+      const inputVideo = e.target.closest('input[data-video-id]');
+      if (inputVideo && inputVideo.files[0]) {
+        const etiqueta = inputVideo.closest('label');
+        if (etiqueta) etiqueta.firstChild.textContent = 'Subiendo video…';
+        try {
+          await subirVideo(inputVideo.dataset.videoId, inputVideo.files[0]);
+        } catch (err) {
+          alert(err.message);
+        }
+        await refreshContenido().catch(() => {});
+        return;
+      }
       const input = e.target.closest('input[data-fecha-id]');
       if (!input || !input.value) return;
       const id = input.dataset.fechaId;

@@ -145,6 +145,10 @@ a { color: var(--amber); }
 .card-note .note-text { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
 .card-note button { background: transparent; border: none; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; font-size: 10px; text-decoration: underline; }
 .card-note .note-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.card-formato { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.card-formato select { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; background: var(--bg); color: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 2px 4px; color-scheme: dark; }
+.card-video-ok { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); }
+.card-video-subir { cursor: pointer; }
 .card-date-btn { background: transparent; border: none; padding: 0; cursor: pointer; text-decoration: underline dotted; }
 .card-date-input { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; background: var(--bg); color: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 2px 4px; color-scheme: dark; }
 

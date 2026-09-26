@@ -51,11 +51,16 @@ function noAutorizado(res) {
 // esa clase de ataque en toda mutación bajo /api.
 const CSRF_HEADER = 'x-rubrofy-panel';
 
-function peticionLegitima(req) {
+// La subida de video es la única que no viaja como JSON (manda el archivo
+// crudo, que puede pesar decenas de MB): se acepta su tipo de video, pero
+// igual exige la cabecera custom, que un sitio ajeno no puede agregar.
+const TIPOS_VIDEO = { 'video/mp4': '.mp4', 'video/quicktime': '.mov' };
+
+function peticionLegitima(req, esSubidaVideo) {
   if (req.headers[CSRF_HEADER] !== '1') return false;
   if (req.method === 'POST' || req.method === 'PUT') {
     const tipo = (req.headers['content-type'] || '').split(';')[0].trim();
-    if (tipo !== 'application/json') return false;
+    if (esSubidaVideo ? !TIPOS_VIDEO[tipo] : tipo !== 'application/json') return false;
   }
   return true;
 }
@@ -74,6 +79,31 @@ const MIME = {
 };
 
 const FOTO_EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+const MAX_VIDEO_BYTES = (Number(process.env.MAX_VIDEO_MB) || 100) * 1024 * 1024;
+
+// Formatos de publicación. Una pieza vieja sin `formato` se deduce de su
+// proporción (9:16 era historia; 4:5, post).
+const FORMATOS = {
+  post: { aspect: '4 / 5', etiqueta: 'Post' },
+  carrusel: { aspect: '4 / 5', etiqueta: 'Carrusel' },
+  reel: { aspect: '9 / 16', etiqueta: 'Reel' },
+  historia: { aspect: '9 / 16', etiqueta: 'Historia' },
+};
+const MAX_FOTOS_CARRUSEL = 10;
+
+function formatoDe(item) {
+  if (item.formato && FORMATOS[item.formato]) return item.formato;
+  return item.aspect && item.aspect.trim().startsWith('9') ? 'historia' : 'post';
+}
+
+// Un contenedor ya creado en Instagram queda obsoleto si cambia lo que se va
+// a publicar (formato o video): se descarta para crear uno nuevo.
+function descartarContenedor(it) {
+  if (it.publicacion && it.publicacion.estado !== 'publicada') {
+    delete it.publicacion.creationId;
+    delete it.publicacion.creationEl;
+  }
+}
 const ESTILOS_IMAGEN = ['limpia', 'texto'];
 
 function slugify(str) {
@@ -251,6 +281,42 @@ function buscarNegocioPorStripeSubscriptionId(subscriptionId) {
 // hay foto, devuelve { motivo } y la pieza queda fallida hasta que se suba
 // una y se reintente.
 async function prepararPublicacion(negocio, item) {
+  // El publicador corre sin un request a mano: usa PUBLIC_URL, o la URL
+  // desde la que se aprobó la pieza.
+  const base = process.env.PUBLIC_URL
+    ? process.env.PUBLIC_URL.replace(/\/$/, '')
+    : item.publicacion && item.publicacion.urlBase;
+  if (!base) return { motivo: 'Falta configurar PUBLIC_URL en el servidor' };
+
+  const enlace = (categoria, archivo, minutos) =>
+    `${base}/fotos/${negocio.id}/${categoria}/${archivo}?t=${auth.crearTokenFoto(negocio.id, categoria, archivo, minutos)}`;
+  const enlaceVideo = (archivo) =>
+    `${base}/videos/${negocio.id}/${archivo}?t=${auth.crearTokenFoto(negocio.id, '_video', archivo, 60)}`;
+  const formato = formatoDe(item);
+  const caption = item.variants[item.variantIndex];
+  const video = item.video && item.video.archivo;
+
+  if (formato === 'reel') {
+    if (!video) return { motivo: 'Este Reel no tiene video. Súbelo en la tarjeta y usa "Reintentar".' };
+    return { tipo: 'reel', videoUrl: enlaceVideo(video), caption };
+  }
+  if (formato === 'historia' && video) {
+    return { tipo: 'historia', videoUrl: enlaceVideo(video) };
+  }
+  if (formato === 'carrusel') {
+    const categoria = item.categoriaFoto;
+    const disponibles = (categoria && store.listFotos(negocio.id)[categoria]) || [];
+    if (disponibles.length < 2) {
+      return { motivo: `Un carrusel necesita al menos 2 fotos en la categoría "${categoria}". Sube más en Fotos y usa "Reintentar".` };
+    }
+    // Empieza en una foto distinta por pieza (mismo reparto que el panel).
+    const inicio = hashString(item.id) % disponibles.length;
+    const orden = disponibles.slice(inicio).concat(disponibles.slice(0, inicio)).slice(0, MAX_FOTOS_CARRUSEL);
+    return { tipo: 'carrusel', imageUrls: orden.map((archivo) => enlace(categoria, archivo)), caption };
+  }
+
+  // Post o historia con una foto: la real de su categoría o, si no hay, una
+  // generada por IA como respaldo.
   let categoria = item.categoriaFoto;
   let archivo = categoria ? elegirFoto(negocio.id, categoria, item.id) : null;
   let generadaPorIA = false;
@@ -273,18 +339,10 @@ async function prepararPublicacion(negocio, item) {
   if (!archivo) {
     return { motivo: 'Esta pieza no tiene foto. Sube una en Fotos y usa "Reintentar".' };
   }
-
-  // El publicador corre sin un request a mano: usa PUBLIC_URL, o la URL
-  // desde la que se aprobó la pieza.
-  const base = process.env.PUBLIC_URL
-    ? process.env.PUBLIC_URL.replace(/\/$/, '')
-    : item.publicacion && item.publicacion.urlBase;
-  if (!base) return { motivo: 'Falta configurar PUBLIC_URL en el servidor' };
-
-  const token = auth.crearTokenFoto(negocio.id, categoria, archivo);
   return {
-    imageUrl: `${base}/fotos/${negocio.id}/${categoria}/${archivo}?t=${token}`,
-    caption: item.variants[item.variantIndex],
+    tipo: formato === 'historia' ? 'historia' : 'imagen',
+    imageUrl: enlace(categoria, archivo),
+    caption,
     generadaPorIA,
   };
 }
@@ -321,8 +379,10 @@ const server = http.createServer(async (req, res) => {
   // HMAC en vez del esquema anti-CSRF de /api.
   const esWebhookStripe = parts[0] === 'api' && parts[1] === 'stripe' && parts[2] === 'webhook';
 
+  const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && parts[3] === 'contenido'
+    && parts[5] === 'video' && parts.length === 6 && req.method === 'POST';
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
-  if (parts[0] === 'api' && mutando && !esWebhookStripe && !peticionLegitima(req)) {
+  if (parts[0] === 'api' && mutando && !esWebhookStripe && !peticionLegitima(req, esSubidaVideo)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
   }
 
@@ -684,6 +744,89 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, items);
         }
 
+        // POST /api/negocios/:id/contenido/:itemId/video — video de un Reel o
+        // historia, como archivo crudo (video/mp4 o video/quicktime). Se
+        // escribe por streaming a un archivo temporal y se corta si pasa del
+        // máximo, sin cargarlo entero en memoria.
+        // DELETE /api/negocios/:id/contenido/:itemId/video — lo quita.
+        if (parts[3] === 'contenido' && parts.length === 6 && parts[5] === 'video') {
+          const itemId = parts[4];
+          const item = encontrarItem(store.getContenido(negocioId), itemId);
+          if (!item) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+          const pub = item.publicacion;
+          if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, itemId)) {
+            return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
+          }
+
+          if (req.method === 'DELETE') {
+            const items = store.getContenido(negocioId);
+            const fresco = encontrarItem(items, itemId);
+            if (fresco && fresco.video) {
+              store.borrarVideo(negocioId, fresco.video.archivo);
+              delete fresco.video;
+              descartarContenedor(fresco);
+              store.saveContenido(negocioId, items);
+            }
+            return sendJSON(res, 200, fresco);
+          }
+
+          if (req.method === 'POST') {
+            const tipo = (req.headers['content-type'] || '').split(';')[0].trim();
+            const declarado = Number(req.headers['content-length']);
+            if (declarado > MAX_VIDEO_BYTES) {
+              return sendJSON(res, 413, { error: `El video pesa más de ${MAX_VIDEO_BYTES / 1024 / 1024} MB` });
+            }
+            const archivo = `${itemId}${TIPOS_VIDEO[tipo]}`;
+            fs.mkdirSync(store.videoDir(negocioId), { recursive: true });
+            const destino = store.videoAbsolutePath(negocioId, archivo);
+            const temporal = `${destino}.subiendo-${Date.now()}`;
+            const bytes = await new Promise((resolve) => {
+              const salida = fs.createWriteStream(temporal);
+              let total = 0;
+              let cortado = false;
+              req.on('data', (chunk) => {
+                total += chunk.length;
+                if (total > MAX_VIDEO_BYTES && !cortado) {
+                  cortado = true;
+                  req.unpipe(salida);
+                  salida.destroy();
+                  resolve(-1);
+                }
+              });
+              req.pipe(salida);
+              salida.on('finish', () => { if (!cortado) resolve(total); });
+              salida.on('error', () => { if (!cortado) resolve(-2); });
+              req.on('error', () => { if (!cortado) resolve(-2); });
+            });
+            if (bytes < 0) {
+              fs.rmSync(temporal, { force: true });
+              if (bytes === -1) {
+                res.setHeader('Connection', 'close');
+                return sendJSON(res, 413, { error: `El video pesa más de ${MAX_VIDEO_BYTES / 1024 / 1024} MB` });
+              }
+              return sendJSON(res, 400, { error: 'No se pudo recibir el video' });
+            }
+            if (!bytes) {
+              fs.rmSync(temporal, { force: true });
+              return sendJSON(res, 400, { error: 'Falta el video' });
+            }
+
+            const items = store.getContenido(negocioId);
+            const fresco = encontrarItem(items, itemId);
+            if (!fresco) {
+              fs.rmSync(temporal, { force: true });
+              return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+            }
+            if (fresco.video && fresco.video.archivo !== archivo) store.borrarVideo(negocioId, fresco.video.archivo);
+            fs.renameSync(temporal, destino);
+            fresco.video = { archivo, bytes, subidoEl: new Date().toISOString() };
+            descartarContenedor(fresco);
+            store.saveContenido(negocioId, items);
+            return sendJSON(res, 200, fresco);
+          }
+          return sendJSON(res, 400, { error: 'Método inválido' });
+        }
+
         // Acciones sobre un item: /api/negocios/:id/contenido/:itemId/:accion
         // Cada acción arma un cambio (`aplicar`) y al final se aplica sobre la
         // cola recién leída de disco: las acciones que esperan a una API
@@ -743,6 +886,18 @@ const server = http.createServer(async (req, res) => {
               programar(it, ahora, req);
             };
             publicarYa = true;
+          } else if (accion === 'formato' && req.method === 'PUT') {
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
+            if (seEstaPublicando) return ocupada();
+            const body = await readBody(req);
+            if (!FORMATOS[body.formato]) return sendJSON(res, 400, { error: 'Formato inválido' });
+            aplicar = (it) => {
+              it.formato = body.formato;
+              it.aspect = FORMATOS[body.formato].aspect;
+              programacion.asegurarPublicarEl(it);
+              it.date = programacion.etiquetaFecha(it.publicarEl, FORMATOS[body.formato].etiqueta);
+              descartarContenedor(it);
+            };
           } else if (accion === 'reprogramar' && req.method === 'PUT') {
             if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
             if (seEstaPublicando) return ocupada();
@@ -814,6 +969,27 @@ const server = http.createServer(async (req, res) => {
       }
 
       return notFound(res);
+    }
+
+    // --- videos: /videos/:negocioId/:archivo --- (sesión del negocio, o
+    // enlace firmado temporal para que Meta los descargue al publicar)
+    if (parts[0] === 'videos' && parts.length === 3 && req.method === 'GET') {
+      const [, negocioId, archivo] = parts;
+      const tokenVideo = url.searchParams.get('t');
+      const autorizado = sesionActual(req) === negocioId
+        || (tokenVideo && auth.verificarTokenFoto(tokenVideo, negocioId, '_video', archivo));
+      if (!autorizado) return notFound(res);
+      const filePath = store.videoAbsolutePath(path.basename(negocioId), path.basename(archivo));
+      if (!filePath.startsWith(store.VIDEOS_DIR)) return notFound(res);
+      return fs.stat(filePath, (err, info) => {
+        if (err || !info.isFile()) return notFound(res);
+        res.writeHead(200, {
+          'Content-Type': path.extname(filePath) === '.mov' ? 'video/quicktime' : 'video/mp4',
+          'Content-Length': info.size,
+          'X-Content-Type-Options': 'nosniff',
+        });
+        fs.createReadStream(filePath).pipe(res);
+      });
     }
 
     // --- fotos subidas: /fotos/:negocioId/:categoria/:archivo ---

@@ -27,6 +27,12 @@ const VIGENCIA_CONTENEDOR_MS = 23 * 60 * 60 * 1000;
 const EDAD_MINIMA_TOKEN_MS = 24 * 60 * 60 * 1000;
 const RENOVAR_CADA_MS = 7 * 24 * 60 * 60 * 1000;
 const REINTENTAR_RENOVACION_MS = 6 * 60 * 60 * 1000;
+// Videos (Reels, historias con video): Meta los procesa antes de poder
+// publicarlos. Se consulta el estado cada minuto, hasta 15 veces, como
+// recomienda su documentación (sin gastar reintentos mientras procesa).
+const ESPERA_PROCESO_MS = 60 * 1000;
+const MAX_CHEQUEOS_PROCESO = 15;
+const TIPOS_CON_PROCESO = new Set(['reel', 'historia-video']);
 
 function ahoraISO() {
   return new Date().toISOString();
@@ -65,9 +71,16 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
   let recorriendo = false;
   let timer = null;
 
-  function marcarFallida(negocioId, itemId, motivo) {
+  // descartarContenedor: el contenedor no sirve (Meta no pudo procesar el
+  // archivo), así que "Reintentar" debe crear uno nuevo con el archivo actual.
+  function marcarFallida(negocioId, itemId, motivo, opciones = {}) {
     return actualizarItem(negocioId, itemId, (it) => {
       it.publicacion = Object.assign({}, it.publicacion, { estado: 'fallida', motivo, falloEl: ahoraISO() });
+      delete it.publicacion.procesando;
+      if (opciones.descartarContenedor) {
+        delete it.publicacion.creationId;
+        delete it.publicacion.creationEl;
+      }
       it.instagram = { intentado: true, ok: false, error: motivo };
     });
   }
@@ -77,6 +90,7 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
     let fallida = false;
     const item = actualizarItem(negocioId, itemId, (it) => {
       const pub = Object.assign({}, it.publicacion);
+      delete pub.procesando;
       if (opciones.descartarContenedor) {
         delete pub.creationId;
         delete pub.creationEl;
@@ -142,29 +156,82 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
 
     const contenedorVigente = pub.creationId && pub.creationEl
       && Date.now() - Date.parse(pub.creationEl) < VIGENCIA_CONTENEDOR_MS;
+    let recienCreado = false;
     if (!contenedorVigente) {
       const preparado = await prepararPublicacion(negocio, item);
       if (preparado.motivo) return marcarFallida(negocioId, itemId, preparado.motivo);
-      const creado = await instagram.crearContenedor({ userId, accessToken, imageUrl: preparado.imageUrl, caption: preparado.caption });
+      const creado = await instagram.crearContenedor(Object.assign({ userId, accessToken }, preparado));
       if (!creado.ok) return manejarError(negocioId, itemId, creado, 'crear');
+      const tipoMedia = preparado.tipo === 'historia' && preparado.videoUrl ? 'historia-video' : (preparado.tipo || 'imagen');
       // Se guarda antes de publicar: si lo que sigue falla o el proceso se
       // cae, el reintento publica este mismo contenedor.
       const conContenedor = actualizarItem(negocioId, itemId, (it) => {
-        Object.assign(it.publicacion, { creationId: creado.id, creationEl: ahoraISO(), generadaPorIA: !!preparado.generadaPorIA });
+        Object.assign(it.publicacion, {
+          creationId: creado.id, creationEl: ahoraISO(), tipoMedia, chequeos: 0,
+          generadaPorIA: !!preparado.generadaPorIA,
+        });
       });
       if (!conContenedor) return null; // la pieza se borró mientras tanto
       pub = conContenedor.publicacion;
+      recienCreado = true;
+    }
+
+    // Antes de publicar se consulta el estado del contenedor cuando puede no
+    // estar listo (video en proceso) o cuando es de un intento anterior (por
+    // si alcanzó a publicarse y solo se perdió la respuesta).
+    if (!recienCreado || TIPOS_CON_PROCESO.has(pub.tipoMedia)) {
+      const estado = await instagram.estadoContenedor({ accessToken, creationId: pub.creationId });
+      if (!estado.ok) return manejarError(negocioId, itemId, estado, 'estado');
+      if (estado.estado === 'PUBLISHED') return marcarPublicada(negocioId, itemId, null);
+      if (estado.estado === 'EXPIRED') {
+        return reintentarOFallar(negocioId, itemId, { tipo: 'reintentable', error: 'El contenedor venció en Instagram' }, { descartarContenedor: true });
+      }
+      if (estado.estado === 'ERROR') {
+        return marcarFallida(negocioId, itemId, 'Instagram no pudo procesar el archivo'
+          + (estado.detalle ? ` (${estado.detalle})` : '')
+          + '. Revisa que el video sea MP4 (H.264), vertical 9:16 y de duración permitida.', { descartarContenedor: true });
+      }
+      if (estado.estado === 'IN_PROGRESS') return esperarProceso(negocioId, itemId);
     }
 
     const publicado = await instagram.publicarContenedor({ userId, accessToken, creationId: pub.creationId });
-    if (!publicado.ok) return manejarError(negocioId, itemId, publicado, 'publicar');
+    if (!publicado.ok) {
+      if (publicado.tipo === 'no_listo') return esperarProceso(negocioId, itemId);
+      return manejarError(negocioId, itemId, publicado, 'publicar');
+    }
+    return marcarPublicada(negocioId, itemId, publicado.id);
+  }
 
-    log(`Publicador: ${negocioId}/${itemId} publicado en Instagram (${publicado.id}).`);
+  // Video todavía en proceso en Meta: vuelve a mirar en un minuto, sin gastar
+  // un reintento, hasta MAX_CHEQUEOS_PROCESO veces.
+  function esperarProceso(negocioId, itemId) {
+    let agotado = false;
+    const item = actualizarItem(negocioId, itemId, (it) => {
+      const pub = it.publicacion;
+      pub.chequeos = (pub.chequeos || 0) + 1;
+      if (pub.chequeos > MAX_CHEQUEOS_PROCESO) {
+        agotado = true;
+        return;
+      }
+      pub.estado = 'programada';
+      pub.procesando = true;
+      pub.proximoIntento = new Date(Date.now() + ESPERA_PROCESO_MS).toISOString();
+    });
+    if (agotado) {
+      return reintentarOFallar(negocioId, itemId,
+        { tipo: 'reintentable', error: 'Instagram tardó demasiado en procesar el video' }, { descartarContenedor: true });
+    }
+    return item;
+  }
+
+  function marcarPublicada(negocioId, itemId, mediaId) {
+    log(`Publicador: ${negocioId}/${itemId} publicado en Instagram (${mediaId || 'id no informado'}).`);
     return actualizarItem(negocioId, itemId, (it) => {
       const publicadoEl = ahoraISO();
-      it.publicacion = Object.assign({}, it.publicacion, { estado: 'publicada', publicadoEl, mediaId: publicado.id });
+      it.publicacion = Object.assign({}, it.publicacion, { estado: 'publicada', publicadoEl, mediaId });
       delete it.publicacion.ultimoError;
-      it.instagram = { intentado: true, ok: true, mediaId: publicado.id, publicadoEl, generadaPorIA: !!it.publicacion.generadaPorIA };
+      delete it.publicacion.procesando;
+      it.instagram = { intentado: true, ok: true, mediaId, publicadoEl, generadaPorIA: !!it.publicacion.generadaPorIA };
     });
   }
 
