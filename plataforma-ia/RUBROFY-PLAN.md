@@ -34,7 +34,7 @@ estrategia" es exactamente lo que hacía falta para escalar a cualquier pyme.
 Salen de la revisión del código. Los dos primeros cuestan plata o reputación desde el
 primer cliente.
 
-### 2.1 Doble cobro al subir de Pro a Estudio 🔴
+### 2.1 Doble cobro al subir de Pro a Estudio ✅ corregido (`5e82a81`)
 
 `public/app/app.js:356` muestra "Actualizar a Estudio" a un negocio que ya está en Pro, y
 `POST /api/negocios/:id/checkout` (`server/server.js:454`) crea un Checkout nuevo sin revisar
@@ -49,7 +49,7 @@ actualizando esa misma suscripción (`POST /v1/subscriptions/:id` con el nuevo p
 prorrateo) o mandándolo al Billing Portal con el cambio de plan habilitado. El endpoint de
 checkout debe rechazar el caso con un 409.
 
-### 2.2 Doble publicación en Instagram 🔴
+### 2.2 Doble publicación en Instagram ✅ corregido (`5e82a81`)
 
 `aprobar` (`server/server.js:551`) no revisa el estado previo de la pieza. Un doble toque,
 un reintento del navegador, o la secuencia "deshacer → aprobar", **publica el mismo post dos
@@ -60,7 +60,7 @@ marcar la pieza como "publicando" antes de llamar a la API, para cortar dobles c
 concurrentes. Y "deshacer" sobre una pieza ya publicada debe avisar que eso no la borra de
 Instagram.
 
-### 2.3 Costo de IA sin techo en el plan Pro 🟠
+### 2.3 Costo de IA sin techo en el plan Pro ✅ corregido (`5e82a81`)
 
 - `POST /generar` acepta cualquier `cantidad` sin tope: el bucle crea N piezas y pide
   `max_tokens: 200 × N`.
@@ -71,7 +71,7 @@ Instagram.
 **Arreglo:** poner `cantidad` entre 1 y 12, y una cuota mensual de generaciones por plan en
 `planes.js`, con el mismo mecanismo que ya existe para las fotos (`usoFotosIA` por mes).
 
-### 2.4 Endpoints públicos sin límite de intentos 🟠
+### 2.4 Endpoints públicos sin límite de intentos ✅ corregido (`5e82a81`)
 
 - `POST /api/auth/registro` llama a Claude (`generarEstrategia`) en cada registro, incluso
   en el plan Gratis y sin sesión. Un bot que cree cuentas consume la key de Anthropic.
@@ -182,7 +182,7 @@ tarea.
 
 | Semana | Qué | Por qué primero |
 |---|---|---|
-| 1 | Bloqueantes 2.1 a 2.4: doble cobro, doble publicación, topes de IA y límites de intentos | Sin esto, cobrar cuesta plata o reputación |
+| 1 | ✅ Bloqueantes 2.1 a 2.4 corregidos en `5e82a81` (rama de Rubrofy) | Sin esto, cobrar cuesta plata o reputación |
 | 1 (paralelo) | Iniciar Meta App Review y Business Verification. Escribir la política de privacidad y la URL de eliminación de datos | Toma semanas y no depende del código |
 | 2 | Deploy en Railway con Volume, dominio rubrofy.com y Stripe en modo test de punta a punta. Confirmar Stripe Chile o cambiar a Flow/Mercado Pago | Primer entorno real |
 | 2 | Página de precios en el sitio público | Nadie paga lo que no ve |
