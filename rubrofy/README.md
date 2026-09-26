@@ -207,6 +207,30 @@ conexión queda en "Reconectar" sin afectar la publicación en Instagram.
 Se sincroniza cada 12 h: la primera vez 30 días, después los últimos 3
 (Meta sigue atribuyendo conversiones a días anteriores).
 
+## Google Ads (server/google.js)
+
+En el plan Estudio, Resultados → **Google Ads** muestra inversión, clics,
+conversiones, costo por conversión, ROAS y campañas (mismo panel que Meta
+Ads), y se suma al informe mensual. **Solo lectura.**
+
+- **Conexión**: en Configuración, "Conectar con Google" abre el inicio de
+  sesión de Google (permiso `adwords`, acceso sin conexión) y vuelve a
+  `/api/google/callback`. El parámetro `state` va firmado, dura 15 minutos
+  y tiene que coincidir con la sesión, así nadie puede enganchar su cuenta
+  de Google a la de otro. Si la cuenta es administradora (MCC), se listan
+  sus clientes y se consulta con `login-customer-id`.
+- **Sincronización** con GAQL (`searchStream`, 1 operación por consulta):
+  30 días la primera vez, después los últimos 7 (Google sigue atribuyendo
+  conversiones). Performance Max entrega menos detalle que Búsqueda.
+- **Configurar**: crear en Google Cloud un proyecto con la API de Google
+  Ads habilitada y el acceso solicitado (Explorer alcanza para empezar),
+  un cliente OAuth de tipo "aplicación web" con la URI de redirección
+  `https://<tu dominio>/api/google/callback`, y definir `GOOGLE_CLIENT_ID`
+  y `GOOGLE_CLIENT_SECRET`. Opcionales: `GOOGLE_ADS_DEVELOPER_TOKEN` (si el
+  proyecto todavía usa uno) y `GOOGLE_ADS_API_VERSION` (por defecto `v25`).
+  El permiso `adwords` es "sensible": hasta que Google verifique la app,
+  admite 100 usuarios y muestra la pantalla de "app no verificada".
+
 ## Mi estilo (server/estilo.js)
 
 El negocio le muestra a Rubrofy el contenido que ya hace para que la IA
@@ -375,6 +399,7 @@ server/
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
+  google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco

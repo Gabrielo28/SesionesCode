@@ -16,6 +16,7 @@ const programacion = require('./programacion');
 const analitica = require('./analitica');
 const informe = require('./informe');
 const meta = require('./meta');
+const google = require('./google');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -144,8 +145,10 @@ function sendJSON(res, status, data, extraHeaders) {
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
 // los IDs internos de Stripe).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram, stripe: stripeInfo, meta: metaInfo, ...resto } = negocio;
+  const { auth: _auth, instagram, stripe: stripeInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
+  resto.googleConexion = google.publico(googleInfo);
+  resto.googleConfigurado = google.configurado();
   resto.instagramConectado = !!(instagram && instagram.accessToken);
   // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
   // programadas esperan hasta que se reconecte).
@@ -392,10 +395,22 @@ const sincronizador = analitica.crearSincronizador({
     if (fuente === 'meta_ads') {
       return plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
     }
+    if (fuente === 'google_ads') {
+      return plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
+    }
     return false;
   },
-  fuentes: { meta_ads: (id) => meta.sincronizarAds(id) },
+  fuentes: { meta_ads: (id) => meta.sincronizarAds(id), google_ads: (id) => google.sincronizar(id) },
 });
+
+informe.registrarSeccion('googleAds', (negocio, desde, hasta) => {
+  if (!getPlan(negocio.plan).ads || !negocio.google || !negocio.google.customerId) return null;
+  return Object.assign(google.resumen(negocio.id, desde, hasta), { moneda: negocio.google.moneda, cuenta: negocio.google.nombre });
+});
+
+function urlPublica(req) {
+  return process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : urlBase(req);
+}
 
 // Sección de Meta Ads en el informe mensual (si el plan la incluye y hay cuenta).
 informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
@@ -609,6 +624,33 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 404, { error: 'El enlace no es válido o ya venció' });
         }
         return sendJSON(res, 200, Object.assign(informe.datos(negocioCompartido, mes, estadisticasAprobacion), { compartido: true }));
+      }
+
+      // GET /api/google/callback?code&state — vuelta de "Iniciar sesión con
+      // Google". El state va firmado y ligado al negocio, y además tiene que
+      // coincidir con la sesión: nadie puede enganchar su Google a otra cuenta.
+      if (parts[1] === 'google' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
+        const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
+        const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
+        const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'google-oauth', nonce);
+        if (!firmaOk || sesionActual(req) !== negocioId) return volver({ google: 'error', motivo: 'La conexión venció o no corresponde a tu sesión. Intenta de nuevo.' });
+        if (url.searchParams.get('error')) return volver({ google: 'error', motivo: 'No se dio permiso en Google.' });
+        try {
+          const tokens = await google.canjearCodigo(url.searchParams.get('code'), urlPublica(req) + '/api/google/callback');
+          if (!tokens.refresh_token) return volver({ google: 'error', motivo: 'Google no entregó acceso permanente; quita el acceso de Rubrofy en tu cuenta de Google y vuelve a conectar.' });
+          const opciones = await google.cuentasAccesibles(tokens.refresh_token);
+          const n = store.getNegocio(negocioId);
+          n.google = { refreshToken: tokens.refresh_token, opciones, conectadoEl: new Date().toISOString() };
+          if (opciones.length === 1) {
+            Object.assign(n.google, { customerId: opciones[0].id, nombre: opciones[0].nombre, moneda: opciones[0].moneda, loginCustomerId: opciones[0].loginCustomerId });
+            delete n.google.opciones;
+          }
+          store.saveNegocio(n);
+          if (n.google.customerId) await google.sincronizar(negocioId);
+          return volver({ google: opciones.length ? 'ok' : 'sin-cuentas' });
+        } catch (err) {
+          return volver({ google: 'error', motivo: 'No se pudo conectar con Google Ads: ' + err.message });
+        }
       }
 
       if (parts[1] === 'negocios' && parts.length >= 3) {
@@ -867,6 +909,60 @@ const server = http.createServer(async (req, res) => {
             delete fresco.meta;
             store.saveNegocio(fresco);
             return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
+        }
+
+        // Google Ads (plan Estudio):
+        //   GET    /api/negocios/:id/google/conectar — redirige a Google
+        //   PUT    /api/negocios/:id/google { customerId } — elige la cuenta
+        //   DELETE /api/negocios/:id/google
+        //   GET    /api/negocios/:id/google-ads?dias=30 · POST .../google-ads/sincronizar
+        if (parts[3] === 'google' || parts[3] === 'google-ads') {
+          if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Google Ads está disponible en el plan Estudio' });
+          if (parts[3] === 'google' && parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
+            if (!google.configurado()) return sendJSON(res, 400, { error: 'Google Ads no está configurado en este servidor' });
+            const nonce = google.nuevoEstadoOAuth();
+            // el token firmado lleva un punto; se cambia por _ para separar el state con puntos
+            const firma = auth.crearTokenFoto(negocioId, 'google-oauth', nonce, 15).replace(/\./g, '_');
+            res.writeHead(302, { Location: google.urlAutorizacion(urlPublica(req) + '/api/google/callback', `${negocioId}.${nonce}.${firma}`) });
+            return res.end();
+          }
+          if (parts[3] === 'google' && parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            const g = negocio.google;
+            const elegida = g && (g.opciones || []).find((o) => o.id === String(body.customerId));
+            if (!elegida) return sendJSON(res, 400, { error: 'Elige una de las cuentas disponibles' });
+            const n = store.getNegocio(negocioId);
+            Object.assign(n.google, { customerId: elegida.id, nombre: elegida.nombre, moneda: elegida.moneda, loginCustomerId: elegida.loginCustomerId });
+            delete n.google.opciones;
+            store.saveNegocio(n);
+            await google.sincronizar(negocioId);
+            return sendJSON(res, 200, negocioPublico(store.getNegocio(negocioId)));
+          }
+          if (parts[3] === 'google' && parts.length === 4 && req.method === 'DELETE') {
+            const n = store.getNegocio(negocioId);
+            delete n.google;
+            store.saveNegocio(n);
+            return sendJSON(res, 200, negocioPublico(n));
+          }
+          if (parts[3] === 'google-ads') {
+            if (!negocio.google || !negocio.google.customerId) return sendJSON(res, 400, { error: 'Conecta Google Ads en Configuración' });
+            if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
+              const r = await sincronizador.sincronizarAhora(negocioId, 'google_ads');
+              if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
+            } else if (!(parts.length === 4 && req.method === 'GET')) {
+              return sendJSON(res, 400, { error: 'Acción inválida' });
+            }
+            const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+            const hasta = analitica.fechaLocal(new Date());
+            const n = store.getNegocio(negocioId);
+            return sendJSON(res, 200, {
+              dias,
+              conexion: google.publico(n.google),
+              sync: analitica.estadoSync(negocioId, 'google_ads'),
+              resumen: google.resumen(negocioId, analitica.sumarDias(hasta, -(dias - 1)), hasta),
+            });
           }
           return sendJSON(res, 400, { error: 'Acción inválida' });
         }

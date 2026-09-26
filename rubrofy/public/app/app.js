@@ -438,6 +438,55 @@
 
     renderPlan();
     renderMeta();
+    renderGoogle();
+  }
+
+  // Google Ads: se conecta con "Iniciar sesión con Google" (redirige a
+  // Google y vuelve a /app?google=...), luego se elige la cuenta.
+  function renderGoogle() {
+    const cont = $('#google-card');
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    const g = negocioActual.googleConexion;
+    const cabecera = `<div class="ig-card-head"><h2>Conexión con Google Ads</h2>
+      <span class="ig-estado ${g && g.customerId ? (g.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${g && g.customerId ? (g.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
+    if (!plan.ads) {
+      cont.innerHTML = cabecera + '<p class="sub">Para ver tus campañas de Google junto a tu Instagram. Disponible en el plan Estudio.</p>';
+      return;
+    }
+    if (!negocioActual.googleConfigurado) {
+      cont.innerHTML = cabecera + '<p class="sub">Google Ads todavía no está configurado en este servidor.</p>';
+      return;
+    }
+    const conectar = `<a class="btn-approve estilo-btn" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/google/conectar">${g ? 'Volver a conectar con Google' : 'Conectar con Google'}</a>`;
+    if (g && g.customerId && g.estado !== 'reconectar') {
+      cont.innerHTML = cabecera + `<p class="sub">Cuenta: <b>${escapeHtml(g.nombre || g.customerId)}</b> (${escapeHtml(g.moneda || '')}) · solo lectura.</p>
+        <button type="button" class="btn-danger" data-google="desconectar">Desconectar Google Ads</button>`;
+    } else if (g && g.opciones && g.opciones.length) {
+      cont.innerHTML = cabecera + `<form class="config-form" data-google="elegir">
+          <label>¿Qué cuenta de Google Ads quieres ver?<select name="customerId">${g.opciones.map((o) => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.nombre)} · ${escapeHtml(o.moneda || '')}${o.via ? ' (vía ' + escapeHtml(o.via) + ')' : ''}</option>`).join('')}</select></label>
+          <div class="config-actions"><button type="submit" class="btn-approve">Usar esta cuenta</button></div>
+        </form>`;
+    } else {
+      cont.innerHTML = cabecera + `<p class="sub">${g && g.estado === 'reconectar' ? 'Google revocó el permiso o venció. ' : ''}Inicia sesión con la cuenta de Google que administra tus anuncios. Rubrofy solo lee los datos, no modifica campañas.</p>${conectar}`;
+    }
+  }
+
+  async function accionGoogle(e) {
+    const btn = e.target.closest('[data-google="desconectar"]');
+    if (!btn) return;
+    if (!confirm('¿Desconectar Google Ads?')) return;
+    negocioActual = await api(`/api/negocios/${negocioActual.id}/google`, { method: 'DELETE' });
+    renderGoogle();
+  }
+
+  async function elegirCuentaGoogle(e) {
+    e.preventDefault();
+    try {
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/google`, { method: 'PUT', body: JSON.stringify({ customerId: e.target.customerId.value }) });
+      renderGoogle();
+    } catch (err) {
+      alert(err.mensaje || 'No se pudo elegir la cuenta.');
+    }
   }
 
   // Conexión con Meta (Ads y competencia): token → elegir cuentas → conectar.
@@ -735,6 +784,18 @@
     $('#view-app').hidden = false;
     render();
     avisarRetornoCheckout();
+    avisarRetornoGoogle();
+  }
+
+  // Vuelta de "Iniciar sesión con Google": avisa el resultado y abre Configuración.
+  function avisarRetornoGoogle() {
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('google');
+    if (!r) return;
+    history.replaceState(null, '', '/app');
+    if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar Google Ads.');
+    if (r === 'sin-cuentas') alert('Esa cuenta de Google no tiene cuentas de Google Ads que Rubrofy pueda leer.');
+    irAVista('config');
   }
 
   // Tras volver de Stripe Checkout (éxito o cancelado), refresca el negocio
@@ -783,6 +844,9 @@
     // conexión con Meta (delegación: el contenido de la tarjeta se redibuja)
     $('#meta-card').addEventListener('click', (e) => { accionMeta(e).catch((err) => alert(err.mensaje || err.message)); });
     $('#meta-card').addEventListener('submit', conectarMeta);
+
+    $('#google-card').addEventListener('click', (e) => { accionGoogle(e).catch((err) => alert(err.mensaje || err.message)); });
+    $('#google-card').addEventListener('submit', elegirCuentaGoogle);
 
     // pestañas de Resultados
     document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.addEventListener('click', () => {
