@@ -29,8 +29,16 @@
     );
     const res = await fetch(path, Object.assign({}, opts, { headers }));
     if (!res.ok) {
-      const err = new Error('Error de API (' + res.status + ') en ' + path);
+      // El servidor explica el motivo en { error } (cuota agotada, demasiados
+      // intentos, etc.); se guarda aparte para mostrárselo al usuario.
+      let mensaje = null;
+      try {
+        const data = await res.json();
+        mensaje = data && typeof data.error === 'string' ? data.error : null;
+      } catch (e) { /* respuesta sin JSON */ }
+      const err = new Error(mensaje || ('Error de API (' + res.status + ') en ' + path));
       err.status = res.status;
+      err.mensaje = mensaje;
       throw err;
     }
     return res.json();
@@ -370,6 +378,9 @@
     }).join('');
 
     const cuota = planesInfo.find((p) => p.id === planActualId);
+    const usoTextos = cuota && cuota.cuotaTextosIA
+      ? `<p class="sub">Piezas con IA disponibles este mes: ${negocioActual.textosIADisponibles} de ${cuota.cuotaTextosIA}.</p>`
+      : '';
     const usoFotos = cuota && cuota.cuotaFotosIA
       ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
       : '';
@@ -377,6 +388,7 @@
     cont.innerHTML = `
       <div class="ig-card-head"><h2>Plan</h2></div>
       ${filas}
+      ${usoTextos}
       ${usoFotos}
       <p class="config-error" id="plan-error" hidden></p>
       ${negocioActual.tieneSuscripcionStripe ? '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>' : ''}
@@ -442,6 +454,18 @@
     await refreshContenido();
   }
 
+  // Igual que accionSimple, pero avisa si falla. Un 409 en "aprobar" es un
+  // doble clic mientras la pieza se publica: no es un error, solo se refresca.
+  async function accionConAviso(accion, id) {
+    try {
+      await accionSimple(accion, id);
+    } catch (err) {
+      if (err.status === 409) return refreshContenido();
+      alert(err.mensaje || 'No se pudo completar la acción. Intenta de nuevo.');
+      refreshContenido().catch(() => {}); // re-renderiza y vuelve a habilitar los botones
+    }
+  }
+
   async function guardarEdicion(id, caption) {
     await api(`/api/negocios/${negocioActual.id}/contenido/${id}/editar`, {
       method: 'PUT',
@@ -461,6 +485,8 @@
         body: JSON.stringify({ cantidad: 6 }),
       });
       render();
+    } catch (err) {
+      alert(err.mensaje || 'No se pudo generar contenido. Intenta de nuevo.');
     } finally {
       btn.disabled = false;
       btn.textContent = '+ Generar más contenido';
@@ -529,7 +555,9 @@
       try {
         await iniciarSesion($('#login-email').value.trim(), $('#login-password').value);
       } catch (err) {
-        mostrarLogin(err.status === 401 ? 'Email o clave incorrectos.' : 'No se pudo iniciar sesión.');
+        mostrarLogin(err.status === 401 ? 'Email o clave incorrectos.'
+          : err.status === 429 ? err.mensaje
+          : 'No se pudo iniciar sesión.');
       } finally {
         btn.disabled = false;
       }
@@ -597,15 +625,30 @@
       if (!btnCheckout && !btnPortal) return;
       const btn = btnCheckout || btnPortal;
       const errorEl = $('#plan-error');
+
+      // Con una suscripción activa, subir de plan cambia esa misma
+      // suscripción (no abre un pago nuevo): se avisa antes del cobro.
+      if (btnCheckout && negocioActual.tieneSuscripcionStripe) {
+        const destino = planesInfo.find((p) => p.id === btnCheckout.dataset.checkoutPlan);
+        const seguir = confirm(`Tu suscripción pasará a ${destino ? destino.nombre : 'el nuevo plan'} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`);
+        if (!seguir) return;
+      }
+
       errorEl.hidden = true;
       btn.disabled = true;
       try {
         const resultado = btnCheckout
           ? await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: btnCheckout.dataset.checkoutPlan }) })
           : await api(`/api/negocios/${negocioActual.id}/portal`, { method: 'POST' });
-        window.location.href = resultado.url;
+        if (resultado.url) {
+          window.location.href = resultado.url;
+          return;
+        }
+        // Cambio de plan sobre la suscripción existente: no hay página de pago.
+        negocioActual = resultado.negocio;
+        renderPlan();
       } catch (err) {
-        errorEl.textContent = 'No se pudo continuar. Intenta de nuevo en un momento.';
+        errorEl.textContent = err.mensaje || 'No se pudo continuar. Intenta de nuevo en un momento.';
         errorEl.hidden = false;
         btn.disabled = false;
       }
@@ -658,10 +701,20 @@
         }
         return;
       }
-      if (accion === 'approve') return accionSimple('aprobar', id);
-      if (accion === 'reject') return accionSimple('rechazar', id);
-      if (accion === 'undo') return accionSimple('deshacer', id);
-      if (accion === 'regenerate') return accionSimple('regenerar', id);
+      if (accion === 'approve') {
+        btn.disabled = true; // la publicación en Instagram puede tardar unos segundos
+        return accionConAviso('aprobar', id);
+      }
+      if (accion === 'reject') return accionConAviso('rechazar', id);
+      if (accion === 'undo') {
+        const item = contenido.find((i) => i.id === id);
+        if (item && item.instagram && item.instagram.ok) {
+          const seguir = confirm('Esta pieza ya está publicada en Instagram. Deshacer la devuelve a pendiente en Rubrofy, pero NO la borra de Instagram (eso se hace desde la app de Instagram). Si la vuelves a aprobar, no se publicará de nuevo.');
+          if (!seguir) return;
+        }
+        return accionConAviso('deshacer', id);
+      }
+      if (accion === 'regenerate') return accionConAviso('regenerar', id);
       if (accion === 'imagen') {
         const textoOriginal = btn.textContent;
         btn.disabled = true;
@@ -671,7 +724,7 @@
         } catch (err) {
           alert(err.status === 400
             ? 'La generación de imágenes con IA no está configurada en este servidor.'
-            : 'No se pudo generar la imagen con IA. Intenta de nuevo.');
+            : (err.mensaje || 'No se pudo generar la imagen con IA. Intenta de nuevo.'));
           btn.disabled = false;
           btn.textContent = textoOriginal;
         }

@@ -4,12 +4,17 @@
 // variable de entorno porque se crea en la cuenta de Stripe de cada
 // despliegue (ver scripts/setup-stripe.js) — nunca se hardcodea acá.
 
+// cuotaTextosIA: cuántas piezas de texto puede escribir Claude por mes
+// (generar + "otra versión"). Es un techo contra el abuso, no un límite que
+// un negocio normal debiera tocar: ~150 piezas son varias veces lo que
+// publica una pyme en un mes.
 const PLANES = {
   gratis: {
     id: 'gratis',
     nombre: 'Gratis',
     precioClp: 0,
     usaIA: false,
+    cuotaTextosIA: 0,
     cuotaFotosIA: 0,
     stripePriceEnv: null,
   },
@@ -18,6 +23,7 @@ const PLANES = {
     nombre: 'Pro',
     precioClp: 19990,
     usaIA: true,
+    cuotaTextosIA: 150,
     cuotaFotosIA: 0,
     stripePriceEnv: 'STRIPE_PRICE_PRO',
   },
@@ -26,6 +32,7 @@ const PLANES = {
     nombre: 'Estudio',
     precioClp: 39990,
     usaIA: true,
+    cuotaTextosIA: 300,
     cuotaFotosIA: 20,
     stripePriceEnv: 'STRIPE_PRICE_ESTUDIO',
   },
@@ -43,6 +50,7 @@ function listPlanesPublico() {
     nombre: p.nombre,
     precioClp: p.precioClp,
     usaIA: p.usaIA,
+    cuotaTextosIA: p.cuotaTextosIA,
     cuotaFotosIA: p.cuotaFotosIA,
     disponible: p.id === 'gratis' || !!(p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));

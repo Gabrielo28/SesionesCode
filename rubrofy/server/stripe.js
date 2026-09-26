@@ -26,18 +26,16 @@ function formBody(obj) {
   return params;
 }
 
-async function stripeFetch(path, body) {
+async function stripeFetch(path, body, method = 'POST') {
   const apiKey = process.env.STRIPE_SECRET_KEY;
   if (!apiKey) return { error: 'Stripe no está configurado en este servidor' };
   try {
-    const res = await fetch(`${STRIPE_API}${path}`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-      body: formBody(body || {}),
-    });
+    const opciones = { method, headers: { authorization: `Bearer ${apiKey}` } };
+    if (method !== 'GET') {
+      opciones.headers['content-type'] = 'application/x-www-form-urlencoded';
+      opciones.body = formBody(body || {});
+    }
+    const res = await fetch(`${STRIPE_API}${path}`, opciones);
     const data = await res.json();
     if (!res.ok) return { error: (data.error && data.error.message) || 'Error de Stripe' };
     return { data };
@@ -63,6 +61,21 @@ async function crearCheckoutSession({ priceId, negocioId, planId, successUrl, ca
 
 async function crearPortalSession({ customerId, returnUrl }) {
   return stripeFetch('/billing_portal/sessions', { customer: customerId, return_url: returnUrl });
+}
+
+async function obtenerSuscripcion(subscriptionId) {
+  return stripeFetch(`/subscriptions/${encodeURIComponent(subscriptionId)}`, null, 'GET');
+}
+
+// Cambio de plan de un negocio que YA tiene suscripción: se cambia el precio
+// de esa misma suscripción (con prorrateo) en vez de abrir un Checkout
+// nuevo, que crearía una segunda suscripción cobrando en paralelo.
+async function cambiarPrecioSuscripcion({ subscriptionId, itemId, priceId, planId }) {
+  return stripeFetch(`/subscriptions/${encodeURIComponent(subscriptionId)}`, {
+    items: [{ id: itemId, price: priceId }],
+    proration_behavior: 'create_prorations',
+    metadata: { planId },
+  });
 }
 
 // Al eliminar una cuenta con una suscripción activa hay que cancelarla en
@@ -108,4 +121,7 @@ function verificarFirmaWebhook(payloadRaw, header, secret, toleranciaSeg = 300) 
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-module.exports = { crearCheckoutSession, crearPortalSession, cancelarSuscripcion, verificarFirmaWebhook };
+module.exports = {
+  crearCheckoutSession, crearPortalSession, obtenerSuscripcion, cambiarPrecioSuscripcion,
+  cancelarSuscripcion, verificarFirmaWebhook,
+};

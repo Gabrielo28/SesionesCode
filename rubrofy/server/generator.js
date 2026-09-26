@@ -107,7 +107,9 @@ async function generarLoteConClaude(negocio, enfoquesDelLote) {
 // cantidad: cuántas piezas nuevas generar.
 // startIndex: desde dónde seguir la rotación de enfoques (para que "generar más" no repita
 // exactamente lo mismo que ya existe en la cola).
-async function generarBanco(negocio, cantidad = 6, startIndex = 0) {
+// opciones.usarIA: false fuerza las plantillas aunque el plan incluya IA (se
+// usa cuando el negocio agotó su cuota mensual de textos con IA).
+async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}) {
   const estrategia = negocio.estrategia;
   if (!estrategia) throw new Error('El negocio no tiene una estrategia de contenido');
 
@@ -131,7 +133,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0) {
     });
   }
 
-  const lote = await generarLoteConClaude(negocio, plan.map((p) => p.enfoque));
+  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan.map((p) => p.enfoque));
 
   return plan.map((p, i) => {
     const generado = lote && lote[i];
@@ -151,6 +153,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0) {
       hueFrom: p.hue[0],
       hueTo: p.hue[1],
       variants: [caption],
+      generadoConIA: !!generado, // para descontar de la cuota mensual de textos con IA
     };
   });
 }

@@ -75,6 +75,14 @@ sesiones sobreviven un reinicio del servidor.
 Las contraseñas se guardan con `scrypt` (costoso de romper por fuerza
 bruta), nunca en texto plano.
 
+Registro y login tienen límite de intentos por IP (5 registros por hora,
+10 logins fallidos cada 15 minutos; ver `server/limites.js`). El registro
+llama a Claude para diseñar la estrategia, así que sin este límite un bot
+podría gastar la key creando cuentas. Detrás de un proxy, la IP real se lee
+de `X-Forwarded-For`: en Railway se detecta solo; en otro hosting con proxy
+hay que definir `TRUST_PROXY=1`. Sin proxy no se debe definir, porque ese
+header lo podría escribir cualquiera para esquivar el límite.
+
 Definir también `PUBLIC_URL` (ej. `https://rubrofy.com`) para que el enlace
 temporal que se le manda a Instagram para descargar cada foto apunte al
 dominio público real y no a la URL interna del servidor. Sin esta variable,
@@ -119,7 +127,12 @@ la usa deducida del request — funciona igual en producción normalmente, pero
 - **Plan y cobro** — en Configuración, cada negocio ve su plan actual, sube
   a Pro o Estudio (Stripe Checkout) o gestiona su suscripción (Billing
   Portal). El plan Gratis usa solo plantillas; Pro y Estudio habilitan la
-  IA de texto, y Estudio agrega una cuota mensual de fotos con IA.
+  IA de texto (con un techo mensual de piezas, contra el abuso), y Estudio
+  agrega una cuota mensual de fotos con IA.
+- **Publicación sin duplicados** — aprobar publica una sola vez: un doble
+  clic mientras se publica se ignora, y una pieza ya publicada que se
+  deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
+  borra de Instagram; el panel lo advierte).
 
 ## Cómo genera el contenido
 
@@ -174,7 +187,16 @@ de Stripe, así que tampoco hace falta construir esa pantalla.
 
 Los precios y cuotas están en `server/planes.js` — cambiarlos ahí no
 requiere tocar Stripe ni el resto del código, salvo que cambie qué plan
-corresponde a qué precio (ver más abajo).
+corresponde a qué precio (ver más abajo). Las cuotas de IA (piezas de texto
+y fotos por mes) se reinician solas el día 1 de cada mes.
+
+**Cambio de plan con una suscripción activa** (por ejemplo, de Pro a
+Estudio): no se abre un Checkout nuevo, porque crearía una segunda
+suscripción cobrando en paralelo. El servidor cambia el precio de la misma
+suscripción, con prorrateo: la diferencia se cobra en la próxima factura.
+Bajar de plan o cancelar se hace desde "Gestionar suscripción". Si igual
+llegaran a pagarse dos Checkouts (dos pestañas abiertas a la vez), el
+webhook cancela la suscripción anterior y deja solo la nueva.
 
 Para activarlo:
 
@@ -216,6 +238,7 @@ server/
   generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
   planes.js     Definición de los planes (precio, cuotas) — la única tabla que hay que tocar para cambiar precios
   stripe.js     Cliente mínimo de Stripe por REST (checkout, billing portal, verificación de webhook)
+  limites.js    Límite de intentos por IP para registro y login
   seed.js       Crea los negocios de ejemplo (con estrategias ya escritas a mano)
 scripts/
   setup-stripe.js  Crea los productos/precios de los planes pagados en Stripe (correr una vez)

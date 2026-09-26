@@ -14,11 +14,30 @@ const { publicarEnInstagram } = require('./instagram');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
+const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
 const APP_DIR = path.join(__dirname, '..', 'public', 'app');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Máximo de piezas por cada "generar" — el panel pide 6; esto evita que una
+// llamada directa a la API pida miles de una vez.
+const MAX_PIEZAS_POR_GENERACION = 12;
+
+// Registro: cada uno llama a Claude, así que se limita por IP. Login: solo
+// cuentan los intentos fallidos, para no molestar a quien entra bien.
+const limiteRegistro = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
+const limiteLoginFallido = crearLimitador({ max: 10, ventanaMs: 15 * 60 * 1000 });
+
+// Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
+// cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
+const SUSCRIPCION_TERMINADA = new Set(['canceled', 'incomplete_expired']);
+
+// Piezas que se están publicando en Instagram en este momento
+// ("negocioId/itemId"). Corta el doble clic: mientras la primera aprobación
+// espera a Instagram, una segunda no puede lanzar otra publicación.
+const publicando = new Set();
 
 // El acceso es self-service: cada negocio es su propia cuenta (email +
 // clave), no hay una clave maestra que vea todos los negocios juntos.
@@ -100,6 +119,7 @@ function negocioPublico(negocio) {
   resto.plan = negocio.plan || 'gratis';
   resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
+  resto.textosIADisponibles = textosIADisponibles(negocio);
   return resto;
 }
 
@@ -175,26 +195,44 @@ function elegirFoto(negocioId, categoria, itemId) {
   return disponibles[hashString(itemId) % disponibles.length];
 }
 
-// Cuota mensual de fotos generadas por IA (la trae el plan del negocio, ver
-// server/planes.js). Se resetea sola cada mes calendario — no hay cron ni
+// Cuotas mensuales de IA (fotos y textos, las trae el plan del negocio, ver
+// server/planes.js). Se resetean solas cada mes calendario — no hay cron ni
 // tarea de fondo, solo se compara contra el mes guardado la próxima vez que
-// se usa.
+// se usan.
 function mesActual() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function usoDelMes(negocio, campo) {
+  const uso = negocio[campo];
+  return uso && uso.mes === mesActual() ? uso.cantidad : 0;
+}
+
 function fotosIADisponibles(negocio) {
   const cuota = getPlan(negocio.plan).cuotaFotosIA;
   if (!cuota) return 0;
-  const uso = negocio.usoFotosIA && negocio.usoFotosIA.mes === mesActual() ? negocio.usoFotosIA.cantidad : 0;
-  return Math.max(0, cuota - uso);
+  return Math.max(0, cuota - usoDelMes(negocio, 'usoFotosIA'));
 }
 
-function registrarUsoFotoIA(negocio) {
+function textosIADisponibles(negocio) {
+  const cuota = getPlan(negocio.plan).cuotaTextosIA;
+  if (!cuota) return 0;
+  return Math.max(0, cuota - usoDelMes(negocio, 'usoTextosIA'));
+}
+
+// Registra el uso sobre el negocio recién leído de disco, no sobre el objeto
+// que el request cargó al empezar: entre medio hubo una llamada larga a una
+// API (Claude, imágenes, Instagram) y otro request — por ejemplo el webhook
+// de Stripe cambiando el plan — pudo guardar cambios que no hay que pisar.
+function registrarUsoIA(negocioId, campo, cantidad) {
+  if (!cantidad) return;
+  const fresco = store.getNegocio(negocioId);
+  if (!fresco) return;
   const mes = mesActual();
-  if (!negocio.usoFotosIA || negocio.usoFotosIA.mes !== mes) negocio.usoFotosIA = { mes, cantidad: 0 };
-  negocio.usoFotosIA.cantidad += 1;
+  if (!fresco[campo] || fresco[campo].mes !== mes) fresco[campo] = { mes, cantidad: 0 };
+  fresco[campo].cantidad += cantidad;
+  store.saveNegocio(fresco);
 }
 
 function buscarNegocioPorStripeCustomerId(customerId) {
@@ -223,8 +261,7 @@ async function intentarPublicarEnInstagram(req, negocio, item) {
       const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
       if (buffer) {
         store.guardarFotoIA(negocio.id, item.id, buffer);
-        registrarUsoFotoIA(negocio);
-        store.saveNegocio(negocio);
+        registrarUsoIA(negocio.id, 'usoFotosIA', 1);
       }
     }
     if (store.tieneFotoIA(negocio.id, item.id)) {
@@ -294,7 +331,20 @@ const server = http.createServer(async (req, res) => {
           const session = evento.data.object;
           const negocioId = session.client_reference_id || (session.metadata && session.metadata.negocioId);
           const planId = session.metadata && session.metadata.planId;
-          const negocio = negocioId && store.getNegocio(negocioId);
+          let negocio = negocioId && store.getNegocio(negocioId);
+          const anterior = negocio && negocio.stripe && negocio.stripe.subscriptionId;
+          if (negocio && planId && anterior && anterior !== session.subscription) {
+            // El negocio ya sigue otra suscripción. Dos casos:
+            // - Se pagaron dos Checkouts a la vez: la nueva está activa y la
+            //   anterior se cancela, o quedaría huérfana cobrando para siempre.
+            // - Stripe reintenta un evento viejo: la suscripción del evento ya
+            //   no está activa y se ignora, para no cancelar la vigente.
+            const nueva = await stripe.obtenerSuscripcion(session.subscription);
+            if (nueva.error) return sendJSON(res, 500, { error: 'No se pudo verificar la suscripción' }); // Stripe reintenta
+            if (SUSCRIPCION_TERMINADA.has(nueva.data.status)) return sendJSON(res, 200, { recibido: true });
+            await stripe.cancelarSuscripcion(anterior);
+            negocio = store.getNegocio(negocioId); // releído después de esperar a Stripe
+          }
           if (negocio && planId) {
             negocio.stripe = {
               customerId: session.customer,
@@ -307,7 +357,11 @@ const server = http.createServer(async (req, res) => {
         } else if (evento.type === 'customer.subscription.updated' || evento.type === 'customer.subscription.deleted') {
           const sub = evento.data.object;
           const negocio = buscarNegocioPorStripeSubscriptionId(sub.id) || buscarNegocioPorStripeCustomerId(sub.customer);
-          if (negocio) {
+          // Un evento de una suscripción que no es la que el negocio sigue (por
+          // ejemplo la anterior, recién cancelada) no debe cambiarle el plan.
+          const esOtraSuscripcion = negocio && negocio.stripe && negocio.stripe.subscriptionId
+            && negocio.stripe.subscriptionId !== sub.id;
+          if (negocio && !esOtraSuscripcion) {
             const activa = sub.status === 'active' || sub.status === 'trialing';
             const priceId = sub.items && sub.items.data && sub.items.data[0] && sub.items.data[0].price && sub.items.data[0].price.id;
             negocio.stripe = {
@@ -330,6 +384,12 @@ const server = http.createServer(async (req, res) => {
 
       // POST /api/auth/registro  { nombre, rubro, email, password, datos }
       if (parts[1] === 'auth' && parts[2] === 'registro' && parts.length === 3 && req.method === 'POST') {
+        const ip = ipCliente(req);
+        const esperaRegistro = limiteRegistro.esperaSegundos(ip);
+        if (esperaRegistro) {
+          return sendJSON(res, 429, { error: 'Demasiados registros desde esta conexión. Intenta más tarde.' }, { 'Retry-After': String(esperaRegistro) });
+        }
+        limiteRegistro.registrar(ip);
         const body = await readBody(req);
         const nombre = (body.nombre || '').trim();
         const rubro = String(body.rubro || '').trim();
@@ -368,10 +428,19 @@ const server = http.createServer(async (req, res) => {
 
       // POST /api/auth/login  { email, password }
       if (parts[1] === 'auth' && parts[2] === 'login' && parts.length === 3 && req.method === 'POST') {
+        const ip = ipCliente(req);
+        const esperaLogin = limiteLoginFallido.esperaSegundos(ip);
+        if (esperaLogin) {
+          return sendJSON(res, 429, { error: 'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.' }, { 'Retry-After': String(esperaLogin) });
+        }
         const body = await readBody(req);
         const negocio = buscarNegocioPorEmail(body.email);
         const claveOk = negocio && negocio.auth && auth.verifyPassword(String(body.password || ''), negocio.auth.salt, negocio.auth.hash);
-        if (!claveOk) return sendJSON(res, 401, { error: 'Email o clave incorrectos' });
+        if (!claveOk) {
+          limiteLoginFallido.registrar(ip);
+          return sendJSON(res, 401, { error: 'Email o clave incorrectos' });
+        }
+        limiteLoginFallido.reiniciar(ip);
         const cookie = auth.cookieSesion(req, auth.crearSesion(negocio.id));
         return sendJSON(res, 200, negocioPublico(negocio), { 'Set-Cookie': cookie });
       }
@@ -449,13 +518,42 @@ const server = http.createServer(async (req, res) => {
         }
 
         // POST /api/negocios/:id/checkout  { plan: 'pro' | 'estudio' }
-        // Crea una sesión de Stripe Checkout y devuelve su URL; el negocio
-        // pasa de plan al confirmar el pago, vía el webhook (no acá).
+        // Sin suscripción vigente: crea una sesión de Stripe Checkout y
+        // devuelve { url }; el negocio pasa de plan al confirmar el pago, vía
+        // el webhook (no acá). Con una suscripción vigente: cambia el precio
+        // de ESA suscripción (con prorrateo) y devuelve { negocio } — nunca
+        // abre un segundo Checkout, que crearía una suscripción paralela
+        // cobrando dos veces.
         if (parts[3] === 'checkout' && parts.length === 4 && req.method === 'POST') {
           const body = await readBody(req);
           const planId = body.plan;
           const priceId = stripePriceId(planId);
           if (!priceId) return sendJSON(res, 400, { error: 'Ese plan no está disponible todavía' });
+
+          const subscriptionId = negocio.stripe && negocio.stripe.subscriptionId;
+          if (subscriptionId) {
+            const actual = await stripe.obtenerSuscripcion(subscriptionId);
+            if (actual.error) return sendJSON(res, 502, { error: actual.error });
+            const sub = actual.data;
+            if (!SUSCRIPCION_TERMINADA.has(sub.status)) {
+              const item = sub.items && sub.items.data && sub.items.data[0];
+              if (!item) return sendJSON(res, 502, { error: 'La suscripción no tiene un plan asociado' });
+              if (item.price && item.price.id === priceId) {
+                return sendJSON(res, 409, { error: 'Ya tienes ese plan' });
+              }
+              const cambio = await stripe.cambiarPrecioSuscripcion({ subscriptionId, itemId: item.id, priceId, planId });
+              if (cambio.error) return sendJSON(res, 502, { error: cambio.error });
+
+              // El webhook customer.subscription.updated también lo confirma;
+              // esto solo evita que el panel muestre el plan viejo mientras llega.
+              const fresco = store.getNegocio(negocioId);
+              const activa = cambio.data.status === 'active' || cambio.data.status === 'trialing';
+              fresco.stripe = Object.assign({}, fresco.stripe, { estado: cambio.data.status });
+              if (activa) fresco.plan = planId;
+              store.saveNegocio(fresco);
+              return sendJSON(res, 200, { negocio: negocioPublico(fresco) });
+            }
+          }
 
           const base = urlBase(req);
           const resultado = await stripe.crearCheckoutSession({
@@ -532,44 +630,78 @@ const server = http.createServer(async (req, res) => {
         // POST /api/negocios/:id/generar  { cantidad }
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
           const body = await readBody(req);
-          const cantidad = Number(body.cantidad) || 6;
-          const actuales = store.getContenido(negocioId);
-          const nuevos = await generarBanco(negocio, cantidad, actuales.length);
-          const items = actuales.concat(nuevos);
+          let cantidad = Math.min(Math.max(Math.floor(Number(body.cantidad)) || 6, 1), MAX_PIEZAS_POR_GENERACION);
+          const usaIA = getPlan(negocio.plan).usaIA;
+          if (usaIA) {
+            const disponibles = textosIADisponibles(negocio);
+            if (disponibles <= 0) {
+              return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+            }
+            cantidad = Math.min(cantidad, disponibles);
+          }
+          const nuevos = await generarBanco(negocio, cantidad, store.getContenido(negocioId).length, { usarIA: usaIA });
+          registrarUsoIA(negocioId, 'usoTextosIA', nuevos.filter((n) => n.generadoConIA).length);
+          // Se relee la cola después de esperar a Claude, para no pisar lo que
+          // el negocio aprobó o editó mientras tanto.
+          const items = store.getContenido(negocioId).concat(nuevos);
           store.saveContenido(negocioId, items);
           return sendJSON(res, 200, items);
         }
 
         // Acciones sobre un item: /api/negocios/:id/contenido/:itemId/:accion
+        // Cada acción arma un cambio (`aplicar`) y al final se aplica sobre la
+        // cola recién leída de disco: las acciones que esperan a una API
+        // externa (Instagram, Claude, imágenes) pueden tardar varios segundos
+        // y no deben pisar lo que se hizo con otras piezas entre medio.
         if (parts[3] === 'contenido' && parts.length === 6) {
           const itemId = parts[4];
           const accion = parts[5];
-          const items = store.getContenido(negocioId);
-          const item = encontrarItem(items, itemId);
+          const item = encontrarItem(store.getContenido(negocioId), itemId);
           if (!item) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
 
+          let aplicar;
           if (accion === 'aprobar' && req.method === 'POST') {
-            item.status = 'aprobado';
-            item.instagram = await intentarPublicarEnInstagram(req, negocio, item);
+            const yaPublicada = !!(item.instagram && item.instagram.ok);
+            if (yaPublicada) {
+              // Ya está en Instagram (se aprobó, se deshizo y se vuelve a
+              // aprobar): se marca aprobada sin publicarla por segunda vez.
+              aplicar = (it) => { it.status = 'aprobado'; };
+            } else {
+              const clave = `${negocioId}/${itemId}`;
+              if (publicando.has(clave)) {
+                return sendJSON(res, 409, { error: 'Esta pieza ya se está publicando' });
+              }
+              publicando.add(clave);
+              let resultadoIG;
+              try {
+                resultadoIG = await intentarPublicarEnInstagram(req, negocio, item);
+              } finally {
+                publicando.delete(clave);
+              }
+              aplicar = (it) => { it.status = 'aprobado'; it.instagram = resultadoIG; };
+            }
           } else if (accion === 'rechazar' && req.method === 'POST') {
-            item.status = 'rechazado';
+            aplicar = (it) => { it.status = 'rechazado'; };
           } else if (accion === 'deshacer' && req.method === 'POST') {
-            item.status = 'pendiente';
+            aplicar = (it) => { it.status = 'pendiente'; };
           } else if (accion === 'editar' && req.method === 'PUT') {
             const body = await readBody(req);
-            if (typeof body.caption === 'string') {
-              item.variants[item.variantIndex] = body.caption;
-            }
+            if (typeof body.caption !== 'string') return sendJSON(res, 400, { error: 'Falta el texto' });
+            aplicar = (it) => { it.variants[it.variantIndex] = body.caption; };
           } else if (accion === 'regenerar' && req.method === 'POST') {
             if (item.variantIndex + 1 < item.variants.length) {
-              item.variantIndex += 1;
+              aplicar = (it) => { it.variantIndex = Math.min(it.variantIndex + 1, it.variants.length - 1); };
             } else {
-              const nueva = await generarVarianteConClaude(negocio, item.enfoqueId, item.variants);
+              const usaIA = getPlan(negocio.plan).usaIA;
+              if (usaIA && textosIADisponibles(negocio) <= 0) {
+                return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+              }
+              const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants) : null;
               if (nueva) {
-                item.variants.push(nueva);
-                item.variantIndex = item.variants.length - 1;
+                registrarUsoIA(negocioId, 'usoTextosIA', 1);
+                aplicar = (it) => { it.variants.push(nueva); it.variantIndex = it.variants.length - 1; };
               } else {
-                item.variantIndex = 0; // sin API key: vuelve a rotar desde la primera
+                aplicar = (it) => { it.variantIndex = 0; }; // sin IA: vuelve a rotar desde la primera
               }
             }
           } else if (accion === 'imagen' && req.method === 'POST') {
@@ -586,16 +718,19 @@ const server = http.createServer(async (req, res) => {
               const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
               if (!buffer) return sendJSON(res, 502, { error: 'No se pudo generar la imagen con IA' });
               store.guardarFotoIA(negocioId, item.id, buffer);
-              registrarUsoFotoIA(negocio);
-              store.saveNegocio(negocio);
+              registrarUsoIA(negocioId, 'usoFotosIA', 1);
             }
-            item.imagenIA = true;
+            aplicar = (it) => { it.imagenIA = true; };
           } else {
             return sendJSON(res, 400, { error: 'Acción o método inválido' });
           }
 
+          const items = store.getContenido(negocioId);
+          const fresco = encontrarItem(items, itemId);
+          if (!fresco) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+          aplicar(fresco);
           store.saveContenido(negocioId, items);
-          return sendJSON(res, 200, item);
+          return sendJSON(res, 200, fresco);
         }
       }
 
