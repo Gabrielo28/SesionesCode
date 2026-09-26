@@ -437,6 +437,88 @@
     aviso.style.color = reconectar ? 'var(--coral)' : '';
 
     renderPlan();
+    renderMeta();
+  }
+
+  // Conexión con Meta (Ads y competencia): token → elegir cuentas → conectar.
+  function renderMeta() {
+    const cont = $('#meta-card');
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    const c = negocioActual.metaConexion;
+    const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)</h2>
+      <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
+    if (!plan.ads && !plan.competencia) {
+      cont.innerHTML = cabecera + '<p class="sub">Para ver tu publicidad en Meta y seguir a tu competencia. Disponible en el plan Estudio.</p>';
+      return;
+    }
+    if (c && c.estado !== 'reconectar') {
+      cont.innerHTML = cabecera + `
+        <p class="sub">${c.cuentaNombre ? `Cuenta publicitaria: <b>${escapeHtml(c.cuentaNombre)}</b> (${escapeHtml(c.moneda || '')})` : 'Sin cuenta publicitaria'}<br>
+        ${c.igUsername ? `Instagram para competencia: <b>@${escapeHtml(c.igUsername)}</b>` : 'Sin cuenta de Instagram para competencia'}
+        ${c.venceEl ? `<br>El token vence el ${fechaCorta(c.venceEl)}.` : ''}</p>
+        <button type="button" class="btn-danger" data-meta="desconectar">Desconectar Meta</button>`;
+    } else {
+      cont.innerHTML = cabecera + `
+        <p class="sub">Pega un token de Meta con los permisos <code>ads_read</code>, <code>pages_show_list</code>, <code>pages_read_engagement</code> e <code>instagram_basic</code>. Lo más cómodo es un token de "usuario del sistema" de tu Business Manager, que no vence.</p>
+        <form class="config-form" data-meta="form">
+          <label>Token de acceso de Meta<input type="password" name="token" required></label>
+          <div data-meta="opciones" hidden>
+            <label>Cuenta publicitaria<select name="adAccountId"></select></label>
+            <label>Cuenta de Instagram (para competencia)<select name="igUserId"></select></label>
+          </div>
+          <p class="config-error" data-meta="error" hidden></p>
+          <div class="config-actions">
+            <button type="button" class="btn-ghost" data-meta="buscar">Buscar mis cuentas</button>
+            <button type="submit" class="btn-approve" data-meta="conectar" hidden>Conectar</button>
+          </div>
+        </form>`;
+    }
+  }
+
+  async function accionMeta(e) {
+    const cont = $('#meta-card');
+    const btn = e.target.closest('[data-meta]');
+    if (!btn) return;
+    const error = cont.querySelector('[data-meta="error"]');
+    const mostrarError = (m) => { if (error) { error.textContent = m; error.hidden = false; } else alert(m); };
+    if (btn.dataset.meta === 'desconectar') {
+      if (!confirm('¿Desconectar Meta? Se dejan de actualizar tus anuncios y competidores.')) return;
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, { method: 'DELETE' });
+      return renderMeta();
+    }
+    if (btn.dataset.meta === 'buscar') {
+      const form = cont.querySelector('[data-meta="form"]');
+      btn.disabled = true;
+      try {
+        const r = await api(`/api/negocios/${negocioActual.id}/meta/cuentas`, { method: 'POST', body: JSON.stringify({ accessToken: form.token.value }) });
+        form.adAccountId.innerHTML = '<option value="">(ninguna)</option>' + r.cuentasPublicitarias.map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nombre)} · ${escapeHtml(c.moneda)}${c.activa ? '' : ' (inactiva)'}</option>`).join('');
+        form.igUserId.innerHTML = '<option value="">(ninguna)</option>' + r.cuentasInstagram.map((c) => `<option value="${escapeHtml(c.id)}">@${escapeHtml(c.username)} · ${escapeHtml(c.pagina)}</option>`).join('');
+        if (r.cuentasPublicitarias.length) form.adAccountId.selectedIndex = 1;
+        if (r.cuentasInstagram.length) form.igUserId.selectedIndex = 1;
+        cont.querySelector('[data-meta="opciones"]').hidden = false;
+        cont.querySelector('[data-meta="conectar"]').hidden = false;
+        if (error) error.hidden = true;
+      } catch (err) {
+        mostrarError(err.mensaje || 'No se pudo leer tus cuentas.');
+      }
+      btn.disabled = false;
+    }
+  }
+
+  async function conectarMeta(e) {
+    e.preventDefault();
+    const form = e.target;
+    try {
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, {
+        method: 'PUT',
+        body: JSON.stringify({ accessToken: form.token.value, adAccountId: form.adAccountId.value || null, igUserId: form.igUserId.value || null }),
+      });
+      renderMeta();
+    } catch (err) {
+      const error = $('#meta-card [data-meta="error"]');
+      error.textContent = err.mensaje || 'No se pudo conectar.';
+      error.hidden = false;
+    }
   }
 
   function formatoCLP(monto) {
@@ -494,6 +576,26 @@
     `;
   }
 
+  // Resultados tiene pestañas: Instagram, Meta Ads, Google Ads y Competencia.
+  let tabResultados = 'instagram';
+  function renderResultados() {
+    document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.classList.toggle('activa', b.dataset.tab === tabResultados));
+    const ctx = { api, negocio: negocioActual, planes: planesInfo, irA: irAVista };
+    const cont = $('#resultados');
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    if (tabResultados === 'instagram') return window.RubrofyResultados.render(cont, ctx);
+    const clave = tabResultados === 'competencia' ? 'competencia' : 'ads';
+    if (!plan[clave]) {
+      cont.innerHTML = `<div class="res-aviso">${tabResultados === 'competencia'
+        ? 'Sigue a tus competidores en Instagram (seguidores, frecuencia e interacción) y compáralos contigo.'
+        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="config">Ver planes</button></div>`;
+      cont.querySelector('[data-ir]').addEventListener('click', () => irAVista('config'));
+      return;
+    }
+    if (tabResultados === 'competencia') return window.RubrofyCompetencia && window.RubrofyCompetencia.render(cont, ctx);
+    return window.RubrofyAds.render(cont, ctx, tabResultados);
+  }
+
   const VISTAS = ['cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
   function irAVista(vista) {
@@ -512,9 +614,7 @@
     else if (vistaActual === 'estilo') {
       window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
     }
-    else if (vistaActual === 'resultados') {
-      window.RubrofyResultados.render($('#resultados'), { api, negocio: negocioActual, planes: planesInfo, irA: irAVista });
-    }
+    else if (vistaActual === 'resultados') renderResultados();
   }
 
   function leerArchivoComoBase64(file) {
@@ -679,6 +779,16 @@
     $('#btn-logout').addEventListener('click', () => {
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
     });
+
+    // conexión con Meta (delegación: el contenido de la tarjeta se redibuja)
+    $('#meta-card').addEventListener('click', (e) => { accionMeta(e).catch((err) => alert(err.mensaje || err.message)); });
+    $('#meta-card').addEventListener('submit', conectarMeta);
+
+    // pestañas de Resultados
+    document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.addEventListener('click', () => {
+      tabResultados = b.dataset.tab;
+      renderResultados();
+    }));
 
     // navegación entre vistas
     document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {

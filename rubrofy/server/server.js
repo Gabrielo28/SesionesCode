@@ -15,6 +15,7 @@ const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
 const analitica = require('./analitica');
 const informe = require('./informe');
+const meta = require('./meta');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -143,7 +144,8 @@ function sendJSON(res, status, data, extraHeaders) {
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
 // los IDs internos de Stripe).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram, stripe: stripeInfo, ...resto } = negocio;
+  const { auth: _auth, instagram, stripe: stripeInfo, meta: metaInfo, ...resto } = negocio;
+  resto.metaConexion = meta.publicoMeta(metaInfo);
   resto.instagramConectado = !!(instagram && instagram.accessToken);
   // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
   // programadas esperan hasta que se reconecte).
@@ -382,9 +384,23 @@ function datosResultados(negocio, dias) {
 }
 
 const sincronizador = analitica.crearSincronizador({
-  debeSincronizar: (negocio, fuente) => fuente === 'instagram'
-    && getPlan(negocio.plan).analitica
-    && !!(negocio.instagram && negocio.instagram.accessToken && negocio.instagram.estado !== 'reconectar'),
+  debeSincronizar: (negocio, fuente) => {
+    const plan = getPlan(negocio.plan);
+    if (fuente === 'instagram') {
+      return plan.analitica && !!(negocio.instagram && negocio.instagram.accessToken && negocio.instagram.estado !== 'reconectar');
+    }
+    if (fuente === 'meta_ads') {
+      return plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
+    }
+    return false;
+  },
+  fuentes: { meta_ads: (id) => meta.sincronizarAds(id) },
+});
+
+// Sección de Meta Ads en el informe mensual (si el plan la incluye y hay cuenta).
+informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
+  if (!getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
+  return Object.assign(meta.resumenAds(negocio.id, desde, hasta), { moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre });
 });
 
 const publicador = crearPublicador({
@@ -796,6 +812,85 @@ const server = http.createServer(async (req, res) => {
           const items = store.getContenido(negocioId).concat(nuevos);
           store.saveContenido(negocioId, items);
           return sendJSON(res, 200, items);
+        }
+
+        // Conexión con Meta (lado Facebook) para Meta Ads y competencia:
+        //   POST   /api/negocios/:id/meta/cuentas { accessToken } — qué cuentas puede elegir
+        //   PUT    /api/negocios/:id/meta { accessToken, adAccountId, igUserId }
+        //   DELETE /api/negocios/:id/meta
+        if (parts[3] === 'meta') {
+          const plan = getPlan(negocio.plan);
+          if (!plan.ads && !plan.competencia) {
+            return sendJSON(res, 403, { error: 'Meta Ads y competencia están disponibles en el plan Estudio' });
+          }
+          if (parts[4] === 'cuentas' && parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req);
+            const token = String(body.accessToken || '').trim();
+            if (!token) return sendJSON(res, 400, { error: 'Falta el token de Meta' });
+            try {
+              return sendJSON(res, 200, await meta.opcionesDeCuenta(token));
+            } catch (err) {
+              return sendJSON(res, 400, { error: err.tipo === 'token' ? 'Meta rechazó el token: revisa que esté completo y vigente.' : err.message });
+            }
+          }
+          if (parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            let token = String(body.accessToken || '').trim();
+            if (!token) return sendJSON(res, 400, { error: 'Falta el token de Meta' });
+            let opciones;
+            try {
+              opciones = await meta.opcionesDeCuenta(token);
+            } catch (err) {
+              return sendJSON(res, 400, { error: 'Meta rechazó el token: revisa que esté completo y vigente.' });
+            }
+            const cuenta = opciones.cuentasPublicitarias.find((c) => c.id === body.adAccountId) || null;
+            const ig = opciones.cuentasInstagram.find((c) => c.id === body.igUserId) || null;
+            if (body.adAccountId && !cuenta) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta publicitaria elegida' });
+            if (body.igUserId && !ig) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta de Instagram elegida' });
+            if (!cuenta && !ig) return sendJSON(res, 400, { error: 'Elige una cuenta publicitaria o una cuenta de Instagram' });
+            const largo = await meta.tokenLargo(token);
+            if (largo) token = largo.accessToken;
+            const fresco = store.getNegocio(negocioId);
+            fresco.meta = {
+              accessToken: token,
+              adAccountId: cuenta ? cuenta.id : null, cuentaNombre: cuenta ? cuenta.nombre : null, moneda: cuenta ? cuenta.moneda : null,
+              igUserId: ig ? ig.id : null, igUsername: ig ? ig.username : null,
+              venceEl: largo && largo.expiraEnSeg ? new Date(Date.now() + largo.expiraEnSeg * 1000).toISOString() : null,
+              conectadoEl: new Date().toISOString(),
+            };
+            store.saveNegocio(fresco);
+            if (fresco.meta.adAccountId && plan.ads) await meta.sincronizarAds(negocioId);
+            return sendJSON(res, 200, negocioPublico(store.getNegocio(negocioId)));
+          }
+          if (parts.length === 4 && req.method === 'DELETE') {
+            const fresco = store.getNegocio(negocioId);
+            delete fresco.meta;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
+        }
+
+        // GET  /api/negocios/:id/ads?dias=30 — Meta Ads del período (solo lectura)
+        // POST /api/negocios/:id/ads/sincronizar
+        if (parts[3] === 'ads') {
+          if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Meta Ads está disponible en el plan Estudio' });
+          if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Configuración' });
+          if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
+            const r = await sincronizador.sincronizarAhora(negocioId, 'meta_ads');
+            if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
+          } else if (!(parts.length === 4 && req.method === 'GET')) {
+            return sendJSON(res, 400, { error: 'Acción inválida' });
+          }
+          const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+          const hasta = analitica.fechaLocal(new Date());
+          const n = store.getNegocio(negocioId);
+          return sendJSON(res, 200, {
+            dias,
+            conexion: meta.publicoMeta(n.meta),
+            sync: analitica.estadoSync(negocioId, 'meta_ads'),
+            resumen: meta.resumenAds(negocioId, analitica.sumarDias(hasta, -(dias - 1)), hasta),
+          });
         }
 
         // "Mi estilo": ejemplos del contenido que ya hace el negocio y la guía

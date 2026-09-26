@@ -185,6 +185,28 @@ Requiere que el token de Instagram tenga el permiso
 la publicación sigue funcionando igual. Una sincronización usa unas 30 a 45
 llamadas (el límite de Meta es ~200 por hora por cuenta).
 
+## Meta Ads (server/meta.js)
+
+En el plan Estudio, Resultados → **Meta Ads** muestra la inversión, los
+resultados (compras, formularios y conversaciones iniciadas por WhatsApp,
+Messenger o Instagram Direct), el costo por resultado, CTR, CPC, ROAS y una
+tabla por campaña, también como sección del informe mensual. Es **solo
+lectura**: Rubrofy no crea ni modifica campañas. Si hay inversión y ningún
+resultado, avisa que puede faltar configurar las conversiones.
+
+**Conexión con Meta** (Configuración): es distinta de la de Instagram y
+sirve también para la competencia. Se pega un token de Meta con los
+permisos `ads_read`, `pages_show_list`, `pages_read_engagement` e
+`instagram_basic`; Rubrofy lista las cuentas publicitarias y las cuentas de
+Instagram a las que tiene acceso y el negocio elige. Lo más práctico es un
+token de **usuario del sistema** de Business Manager, que no vence. Con
+`META_APP_ID` y `META_APP_SECRET` configurados, un token de usuario se
+canjea por uno de larga duración (~60 días). Si Meta lo rechaza, la
+conexión queda en "Reconectar" sin afectar la publicación en Instagram.
+
+Se sincroniza cada 12 h: la primera vez 30 días, después los últimos 3
+(Meta sigue atribuyendo conversiones a días anteriores).
+
 ## Mi estilo (server/estilo.js)
 
 El negocio le muestra a Rubrofy el contenido que ya hace para que la IA
@@ -352,6 +374,7 @@ server/
   aprendizaje.js Lo que la IA aprende de cada negocio (aprobaciones, correcciones, resultados)
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
+  meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco

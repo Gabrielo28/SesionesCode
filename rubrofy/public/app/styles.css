@@ -377,3 +377,15 @@ a { color: var(--amber); }
 .estilo-ref-pie { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
 .card-idea { margin: 0; font-size: 11.5px; color: var(--ink-dim); border-left: 2px solid var(--border); padding-left: 8px; }
 .card-idea b { color: var(--ink-faint); font-weight: 600; }
+
+/* --- pestañas y tablas de publicidad --- */
+.pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
+.pestanas button { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--ink-dim); padding: 8px 14px; font-size: 13px; margin-bottom: -1px; }
+.pestanas button.activa { color: var(--ink); border-bottom-color: var(--amber); }
+.tabla-scroll { overflow-x: auto; }
+.tabla-ads { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.tabla-ads th, .tabla-ads td { text-align: right; padding: 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.tabla-ads th:first-child, .tabla-ads td:first-child { text-align: left; white-space: normal; }
+.tabla-ads th { color: var(--ink-faint); font-weight: 500; }
+.tabla-sub { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); }
+#meta-card code { font-size: 11px; color: var(--ink); }

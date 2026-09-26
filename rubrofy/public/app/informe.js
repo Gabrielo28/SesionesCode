@@ -235,6 +235,41 @@
     cargar();
   }
 
+  // --- secciones de publicidad (Meta Ads y Google Ads comparten forma) ---
+  function dinero(v, moneda) {
+    if (v == null) return '–';
+    try {
+      return Number(v).toLocaleString('es-CL', { style: 'currency', currency: moneda || 'CLP', maximumFractionDigits: (moneda || 'CLP') === 'CLP' ? 0 : 2 });
+    } catch (err) {
+      return Math.round(v).toLocaleString('es-CL');
+    }
+  }
+  function seccionAds(titulo, textoResultados) {
+    return (datos) => {
+      const div = document.createElement('section');
+      div.className = 'card';
+      const t = datos.total;
+      const m = datos.moneda;
+      const pct = (v) => (v == null ? '–' : (v * 100).toLocaleString('es-CL', { maximumFractionDigits: 2 }) + '%');
+      div.innerHTML = `
+        <h2>${titulo}${datos.cuenta ? ` · ${e(datos.cuenta)}` : ''}</h2>
+        <div class="kpis">
+          ${kpi('Inversión', dinero(t.gasto, m), n(t.impresiones) + ' impresiones')}
+          ${kpi('Resultados', n(t.resultados), textoResultados)}
+          ${kpi('Costo por resultado', dinero(t.costoPorResultado, m), '')}
+          ${kpi('Clics', n(t.clics), 'CTR ' + pct(t.ctr))}
+          ${kpi('Retorno (ROAS)', t.roas == null ? '–' : t.roas.toLocaleString('es-CL', { maximumFractionDigits: 2 }) + '×', t.valorCompras ? dinero(t.valorCompras, m) + ' en ventas' : '')}
+        </div>
+        ${datos.campanas.length ? `<table class="tabla" style="margin-top:12px">
+          <thead><tr><th>Campaña</th><th>Inversión</th><th>Clics</th><th>Resultados</th><th>Costo / resultado</th></tr></thead>
+          <tbody>${datos.campanas.slice(0, 8).map((c) => `<tr><td>${e(c.nombre || c.id)}</td><td>${dinero(c.gasto, m)}</td><td>${n(c.clics)}</td><td>${n(c.resultados)}</td><td>${dinero(c.costoPorResultado, m)}</td></tr>`).join('')}</tbody>
+        </table>` : '<p class="vacio">Sin campañas con actividad este mes.</p>'}`;
+      return div;
+    };
+  }
+  secciones.metaAds = seccionAds('Publicidad en Meta', 'compras, formularios y conversaciones');
+  secciones.googleAds = seccionAds('Publicidad en Google', 'conversiones');
+
   window.RubrofyInforme = { secciones, kpi, variacionHTML };
   iniciar();
 })();
