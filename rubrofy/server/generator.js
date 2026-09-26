@@ -9,6 +9,7 @@
 const { fechaProgramada, etiquetaFecha } = require('./programacion');
 const aprendizaje = require('./aprendizaje');
 const estilo = require('./estilo');
+const guardian = require('./guardian');
 
 const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
 
@@ -199,6 +200,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       hueFrom: p.hue[0],
       hueTo: p.hue[1],
       variants: [caption],
+      alertas: guardian.revisar(caption, negocio), // qué verificar antes de aprobar
       generadoConIA: !!generado, // para descontar de la cuota mensual de textos con IA
     };
   });

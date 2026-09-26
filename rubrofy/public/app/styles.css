@@ -398,3 +398,10 @@ a { color: var(--amber); }
 .comp-error { color: var(--coral); }
 .tabla-ads .sube { color: var(--green); }
 .tabla-ads .baja { color: var(--coral); }
+
+/* --- guardián de marca: qué verificar antes de aprobar --- */
+.card-alertas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.card-alertas li { font-size: 11px; line-height: 1.4; color: var(--ink); background: rgba(255, 172, 43, 0.1); border: 1px solid rgba(255, 172, 43, 0.35); border-radius: 6px; padding: 4px 7px; }
+.card-alertas li.alerta-promesa { background: rgba(255, 90, 60, 0.1); border-color: rgba(255, 90, 60, 0.45); }
+.card-alertas li span { color: var(--amber); }
+.card-alertas li.alerta-promesa span { color: var(--coral); }

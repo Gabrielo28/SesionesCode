@@ -132,3 +132,17 @@ footer { border-top: 1px solid var(--border); padding: 32px 0; }
   .preview .body { grid-template-columns: 1fr; }
   section { padding: 60px 0; }
 }
+
+/* --- precios --- */
+.planes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; align-items: stretch; }
+.plan { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; }
+.plan.destacado { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber) inset; }
+.plan-etiqueta { position: absolute; top: -11px; left: 24px; background: var(--amber); color: #17110a; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+.plan h3 { margin: 0; font-size: 18px; }
+.plan-precio { font-size: 32px; font-weight: 800; }
+.plan-precio span { font-size: 14px; font-weight: 500; color: var(--ink-dim); }
+.plan ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.plan li { font-size: 13.5px; color: var(--ink-dim); padding-left: 22px; position: relative; line-height: 1.45; }
+.plan li::before { content: '✓'; position: absolute; left: 0; color: var(--amber); font-weight: 700; }
+.plan .btn { text-align: center; }
+.planes-cargando { text-align: center; color: var(--ink-faint); }

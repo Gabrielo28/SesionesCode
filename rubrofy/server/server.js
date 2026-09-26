@@ -18,6 +18,7 @@ const informe = require('./informe');
 const meta = require('./meta');
 const google = require('./google');
 const competencia = require('./competencia');
+const guardian = require('./guardian');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -695,6 +696,13 @@ const server = http.createServer(async (req, res) => {
           };
           if (body.estiloImagen) negocio.estiloImagen = body.estiloImagen;
           store.saveNegocio(negocio);
+          // Con los datos nuevos (precio, promo...) cambia qué hay que
+          // verificar en las piezas que todavía no salen.
+          const piezas = store.getContenido(negocioId);
+          for (const it of piezas) {
+            if (!(it.publicacion && it.publicacion.estado === 'publicada')) guardian.aplicar(it, negocio);
+          }
+          store.saveContenido(negocioId, piezas);
           return sendJSON(res, 200, negocioPublico(negocio));
         }
 
@@ -1338,6 +1346,7 @@ const server = http.createServer(async (req, res) => {
               if (!it.editado) it.textoIA = anterior;
               it.editado = true;
               it.variants[it.variantIndex] = body.caption;
+              guardian.aplicar(it, negocio);
             };
           } else if (accion === 'regenerar' && req.method === 'POST') {
             if (item.variantIndex + 1 < item.variants.length) {
@@ -1358,7 +1367,7 @@ const server = http.createServer(async (req, res) => {
             // Otra versión es un texto nuevo de la IA: la corrección anterior
             // era sobre otro texto y ya no cuenta como edición de este.
             const cambiarVersion = aplicar;
-            aplicar = (it) => { cambiarVersion(it); delete it.editado; delete it.textoIA; };
+            aplicar = (it) => { cambiarVersion(it); delete it.editado; delete it.textoIA; guardian.aplicar(it, negocio); };
           } else if (accion === 'imagen' && req.method === 'POST') {
             if (!getPlan(negocio.plan).cuotaFotosIA) {
               return sendJSON(res, 403, { error: 'Las fotos generadas por IA están disponibles en el plan Estudio' });

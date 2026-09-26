@@ -287,6 +287,27 @@ interacción, lo publicado con Rubrofy y cuánto se aprobó sin cambios.
   cliente de una agencia o un socio).
 - Otros módulos agregan sus secciones con `informe.registrarSeccion()`.
 
+## Guardián de marca (server/guardian.js)
+
+Cada pieza llega a la cola con una lista de **qué verificar** antes de
+aprobarla (se ve en la tarjeta; no bloquea nada):
+
+- promesas de salud o de resultados ("garantizado", "cura", "sin dolor",
+  "resultados inmediatos"...), delicadas en clínicas, estética o
+  suplementos;
+- precios, porcentajes de descuento o fechas que no están en los datos del
+  negocio (la IA pudo inventarlos);
+- frases de plantilla que suenan a texto genérico de IA.
+
+Se recalcula al editar, al pedir otra versión y al cambiar los datos del
+negocio. Sin IA ni dependencias: funciona en todos los planes.
+
+## Sitio público
+
+La sección **Precios** del sitio lee `/api/planes`, la misma tabla que usa
+el cobro (`server/planes.js`): cambiar un precio o una cuota ahí actualiza
+el sitio, el panel y Stripe a la vez.
+
 ## Cómo publica (server/publicador.js)
 
 Un proceso dentro del mismo servidor revisa cada 30 segundos las piezas
@@ -418,6 +439,7 @@ server/
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
   google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
   competencia.js Seguimiento de competidores en Instagram (Business Discovery)
+  guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco

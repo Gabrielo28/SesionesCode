@@ -123,6 +123,26 @@
           <h3>Configurable para tu rubro</h3>
           <p>El tono, el calendario y los enfoques de contenido se adaptan al tipo de negocio que tengas.</p>
         </div>
+        <div class="feature">
+          <div class="icon">↻</div>
+          <h3>Se publica solo, a su hora</h3>
+          <p>Lo que apruebas sale a Instagram en su fecha: posts, carruseles, reels e historias. Si algo falla, reintenta y te avisa.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">★</div>
+          <h3>Aprende tu estilo</h3>
+          <p>Muéstrale lo que ya publicas y cómo corriges sus textos: cada mes escribe más como tú y sugiere qué mostrar en cada pieza.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">▲</div>
+          <h3>Resultados e informe mensual</h3>
+          <p>Qué te funciona, cuándo publicar y un informe listo para compartir, con conclusiones en palabras simples.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">!</div>
+          <h3>Revisa antes de que publiques</h3>
+          <p>Te avisa si un texto promete algo delicado o menciona precios y descuentos que no están en tus datos.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -144,6 +164,19 @@
   </section>
 
   <section id="precios">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Precios</div>
+        <h2>Empieza gratis, sube cuando lo necesites</h2>
+        <p>Precios mensuales por negocio, en pesos chilenos. Sin permanencia: cambias o cancelas cuando quieras.</p>
+      </div>
+      <div class="planes" id="planes">
+        <p class="planes-cargando">Cargando planes…</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="empezar">
     <div class="wrap cta-final">
       <div class="box">
         <h2>Prueba Rubrofy con tu propio negocio</h2>
@@ -162,5 +195,34 @@
       </div>
     </div>
   </footer>
+  <script>
+    // Los precios y lo que incluye cada plan salen de /api/planes (la misma
+    // tabla que usa el cobro), para que el sitio nunca quede desactualizado.
+    (function () {
+      var DETALLES = {
+        gratis: ['Cola de aprobación y calendario', 'Publicación programada en Instagram', 'Posts, carruseles, reels e historias', 'Mi estilo: tu mezcla de formatos', 'Textos con plantillas'],
+        pro: ['Todo lo del plan Gratis', 'La IA escribe con tu voz y aprende de tus correcciones', 'Guía de estilo aprendida de tu contenido', 'Resultados de Instagram y mejor horario', 'Informe mensual para compartir'],
+        estudio: ['Todo lo del plan Pro', 'Fotos generadas con IA', 'Meta Ads y Google Ads en un solo lugar', 'Seguimiento de hasta 5 competidores', 'Todo en el informe mensual'],
+      };
+      function precio(p) { return p.precioClp ? '$' + p.precioClp.toLocaleString('es-CL') + '<span>/mes</span>' : '$0'; }
+      function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      fetch('/api/planes').then(function (r) { return r.json(); }).then(function (planes) {
+        document.getElementById('planes').innerHTML = planes.map(function (p) {
+          var extra = [];
+          if (p.cuotaTextosIA) extra.push(p.cuotaTextosIA + ' piezas con IA al mes');
+          if (p.cuotaFotosIA) extra.push(p.cuotaFotosIA + ' fotos con IA al mes');
+          var items = (DETALLES[p.id] || []).concat(extra);
+          return '<div class="plan' + (p.id === 'pro' ? ' destacado' : '') + '">' +
+            (p.id === 'pro' ? '<span class="plan-etiqueta">Recomendado</span>' : '') +
+            '<h3>' + esc(p.nombre) + '</h3><div class="plan-precio">' + precio(p) + '</div>' +
+            '<ul>' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
+            '<a class="btn ' + (p.id === 'pro' ? 'btn-primary' : 'btn-ghost') + '" href="/registro.html">' + (p.precioClp ? 'Empezar con ' + esc(p.nombre) : 'Crear cuenta gratis') + '</a>' +
+            '</div>';
+        }).join('');
+      }).catch(function () {
+        document.getElementById('planes').innerHTML = '<p class="planes-cargando">No se pudieron cargar los planes. <a href="/registro.html">Crea tu cuenta gratis</a> y míralos en tu panel.</p>';
+      });
+    })();
+  </script>
 </body>
 </html>

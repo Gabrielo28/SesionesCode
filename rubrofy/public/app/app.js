@@ -257,6 +257,7 @@
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
+          ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}</ul>` : ''}
           ${isPending ? `
             <div class="card-actions">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
