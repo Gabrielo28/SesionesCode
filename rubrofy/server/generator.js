@@ -7,6 +7,7 @@
 // usa plantillas genéricas con los datos del negocio.
 
 const { fechaProgramada, etiquetaFecha } = require('./programacion');
+const aprendizaje = require('./aprendizaje');
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
@@ -54,7 +55,7 @@ function extraerJSONArray(texto) {
 // Pide a Claude titulares + captions reales para un lote de piezas nuevas,
 // en una sola llamada. Devuelve null si no hay API key o si algo falla — el
 // llamador cae de vuelta a las plantillas genéricas.
-async function generarLoteConClaude(negocio, enfoquesDelLote) {
+async function generarLoteConClaude(negocio, enfoquesDelLote, ctx) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
@@ -66,7 +67,8 @@ async function generarLoteConClaude(negocio, enfoquesDelLote) {
   const prompt =
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Datos reales del negocio, úsalos solo si son útiles y nunca inventes ` +
-    `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.\n\n` +
+    `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.` +
+    (ctx ? aprendizaje.textoParaPrompt(ctx) : '') + '\n\n' +
     `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por cada enfoque, en este orden:\n${lista}\n\n` +
     `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
     `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación"}]\n` +
@@ -108,7 +110,17 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
   const estrategia = negocio.estrategia;
   if (!estrategia) throw new Error('El negocio no tiene una estrategia de contenido');
 
-  const enfoques = estrategia.enfoques;
+  // Lo aprendido del negocio (aprobaciones, correcciones y resultados reales):
+  // el enfoque que mejor funciona sale más seguido y los posts van a la hora
+  // en que mejor le va a esta cuenta, si hay datos suficientes para saberlo.
+  let ctx = null;
+  try {
+    ctx = aprendizaje.contexto(negocio);
+  } catch (err) {
+    ctx = null; // sin datos todavía: se genera como siempre
+  }
+  const enfoques = ordenarEnfoques(estrategia.enfoques, ctx);
+  const horaPost = (ctx && ctx.horario && ctx.horario.hora) || '09:00';
   const plan = [];
 
   for (let i = 0; i < cantidad; i++) {
@@ -117,7 +129,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     const esHistoria = idx % 3 === 2;
     // Fecha real en la hora del negocio (ver server/programacion.js): es la
     // que usa el publicador para publicar la pieza una vez aprobada.
-    const publicarEl = fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : '09:00');
+    const publicarEl = fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : horaPost);
     plan.push({
       idx,
       enfoque,
@@ -128,7 +140,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     });
   }
 
-  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan.map((p) => p.enfoque));
+  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan.map((p) => p.enfoque), ctx);
 
   return plan.map((p, i) => {
     const generado = lote && lote[i];
@@ -155,6 +167,17 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
   });
 }
 
+// Con un enfoque ganador claro, la rotación lo repite: [ganador, A, B,
+// ganador, C, ...]. Sin datos, la rotación es la de siempre.
+function ordenarEnfoques(enfoques, ctx) {
+  const mejor = ctx && ctx.mejoresEnfoques && ctx.mejoresEnfoques[0];
+  const ganador = mejor && enfoques.find((e) => e.label === mejor);
+  if (!ganador || enfoques.length < 3) return enfoques;
+  const resto = enfoques.filter((e) => e !== ganador);
+  const mitad = Math.ceil(resto.length / 2);
+  return [ganador, ...resto.slice(0, mitad), ganador, ...resto.slice(mitad)];
+}
+
 // Pide a Claude una variante nueva para "Otra versión" cuando ya no quedan
 // variantes precalculadas. Devuelve null si no hay API key o si algo falla —
 // el llamador debe tener un plan B (rotar de nuevo desde el principio).
@@ -169,7 +192,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas) {
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
-    `${JSON.stringify(negocio.datos || {})}. No repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
+    `${JSON.stringify(negocio.datos || {})}.` + aprendizajeSeguro(negocio) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
 
   try {
@@ -192,6 +215,14 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas) {
     return text ? text.trim() : null;
   } catch (err) {
     return null;
+  }
+}
+
+function aprendizajeSeguro(negocio) {
+  try {
+    return aprendizaje.textoParaPrompt(aprendizaje.contexto(negocio));
+  } catch (err) {
+    return '';
   }
 }
 

@@ -493,12 +493,24 @@
     `;
   }
 
+  const VISTAS = ['cola', 'calendario', 'fotos', 'resultados', 'config'];
+
+  function irAVista(vista) {
+    vistaActual = vista;
+    document.querySelectorAll('.rail-btn[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === vista));
+    for (const v of VISTAS) $('#view-' + v).hidden = v !== vista;
+    render();
+  }
+
   function render() {
     renderStats();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
     else if (vistaActual === 'config') renderConfig();
+    else if (vistaActual === 'resultados') {
+      window.RubrofyResultados.render($('#resultados'), { api, negocio: negocioActual, planes: planesInfo, irA: irAVista });
+    }
   }
 
   function leerArchivoComoBase64(file) {
@@ -666,16 +678,7 @@
 
     // navegación entre vistas
     document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.rail-btn[data-view]').forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        vistaActual = btn.dataset.view;
-        $('#view-cola').hidden = vistaActual !== 'cola';
-        $('#view-calendario').hidden = vistaActual !== 'calendario';
-        $('#view-fotos').hidden = vistaActual !== 'fotos';
-        $('#view-config').hidden = vistaActual !== 'config';
-        render();
-      });
+      btn.addEventListener('click', () => irAVista(btn.dataset.view));
     });
 
     // fotos: subir y borrar (delegación)

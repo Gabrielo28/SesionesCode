@@ -4,6 +4,9 @@
 // variable de entorno porque se crea en la cuenta de Stripe de cada
 // despliegue (ver scripts/setup-stripe.js) — nunca se hardcodea acá.
 
+// analitica: Resultados e informe mensual. ads / competencia: Meta Ads,
+// Google Ads y seguimiento de competidores (pensados para un futuro plan
+// Agencia; mientras no exista, van en Estudio).
 // cuotaTextosIA: cuántas piezas de texto puede escribir Claude por mes
 // (generar + "otra versión"). Es un techo contra el abuso, no un límite que
 // un negocio normal debiera tocar: ~150 piezas son varias veces lo que
@@ -16,6 +19,9 @@ const PLANES = {
     usaIA: false,
     cuotaTextosIA: 0,
     cuotaFotosIA: 0,
+    analitica: false,
+    ads: false,
+    competencia: false,
     stripePriceEnv: null,
   },
   pro: {
@@ -25,6 +31,9 @@ const PLANES = {
     usaIA: true,
     cuotaTextosIA: 150,
     cuotaFotosIA: 0,
+    analitica: true,
+    ads: false,
+    competencia: false,
     stripePriceEnv: 'STRIPE_PRICE_PRO',
   },
   estudio: {
@@ -34,6 +43,9 @@ const PLANES = {
     usaIA: true,
     cuotaTextosIA: 300,
     cuotaFotosIA: 20,
+    analitica: true,
+    ads: true,
+    competencia: true,
     stripePriceEnv: 'STRIPE_PRICE_ESTUDIO',
   },
 };
@@ -52,6 +64,9 @@ function listPlanesPublico() {
     usaIA: p.usaIA,
     cuotaTextosIA: p.cuotaTextosIA,
     cuotaFotosIA: p.cuotaFotosIA,
+    analitica: p.analitica,
+    ads: p.ads,
+    competencia: p.competencia,
     disponible: p.id === 'gratis' || !!(p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));
 }

@@ -12,6 +12,7 @@ const { generarEstrategia } = require('./estrategia');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
 const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
+const analitica = require('./analitica');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -346,6 +347,43 @@ async function prepararPublicacion(negocio, item) {
     generadaPorIA,
   };
 }
+
+// Qué tanto aprueba el dueño lo que propone la IA sin tocarlo: la métrica
+// que dice si Rubrofy está aprendiendo su voz.
+function estadisticasAprobacion(negocioId, desdeISO, hastaISO) {
+  const decididas = store.getContenido(negocioId).filter((i) => i.decididoEl
+    && i.decididoEl >= desdeISO && i.decididoEl < hastaISO && (i.status === 'aprobado' || i.status === 'rechazado'));
+  const aprobadas = decididas.filter((i) => i.status === 'aprobado');
+  const sinCambios = aprobadas.filter((i) => !i.editado).length;
+  return {
+    aprobadas: aprobadas.length,
+    sinCambios,
+    editadas: aprobadas.length - sinCambios,
+    rechazadas: decididas.length - aprobadas.length,
+    porcentajeSinCambios: aprobadas.length ? Math.round((sinCambios / aprobadas.length) * 100) : null,
+  };
+}
+
+function datosResultados(negocio, dias) {
+  const hasta = analitica.fechaLocal(new Date());
+  const desde = analitica.sumarDias(hasta, -(dias - 1));
+  const [a, m, d] = desde.split('-').map(Number);
+  const desdeISO = programacion.isoDesdeZona(a, m, d, 0, 0);
+  return {
+    dias,
+    instagramConectado: !!(negocio.instagram && negocio.instagram.accessToken),
+    sync: analitica.estadoSync(negocio.id, 'instagram'),
+    resumen: analitica.resumen(negocio.id, desde, hasta, negocio.estrategia),
+    horario: analitica.mejorHorario(negocio.id),
+    aprobacion: estadisticasAprobacion(negocio.id, desdeISO, new Date(Date.now() + 1000).toISOString()),
+  };
+}
+
+const sincronizador = analitica.crearSincronizador({
+  debeSincronizar: (negocio, fuente) => fuente === 'instagram'
+    && getPlan(negocio.plan).analitica
+    && !!(negocio.instagram && negocio.instagram.accessToken && negocio.instagram.estado !== 'reconectar'),
+});
 
 const publicador = crearPublicador({
   prepararPublicacion,
@@ -744,6 +782,27 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, items);
         }
 
+        // GET /api/negocios/:id/analitica?dias=30 — Resultados del período.
+        // POST /api/negocios/:id/analitica/sincronizar — actualizar ahora.
+        if (parts[3] === 'analitica') {
+          if (!getPlan(negocio.plan).analitica) {
+            return sendJSON(res, 403, { error: 'Resultados está disponible en los planes Pro y Estudio' });
+          }
+          if (parts.length === 4 && req.method === 'GET') {
+            const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+            return sendJSON(res, 200, datosResultados(negocio, dias));
+          }
+          if (parts[4] === 'sincronizar' && parts.length === 5 && req.method === 'POST') {
+            if (!negocio.instagram || !negocio.instagram.accessToken) {
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para ver tus resultados' });
+            }
+            const r = await sincronizador.sincronizarAhora(negocioId);
+            if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
+            return sendJSON(res, 200, datosResultados(store.getNegocio(negocioId), 30));
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
+        }
+
         // POST /api/negocios/:id/contenido/:itemId/video — video de un Reel o
         // historia, como archivo crudo (video/mp4 o video/quicktime). Se
         // escribe por streaming a un archivo temporal y se corta si pasa del
@@ -860,6 +919,7 @@ const server = http.createServer(async (req, res) => {
               aplicar = (it) => {
                 const cuando = programacion.asegurarPublicarEl(it);
                 it.status = 'aprobado';
+                it.decididoEl = new Date().toISOString();
                 const yaEnCola = it.publicacion && ['programada', 'publicando'].includes(it.publicacion.estado);
                 if (igConectado && !yaEnCola) programar(it, maxISO(cuando, new Date().toISOString()), req);
               };
@@ -869,6 +929,7 @@ const server = http.createServer(async (req, res) => {
             if (seEstaPublicando) return ocupada();
             aplicar = (it) => {
               it.status = accion === 'rechazar' ? 'rechazado' : 'pendiente';
+              if (accion === 'rechazar') it.decididoEl = new Date().toISOString();
               // Sale de la cola de publicación; el registro de una ya
               // publicada se conserva (así no se publica de nuevo al re-aprobar).
               if (it.publicacion && it.publicacion.estado !== 'publicada') delete it.publicacion;
@@ -917,7 +978,15 @@ const server = http.createServer(async (req, res) => {
           } else if (accion === 'editar' && req.method === 'PUT') {
             const body = await readBody(req);
             if (typeof body.caption !== 'string') return sendJSON(res, 400, { error: 'Falta el texto' });
-            aplicar = (it) => { it.variants[it.variantIndex] = body.caption; };
+            aplicar = (it) => {
+              const anterior = it.variants[it.variantIndex];
+              if (body.caption === anterior) return;
+              // Se guarda lo que escribió la IA la primera vez que el dueño lo
+              // corrige: el par "IA → dueño" es lo que aprende el generador.
+              if (!it.editado) it.textoIA = anterior;
+              it.editado = true;
+              it.variants[it.variantIndex] = body.caption;
+            };
           } else if (accion === 'regenerar' && req.method === 'POST') {
             if (item.variantIndex + 1 < item.variants.length) {
               aplicar = (it) => { it.variantIndex = Math.min(it.variantIndex + 1, it.variants.length - 1); };
@@ -934,6 +1003,10 @@ const server = http.createServer(async (req, res) => {
                 aplicar = (it) => { it.variantIndex = 0; }; // sin IA: vuelve a rotar desde la primera
               }
             }
+            // Otra versión es un texto nuevo de la IA: la corrección anterior
+            // era sobre otro texto y ya no cuenta como edición de este.
+            const cambiarVersion = aplicar;
+            aplicar = (it) => { cambiarVersion(it); delete it.editado; delete it.textoIA; };
           } else if (accion === 'imagen' && req.method === 'POST') {
             if (!getPlan(negocio.plan).cuotaFotosIA) {
               return sendJSON(res, 403, { error: 'Las fotos generadas por IA están disponibles en el plan Estudio' });
@@ -1033,6 +1106,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Rubrofy corriendo en http://localhost:${PORT}`);
   publicador.iniciar();
+  sincronizador.iniciar();
   console.log(`Publicador activo: revisa las publicaciones programadas cada ${Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30} s (zona ${programacion.ZONA}).`);
   if (!process.env.PUBLIC_URL) {
     console.log('PUBLIC_URL no configurada: el publicador usará la URL desde la que se aprobó cada pieza. En producción conviene definirla.');

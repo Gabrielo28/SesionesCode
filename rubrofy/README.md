@@ -159,6 +159,32 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Resultados y aprendizaje (server/analitica.js, server/aprendizaje.js)
+
+En los planes Pro y Estudio, con Instagram conectado, Rubrofy sincroniza
+cada 12 horas las métricas de la cuenta (seguidores, alcance, vistas,
+interacciones) y de cada post de los últimos 30 días, y las guarda en la
+base. La vista **Resultados** muestra:
+
+- seguidores, alcance, interacciones, tasa de interacción y **% de piezas
+  aprobadas sin cambios** (qué tanto la IA ya escribe como el dueño);
+- alcance e interacciones por día, con los datos también como tabla;
+- **qué enfoques funcionan** (interacción promedio de los posts hechos con
+  cada enfoque de la estrategia);
+- **cuándo publicar**: mapa de día × franja con la interacción promedio;
+- las mejores publicaciones del período.
+
+La IA usa todo eso al generar: textos que el dueño aprobó tal cual, cómo
+corrige los de la IA, qué rechazó, y los enfoques y posts con mejores
+resultados. El enfoque ganador sale más seguido y, si hay datos suficientes
+(8+ posts y una franja clara), los posts se programan a la hora que mejor
+le funciona a esa cuenta.
+
+Requiere que el token de Instagram tenga el permiso
+`instagram_business_manage_insights`; si no lo tiene, Resultados lo avisa y
+la publicación sigue funcionando igual. Una sincronización usa unas 30 a 45
+llamadas (el límite de Meta es ~200 por hora por cuenta).
+
 ## Cómo publica (server/publicador.js)
 
 Un proceso dentro del mismo servidor revisa cada 30 segundos las piezas
@@ -283,6 +309,8 @@ server/
   auth.js       Contraseñas (scrypt), sesiones firmadas y token temporal de foto
   instagram.js  Cliente de la Instagram Graph API (contenedor, publicación, renovación de token)
   publicador.js Proceso de fondo: publica lo programado, reintenta y renueva tokens
+  analitica.js  Sincroniza métricas de Instagram y calcula Resultados (resumen, enfoques, mejor horario)
+  aprendizaje.js Lo que la IA aprende de cada negocio (aprobaciones, correcciones, resultados)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco

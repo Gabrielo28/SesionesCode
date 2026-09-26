@@ -42,6 +42,9 @@
       <button class="rail-btn" data-view="fotos" title="Fotos del negocio">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 L4 15 L14 5 L18 9 L8 19 Z"/><path d="M13 6 L17 10"/></svg>
       </button>
+      <button class="rail-btn" data-view="resultados" title="Resultados">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg>
+      </button>
       <button class="rail-btn spacer" data-view="config" title="Configuración del negocio">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg>
       </button>
@@ -101,6 +104,14 @@
           <p class="sub">El contenido usa estas fotos según la categoría de cada pieza. Sin foto, la tarjeta muestra un color de marcador.</p>
         </div>
         <div id="fotos-categorias"></div>
+      </section>
+
+      <section id="view-resultados" class="view" hidden>
+        <div>
+          <h1>Resultados</h1>
+          <p class="sub">Cómo le va a tu Instagram y qué le está funcionando. Con esto la IA aprende a escribir lo que te sirve.</p>
+        </div>
+        <div id="resultados"></div>
       </section>
 
       <section id="view-config" class="view" hidden>
@@ -168,6 +179,8 @@
     </div>
   </div>
 
+  <script src="/app/graficos.js"></script>
+  <script src="/app/resultados.js"></script>
   <script src="/app/app.js"></script>
 </body>
 </html>
