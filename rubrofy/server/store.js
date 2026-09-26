@@ -19,7 +19,7 @@ process.emitWarning = function (aviso, ...resto) {
 };
 const { DatabaseSync } = require('node:sqlite');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const { DATA_DIR } = require('./datos');
 const NEGOCIOS_DIR = path.join(DATA_DIR, 'negocios');
 const CONTENIDO_DIR = path.join(DATA_DIR, 'contenido');
 const FOTOS_DIR = path.join(DATA_DIR, 'fotos');

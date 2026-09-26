@@ -3,13 +3,35 @@
 // sin dependencias externas (ni bcrypt ni jsonwebtoken).
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const { DATA_DIR } = require('./datos');
 
-const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-const SESSION_DIAS = 30;
-
-if (!process.env.SESSION_SECRET) {
-  console.log('SESSION_SECRET no configurada: se generó una al azar para este proceso. Las sesiones no sobrevivirán un reinicio del servidor.');
+// Clave que firma las sesiones y los enlaces temporales. Si no viene en
+// SESSION_SECRET, se genera una vez y se guarda en la carpeta de datos
+// (el Volume en producción): así las sesiones sobreviven a cada redeploy.
+function claveDeSesion() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  const archivo = path.join(DATA_DIR, '.session-secret');
+  try {
+    const guardada = fs.readFileSync(archivo, 'utf8').trim();
+    if (guardada.length >= 32) return guardada;
+  } catch (err) {
+    // todavía no existe
+  }
+  const nueva = crypto.randomBytes(32).toString('hex');
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(archivo, nueva, { mode: 0o600 });
+    console.log(`SESSION_SECRET no configurada: se generó una y se guardó en ${archivo}.`);
+  } catch (err) {
+    console.log('SESSION_SECRET no configurada y no se pudo guardar una: las sesiones no sobrevivirán un reinicio.');
+  }
+  return nueva;
 }
+
+const SESSION_SECRET = claveDeSesion();
+const SESSION_DIAS = 30;
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');

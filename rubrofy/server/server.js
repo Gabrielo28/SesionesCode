@@ -25,6 +25,7 @@ const stripe = require('./stripe');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
+const VERSION = require('../package.json').version;
 const SITE_DIR = path.join(__dirname, '..', 'public', 'site');
 const APP_DIR = path.join(__dirname, '..', 'public', 'app');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -464,6 +465,17 @@ const server = http.createServer(async (req, res) => {
   // (no puede llevar la cabecera custom): se autentica con su propia firma
   // HMAC en vez del esquema anti-CSRF de /api.
   const esWebhookStripe = parts[0] === 'api' && parts[1] === 'stripe' && parts[2] === 'webhook';
+
+  // GET /api/salud — para el healthcheck de Railway: responde 200 si el
+  // servidor atiende y la base de datos contesta.
+  if (url.pathname === '/api/salud' && req.method === 'GET') {
+    try {
+      store.db.prepare('SELECT 1').get();
+      return sendJSON(res, 200, { ok: true, version: VERSION });
+    } catch (err) {
+      return sendJSON(res, 503, { ok: false, error: 'La base de datos no responde' });
+    }
+  }
 
   const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && parts[3] === 'contenido'
     && parts[5] === 'video' && parts.length === 6 && req.method === 'POST';
@@ -1477,8 +1489,28 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
+// Railway manda SIGTERM antes de cada redeploy: se dejan de tomar trabajos
+// nuevos, se cierran las conexiones y la base. Si una publicación quedó a
+// medias, el publicador la retoma al arrancar (sin duplicarla).
+let apagando = false;
+function apagar(senal) {
+  if (apagando) return;
+  apagando = true;
+  console.log(`${senal} recibido: cerrando Rubrofy…`);
+  publicador.detener();
+  sincronizador.detener();
+  server.close(() => {
+    try { store.db.close(); } catch (err) { /* ya cerrada */ }
+    process.exit(0);
+  });
+  server.closeIdleConnections(); // las keep-alive ociosas no retienen el cierre
+  setTimeout(() => process.exit(0), 8000).unref();
+}
+process.on('SIGTERM', () => apagar('SIGTERM'));
+process.on('SIGINT', () => apagar('SIGINT'));
+
 server.listen(PORT, () => {
-  console.log(`Rubrofy corriendo en http://localhost:${PORT}`);
+  console.log(`Rubrofy corriendo en http://localhost:${PORT} · datos en ${require('./datos').DATA_DIR}`);
   publicador.iniciar();
   sincronizador.iniciar();
   console.log(`Publicador activo: revisa las publicaciones programadas cada ${Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30} s (zona ${programacion.ZONA}).`);

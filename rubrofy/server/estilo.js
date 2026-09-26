@@ -29,7 +29,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS referencias_negocio ON referencias (negocio_id, creado_el);
 `);
 
-const REFERENCIAS_DIR = path.join(path.dirname(store.FOTOS_DIR), 'referencias');
+const REFERENCIAS_DIR = path.join(require('./datos').DATA_DIR, 'referencias');
 fs.mkdirSync(REFERENCIAS_DIR, { recursive: true });
 store.registrarLimpieza((negocioId) => {
   db.prepare('DELETE FROM referencias WHERE negocio_id = ?').run(negocioId);

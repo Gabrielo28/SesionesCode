@@ -61,26 +61,22 @@ Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
 
 ## Antes de ponerlo en un servidor público
 
-**Datos persistentes:** todo vive en `data/` — la base `data/rubrofy.db`
-(negocios, colas de contenido, métricas) y las fotos y videos subidos. En
-Railway el disco se borra en cada deploy, así que hay que montar un
-**Volume** en la carpeta `data` del servicio (o apuntar `RUBROFY_DB` a una
-ruta dentro del Volume). Si hay datos de una versión anterior en archivos
-JSON (`data/negocios/`, `data/contenido/`), se migran solos a la base la
-primera vez que arranca, y las carpetas viejas quedan como respaldo
+**Paso a paso para Railway: [DEPLOY-RAILWAY.md](DEPLOY-RAILWAY.md)** (Volume,
+variables, dominio rubrofy.com y URLs de Stripe, Google y Meta).
+
+**Datos persistentes:** todo vive en una carpeta de datos — la base
+`rubrofy.db` (negocios, colas de contenido, métricas), las fotos, los videos
+y los ejemplos de "Mi estilo". Por defecto es `rubrofy/data`; en producción
+se apunta a un disco persistente con `RUBROFY_DATA_DIR` (en Railway, un
+Volume montado en `/data`). Si hay datos de una versión anterior en
+archivos JSON (`negocios/`, `contenido/`), se migran solos a la base la
+primera vez que arranca y las carpetas viejas quedan como respaldo
 (`*.migrado-<fecha>`).
 
-Definir `SESSION_SECRET` (una cadena larga y al azar) antes de arrancar en
-producción:
-
-```bash
-SESSION_SECRET=una-cadena-larga-y-al-azar npm start
-```
-
-Sin `SESSION_SECRET`, el servidor genera una al azar en cada arranque —
-funciona igual, pero todas las sesiones activas se cierran cada vez que el
-proceso se reinicia (redeploy, crash, etc.). Con la variable fija, las
-sesiones sobreviven un reinicio del servidor.
+**Sesiones:** se firman con `SESSION_SECRET`. Si no la defines, Rubrofy
+genera una y la guarda en la carpeta de datos (`.session-secret`), así que
+las sesiones sobreviven a los reinicios siempre que esa carpeta sea
+persistente.
 
 Las contraseñas se guardan con `scrypt` (costoso de romper por fuerza
 bruta), nunca en texto plano.
@@ -442,6 +438,7 @@ server/
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
+  datos.js      Carpeta de datos (RUBROFY_DATA_DIR / Volume de Railway)
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro
   generator.js  Genera el banco de contenido (titulares + captions vía Claude, con respaldo genérico)
