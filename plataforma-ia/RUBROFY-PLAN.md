@@ -193,3 +193,34 @@ tarea.
 
 Después de todo eso, una segunda revisión de seguridad del flujo completo (registro → cobro
 → publicación), como ya estaba previsto.
+
+---
+
+## 5. Estado al 26 de septiembre de 2026
+
+Todo lo de este plan y del análisis de plataformas (Metricool) está
+construido en la rama `claude/strategy-content-generator-yvx3rx`, con una
+regresión automatizada de 50 escenarios (Instagram, Meta y Google
+simulados) en verde:
+
+| Pieza | Commit |
+|---|---|
+| Bloqueantes de cobro y publicación (§2.1 a 2.4) | `5e82a81` |
+| Publicación programada, reintentos, renovación del token (§2.5) | `84f4a2f` |
+| Carruseles, Reels e historias | `74d91b8` |
+| Base de datos SQLite (en vez de JSON) | `7d4face` |
+| Resultados de Instagram + IA que aprende (§3.1) | `e051e2b` |
+| Informe mensual con conclusión escrita por IA | `43a8398` |
+| Mi estilo: el negocio muestra su contenido y la IA lo imita | `af5aec4` |
+| Meta Ads (solo lectura) | `0e087e7` |
+| Google Ads (solo lectura) | `3fcf33e` |
+| Competencia en Instagram | `c72cd96` |
+| Página de precios pública y guardián de marca (§3.2, §3.5) | `3c5b86c` |
+
+**Lo que no depende del código y sigue pendiente:** deploy en Railway con
+Volume en `data/` y `PUBLIC_URL`; Meta App Review + Business Verification
+(publicar, métricas, `ads_read`, páginas); proyecto de Google Cloud con
+acceso a la API de Google Ads y verificación del permiso `adwords`; cuenta
+de Stripe (o Flow/Mercado Pago) y las claves de IA. También quedan
+decisiones de producto: plan anual, un plan Agencia (varios negocios por
+cuenta) y si Ads y competencia se quedan en Estudio.
