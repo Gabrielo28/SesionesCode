@@ -11,6 +11,9 @@ const auth = require('./auth');
 const { generarEstrategia, editar: editarEstrategia } = require('./estrategia');
 const planContenido = require('./plan-contenido');
 const ruta = require('./ruta');
+const instagram = require('./instagram');
+const correo = require('./correo');
+const avisos = require('./avisos');
 const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
 const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
@@ -40,6 +43,8 @@ const MAX_PIEZAS_POR_GENERACION = 12;
 // cuentan los intentos fallidos, para no molestar a quien entra bien.
 const limiteRegistro = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 const limiteLoginFallido = crearLimitador({ max: 10, ventanaMs: 15 * 60 * 1000 });
+// Correo de prueba del resumen semanal: tope por negocio.
+const limiteCorreoPrueba = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
 // Regenerar la estrategia llama a Claude: tope por negocio.
 const limiteEstrategia = crearLimitador({ max: 10, ventanaMs: 60 * 60 * 1000 });
 
@@ -152,16 +157,20 @@ function sendJSON(res, status, data, extraHeaders) {
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
 // los IDs internos de Stripe).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram, stripe: stripeInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
+  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
   resto.googleConexion = google.publico(googleInfo);
   resto.googleConfigurado = google.configurado();
-  resto.instagramConectado = !!(instagram && instagram.accessToken);
+  resto.instagramConectado = !!(igInfo && igInfo.accessToken);
   // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
   // programadas esperan hasta que se reconecte).
-  resto.instagramEstado = instagram && instagram.accessToken ? (instagram.estado || 'ok') : null;
-  resto.instagramMotivoReconexion = (instagram && instagram.motivoReconexion) || null;
-  resto.instagramVenceEl = (instagram && instagram.venceEl) || null;
+  resto.instagramEstado = igInfo && igInfo.accessToken ? (igInfo.estado || 'ok') : null;
+  resto.instagramMotivoReconexion = (igInfo && igInfo.motivoReconexion) || null;
+  resto.instagramVenceEl = (igInfo && igInfo.venceEl) || null;
+  resto.instagramUsuario = (igInfo && igInfo.username) || null;
+  resto.instagramLoginDisponible = instagram.loginConfigurado();
+  resto.avisosSemanal = !(negocio.avisos && negocio.avisos.semanal === false);
+  resto.correoConfigurado = correo.configurado();
   resto.zonaHoraria = programacion.ZONA;
   resto.plan = negocio.plan || 'gratis';
   resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
@@ -441,6 +450,26 @@ informe.registrarSeccion('googleAds', (negocio, desde, hasta) => {
   return Object.assign(google.resumen(negocio.id, desde, hasta), { moneda: negocio.google.moneda, cuenta: negocio.google.nombre });
 });
 
+// Estado de la ruta del cliente (server/ruta.js) con los datos del negocio.
+function calcularRuta(negocio) {
+  return ruta.calcular({
+    negocio: negocioPublico(negocio),
+    plan: getPlan(negocio.plan),
+    contenido: store.getContenido(negocio.id),
+    fotos: store.listFotos(negocio.id),
+    referencias: estilo.listar(negocio.id).length,
+    competidores: competencia.contar(negocio.id),
+    fotosIA: process.env.OPENAI_API_KEY ? fotosIADisponibles(negocio) : 0,
+    syncInstagram: analitica.estadoSync(negocio.id, 'instagram'),
+    mesHoy: informe.mesActual(),
+  });
+}
+
+// Enlace firmado para darse de baja del resumen semanal (vale 60 días).
+function enlaceBajaAvisos(negocioId) {
+  return `/api/avisos/baja?n=${encodeURIComponent(negocioId)}&t=${auth.crearTokenFoto(negocioId, 'avisos', 'baja', 60 * 24 * 60)}`;
+}
+
 function urlPublica(req) {
   return process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : urlBase(req);
 }
@@ -451,6 +480,19 @@ informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
   return Object.assign(meta.resumenAds(negocio.id, desde, hasta), { moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre });
 });
 
+const avisador = avisos.crearAvisador({
+  listarNegocios: () => store.listNegocios(),
+  datosDe: (negocio) => ({ negocioPublico: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocio.id) }),
+  urlPublica: () => (process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null),
+  enlaceBaja: enlaceBajaAvisos,
+  guardarEnvio: (negocioId, semana) => {
+    const n = store.getNegocio(negocioId);
+    if (!n) return;
+    n.avisos = Object.assign({}, n.avisos, { ultimaSemana: semana });
+    store.saveNegocio(n);
+  },
+});
+
 const publicador = crearPublicador({
   prepararPublicacion,
   intervaloMs: (Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30) * 1000,
@@ -458,6 +500,29 @@ const publicador = crearPublicador({
 
 // Deja una pieza aprobada lista para que el publicador la publique en
 // `cuando` (ISO), sin perder el contenedor ya creado si lo había.
+// Guarda la conexión con Instagram (a mano o con "Conectar con Instagram").
+// Lo aprobado antes de conectar, con fecha futura, entra a la cola; lo que
+// esperaba una reconexión ya está programado y se publica solo.
+function conectarInstagram(negocioId, { userId, accessToken, username, venceEl }, req) {
+  const negocio = store.getNegocio(negocioId);
+  negocio.instagram = { userId, accessToken, conectadoEl: new Date().toISOString() };
+  if (username) negocio.instagram.username = username;
+  if (venceEl) negocio.instagram.venceEl = venceEl;
+  store.saveNegocio(negocio);
+  const items = store.getContenido(negocioId);
+  const ahora = Date.now();
+  let programadas = 0;
+  for (const it of items) {
+    const publicable = it.status === 'aprobado' && !it.publicacion && !(it.instagram && it.instagram.ok);
+    if (publicable && Date.parse(programacion.asegurarPublicarEl(it)) > ahora) {
+      programar(it, it.publicarEl, req);
+      programadas += 1;
+    }
+  }
+  if (programadas) store.saveContenido(negocioId, items);
+  return negocio;
+}
+
 function programar(it, cuando, req) {
   it.publicacion = Object.assign({}, it.publicacion, {
     estado: 'programada',
@@ -676,6 +741,43 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, Object.assign(informe.datos(negocioCompartido, mes, estadisticasAprobacion), { compartido: true }));
       }
 
+      // GET /api/avisos/baja?n&t — enlace "No quiero recibirlo más" del resumen semanal
+      if (parts[1] === 'avisos' && parts[2] === 'baja' && parts.length === 3 && req.method === 'GET') {
+        const id = url.searchParams.get('n');
+        const n = id && store.getNegocio(id);
+        const valido = n && auth.verificarTokenFoto(url.searchParams.get('t'), id, 'avisos', 'baja');
+        if (valido) {
+          n.avisos = Object.assign({}, n.avisos, { semanal: false });
+          store.saveNegocio(n);
+        }
+        res.writeHead(valido ? 200 : 400, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rubrofy</title>
+          <body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#140f0a;color:#f5efe4;font-family:Arial,sans-serif;padding:24px">
+          <div style="max-width:420px;text-align:center"><h1 style="font-size:22px">${valido ? 'Listo: ya no recibirás el resumen semanal' : 'El enlace no es válido o ya venció'}</h1>
+          <p style="color:#b9a892">${valido ? 'Puedes volver a activarlo cuando quieras en Conexiones y ajustes.' : 'Puedes desactivar el resumen en Conexiones y ajustes.'}</p>
+          <p><a href="/app" style="color:#ffac2b">Ir a mi panel</a></p></div></body></html>`);
+      }
+
+      // GET /api/instagram/callback?code&state — vuelta de "Conectar con
+      // Instagram". Igual que Google: state firmado, ligado al negocio y a la sesión.
+      if (parts[1] === 'instagram' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
+        const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
+        const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
+        const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'instagram-oauth', nonce);
+        if (!firmaOk || sesionActual(req) !== negocioId) return volver({ instagram: 'error', motivo: 'La conexión venció o no corresponde a tu sesión. Intenta de nuevo.' });
+        if (url.searchParams.get('error')) return volver({ instagram: 'error', motivo: 'No se dieron los permisos en Instagram.' });
+        try {
+          const r = await instagram.conectarConCodigo(url.searchParams.get('code'), urlPublica(req) + '/api/instagram/callback');
+          conectarInstagram(negocioId, {
+            userId: r.userId, accessToken: r.accessToken, username: r.username,
+            venceEl: new Date(Date.now() + r.expiraEnSeg * 1000).toISOString(),
+          }, req);
+          return volver({ instagram: 'ok' });
+        } catch (err) {
+          return volver({ instagram: 'error', motivo: 'No se pudo conectar Instagram: ' + err.message });
+        }
+      }
+
       // GET /api/google/callback?code&state — vuelta de "Iniciar sesión con
       // Google". El state va firmado y ligado al negocio, y además tiene que
       // coincidir con la sesión: nadie puede enganchar su Google a otra cuenta.
@@ -757,22 +859,20 @@ const server = http.createServer(async (req, res) => {
           const accessToken = String(body.accessToken || '').trim();
           if (!/^[0-9]+$/.test(userId)) return sendJSON(res, 400, { error: 'ID de usuario de Instagram inválido' });
           if (!accessToken) return sendJSON(res, 400, { error: 'Falta el token de acceso' });
-          negocio.instagram = { userId, accessToken, conectadoEl: new Date().toISOString() };
-          store.saveNegocio(negocio);
-          // Lo aprobado antes de conectar, con fecha futura, entra a la cola.
-          // Lo que esperaba una reconexión ya está programado: se publica solo.
-          const items = store.getContenido(negocioId);
-          const ahora = new Date().toISOString();
-          let programadas = 0;
-          for (const it of items) {
-            const publicable = it.status === 'aprobado' && !it.publicacion && !(it.instagram && it.instagram.ok);
-            if (publicable && Date.parse(programacion.asegurarPublicarEl(it)) > Date.parse(ahora)) {
-              programar(it, it.publicarEl, req);
-              programadas += 1;
-            }
+          return sendJSON(res, 200, negocioPublico(conectarInstagram(negocioId, { userId, accessToken }, req)));
+        }
+
+        // GET /api/negocios/:id/instagram/conectar — "Conectar con Instagram":
+        // lleva al inicio de sesión de Instagram con un state firmado.
+        if (parts[3] === 'instagram' && parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
+          if (!instagram.loginConfigurado()) {
+            res.writeHead(302, { Location: '/app?' + new URLSearchParams({ instagram: 'error', motivo: 'El inicio de sesión con Instagram no está configurado en este servidor. Usa el ID y el token.' }) });
+            return res.end();
           }
-          if (programadas) store.saveContenido(negocioId, items);
-          return sendJSON(res, 200, negocioPublico(negocio));
+          const nonce = google.nuevoEstadoOAuth();
+          const firma = auth.crearTokenFoto(negocioId, 'instagram-oauth', nonce, 15).replace(/\./g, '_');
+          res.writeHead(302, { Location: instagram.urlLogin(urlPublica(req) + '/api/instagram/callback', `${negocioId}.${nonce}.${firma}`) });
+          return res.end();
         }
 
         // DELETE /api/negocios/:id/instagram
@@ -901,17 +1001,31 @@ const server = http.createServer(async (req, res) => {
 
         // GET /api/negocios/:id/ruta — en qué etapa va y qué le toca ahora (ver server/ruta.js)
         if (parts[3] === 'ruta' && parts.length === 4 && req.method === 'GET') {
-          return sendJSON(res, 200, ruta.calcular({
-            negocio: negocioPublico(negocio),
-            plan: getPlan(negocio.plan),
-            contenido: store.getContenido(negocioId),
-            fotos: store.listFotos(negocioId),
-            referencias: estilo.listar(negocioId).length,
-            competidores: competencia.contar(negocioId),
-            fotosIA: process.env.OPENAI_API_KEY ? fotosIADisponibles(negocio) : 0,
-            syncInstagram: analitica.estadoSync(negocioId, 'instagram'),
-            mesHoy: informe.mesActual(),
-          }));
+          return sendJSON(res, 200, calcularRuta(negocio));
+        }
+
+        // PUT /api/negocios/:id/avisos { semanal } — resumen semanal por correo
+        if (parts[3] === 'avisos' && parts.length === 4 && req.method === 'PUT') {
+          const body = await readBody(req);
+          negocio.avisos = Object.assign({}, negocio.avisos, { semanal: !!body.semanal });
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
+        // POST /api/negocios/:id/avisos/prueba — manda el resumen ahora, al email de la cuenta
+        if (parts[3] === 'avisos' && parts[4] === 'prueba' && parts.length === 5 && req.method === 'POST') {
+          if (!correo.configurado()) return sendJSON(res, 400, { error: 'El correo no está configurado en este servidor' });
+          const espera = limiteCorreoPrueba.esperaSegundos(negocioId);
+          if (espera) return sendJSON(res, 429, { error: 'Ya enviaste varios correos de prueba. Intenta en un rato.' }, { 'Retry-After': String(espera) });
+          limiteCorreoPrueba.registrar(negocioId);
+          const base = urlPublica(req);
+          const mail = avisos.construir({
+            negocio: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocioId),
+            urlPanel: base + '/app', urlBaja: base + enlaceBajaAvisos(negocioId), forzar: true,
+          });
+          const r = await correo.enviar({ para: negocio.email, asunto: mail.asunto, html: mail.html, texto: mail.texto });
+          if (!r.ok) return sendJSON(res, 502, { error: r.error });
+          return sendJSON(res, 200, { ok: true, para: negocio.email });
         }
 
         // POST /api/negocios/:id/ruta/informe-visto  { mes } — el dueño abrió su informe
@@ -1605,6 +1719,7 @@ function apagar(senal) {
   console.log(`${senal} recibido: cerrando Rubrofy…`);
   publicador.detener();
   sincronizador.detener();
+  avisador.detener();
   server.close(() => {
     try { store.db.close(); } catch (err) { /* ya cerrada */ }
     process.exit(0);
@@ -1619,6 +1734,7 @@ server.listen(PORT, () => {
   console.log(`Rubrofy corriendo en http://localhost:${PORT} · datos en ${require('./datos').DATA_DIR}`);
   publicador.iniciar();
   sincronizador.iniciar();
+  avisador.iniciar();
   console.log(`Publicador activo: revisa las publicaciones programadas cada ${Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30} s (zona ${programacion.ZONA}).`);
   if (!process.env.PUBLIC_URL) {
     console.log('PUBLIC_URL no configurada: el publicador usará la URL desde la que se aprobó cada pieza. En producción conviene definirla.');
@@ -1633,6 +1749,12 @@ server.listen(PORT, () => {
   } else {
     console.log('OPENAI_API_KEY no configurada: sin foto real ni generada, las piezas muestran un degradé de marcador.');
   }
+  console.log(instagram.loginConfigurado()
+    ? '"Conectar con Instagram" activo (INSTAGRAM_APP_ID configurado).'
+    : 'INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET no configurados: Instagram se conecta pegando ID y token.');
+  console.log(correo.configurado()
+    ? 'Correo configurado: resumen semanal los lunes.'
+    : 'RESEND_API_KEY / EMAIL_FROM no configurados: no se envían resúmenes semanales.');
   if (process.env.STRIPE_SECRET_KEY) {
     const planesDisponibles = listPlanesPublico().filter((p) => p.disponible && p.id !== 'gratis').map((p) => p.id);
     console.log(planesDisponibles.length

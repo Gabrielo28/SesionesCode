@@ -67,6 +67,8 @@ queda apagada y el resto funciona igual)
 | Cobro | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO` |
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |
 | Google Ads | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`) |
+| "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
+| Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
 | Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
 
 ## 4. Primer deploy y verificación
@@ -115,8 +117,36 @@ Una vez que `https://rubrofy.com` funcione:
 - **Meta** → en la app de Meta, dominio de la app `rubrofy.com`. Para la
   revisión de Meta (App Review) también van a pedir la URL de la política
   de privacidad y la de eliminación de datos, que el sitio todavía no tiene.
-- **Instagram**: no necesita configuración extra; Meta descarga las fotos y
-  videos desde `PUBLIC_URL` con enlaces firmados temporales.
+- **Instagram**: Meta descarga las fotos y videos desde `PUBLIC_URL` con
+  enlaces firmados temporales.
+- **"Conectar con Instagram"** (para que el cliente inicie sesión en vez de
+  pegar ID y token):
+  1. En [developers.facebook.com/apps](https://developers.facebook.com/apps),
+     en tu app (tipo Empresa), agrega el producto **Instagram** →
+     **API con inicio de sesión de Instagram**.
+  2. En **Configurar el inicio de sesión para empresas** (Business login
+     settings), en "URI de redireccionamiento de OAuth", agrega
+     `https://rubrofy.com/api/instagram/callback`.
+  3. Copia el **ID de la app de Instagram** y la **clave secreta de la app
+     de Instagram** (aparecen en esa misma sección; no son el ID y la clave
+     de la app de Meta) a `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`.
+  4. Mientras la app esté en modo desarrollo, solo pueden conectarse las
+     cuentas de Instagram agregadas como evaluadoras (Roles de la app →
+     Evaluadores de Instagram, y aceptar la invitación en Instagram →
+     Configuración → Apps y sitios web). Para abrirlo a todos los clientes,
+     pide en App Review los permisos `instagram_business_basic`,
+     `instagram_business_content_publish` e
+     `instagram_business_manage_insights`.
+- **Resumen semanal por correo** (Resend):
+  1. Crea una cuenta en [resend.com](https://resend.com) → Domains → Add
+     domain → `rubrofy.com`.
+  2. Resend muestra registros DNS (MX y TXT de SPF/DKIM). Agrégalos en
+     Cloudflare → DNS, todos en **DNS only** (nube gris). Espera a que
+     Resend marque el dominio como verificado.
+  3. En Resend → API Keys, crea una con permiso de envío y cópiala a
+     `RESEND_API_KEY`. Pon `EMAIL_FROM` = `Rubrofy <avisos@rubrofy.com>`.
+  4. En el panel, Conexiones y ajustes → Avisos por correo → "Enviarme uno
+     ahora" para probar. Los resúmenes salen solos los lunes desde las 8:00.
 
 ## 7. Problemas comunes
 

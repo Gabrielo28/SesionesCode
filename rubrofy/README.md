@@ -155,6 +155,27 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Conectar con Instagram y resumen semanal (server/instagram.js, server/avisos.js, server/correo.js)
+
+**Conectar con Instagram**: con `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`,
+el panel muestra el botón "Conectar con Instagram" (también en el último
+paso de la bienvenida). El dueño inicia sesión en Instagram y acepta los
+permisos `instagram_business_basic`, `instagram_business_content_publish` e
+`instagram_business_manage_insights`. `GET /api/negocios/:id/instagram/conectar`
+redirige con un state firmado y ligado a la sesión (igual que Google);
+`GET /api/instagram/callback` canjea el código, lo cambia por un token de 60
+días (que el publicador renueva solo), lee el ID de la cuenta profesional y
+el @usuario, y programa lo aprobado que estaba esperando. Sin esas
+variables se sigue conectando pegando ID y token.
+
+**Resumen semanal**: con `RESEND_API_KEY` y `EMAIL_FROM`, cada lunes desde
+las 8:00 (hora del negocio) llega un correo con las 3 tareas de la ruta y
+lo que se publica en los próximos 7 días. Una vez por semana ISO, solo a
+quien terminó la bienvenida y solo si hay algo que contar. Se apaga desde
+Conexiones y ajustes (`PUT /api/negocios/:id/avisos`) o con el enlace
+firmado del correo (`GET /api/avisos/baja`, también en `List-Unsubscribe`).
+`POST /api/negocios/:id/avisos/prueba` lo manda en el momento (3 por hora).
+
 ## La ruta del cliente (server/ruta.js, public/app/inicio.js)
 
 El panel y el sitio siguen la misma ruta de cuatro etapas:

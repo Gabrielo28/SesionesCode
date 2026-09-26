@@ -113,4 +113,76 @@ async function renovarToken(accessToken) {
   }
 }
 
-module.exports = { crearContenedor, estadoContenedor, publicarContenedor, renovarToken, clasificarError, GRAPH_BASE };
+// --- "Conectar con Instagram" (API de Instagram con inicio de sesión de
+// Instagram). El dueño inicia sesión en Instagram, acepta los permisos y
+// vuelve con un código que se canjea por un token de larga duración.
+// Requiere INSTAGRAM_APP_ID e INSTAGRAM_APP_SECRET: los de la sección
+// "API con inicio de sesión de Instagram" de la app en Meta for Developers
+// (no son el ID y la clave de la app de Meta).
+const PERMISOS_LOGIN = [
+  'instagram_business_basic',
+  'instagram_business_content_publish',
+  'instagram_business_manage_insights',
+];
+
+function loginConfigurado() {
+  return !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET);
+}
+
+function urlLogin(redirectUri, state) {
+  const q = new URLSearchParams({
+    client_id: process.env.INSTAGRAM_APP_ID,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: PERMISOS_LOGIN.join(','),
+    state,
+  });
+  return `https://www.instagram.com/oauth/authorize?${q}`;
+}
+
+class ErrorLogin extends Error {}
+
+async function jsonDe(res) {
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const m = (data.error && (data.error.message || data.error)) || data.error_message || data.error_description || `HTTP ${res.status}`;
+    throw new ErrorLogin(typeof m === 'string' ? m : JSON.stringify(m));
+  }
+  return data;
+}
+
+// Código → token de corta duración → token de 60 días → cuenta profesional.
+// Devuelve { userId, username, accessToken, expiraEnSeg }.
+async function conectarConCodigo(codigo, redirectUri) {
+  const code = String(codigo || '').replace(/#_$/, ''); // Instagram agrega "#_" al final
+  if (!code) throw new ErrorLogin('Instagram no devolvió el código de acceso');
+  const corto = await jsonDe(await fetch('https://api.instagram.com/oauth/access_token', {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: process.env.INSTAGRAM_APP_ID,
+      client_secret: process.env.INSTAGRAM_APP_SECRET,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+      code,
+    }),
+  }));
+  const fila = Array.isArray(corto.data) ? corto.data[0] || {} : corto;
+  if (!fila.access_token) throw new ErrorLogin('Instagram no entregó un token');
+  const largo = await jsonDe(await fetch('https://graph.instagram.com/access_token?' + new URLSearchParams({
+    grant_type: 'ig_exchange_token',
+    client_secret: process.env.INSTAGRAM_APP_SECRET,
+    access_token: fila.access_token,
+  })));
+  const token = largo.access_token || fila.access_token;
+  // El ID con el que se publica es el de la cuenta profesional (user_id de /me).
+  const me = await jsonDe(await fetch(`${GRAPH_BASE}/me?` + new URLSearchParams({ fields: 'user_id,username,account_type', access_token: token })));
+  const userId = String(me.user_id || fila.user_id || '');
+  if (!/^[0-9]+$/.test(userId)) throw new ErrorLogin('No se pudo leer el ID de tu cuenta de Instagram');
+  return { userId, username: me.username || null, accessToken: token, expiraEnSeg: Number(largo.expires_in) || 60 * 24 * 3600 };
+}
+
+module.exports = {
+  crearContenedor, estadoContenedor, publicarContenedor, renovarToken, clasificarError, GRAPH_BASE,
+  loginConfigurado, urlLogin, conectarConCodigo, ErrorLogin, PERMISOS_LOGIN,
+};

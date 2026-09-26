@@ -54,7 +54,9 @@
       return `<h2>Conecta tus cuentas</h2>
         <p class="bv-lead">Puedes hacerlo ahora o después. Todas se conectan desde <b>Conexiones</b>, abajo a la izquierda del menú.</p>
         <div class="bv-conexiones">
-          <div class="bv-con"><i class="c-ig"></i><div><b>Instagram</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
+          <div class="bv-con"><i class="c-ig"></i><div><b>Instagram</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible
+            ? '<button type="button" class="btn-ig bv-ig" data-bv="conectar-ig">Conectar ahora</button>'
+            : estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
           <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
           <div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>
         </div>
@@ -133,6 +135,16 @@
         } catch (err) { /* igual se cierra */ }
         cerrar();
         return ctx.alTerminar(false);
+      }
+      if (accion === 'conectar-ig') {
+        // Termina la bienvenida (y crea la primera semana) antes de ir a Instagram.
+        try {
+          await guardarPaso(b);
+        } catch (err) {
+          return pintar(err.mensaje || err.message || 'No se pudo guardar.');
+        }
+        window.location.href = `/api/negocios/${ctx.negocio().id}/instagram/conectar`;
+        return;
       }
       if (accion === 'proponer') {
         ocupado(b, 'Pensando…');

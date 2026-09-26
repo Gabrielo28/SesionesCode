@@ -170,7 +170,7 @@
           <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y administra tu plan.</p>
         </div>
         <nav class="cfg-indice" aria-label="Secciones de ajustes">
-          <a href="#cfg-conexiones">Conexiones</a><a href="#cfg-datos">Datos del negocio</a><a href="#cfg-plan">Plan y pago</a>
+          <a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos por correo</a><a href="#cfg-datos">Datos del negocio</a><a href="#cfg-plan">Plan y pago</a>
         </nav>
 
         <h2 class="cfg-titulo" id="cfg-conexiones">Conexiones</h2>
@@ -181,7 +181,17 @@
           </div>
           <p class="sub">Cuando está conectado, las piezas aprobadas se publican solas en Instagram en su fecha y hora (si una falla, se reintenta y te avisamos en la tarjeta).</p>
           <p class="sub" id="ig-aviso" hidden></p>
-          <details class="ayuda">
+          <p class="ig-cuenta" id="ig-cuenta" hidden></p>
+          <div class="ig-login" id="ig-login" hidden>
+            <a class="btn-approve btn-ig" id="btn-ig-login" href="#">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+              <span id="btn-ig-login-txt">Conectar con Instagram</span>
+            </a>
+            <span class="sub">Inicias sesión en Instagram y aceptas los permisos. Tu cuenta debe ser profesional (de empresa o de creador).</span>
+          </div>
+          <details class="ig-manual" id="ig-manual">
+            <summary id="ig-manual-titulo">Conectar pegando el ID y el token</summary>
+          <details class="ayuda" id="ig-ayuda">
             <summary>¿Dónde consigo el ID y el token?</summary>
             <ol>
               <li>Tu cuenta de Instagram debe ser <b>profesional</b> (de empresa o de creador). Se cambia en Instagram, en Configuración → Tipo de cuenta.</li>
@@ -201,12 +211,24 @@
               <button type="submit" class="btn-approve">Conectar Instagram</button>
             </div>
           </form>
+          </details>
           <button type="button" class="btn-danger" id="btn-desconectar-ig" hidden>Desconectar Instagram</button>
         </div>
 
         <div class="ig-card" id="meta-card"></div>
 
         <div class="ig-card" id="google-card"></div>
+
+        <h2 class="cfg-titulo" id="cfg-avisos">Avisos por correo</h2>
+        <div class="ig-card" id="avisos-card">
+          <div class="ig-card-head"><h2>Resumen semanal</h2><span class="ig-estado" id="avisos-estado"></span></div>
+          <p class="sub">Cada lunes en la mañana te llega un correo con lo que te toca esa semana (qué aprobar, videos o fotos que faltan) y lo que se publica en los próximos 7 días.</p>
+          <label class="switch"><input type="checkbox" id="avisos-semanal"> <span>Recibir el resumen semanal en <b id="avisos-email"></b></span></label>
+          <p class="sub" id="avisos-no-config" hidden>El envío de correos todavía no está configurado en este servidor.</p>
+          <p class="config-error" id="avisos-error" hidden></p>
+          <p class="config-ok" id="avisos-ok" hidden></p>
+          <div class="config-actions"><button type="button" class="btn-ghost" id="btn-avisos-prueba">Enviarme uno ahora</button></div>
+        </div>
 
         <h2 class="cfg-titulo" id="cfg-datos">Datos del negocio</h2>
         <p class="sub">Rubrofy usa estos datos tal cual en tus publicaciones y te avisa si un texto menciona algo que no está aquí. El rubro no se cambia aquí: define tu estrategia.</p>

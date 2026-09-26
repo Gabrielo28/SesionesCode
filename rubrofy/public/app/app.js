@@ -437,6 +437,21 @@
     aviso.hidden = !aviso.textContent;
     aviso.style.color = reconectar ? 'var(--coral)' : '';
 
+    // "Conectar con Instagram" si el servidor lo tiene configurado; si no,
+    // solo el formulario de ID y token (con su ayuda).
+    const login = !!negocioActual.instagramLoginDisponible;
+    const necesitaConectar = !conectado || reconectar;
+    $('#ig-login').hidden = !(login && necesitaConectar);
+    $('#btn-ig-login').href = `/api/negocios/${negocioActual.id}/instagram/conectar`;
+    $('#btn-ig-login-txt').textContent = reconectar ? 'Reconectar con Instagram' : 'Conectar con Instagram';
+    $('#ig-manual').hidden = !necesitaConectar;
+    $('#ig-manual').open = !login;
+    $('#ig-manual-titulo').hidden = !login;
+    $('#ig-cuenta').hidden = !(conectado && negocioActual.instagramUsuario);
+    $('#ig-cuenta').textContent = negocioActual.instagramUsuario ? 'Cuenta: @' + negocioActual.instagramUsuario : '';
+
+    renderAvisos();
+
     renderPlan();
     renderMeta();
     renderGoogle();
@@ -569,6 +584,18 @@
       error.textContent = err.mensaje || 'No se pudo conectar.';
       error.hidden = false;
     }
+  }
+
+  function renderAvisos() {
+    const activo = !!negocioActual.avisosSemanal;
+    const config = !!negocioActual.correoConfigurado;
+    $('#avisos-semanal').checked = activo;
+    $('#avisos-email').textContent = negocioActual.email || '';
+    $('#avisos-estado').textContent = !config ? 'No disponible' : activo ? 'Activo' : 'Apagado';
+    $('#avisos-estado').classList.toggle('conectado', config && activo);
+    $('#avisos-no-config').hidden = config;
+    $('#btn-avisos-prueba').hidden = !config;
+    $('#avisos-error').hidden = true;
   }
 
   function formatoCLP(monto) {
@@ -867,9 +894,22 @@
     $('#view-app').hidden = false;
     vistaActual = 'inicio';
     irAVista('inicio');
+    const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
     avisarRetornoCheckout();
     avisarRetornoGoogle();
-    if (!negocioActual.bienvenidaCompletada && !new URLSearchParams(window.location.search).get('google')) abrirBienvenida();
+    avisarRetornoInstagram();
+    if (!negocioActual.bienvenidaCompletada && !volvioDeOAuth) abrirBienvenida();
+  }
+
+  // Vuelta de "Conectar con Instagram": avisa si falló y abre Conexiones.
+  function avisarRetornoInstagram() {
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('instagram');
+    if (!r) return false;
+    history.replaceState(null, '', '/app');
+    if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar Instagram.');
+    irAVista(r === 'ok' ? 'inicio' : 'config');
+    return true;
   }
 
   // Vuelta de "Iniciar sesión con Google": avisa el resultado y abre Configuración.
@@ -977,6 +1017,33 @@
         btn.disabled = false;
       }
     });
+    $('#avisos-semanal').addEventListener('change', async (e) => {
+      try {
+        negocioActual = await api(`/api/negocios/${negocioActual.id}/avisos`, { method: 'PUT', body: JSON.stringify({ semanal: e.target.checked }) });
+        renderAvisos();
+      } catch (err) {
+        e.target.checked = !e.target.checked;
+        $('#avisos-error').textContent = err.mensaje || 'No se pudo guardar.';
+        $('#avisos-error').hidden = false;
+      }
+    });
+    $('#btn-avisos-prueba').addEventListener('click', async (e) => {
+      const b = e.target;
+      b.disabled = true;
+      $('#avisos-error').hidden = true;
+      $('#avisos-ok').hidden = true;
+      try {
+        const r = await api(`/api/negocios/${negocioActual.id}/avisos/prueba`, { method: 'POST' });
+        $('#avisos-ok').textContent = 'Enviado a ' + r.para + '. Revisa también la carpeta de spam.';
+        $('#avisos-ok').hidden = false;
+      } catch (err) {
+        $('#avisos-error').textContent = err.mensaje || 'No se pudo enviar.';
+        $('#avisos-error').hidden = false;
+      } finally {
+        b.disabled = false;
+      }
+    });
+
     $('#btn-desconectar-ig').addEventListener('click', async () => {
       if (!confirm('¿Desconectar Instagram? Las próximas aprobaciones no se publicarán solas.')) return;
       negocioActual = await api(`/api/negocios/${negocioActual.id}/instagram`, { method: 'DELETE' });
