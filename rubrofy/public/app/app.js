@@ -648,15 +648,38 @@
 
   const VISTAS = ['cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
-  function irAVista(vista) {
+  // El menú lateral tiene entradas que abren Resultados en una pestaña
+  // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
+  function marcarMenu() {
+    document.querySelectorAll('.rail-btn[data-view]').forEach((b) => b.classList.toggle('active',
+      b.dataset.view === vistaActual && (!b.dataset.tab || vistaActual !== 'resultados' || b.dataset.tab === tabMenu())));
+  }
+  function tabMenu() { return tabResultados === 'google' ? 'meta' : tabResultados; }
+
+  function irAVista(vista, tab) {
     vistaActual = vista;
-    document.querySelectorAll('.rail-btn[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === vista));
+    if (tab) tabResultados = tab;
+    marcarMenu();
     for (const v of VISTAS) $('#view-' + v).hidden = v !== vista;
     render();
   }
 
+  // Etiquetas del menú: pendientes por aprobar y qué plan pide cada sección.
+  function renderMenu() {
+    if (!negocioActual) return;
+    const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
+    const num = $('#rail-pendientes');
+    num.textContent = pendientes; num.hidden = !pendientes;
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    document.querySelectorAll('[data-plan-req]').forEach((el) => { el.hidden = !!plan[el.dataset.planReq] || !planesInfo.length; });
+    const actual = $('#rail-planactual');
+    actual.hidden = !plan.nombre;
+    actual.innerHTML = plan.nombre ? `Plan <b>${escapeHtml(plan.nombre)}</b>` : '';
+  }
+
   function render() {
     renderStats();
+    renderMenu();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
@@ -852,12 +875,13 @@
     // pestañas de Resultados
     document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.addEventListener('click', () => {
       tabResultados = b.dataset.tab;
+      marcarMenu();
       renderResultados();
     }));
 
     // navegación entre vistas
     document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
-      btn.addEventListener('click', () => irAVista(btn.dataset.view));
+      btn.addEventListener('click', () => irAVista(btn.dataset.view, btn.dataset.tab));
     });
 
     // fotos: subir y borrar (delegación)

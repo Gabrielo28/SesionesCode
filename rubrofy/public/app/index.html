@@ -29,28 +29,41 @@
   </section>
 
   <div class="app" id="view-app" hidden>
-    <nav class="rail">
+    <nav class="rail" aria-label="Secciones del panel">
       <div class="logo">
         <img src="/app/icon-192.png" width="34" height="34" alt="Rubrofy">
+        <span class="rail-marca">Rubrofy</span>
       </div>
+      <span class="rail-grupo">Contenido</span>
       <button class="rail-btn active" data-view="cola" title="Cola de aprobación">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="10.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="16.5" width="10" height="4" rx="1.2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="10.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="16.5" width="10" height="4" rx="1.2"/></svg><span class="rail-label">Por aprobar</span><em class="rail-num" id="rail-pendientes" hidden></em>
       </button>
       <button class="rail-btn" data-view="calendario" title="Calendario">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5 H20.5"/><path d="M8 3 V6.5 M16 3 V6.5"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5 H20.5"/><path d="M8 3 V6.5 M16 3 V6.5"/></svg><span class="rail-label">Calendario</span>
       </button>
       <button class="rail-btn" data-view="fotos" title="Fotos del negocio">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 L4 15 L14 5 L18 9 L8 19 Z"/><path d="M13 6 L17 10"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16 L15 11 L6 19"/></svg><span class="rail-label">Fotos del negocio</span>
       </button>
       <button class="rail-btn" data-view="estilo" title="Mi estilo">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg><span class="rail-label">Mi estilo</span>
       </button>
-      <button class="rail-btn" data-view="resultados" title="Resultados">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg>
+      <span class="rail-grupo">Crecimiento</span>
+      <button class="rail-btn" data-view="resultados" data-tab="instagram" title="Resultados">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg><span class="rail-label">Resultados</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
       </button>
-      <button class="rail-btn spacer" data-view="config" title="Configuración del negocio">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg>
+      <button class="rail-btn" data-view="resultados" data-tab="meta" title="Publicidad">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 V14 H7 L13 18 V6 L7 10 Z"/><path d="M16.5 9.5 a3.5 3.5 0 0 1 0 5"/></svg><span class="rail-label">Publicidad</span><em class="rail-plan" data-plan-req="ads" hidden>Estudio</em>
       </button>
+      <button class="rail-btn" data-view="resultados" data-tab="competencia" title="Competencia">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10.5" r="2.3"/><path d="M3.5 19 c0.8-3.2 3-4.8 5.5-4.8 s4.7 1.6 5.5 4.8"/><path d="M15 15 c2.4-0.4 4.6 0.8 5.5 3.6"/></svg><span class="rail-label">Competencia</span><em class="rail-plan" data-plan-req="competencia" hidden>Estudio</em>
+      </button>
+      <a class="rail-btn" href="/app/informe.html" target="_blank" rel="noopener" title="Informe mensual">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5 H14 L18.5 8 V20.5 H7 Z"/><path d="M14 3.5 V8 H18.5"/><path d="M10 13 H15.5 M10 16.5 H15.5"/></svg><span class="rail-label">Informe mensual</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
+      </a>
+      <button class="rail-btn spacer" data-view="config" title="Configuración">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg><span class="rail-label">Configuración</span>
+      </button>
+      <div class="rail-planactual" id="rail-planactual" hidden></div>
     </nav>
 
     <div class="main">
