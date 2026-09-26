@@ -42,11 +42,12 @@ const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 // Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
 // hay una foto real todavía. Ya no depende del rubro (antes había un set de
 // colores por nicho) — rota por el índice de la pieza.
+// Fondo de la tarjeta mientras la pieza no tiene foto (rosados y ciruelas oscuros).
 const HUES = [
-  ['#5a3d1e', '#20140a'],
-  ['#5c2c1e', '#22100a'],
-  ['#5a4526', '#20160a'],
-  ['#4a3624', '#1c130a'],
+  ['#5a2340', '#1a0d14'],
+  ['#3d2a4a', '#140f1a'],
+  ['#6a2a45', '#1c0e15'],
+  ['#2f2a36', '#111014'],
 ];
 
 function headlineGenerico(enfoque) {

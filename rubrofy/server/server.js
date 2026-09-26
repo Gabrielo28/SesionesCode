@@ -678,7 +678,7 @@ const server = http.createServer(async (req, res) => {
           estrategia,
           email,
           auth: auth.hashPassword(password),
-          marca: { color: '#e6a23a' },
+          marca: { color: '#ff4d94' },
           plan: 'gratis',
           estiloImagen: 'limpia',
           datos: {

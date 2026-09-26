@@ -3,517 +3,259 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rubrofy — Crea, publica y mide tu Instagram, con tu aprobación</title>
-  <meta name="description" content="Rubrofy crea publicaciones para Instagram con los datos reales de tu negocio, las publica en su fecha cuando tú las apruebas y te muestra qué funciona: resultados, informe mensual, Meta Ads, Google Ads y competencia.">
+  <title>Rubrofy — Tu Instagram al día, con tu aprobación</title>
+  <meta name="description" content="Rubrofy crea publicaciones para Instagram con los datos reales de tu negocio, las publica cuando tú las apruebas y te muestra qué funciona: resultados, informe mensual, Meta Ads, Google Ads y competencia.">
+  <meta name="theme-color" content="#111014">
   <link rel="icon" href="/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <a class="aviso" href="/registro.html">Nuevo: la bienvenida arma tu estrategia de contenido en pocos minutos <span aria-hidden="true">→</span></a>
+
   <header class="top">
     <div class="wrap topinner">
-      <a class="brand" href="/">
-        <img src="/icon-512.png" alt="">
-        Rubrofy
-      </a>
+      <a class="marca" href="/" aria-label="Rubrofy, inicio"><img src="/icon-512.png" alt="">rubrofy</a>
       <nav class="links" aria-label="Secciones">
-        <a href="#plataforma">Plataforma</a>
+        <a href="#producto">Producto</a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#precios">Precios</a>
         <a href="#preguntas">Preguntas</a>
       </nav>
       <div class="top-ctas">
-        <a class="btn btn-ghost" href="/app">Iniciar sesión</a>
-        <a class="btn btn-primary solo-escritorio" href="/registro.html">Probar gratis</a>
+        <a class="btn btn-borde" href="/app">Entra</a>
+        <a class="btn btn-negro" href="/registro.html">Regístrate</a>
       </div>
     </div>
   </header>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <span class="kicker"><span class="dot"></span> Crea · Publica · Mide · Aprende</span>
-        <h1>Tu Instagram al día, con los datos de tu negocio y <span class="accent">tu visto bueno</span>.</h1>
-        <p class="lead">
-          Rubrofy escribe tus posts, carruseles, reels e historias con tus precios, promociones y fotos reales.
-          Tú apruebas y se publican solos en su fecha. Después te muestra qué funcionó, cómo va tu publicidad y
-          qué hace tu competencia.
-        </p>
-        <div class="hero-ctas">
-          <a class="btn btn-primary btn-lg" href="/registro.html">Crear cuenta gratis</a>
-          <a class="btn btn-ghost btn-lg" href="#plataforma">Ver la plataforma</a>
-        </div>
-        <ul class="hero-checks">
-          <li>Sin tarjeta para empezar</li>
-          <li>Nada se publica sin tu OK</li>
-          <li>Hecho para negocios en Chile</li>
-        </ul>
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>Tu Instagram al día sin que se te vaya la semana en eso</h1>
+        <p class="lead">Rubrofy escribe tus posts, carruseles, reels e historias con tus precios y tus fotos, los publica cuando tú los apruebas y te dice qué está funcionando.</p>
+        <a class="btn btn-negro btn-xl" href="/registro.html">Crea tu cuenta gratis</a>
+        <p class="hero-nota">Sin tarjeta · Conecta Instagram, Meta Ads y Google Ads</p>
       </div>
-
-      <div class="hero-visual" aria-hidden="true">
-        <div class="mock-window">
-          <div class="mw-bar"><span></span><span></span><span></span><em>rubrofy.com/app</em></div>
-          <div class="mw-body">
-            <div class="mw-side">
-              <i class="on"></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="mw-main">
-              <div class="mw-head">
-                <b>Cola de aprobación</b>
-                <span class="mw-stats"><em class="a">4</em> pendientes · <em class="g">7</em> programadas</span>
-              </div>
-              <div class="mw-cards">
-                <div class="post">
-                  <div class="post-img ph-1"><span class="fmt">Carrusel · 3</span><strong>Pan de masa madre, recién salido</strong></div>
-                  <div class="post-body">
-                    <span class="chip">Producto del día</span>
-                    <p>Hoy sale a las 8:00. Desde $2.500 el kilo en Panadería Migas.</p>
-                    <div class="post-actions"><span class="b-ok">Aprobar</span><span class="b-gh">Otra versión</span></div>
-                  </div>
-                </div>
-                <div class="post">
-                  <div class="post-img ph-2"><span class="fmt">Reel</span><strong>Así amasamos cada mañana</strong></div>
-                  <div class="post-body">
-                    <span class="chip">Mostrar el proceso</span>
-                    <p>Cinco de la mañana y el horno ya está encendido. ¿Te lo mostramos?</p>
-                    <div class="post-actions"><span class="b-ok">Aprobar</span><span class="b-gh">Editar</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="float f-pub"><span class="ok-dot"></span><div><b>Publicado en Instagram</b><small>Hoy · 09:00</small></div></div>
-        <div class="float f-guard"><span class="warn">!</span><div><b>Revisa antes de aprobar</b><small>"20% dcto" no está en tus datos</small></div></div>
-        <div class="float f-chart">
-          <small>Alcance · últimos 30 días</small>
-          <svg viewBox="0 0 160 48" preserveAspectRatio="none"><path d="M0 40 L16 36 L32 38 L48 30 L64 32 L80 24 L96 26 L112 18 L128 20 L144 10 L160 12" fill="none" stroke="#ffac2b" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 40 L16 36 L32 38 L48 30 L64 32 L80 24 L96 26 L112 18 L128 20 L144 10 L160 12 L160 48 L0 48 Z" fill="rgba(255,172,43,0.14)"/></svg>
-        </div>
+      <div class="wrap hero-captura">
+        <figure class="captura">
+          <img src="/img/panel-inicio.jpg" width="1440" height="900" alt="Inicio del panel de Rubrofy: qué hacer ahora, la ruta en cuatro etapas y las próximas publicaciones">
+        </figure>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ CONEXIONES ============ -->
-  <section class="conexiones">
-    <div class="wrap">
-      <p>Se conecta con las herramientas que ya usas</p>
-      <div class="con-list">
-        <span class="con"><i class="c-ig"></i>Instagram</span>
-        <span class="con"><i class="c-meta"></i>Meta Ads</span>
-        <span class="con"><i class="c-g"></i>Google Ads</span>
-        <span class="con"><i class="c-ai"></i>IA de Anthropic</span>
-        <span class="con"><i class="c-pay"></i>Pagos con Stripe</span>
+    <!-- FRASE -->
+    <section class="frase">
+      <div class="wrap">
+        <p>Tú <mark>apruebas</mark>. Rubrofy escribe, programa, publica y mide.</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ PILARES ============ -->
-  <section id="plataforma" class="pilares-sec">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">La plataforma</div>
-        <h2>Todo tu Instagram en un solo lugar</h2>
-        <p>Desde la idea hasta el informe de fin de mes. Sin saltar entre cinco herramientas distintas.</p>
-      </div>
-      <div class="pilares">
-        <a class="pilar" href="#crea">
-          <span class="p-num">01</span>
-          <h3>Crea</h3>
-          <p>Posts, carruseles, reels e historias con tus datos y tu estilo.</p>
-          <ul><li>Cola de aprobación</li><li>Mi estilo</li><li>Revisión antes de publicar</li></ul>
+    <!-- TRES TARJETAS -->
+    <section class="tarjetas" id="producto">
+      <div class="wrap tarjetas-grid">
+        <a class="tarjeta t-rosa" href="#crea">
+          <div class="t-cab"><h2>Crea con tus datos</h2><span class="flecha" aria-hidden="true">↗</span></div>
+          <p><b>Tus precios, promociones y fotos</b> en cada publicación. Nada de plantillas que sirven para cualquiera.</p>
+          <ul class="t-chips"><li>Posts</li><li>Carruseles</li><li>Reels</li><li>Historias</li></ul>
         </a>
-        <a class="pilar" href="#publica">
-          <span class="p-num">02</span>
-          <h3>Publica</h3>
-          <p>Lo que apruebas sale solo a Instagram, en su fecha y hora.</p>
-          <ul><li>Calendario</li><li>Publicación automática</li><li>Reintentos y avisos</li></ul>
+        <a class="tarjeta t-negra" href="#publica">
+          <div class="t-cab"><h2>Publica solo</h2><span class="flecha" aria-hidden="true">↗</span></div>
+          <p><b>Lo que apruebas sale a Instagram</b> en su fecha y hora. Si algo falla, reintenta y te avisa.</p>
+          <div class="t-estados"><span class="e-ok">Publicada · 09:00</span><span class="e-prog">Programada · jue 09:00</span></div>
         </a>
-        <a class="pilar" href="#mide">
-          <span class="p-num">03</span>
-          <h3>Mide</h3>
-          <p>Qué te funciona, cuándo publicar y un informe para compartir.</p>
-          <ul><li>Resultados de Instagram</li><li>Mejor horario</li><li>Informe mensual</li></ul>
-        </a>
-        <a class="pilar" href="#crece">
-          <span class="p-num">04</span>
-          <h3>Crece</h3>
-          <p>Tu publicidad y tu competencia, junto a tu contenido.</p>
-          <ul><li>Meta Ads</li><li>Google Ads</li><li>Competencia</li></ul>
+        <a class="tarjeta t-clara" href="#mide">
+          <div class="t-cab"><h2>Mide y mejora</h2><span class="flecha" aria-hidden="true">↗</span></div>
+          <p><b>Qué te funciona y cuándo publicar</b>, más un informe mensual con conclusiones en palabras simples.</p>
+          <svg class="t-graf" viewBox="0 0 300 70" aria-hidden="true"><path d="M0 60 C30 55 45 48 70 50 S110 38 135 40 S175 26 200 30 S250 14 300 10" fill="none" stroke="#111014" stroke-width="2.5" stroke-linecap="round"/></svg>
         </a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ CREA ============ -->
-  <section id="crea" class="feat">
-    <div class="wrap feat-row">
-      <div class="feat-copy">
-        <div class="eyebrow">01 · Crea</div>
-        <h2>Contenido con tus precios y tus fotos, no plantillas</h2>
-        <p>Rubrofy arma un banco de publicaciones con lo que realmente vendes: precios, promociones vigentes, tu producto estrella y las fotos de tu local. Cada pieza trae el texto, el formato y una idea de qué mostrar.</p>
-        <ul class="bullets">
-          <li><b>Cuatro formatos:</b> post, carrusel, reel e historia, con la mezcla que usas tú.</li>
-          <li><b>Tú decides:</b> apruebas, editas el texto a mano o pides otra versión.</li>
-          <li><b>Revisión automática:</b> te avisa si un texto promete algo delicado o menciona un precio o descuento que no está en tus datos.</li>
+    <!-- FUNCIONES -->
+    <section class="intro-func">
+      <div class="wrap">
+        <h2 class="titulo-grande">Pensado para el dueño<br>que no tiene tiempo</h2>
+        <p class="bajada">Porque detrás de cada negocio hay alguien atendiendo, cocinando o vendiendo, no escribiendo captions.</p>
+      </div>
+    </section>
+
+    <section class="func" id="crea">
+      <div class="wrap func-grid">
+        <div class="func-txt">
+          <h2>Estrategia <span>(hecha a tu medida)</span></h2>
+          <p>Al entrar por primera vez, Rubrofy te pregunta tu objetivo, a quién le hablas, qué te hace distinto y cuánto quieres publicar. Con eso arma tu estrategia: el tono, los temas que se van turnando y la mezcla de formatos.</p>
+          <ul class="checks"><li>Objetivo, público y tono</li><li>Cuántos posts, carruseles, reels e historias por semana</li><li>La cambias cuando quieras</li></ul>
+        </div>
+        <figure class="func-img fondo-rosa"><img src="/img/panel-estrategia.jpg" width="1440" height="900" alt="Vista Estrategia: resumen, tono y enfoques de contenido editables" loading="lazy"></figure>
+      </div>
+    </section>
+
+    <section class="func inv">
+      <div class="wrap func-grid">
+        <div class="func-txt">
+          <h2>Por aprobar <span>(nada sale sin tu OK)</span></h2>
+          <p>Cada semana llega tu contenido listo para revisar: el texto, el formato y una idea de qué foto o video usar. Apruebas, editas a mano o pides otra versión. Si un texto promete algo delicado o menciona un precio que no está en tus datos, te lo marca.</p>
+          <ul class="checks"><li>Aprende de lo que corriges y rechazas</li><li>Mi estilo: muéstrale tus publicaciones y escribe como tú</li><li>Revisión antes de publicar</li></ul>
+        </div>
+        <figure class="func-img fondo-gris"><img src="/img/panel-cola.jpg" width="1440" height="900" alt="Cola de aprobación con publicaciones aprobadas y pendientes" loading="lazy"></figure>
+      </div>
+    </section>
+
+    <section class="func" id="publica">
+      <div class="wrap func-grid">
+        <div class="func-txt">
+          <h2>Calendario <span>(que se publica solo)</span></h2>
+          <p>Lo que apruebas queda en su día y hora y sale solo a Instagram. "Generar semana" crea exactamente la mezcla de tu plan y la reparte después de lo que ya tienes programado.</p>
+          <ul class="checks"><li>Reintentos y avisos si algo falla</li><li>Publica ahora cuando no quieras esperar</li><li>Resumen por correo cada lunes</li></ul>
+        </div>
+        <figure class="func-img fondo-rosa"><img src="/img/panel-calendario.jpg" width="1440" height="900" alt="Calendario del mes con las publicaciones programadas" loading="lazy"></figure>
+      </div>
+    </section>
+
+    <section class="func inv" id="mide">
+      <div class="wrap func-grid">
+        <div class="func-txt">
+          <h2>Resultados <span>(en palabras simples)</span></h2>
+          <p>Alcance, interacciones y seguidores día a día, qué enfoques rinden más y a qué hora te conviene publicar. Cada mes, un informe listo para imprimir o compartir, con una conclusión escrita.</p>
+          <ul class="checks"><li>Mejor horario según tu público</li><li>Informe mensual</li><li>La IA aprende de tus resultados</li></ul>
+        </div>
+        <figure class="func-img fondo-gris"><img src="/img/panel-resultados.jpg" width="1440" height="900" alt="Resultados de Instagram: seguidores, alcance, interacciones y mejor horario" loading="lazy"></figure>
+      </div>
+    </section>
+
+    <section class="func" id="crece">
+      <div class="wrap func-grid">
+        <div class="func-txt">
+          <h2>Publicidad y competencia <span>(en el mismo lugar)</span></h2>
+          <p>Conecta Meta Ads y Google Ads para ver cuánto inviertes, qué obtienes y cuánto te cuesta cada resultado. Sigue hasta 5 cuentas de tu competencia y compara seguidores, frecuencia e interacción.</p>
+          <ul class="checks"><li>Meta Ads y Google Ads juntos</li><li>Costo por resultado por campaña</li><li>Comparación con tu competencia</li></ul>
+        </div>
+        <div class="func-img fondo-negro">
+          <div class="mini-tabla" role="img" aria-label="Ejemplo de tabla de campañas con inversión, resultados y costo por resultado">
+            <div class="mt-fila mt-cab"><span>Campaña</span><span>Inversión</span><span>Resultados</span><span>Costo c/u</span></div>
+            <div class="mt-fila"><span><i class="c-meta"></i>Promo miércoles</span><span>$62.400</span><span>418</span><span>$149</span></div>
+            <div class="mt-fila"><span><i class="c-g"></i>Panadería cerca</span><span>$81.900</span><span>236</span><span>$347</span></div>
+            <div class="mt-fila"><span><i class="c-meta"></i>Tortas por encargo</span><span>$40.000</span><span>91</span><span>$440</span></div>
+          </div>
+          <div class="mini-barras" role="img" aria-label="Ejemplo de comparación de interacción con la competencia">
+            <p>Interacción por publicación</p>
+            <div class="mb"><span>Tú</span><div><i style="width:78%"></i></div><b>4,8%</b></div>
+            <div class="mb otro"><span>@panaderia.centro</span><div><i style="width:56%"></i></div><b>3,4%</b></div>
+            <div class="mb otro"><span>@hornodelbarrio</span><div><i style="width:41%"></i></div><b>2,5%</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="wrap nota-ejemplos">Las capturas muestran datos de ejemplo de un negocio ficticio.</p>
+
+    <!-- CONEXIONES -->
+    <section class="conexiones" aria-label="Integraciones">
+      <div class="wrap">
+        <ul>
+          <li><i class="c-ig"></i>Instagram</li>
+          <li><i class="c-meta"></i>Meta Ads</li>
+          <li><i class="c-g"></i>Google Ads</li>
+          <li><i class="c-ai"></i>IA de Anthropic</li>
+          <li><i class="c-pay"></i>Pagos con Stripe</li>
         </ul>
       </div>
-      <div class="feat-visual" aria-hidden="true">
-        <div class="v-card v-crea">
-          <div class="fmt-tabs"><span>Post</span><span class="on">Carrusel</span><span>Reel</span><span>Historia</span></div>
-          <div class="crea-body">
-            <div class="crea-slides">
-              <div class="sl ph-1"><b>1</b></div><div class="sl ph-3"><b>2</b></div><div class="sl ph-2"><b>3</b></div>
-            </div>
-            <div class="crea-txt">
-              <span class="chip">Precio y datos · 30 sep · 09:00</span>
-              <p>2x1 en masas los miércoles en Panadería Migas. Desde $2.500 combo pan + café. ☕</p>
-              <div class="idea"><b>Idea:</b> 3 fotos del mesón con buena luz, el precio en la última.</div>
-              <div class="alerta"><span class="warn">!</span>Menciona "garantizado": evita prometer resultados.</div>
-              <div class="post-actions"><span class="b-ok">Aprobar</span><span class="b-gh">Otra versión</span><span class="b-gh">Editar</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ MI ESTILO ============ -->
-  <section class="feat">
-    <div class="wrap feat-row inv">
-      <div class="feat-copy">
-        <div class="eyebrow">01 · Crea · Mi estilo</div>
-        <h2>Aprende cómo hablas tú</h2>
-        <p>Muéstrale lo que ya publicaste —posts, carruseles, reels e historias— o impórtalo directo desde tu Instagram. Rubrofy arma una guía con tu tono, tus temas y tu mezcla de formatos, y la usa en cada texto nuevo.</p>
-        <ul class="bullets">
-          <li><b>Aprende de tus correcciones:</b> lo que editas y lo que rechazas cuenta.</li>
-          <li><b>Aprende de tus resultados:</b> repite los enfoques que mejor te funcionan.</li>
-          <li><b>Sugiere qué mostrar</b> en cada foto o video, pensando en tu rubro.</li>
+    <!-- RUTA (franja oscura) -->
+    <section class="oscura" id="como-funciona">
+      <div class="wrap">
+        <h2 class="titulo-grande">Tu ruta en Rubrofy</h2>
+        <p class="bajada">Lo configuras una vez. Después es un ciclo corto cada semana y una revisión cada mes. Tu panel te dice siempre qué te toca.</p>
+        <ol class="ruta">
+          <li>
+            <span class="num">01</span>
+            <div><h3>Configura <em>una vez</em></h3>
+            <p>Tu objetivo, tu público, cuánto publicar, tus fotos y tu estilo. Conectas Instagram iniciando sesión.</p></div>
+          </li>
+          <li>
+            <span class="num">02</span>
+            <div><h3>Crea <em>cada semana</em></h3>
+            <p>Generas la semana, apruebas y subes los videos de tus reels. Se publica solo.</p></div>
+          </li>
+          <li>
+            <span class="num">03</span>
+            <div><h3>Mide <em>automático</em></h3>
+            <p>Resultados y mejor horario (Pro). Publicidad y competencia (Estudio).</p></div>
+          </li>
+          <li>
+            <span class="num">04</span>
+            <div><h3>Mejora <em>cada mes</em></h3>
+            <p>Lees tu informe (Pro) y ajustas la estrategia. El mes siguiente sale mejor.</p></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- RUBROS -->
+    <section class="rubros">
+      <div class="wrap">
+        <h2 class="titulo-medio">Se adapta a tu rubro</h2>
+        <p class="bajada">Nos cuentas a qué se dedica tu negocio y Rubrofy arma su propio tono, temas y categorías de foto.</p>
+        <ul class="nichos">
+          <li>Panadería y cafetería</li><li>Turismo y hospedaje</li><li>Clínica dental</li><li>Restaurantes</li>
+          <li>Peluquería y estética</li><li>Tiendas y emprendimientos</li><li>Servicios profesionales</li><li class="otro">Y cualquier otro rubro</li>
         </ul>
       </div>
-      <div class="feat-visual" aria-hidden="true">
-        <div class="v-card v-estilo">
-          <div class="ref-grid">
-            <div class="ref ph-1"><span>Post</span></div>
-            <div class="ref ph-2"><span>Reel</span></div>
-            <div class="ref ph-3"><span>Carrusel</span></div>
-            <div class="ref ph-4"><span>Historia</span></div>
-            <div class="ref ph-2"><span>Post</span></div>
-            <div class="ref ph-1"><span>Reel</span></div>
-          </div>
-          <div class="guia">
-            <span class="kick">Tu guía de estilo</span>
-            <div class="g-row"><em>Tono</em><p>Cercano y de barrio, con humor suave. Tutea.</p></div>
-            <div class="g-row"><em>Temas</em><p>Horneado del día · Precios claros · El equipo</p></div>
-            <div class="g-row"><em>Formatos</em>
-              <div class="mix"><span style="width:45%">Posts</span><span style="width:30%">Reels</span><span style="width:25%">Historias</span></div>
-            </div>
-          </div>
+    </section>
+
+    <!-- PRECIOS -->
+    <section id="precios" class="precios">
+      <div class="wrap">
+        <h2 class="titulo-grande">Empieza gratis</h2>
+        <p class="bajada">Precios mensuales por negocio, en pesos chilenos. Sin permanencia: cambias o cancelas cuando quieras.</p>
+        <div class="planes" id="planes"><p class="planes-cargando">Cargando planes…</p></div>
+        <div class="comparar" id="comparar" hidden>
+          <h3>Compara los planes</h3>
+          <div class="tabla-scroll"><table class="tabla-planes" id="tabla-planes"></table></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ PUBLICA ============ -->
-  <section id="publica" class="feat">
-    <div class="wrap feat-row">
-      <div class="feat-copy">
-        <div class="eyebrow">02 · Publica</div>
-        <h2>Aprobaste el lunes, sale el jueves a las 9:00</h2>
-        <p>Cada pieza aprobada queda en tu calendario con su fecha y hora, y se publica sola en Instagram. Si Instagram falla, Rubrofy reintenta; si tu conexión vence, te avisa para reconectar sin perder nada.</p>
-        <ul class="bullets">
-          <li><b>Calendario del mes</b> con cada publicación en su día.</li>
-          <li><b>Publica ahora</b> cuando no quieres esperar.</li>
-          <li><b>Sin duplicados:</b> revisa antes de volver a publicar algo.</li>
-        </ul>
-      </div>
-      <div class="feat-visual" aria-hidden="true">
-        <div class="v-card v-cal">
-          <div class="cal-top"><b>Octubre</b><span>7 programadas · 3 publicadas</span></div>
-          <div class="cal-w"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
-          <div class="cal-g">
-            <div class="d"><em>1</em><i class="c-ok"></i></div><div class="d"><em>2</em></div><div class="d"><em>3</em><i class="c-ok"></i></div><div class="d"><em>4</em></div><div class="d"><em>5</em><i class="c-ok"></i></div><div class="d"><em>6</em></div><div class="d"><em>7</em></div>
-            <div class="d hoy"><em>8</em><i class="c-prog"></i></div><div class="d"><em>9</em></div><div class="d"><em>10</em><i class="c-prog"></i><i class="c-hist"></i></div><div class="d"><em>11</em></div><div class="d"><em>12</em><i class="c-prog"></i></div><div class="d"><em>13</em></div><div class="d"><em>14</em></div>
-            <div class="d"><em>15</em><i class="c-prog"></i></div><div class="d"><em>16</em></div><div class="d"><em>17</em><i class="c-pend"></i></div><div class="d"><em>18</em></div><div class="d"><em>19</em><i class="c-prog"></i></div><div class="d"><em>20</em></div><div class="d"><em>21</em></div>
-          </div>
-          <div class="cal-list">
-            <div class="cl"><span class="st ok">Publicada</span><p>Pan de masa madre · Carrusel</p><em>1 oct · 09:00</em></div>
-            <div class="cl"><span class="st prog">Programada</span><p>2x1 los miércoles · Post</p><em>8 oct · 09:00</em></div>
-            <div class="cl"><span class="st re">Reintentando</span><p>Así amasamos · Reel</p><em>en 5 min</em></div>
-          </div>
+    <!-- PREGUNTAS -->
+    <section id="preguntas" class="preguntas">
+      <div class="wrap faq-grid">
+        <h2 class="titulo-medio">Preguntas frecuentes</h2>
+        <div class="faq">
+          <details><summary>¿Se puede publicar algo sin que yo lo apruebe?</summary><p>No. Solo se publica lo que apruebas. Puedes editar el texto, pedir otra versión o deshacer la aprobación mientras la pieza no haya salido.</p></details>
+          <details><summary>¿Qué necesito para publicar en Instagram?</summary><p>Una cuenta profesional de Instagram (de empresa o de creador). La conectas una vez desde tu panel y desde ahí Rubrofy publica lo que apruebes en su fecha y hora.</p></details>
+          <details><summary>¿Qué formatos crea?</summary><p>Posts, carruseles, reels e historias. Eliges cuántos de cada uno quieres por semana. Para reels e historias con video, subes tu video y Rubrofy se encarga de publicarlo.</p></details>
+          <details><summary>¿Cómo aprende mi estilo?</summary><p>Desde "Mi estilo" subes o importas desde Instagram lo que ya publicaste. Rubrofy arma una guía con tu tono, temas y mezcla de formatos, y también aprende de lo que corriges, rechazas y de lo que mejor te funciona.</p></details>
+          <details><summary>¿Necesito hacer publicidad para usar Rubrofy?</summary><p>No. Meta Ads y Google Ads son opcionales y están en el plan Estudio. Sin publicidad igual tienes contenido, calendario, publicación automática y resultados.</p></details>
+          <details><summary>¿Puedo cancelar cuando quiera?</summary><p>Sí. No hay permanencia: cambias de plan o cancelas desde tu panel. También puedes eliminar tu negocio y todos sus datos cuando quieras.</p></details>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ MIDE ============ -->
-  <section id="mide" class="feat">
-    <div class="wrap feat-row inv">
-      <div class="feat-copy">
-        <div class="eyebrow">03 · Mide</div>
-        <h2>Qué te funciona, en palabras simples</h2>
-        <p>Rubrofy lee los resultados de tu Instagram y te dice qué publicaciones rinden más, qué enfoques conviene repetir y a qué hora te conviene publicar. Con eso también aprende a escribir mejor para ti.</p>
-        <ul class="bullets">
-          <li><b>Alcance, interacciones y seguidores</b> día a día.</li>
-          <li><b>Mejor horario</b> según cuándo reacciona tu público.</li>
-          <li><b>Informe mensual</b> listo para imprimir o compartir, con una conclusión escrita.</li>
-        </ul>
-      </div>
-      <div class="feat-visual" aria-hidden="true">
-        <div class="v-card v-mide">
-          <div class="kpis">
-            <div class="kpi"><small>Alcance</small><b>12.480</b><em class="up">▲ 18%</em></div>
-            <div class="kpi"><small>Interacciones</small><b>1.126</b><em class="up">▲ 9%</em></div>
-            <div class="kpi"><small>Seguidores</small><b>2.341</b><em class="up">+64</em></div>
-          </div>
-          <div class="chart">
-            <svg viewBox="0 0 320 110" preserveAspectRatio="none">
-              <g stroke="#3a2c1e" stroke-width="1"><path d="M0 22 H320 M0 55 H320 M0 88 H320"/></g>
-              <path d="M0 92 C20 88 30 80 46 82 S76 70 92 72 S122 58 138 62 S168 44 184 50 S214 40 230 36 S262 28 276 30 S304 18 320 16" fill="none" stroke="#cc7f14" stroke-width="2.6"/>
-              <path d="M0 92 C20 88 30 80 46 82 S76 70 92 72 S122 58 138 62 S168 44 184 50 S214 40 230 36 S262 28 276 30 S304 18 320 16 L320 110 L0 110 Z" fill="rgba(204,127,20,0.16)"/>
-              <circle cx="320" cy="16" r="4" fill="#ffac2b"/>
-            </svg>
-          </div>
-          <div class="mide-bottom">
-            <div class="heat">
-              <small>Mejor horario</small>
-              <div class="hm">
-                <i style="--o:.15"></i><i style="--o:.3"></i><i style="--o:.55"></i><i style="--o:.9"></i><i style="--o:.4"></i><i style="--o:.2"></i>
-                <i style="--o:.2"></i><i style="--o:.45"></i><i style="--o:.7"></i><i style="--o:1"></i><i style="--o:.5"></i><i style="--o:.25"></i>
-                <i style="--o:.1"></i><i style="--o:.25"></i><i style="--o:.4"></i><i style="--o:.6"></i><i style="--o:.8"></i><i style="--o:.35"></i>
-              </div>
-              <em>Jueves · 19:00</em>
-            </div>
-            <div class="informe">
-              <small>Informe de septiembre</small>
-              <p>"Los carruseles con precio visible tuvieron el doble de guardados. Conviene repetirlos los jueves."</p>
-              <span class="b-gh">Guardar en PDF</span>
-            </div>
-          </div>
+    <!-- CTA -->
+    <section class="cta">
+      <div class="wrap">
+        <div class="cta-caja">
+          <h2>Prueba Rubrofy con tu propio negocio</h2>
+          <p>Configura tu rubro, cuéntale tu objetivo y ve tu primera semana de contenido.</p>
+          <a class="btn btn-negro btn-xl" href="/registro.html">Crea tu cuenta gratis</a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- ============ CRECE ============ -->
-  <section id="crece" class="feat">
-    <div class="wrap feat-row">
-      <div class="feat-copy">
-        <div class="eyebrow">04 · Crece</div>
-        <h2>Tu publicidad y tu competencia, al lado de tu contenido</h2>
-        <p>Conecta Meta Ads y Google Ads para ver en un solo tablero cuánto inviertes, qué obtienes y cuánto te cuesta cada resultado. Y sigue hasta 5 cuentas de la competencia para comparar seguidores, frecuencia e interacción.</p>
-        <ul class="bullets">
-          <li><b>Meta Ads y Google Ads</b> juntos, sin entrar a dos paneles.</li>
-          <li><b>Costo por resultado</b> por campaña, día a día.</li>
-          <li><b>Competencia:</b> cómo te comparas y qué publican más.</li>
-        </ul>
-      </div>
-      <div class="feat-visual" aria-hidden="true">
-        <div class="v-card v-crece">
-          <div class="ads">
-            <div class="ads-head"><b>Publicidad · últimos 30 días</b><span>Inversión $184.300</span></div>
-            <div class="ads-row h"><span>Campaña</span><span>Inversión</span><span>Resultados</span><span>Costo c/u</span></div>
-            <div class="ads-row"><span><i class="c-meta"></i>Promo miércoles</span><span>$62.400</span><span>418</span><span>$149</span></div>
-            <div class="ads-row"><span><i class="c-g"></i>Panadería cerca</span><span>$81.900</span><span>236</span><span>$347</span></div>
-            <div class="ads-row"><span><i class="c-meta"></i>Tortas por encargo</span><span>$40.000</span><span>91</span><span>$440</span></div>
-          </div>
-          <div class="comp">
-            <div class="ads-head"><b>Competencia · interacción por post</b></div>
-            <div class="bar-r tu"><span>Tú</span><div><i style="width:78%"></i></div><em>4,8%</em></div>
-            <div class="bar-r"><span>@panaderia.centro</span><div><i style="width:56%"></i></div><em>3,4%</em></div>
-            <div class="bar-r"><span>@hornodelbarrio</span><div><i style="width:41%"></i></div><em>2,5%</em></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <p class="wrap nota-ejemplos">Las pantallas de esta página muestran datos de ejemplo de un negocio ficticio.</p>
-
-  <!-- ============ POR QUÉ ============ -->
-  <section class="porque">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">Por qué Rubrofy</div>
-        <h2>Pensado para el dueño que no tiene tiempo</h2>
-      </div>
-      <div class="porque-grid">
-        <div class="pq">
-          <div class="pq-ic"><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17 L19 7.5"/></svg></div>
-          <h3>Tú apruebas todo</h3>
-          <p>Nada sale a Instagram sin tu visto bueno. Siempre puedes editar, pedir otra versión o deshacer.</p>
-        </div>
-        <div class="pq">
-          <div class="pq-ic"><svg viewBox="0 0 24 24"><path d="M4 7 H20 M4 12 H20 M4 17 H13"/></svg></div>
-          <h3>Datos reales, no inventos</h3>
-          <p>Los textos usan tus precios y promociones. Si algo no calza con tus datos, te lo marca.</p>
-        </div>
-        <div class="pq">
-          <div class="pq-ic"><svg viewBox="0 0 24 24"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg></div>
-          <h3>Mejora cada mes</h3>
-          <p>Aprende de tu estilo, de tus correcciones y de tus resultados. Mientras más lo usas, más suena a ti.</p>
-        </div>
-        <div class="pq">
-          <div class="pq-ic"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5 V7.5 a4 4 0 0 1 8 0 V10.5"/></svg></div>
-          <h3>Tu cuenta es solo tuya</h3>
-          <p>Cada negocio tiene su propia cuenta y sus propios datos. Puedes eliminarla con todo su contenido cuando quieras.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CÓMO FUNCIONA: LA RUTA ============ -->
-  <section id="como-funciona">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">Cómo funciona</div>
-        <h2>Tu ruta con Rubrofy</h2>
-        <p>Lo configuras una vez. Después es un ciclo corto cada semana y una revisión cada mes. Tu panel te dice siempre qué te toca.</p>
-      </div>
-      <ol class="ruta">
-        <li class="ruta-paso">
-          <span class="ruta-cuando">Una vez</span>
-          <h3><em>1</em> Configura</h3>
-          <p>Cuéntale tu objetivo, a quién le hablas y cuánto quieres publicar. La IA arma tu estrategia y tú la ajustas.</p>
-          <ul><li>Datos, objetivo y tono</li><li>Conecta Instagram</li><li>Sube tus fotos</li><li>Muéstrale tu estilo</li></ul>
-        </li>
-        <li class="ruta-paso">
-          <span class="ruta-cuando">Cada semana</span>
-          <h3><em>2</em> Crea</h3>
-          <p>Genera la semana con la mezcla que elegiste, revisa, aprueba y sube los videos de tus reels. Se publica solo.</p>
-          <ul><li>Generar semana</li><li>Aprobar o pedir otra versión</li><li>Calendario automático</li></ul>
-        </li>
-        <li class="ruta-paso">
-          <span class="ruta-cuando">Automático</span>
-          <h3><em>3</em> Mide</h3>
-          <p>Rubrofy lee tus resultados, tu publicidad y a tu competencia, y aprende qué te funciona.</p>
-          <ul><li>Resultados y mejor horario <span class="ruta-plan">Pro</span></li><li>Meta Ads y Google Ads <span class="ruta-plan">Estudio</span></li><li>Competencia <span class="ruta-plan">Estudio</span></li></ul>
-        </li>
-        <li class="ruta-paso">
-          <span class="ruta-cuando">Cada mes</span>
-          <h3><em>4</em> Mejora</h3>
-          <p>Lee tu informe con una conclusión escrita y ajusta la estrategia. El mes siguiente sale mejor.</p>
-          <ul><li>Informe mensual <span class="ruta-plan">Pro</span></li><li>Ajusta objetivo y temas</li></ul>
-        </li>
-      </ol>
-      <p class="ruta-ciclo">↻ Crea, mide y mejora se repiten: cada semana y cada mes Rubrofy escribe más como tú.</p>
-    </div>
-  </section>
-
-  <!-- ============ RUBROS ============ -->
-  <section id="rubros">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">Para tu rubro</div>
-        <h2>Se adapta a lo que haces</h2>
-        <p>Nos cuentas a qué se dedica tu negocio y Rubrofy arma su propio tono, enfoques de contenido y categorías de foto. Sirve para cualquier rubro, no solo para una lista fija.</p>
-      </div>
-      <div class="nichos">
-        <span class="nicho-pill">Turismo y hospedaje</span>
-        <span class="nicho-pill">Panadería y cafetería</span>
-        <span class="nicho-pill">Clínica dental</span>
-        <span class="nicho-pill">Restaurantes</span>
-        <span class="nicho-pill">Peluquería y estética</span>
-        <span class="nicho-pill">Tiendas y emprendimientos</span>
-        <span class="nicho-pill">Servicios profesionales</span>
-        <span class="nicho-pill otro">Y cualquier otro rubro</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PRECIOS ============ -->
-  <section id="precios">
-    <div class="wrap">
-      <div class="section-head">
-        <div class="eyebrow">Precios</div>
-        <h2>Empieza gratis, sube cuando lo necesites</h2>
-        <p>Precios mensuales por negocio, en pesos chilenos. Sin permanencia: cambias o cancelas cuando quieras.</p>
-      </div>
-      <div class="planes" id="planes">
-        <p class="planes-cargando">Cargando planes…</p>
-      </div>
-      <div class="comparar" id="comparar" hidden>
-        <h3>Compara los planes</h3>
-        <div class="tabla-scroll">
-          <table class="tabla-planes" id="tabla-planes"></table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PREGUNTAS ============ -->
-  <section id="preguntas">
-    <div class="wrap faq-wrap">
-      <div class="section-head">
-        <div class="eyebrow">Preguntas frecuentes</div>
-        <h2>Lo que suelen preguntarnos</h2>
-      </div>
-      <div class="faq">
-        <details>
-          <summary>¿Se puede publicar algo sin que yo lo apruebe?</summary>
-          <p>No. Solo se publica lo que apruebas. Puedes editar el texto, pedir otra versión o deshacer la aprobación mientras la pieza no haya salido.</p>
-        </details>
-        <details>
-          <summary>¿Qué necesito para publicar en Instagram?</summary>
-          <p>Una cuenta profesional de Instagram (de empresa o de creador). La conectas una vez desde tu panel y desde ahí Rubrofy publica lo que apruebes en su fecha y hora.</p>
-        </details>
-        <details>
-          <summary>¿Qué formatos crea?</summary>
-          <p>Posts, carruseles, reels e historias. Para reels e historias con video, subes tu video y Rubrofy se encarga de la publicación.</p>
-        </details>
-        <details>
-          <summary>¿Cómo aprende mi estilo?</summary>
-          <p>Desde "Mi estilo" subes o importas desde Instagram lo que ya publicaste. Rubrofy arma una guía con tu tono, temas y mezcla de formatos. También aprende de lo que corriges, rechazas y de lo que mejor te funciona.</p>
-        </details>
-        <details>
-          <summary>¿Necesito tener publicidad para usar Rubrofy?</summary>
-          <p>No. Meta Ads y Google Ads son opcionales y están en el plan Estudio. Si no haces publicidad, igual tienes contenido, calendario, publicación automática y resultados.</p>
-        </details>
-        <details>
-          <summary>¿Puedo cancelar cuando quiera?</summary>
-          <p>Sí. No hay permanencia: cambias de plan o cancelas desde tu panel. También puedes eliminar tu negocio y todos sus datos cuando quieras.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CTA FINAL ============ -->
-  <section id="empezar">
-    <div class="wrap cta-final">
-      <div class="box">
-        <h2>Prueba Rubrofy con tu propio negocio</h2>
-        <p>Configura tu rubro, carga tus datos y ve tu primer banco de contenido en minutos.</p>
-        <div class="hero-ctas">
-          <a class="btn btn-primary btn-lg" href="/registro.html">Crear cuenta gratis</a>
-          <a class="btn btn-ghost btn-lg" href="/app">Ya tengo cuenta</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="wrap footgrid">
-      <div class="fcol fbrand">
-        <a class="brand" href="/"><img src="/icon-512.png" alt="">Rubrofy</a>
+  <footer class="pie">
+    <div class="wrap pie-grid">
+      <div class="pie-marca">
+        <a class="marca" href="/"><img src="/icon-512.png" alt="">rubrofy</a>
         <p>Contenido para Instagram con los datos de tu negocio y tu aprobación.</p>
       </div>
-      <div class="fcol">
-        <b>Plataforma</b>
-        <a href="#crea">Crea</a>
-        <a href="#publica">Publica</a>
-        <a href="#mide">Mide</a>
-        <a href="#crece">Crece</a>
-      </div>
-      <div class="fcol">
-        <b>Rubrofy</b>
-        <a href="#precios">Precios</a>
-        <a href="#preguntas">Preguntas</a>
-        <a href="/registro.html">Crear cuenta</a>
-        <a href="/app">Iniciar sesión</a>
-      </div>
+      <div class="pie-col"><b>Producto</b><a href="#crea">Estrategia</a><a href="#publica">Calendario</a><a href="#mide">Resultados</a><a href="#crece">Publicidad y competencia</a></div>
+      <div class="pie-col"><b>Rubrofy</b><a href="#precios">Precios</a><a href="#preguntas">Preguntas</a><a href="/registro.html">Crear cuenta</a><a href="/app">Entrar</a></div>
     </div>
-    <div class="wrap fbottom">© 2026 Rubrofy</div>
+    <div class="wrap pie-fin">© 2026 Rubrofy</div>
   </footer>
 
   <script>
@@ -525,7 +267,6 @@
         pro: ['Todo lo del plan Gratis', 'La IA escribe con tu voz y aprende de tus correcciones', 'Guía de estilo aprendida de tu contenido', 'Resultados de Instagram y mejor horario', 'Informe mensual para compartir'],
         estudio: ['Todo lo del plan Pro', 'Fotos generadas con IA', 'Meta Ads y Google Ads en un solo lugar', 'Seguimiento de hasta 5 competidores', 'Todo en el informe mensual'],
       };
-      // Filas de la tabla comparativa: cada una dice, para un plan, qué mostrar.
       var FILAS = [
         ['Cola de aprobación y calendario', function () { return true; }],
         ['Publicación automática en Instagram', function () { return true; }],
@@ -556,7 +297,7 @@
             (p.id === 'pro' ? '<span class="plan-etiqueta">Recomendado</span>' : '') +
             '<h3>' + esc(p.nombre) + '</h3><div class="plan-precio">' + precio(p) + '</div>' +
             '<ul>' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
-            '<a class="btn ' + (p.id === 'pro' ? 'btn-primary' : 'btn-ghost') + '" href="/registro.html">' + (p.precioClp ? 'Empezar con ' + esc(p.nombre) : 'Crear cuenta gratis') + '</a>' +
+            '<a class="btn ' + (p.id === 'pro' ? 'btn-rosa' : 'btn-borde') + '" href="/registro.html">' + (p.precioClp ? 'Empezar con ' + esc(p.nombre) : 'Crear cuenta gratis') + '</a>' +
             '</div>';
         }).join('');
         document.getElementById('tabla-planes').innerHTML =

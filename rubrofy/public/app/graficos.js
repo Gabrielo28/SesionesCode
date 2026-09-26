@@ -170,7 +170,7 @@
   // la escala secuencial se invierte). Celdas sin posts quedan vacías.
   // Rampa por defecto: fondo oscuro (más = más claro). El informe impreso
   // pasa la suya para fondo blanco (más = más oscuro).
-  const RAMPA = ['#3b2a17', '#6a4a1b', '#9a6619', '#cc7f14', '#f3a33a'];
+  const RAMPA = ['#3a1a29', '#6b2447', '#a32f66', '#d9437f', '#ff7fb0']; // un tono, L 0.27 → 0.76
   function mapaCalor(celdas, filas, columnas, rampa) {
     const RAMPA_USADA = rampa || RAMPA;
     const div = document.createElement('div');

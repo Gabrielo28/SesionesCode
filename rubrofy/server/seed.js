@@ -51,7 +51,7 @@ const NEGOCIOS_EJEMPLO = [
     id: 'panaderia-migas',
     nombre: 'Panadería Migas',
     email: 'demo-panaderia@rubrofy.com',
-    marca: { color: '#e6a23a' },
+    marca: { color: '#ff4d94' },
     plan: 'pro',
     estiloImagen: 'limpia',
     estrategia: {

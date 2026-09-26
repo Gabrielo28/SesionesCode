@@ -10,7 +10,7 @@
   const compartido = !!token;
   let negocioId = params.get('n');
   let mes = params.get('mes');
-  const RAMPA_CLARA = ['#f5e6cc', '#e9c68a', '#d9a24d', '#b86e0c', '#7e4a06'];
+  const RAMPA_CLARA = ['#fbe3ee', '#f5b3cf', '#e56d9f', '#c2185b', '#7f0f3c']; // un tono, L 0.94 → 0.39
   const DIAS = [
     { id: 1, label: 'Lunes' }, { id: 2, label: 'Martes' }, { id: 3, label: 'Miércoles' }, { id: 4, label: 'Jueves' },
     { id: 5, label: 'Viernes' }, { id: 6, label: 'Sábado' }, { id: 0, label: 'Domingo' },

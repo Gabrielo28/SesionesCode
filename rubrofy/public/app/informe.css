@@ -1,35 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* Informe pensado para leer, imprimir y compartir: fondo claro. Los tokens
    se llaman igual que en el panel para reutilizar graficos.js; el acento de
-   datos (#b86e0c) está validado para fondo blanco (L 0.43-0.77, >= 3:1). */
+   datos (#c2185b) está validado para fondo blanco (L 0.43-0.77, >= 3:1). */
 :root {
-  --bg: #f6f3ee;
+  --bg: #f7f5f8;
   --surface: #ffffff;
-  --border: #e6ded2;
-  --ink: #1f1a14;
-  --ink-dim: #5b5045;
-  --ink-faint: #8f8578;
+  --border: #e7e2ea;
+  --ink: #16131a;
+  --ink-dim: #5a5460;
+  --ink-faint: #7a7480;
   --green: #1f8a3c;
   --coral: #c2412a;
-  --amber: #b86e0c;
-  --viz-acento: #b86e0c;
-  --viz-gris: #8f8578;
+  --amber: #c2185b;
+  --viz-acento: #c2185b;
+  --viz-gris: #c9c3cd;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Instrument Sans', sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; }
 
 .barra {
   position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  padding: 10px 24px; background: #1d1610; color: #f5efe4; font-size: 13px;
+  padding: 10px 24px; background: #19181c; color: #f6f3f7; font-size: 13px;
 }
-.barra a { color: #ffac2b; text-decoration: none; margin-right: auto; }
+.barra a { color: #ff4d94; text-decoration: none; margin-right: auto; }
 .barra select, .barra button {
-  font: inherit; background: #2a2016; color: #f5efe4; border: 1px solid #3a2c1e; border-radius: 6px; padding: 5px 10px;
+  font: inherit; background: #2a2016; color: #f6f3f7; border: 1px solid #3a2c1e; border-radius: 6px; padding: 5px 10px;
 }
 .barra button { cursor: pointer; }
-.barra button.primario { background: #ffac2b; color: #1d1610; border-color: #ffac2b; font-weight: 600; }
+.barra button.primario { background: #ff4d94; color: #19181c; border-color: #ff4d94; font-weight: 600; }
 #barra-msg { color: #b9a892; font-size: 12px; }
 
 main { max-width: 920px; margin: 24px auto 60px; padding: 0 20px; display: flex; flex-direction: column; gap: 16px; }

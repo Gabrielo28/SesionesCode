@@ -164,13 +164,13 @@
       ctx.fillStyle = '#f3ede1';
       ctx.fill();
       ctx.fillStyle = '#161310';
-      ctx.font = '700 15px "Instrument Sans", sans-serif';
+      ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(inicial, 30, 31);
 
       ctx.fillStyle = '#f8f4ea';
-      ctx.font = '700 26px "Instrument Sans", sans-serif';
+      ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
       const lines = headline.split('\n');
