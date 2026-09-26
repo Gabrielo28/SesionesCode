@@ -656,12 +656,16 @@
   }
   function tabMenu() { return tabResultados === 'google' ? 'meta' : tabResultados; }
 
-  function irAVista(vista, tab) {
+  // ancla: id de una sección dentro de la vista (ej: 'cfg-plan').
+  function irAVista(vista, tab, ancla) {
     vistaActual = vista;
     if (tab) tabResultados = tab;
     marcarMenu();
     for (const v of VISTAS) $('#view-' + v).hidden = v !== vista;
     render();
+    const destino = ancla && document.getElementById(ancla);
+    if (destino) destino.scrollIntoView({ block: 'start' });
+    else $('#view-' + vista).scrollTop = 0;
   }
 
   // Etiquetas del menú: pendientes por aprobar y qué plan pide cada sección.

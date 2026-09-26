@@ -155,6 +155,25 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## La ruta del cliente (server/ruta.js, public/app/inicio.js)
+
+El panel y el sitio siguen la misma ruta de cuatro etapas:
+
+| Etapa | Cuándo | Pasos |
+|---|---|---|
+| 1. Configura | Una vez | Bienvenida (datos, objetivo, tono, cuánto publicar, estrategia), conectar Instagram, fotos en cada categoría, 5 ejemplos en Mi estilo |
+| 2. Crea | Cada semana | Tener lista la próxima semana (según el plan), aprobar, subir videos de reels y fotos que faltan, corregir lo que no se pudo publicar |
+| 3. Mide | Automático | Resultados (Pro), publicidad con Meta/Google Ads (Estudio), competencia (Estudio) |
+| 4. Mejora | Cada mes | Leer el informe del mes anterior (Pro) y ajustar la estrategia |
+
+`GET /api/negocios/:id/ruta` calcula el estado de cada paso con los datos
+reales (hecho, pendiente, bloqueado por plan o próximo), la etapa en que va
+el negocio y las 3 acciones más urgentes ("Qué hacer ahora" en Inicio). Lo
+urgente primero: publicaciones fallidas, Instagram por reconectar, lo que
+sale en los próximos 3 días sin aprobar o sin video/foto. El menú del panel
+está agrupado por estas etapas. `POST /api/negocios/:id/ruta/informe-visto`
+marca el informe del mes como leído.
+
 ## Bienvenida, estrategia y plan semanal (server/plan-contenido.js, public/app/bienvenida.js)
 
 Al registrarse ya no se genera contenido de inmediato. La primera vez que el

@@ -10,6 +10,7 @@ const store = require('./store');
 const auth = require('./auth');
 const { generarEstrategia, editar: editarEstrategia } = require('./estrategia');
 const planContenido = require('./plan-contenido');
+const ruta = require('./ruta');
 const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
 const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
@@ -863,6 +864,7 @@ const server = http.createServer(async (req, res) => {
           const r = editarEstrategia(negocio.estrategia, await readBody(req));
           if (r.error) return sendJSON(res, 400, { error: r.error });
           negocio.estrategia = r.estrategia;
+          negocio.estrategiaRevisadaEl = new Date().toISOString();
           store.saveNegocio(negocio);
           return sendJSON(res, 200, negocio.estrategia);
         }
@@ -882,6 +884,7 @@ const server = http.createServer(async (req, res) => {
           });
           const actual = store.getNegocio(negocioId); // releído: Claude tarda
           actual.estrategia = nueva;
+          actual.estrategiaRevisadaEl = new Date().toISOString();
           store.saveNegocio(actual);
           return sendJSON(res, 200, nueva);
         }
@@ -891,8 +894,33 @@ const server = http.createServer(async (req, res) => {
           const r = planContenido.normalizar(await readBody(req));
           if (r.error) return sendJSON(res, 400, { error: r.error });
           negocio.planContenido = r.plan;
+          negocio.estrategiaRevisadaEl = new Date().toISOString();
           store.saveNegocio(negocio);
           return sendJSON(res, 200, negocioPublico(negocio));
+        }
+
+        // GET /api/negocios/:id/ruta — en qué etapa va y qué le toca ahora (ver server/ruta.js)
+        if (parts[3] === 'ruta' && parts.length === 4 && req.method === 'GET') {
+          return sendJSON(res, 200, ruta.calcular({
+            negocio: negocioPublico(negocio),
+            plan: getPlan(negocio.plan),
+            contenido: store.getContenido(negocioId),
+            fotos: store.listFotos(negocioId),
+            referencias: estilo.listar(negocioId).length,
+            competidores: competencia.contar(negocioId),
+            fotosIA: process.env.OPENAI_API_KEY ? fotosIADisponibles(negocio) : 0,
+            syncInstagram: analitica.estadoSync(negocioId, 'instagram'),
+            mesHoy: informe.mesActual(),
+          }));
+        }
+
+        // POST /api/negocios/:id/ruta/informe-visto  { mes } — el dueño abrió su informe
+        if (parts[3] === 'ruta' && parts[4] === 'informe-visto' && parts.length === 5 && req.method === 'POST') {
+          const body = await readBody(req);
+          if (!informe.mesValido(body.mes)) return sendJSON(res, 400, { error: 'Mes inválido' });
+          negocio.ruta = Object.assign({}, negocio.ruta, { informeVisto: body.mes });
+          store.saveNegocio(negocio);
+          return sendJSON(res, 200, { ok: true });
         }
 
         // POST /api/negocios/:id/bienvenida  { reemplazar } — termina la

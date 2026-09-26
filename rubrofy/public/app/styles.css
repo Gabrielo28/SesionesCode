@@ -522,20 +522,6 @@ a { color: var(--amber); }
 .ini-acciones { display: flex; gap: 8px; }
 .ini-acciones .btn-approve { flex: none; padding: 10px 18px; font-size: 13px; }
 .ini-acciones .btn-ghost { padding: 10px 16px; font-size: 13px; }
-.ini-pasos { margin-bottom: 16px; }
-.ini-prog-txt { font-size: 12px; color: var(--ink-faint); }
-.ini-prog { height: 6px; border-radius: 3px; background: var(--bg); overflow: hidden; }
-.ini-prog i { display: block; height: 100%; background: var(--amber); border-radius: 3px; }
-.ini-pasos ol { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; }
-.ini-pasos li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); }
-.ini-pasos li:first-child { border-top: none; }
-.ini-pasos li > div { flex: 1; min-width: 0; }
-.ini-pasos li b { display: block; font-size: 13.5px; }
-.ini-pasos li span:not(.ini-check) { font-size: 12px; color: var(--ink-faint); }
-.ini-pasos li.ok b { color: var(--ink-faint); text-decoration: line-through; font-weight: 500; }
-.ini-check { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--green); }
-.ini-pasos li.ok .ini-check { background: rgba(63,191,95,0.16); border-color: transparent; }
-.ini-pasos .btn-ghost { padding: 7px 12px; }
 .ini-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: start; }
 .ini-link { background: none; border: none; color: var(--amber); font-size: 12px; padding: 0; }
 .ini-link:hover { text-decoration: underline; }
@@ -592,3 +578,67 @@ a { color: var(--amber); }
 .ayuda { font-size: 12.5px; color: var(--ink-dim); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
 .ayuda summary { cursor: pointer; color: var(--amber); font-weight: 600; }
 .ayuda ol { margin: 10px 0 4px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; line-height: 1.5; }
+
+/* --- ruta del cliente en Inicio (inicio.js) --- */
+.ru-ahora { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.ru-accion { position: relative; display: flex; flex-direction: column; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 16px 14px 52px; }
+.ru-accion.primera { border-color: rgba(255,172,43,0.6); background: linear-gradient(160deg, rgba(255,172,43,0.10), var(--surface) 60%); }
+.ru-num { position: absolute; left: 16px; top: 16px; width: 24px; height: 24px; border-radius: 7px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--ink-dim); }
+.ru-accion.primera .ru-num { background: var(--amber); border-color: var(--amber); color: #17110a; }
+.ru-accion-txt { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.ru-accion-txt b { font-size: 14px; }
+.ru-accion-txt p { margin: 0; font-size: 12.5px; color: var(--ink-dim); line-height: 1.45; }
+.ru-etapa-chip { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--coral); }
+.ru-accion .btn-ghost { align-self: flex-start; padding: 8px 14px; font-size: 12px; }
+.ru-accion .ru-btn-principal { background: var(--amber); border-color: var(--amber); color: #17110a; font-weight: 700; }
+
+.ru-ruta { margin-bottom: 16px; }
+.ru-ayuda { font-size: 12px; color: var(--ink-faint); }
+.ru-etapas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: relative; }
+.ru-etapa { position: relative; display: flex; align-items: center; gap: 10px; text-align: left; background: var(--bg); border: 1px solid var(--border); border-radius: 11px; padding: 12px; color: var(--ink-dim); }
+.ru-etapa:hover { border-color: rgba(255,172,43,0.45); }
+.ru-etapa.abierta { border-color: var(--amber); color: var(--ink); box-shadow: inset 0 0 0 1px var(--amber); }
+.ru-ic { width: 34px; height: 34px; border-radius: 9px; background: var(--surface); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ru-ic svg { width: 18px; height: 18px; stroke: currentColor; }
+.ru-etapa.actual .ru-ic { background: rgba(255,172,43,0.16); color: var(--amber); }
+.ru-etapa.completa .ru-ic { background: rgba(63,191,95,0.16); color: var(--green); }
+.ru-e-txt { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.ru-e-txt b { font-size: 13px; }
+.ru-e-txt em { font-style: normal; font-size: 11px; color: var(--ink-faint); }
+.ru-e-prog { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
+.ru-lock-mini { font-style: normal; color: var(--ink-faint); }
+.ru-aqui { position: absolute; top: -9px; right: 10px; font-size: 9.5px; font-weight: 700; background: var(--amber); color: #17110a; padding: 1px 8px; border-radius: 8px; }
+.ru-panel { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px; }
+.ru-resumen { margin: 0 0 6px; font-size: 12.5px; color: var(--ink-faint); }
+.ru-pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ru-pasos li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); }
+.ru-pasos li:first-child { border-top: none; }
+.ru-pasos li > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ru-pasos li > div b { font-size: 13.5px; }
+.ru-pasos li > div span:not(.rail-plan) { font-size: 12px; color: var(--ink-faint); line-height: 1.45; }
+.ru-pasos li > div .rail-plan { align-self: flex-start; }
+.ru-pasos li.hecho > div b { color: var(--ink-dim); }
+.ru-pasos li.bloqueado, .ru-pasos li.proximo { opacity: 0.72; }
+.ru-pasos .btn-ghost { padding: 7px 12px; }
+.ru-est { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+.ru-est.hecho { background: rgba(63,191,95,0.16); color: var(--green); }
+.ru-est.pend { border: 1.5px solid var(--amber); }
+.ru-est.bloq { border: 1px solid var(--border); color: var(--ink-faint); }
+.ru-est.bloq svg { width: 13px; height: 13px; stroke: currentColor; }
+.ru-est.prox { border: 1px dashed var(--border); color: var(--ink-faint); }
+
+@media (max-width: 900px) {
+  .ru-etapas { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+}
+@media (max-width: 600px) {
+  .ru-etapas { grid-template-columns: 1fr 1fr; }
+  .ru-e-prog { display: none; }
+  .ru-pasos li { flex-wrap: wrap; }
+  .ru-pasos li > button { margin-left: 36px; }
+}
+.ini-acciones { flex-wrap: wrap; }
+@media (max-width: 600px) {
+  .ini-acciones > * { flex: 1 1 auto; }
+  .ru-etapas { grid-template-columns: 1fr; }
+  .ru-ayuda { display: none; }
+}

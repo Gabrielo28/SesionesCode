@@ -196,4 +196,9 @@ function comparacion(negocio) {
   return { filas: [propio, ...filas], maximo: MAX_COMPETIDORES };
 }
 
-module.exports = { agregar, quitar, sincronizar, comparacion, normalizar };
+// Cuántos competidores sigue el negocio (para la ruta del Inicio).
+function contar(negocioId) {
+  return sql.listar.all(negocioId).length;
+}
+
+module.exports = { agregar, quitar, sincronizar, comparacion, normalizar, contar };

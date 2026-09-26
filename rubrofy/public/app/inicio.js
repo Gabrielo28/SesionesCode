@@ -1,5 +1,6 @@
-// Inicio: primeros pasos (qué falta configurar y dónde), lo que espera tu
-// aprobación, lo próximo que se publica y un resumen de tu estrategia.
+// Inicio: la ruta del cliente (server/ruta.js). Qué hacer ahora, en qué
+// etapa va (Configura → Crea cada semana → Mide → Mejora cada mes), lo
+// próximo que se publica y su plan.
 (function () {
   'use strict';
 
@@ -7,80 +8,111 @@
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  let referenciasCache = { id: null, n: 0 };
+  const ICONOS = {
+    configura: '<path d="M12 3.5 V6 M12 18 V20.5 M3.5 12 H6 M18 12 H20.5"/><circle cx="12" cy="12" r="4"/>',
+    crea: '<path d="M5 19 L5 15 L15 5 L19 9 L9 19 Z"/><path d="M13 7 L17 11"/>',
+    mide: '<path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/>',
+    mejora: '<path d="M4 16 L10 10 L13 13 L20 6"/><path d="M15 6 H20 V11"/>',
+  };
+  const icono = (id) => `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONOS[id]}</svg>`;
+
+  let etapaAbierta = null; // la que el usuario eligió mirar; si no, la actual
+
+  function marcaEstado(p) {
+    if (p.estado === 'hecho') return '<span class="ru-est hecho" aria-label="Hecho">✓</span>';
+    if (p.estado === 'bloqueado') return '<span class="ru-est bloq" aria-label="Bloqueado"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11 V8.5 a3 3 0 0 1 6 0 V11"/></svg></span>';
+    if (p.estado === 'proximo') return '<span class="ru-est prox" aria-label="Más adelante">…</span>';
+    return '<span class="ru-est pend" aria-label="Pendiente"></span>';
+  }
+
+  function botonPaso(p, clase) {
+    if (p.estado === 'bloqueado') return `<button type="button" class="btn-ghost ${clase || ''}" data-planes>Plan ${esc(p.requierePlan)}</button>`;
+    if (p.estado === 'proximo') return '';
+    if (p.estado === 'hecho') {
+      return p.botonHecho ? `<button type="button" class="ini-link" data-accion='${esc(JSON.stringify(p.accion))}'>${esc(p.botonHecho)}</button>` : '';
+    }
+    return `<button type="button" class="btn-ghost ${clase || ''}" data-accion='${esc(JSON.stringify(p.accion))}'>${esc(p.boton)}</button>`;
+  }
 
   async function render(cont, ctx) {
     const n = ctx.negocio;
-    const contenido = ctx.contenido;
+    const [r, cat] = await Promise.all([
+      ctx.api(`/api/negocios/${n.id}/ruta`),
+      window.RubrofyPlan.catalogo(ctx.api),
+    ]);
     const plan = ctx.planActual;
-    const cat = await window.RubrofyPlan.catalogo(ctx.api);
-    if (referenciasCache.id !== n.id) {
-      try {
-        const e = await ctx.api(`/api/negocios/${n.id}/estilo`);
-        referenciasCache = { id: n.id, n: (e.referencias || []).length };
-      } catch (err) {
-        referenciasCache = { id: n.id, n: 0 };
-      }
-    }
-    const totalFotos = Object.values(ctx.fotos || {}).reduce((s, l) => s + l.length, 0);
-    const pendientes = contenido.filter((i) => i.status === 'pendiente');
-    const aprobadas = contenido.filter((i) => i.status === 'aprobado');
-    const proximas = aprobadas
-      .filter((i) => !(i.publicacion && i.publicacion.estado === 'publicada') && i.publicarEl)
+    const pc = window.RubrofyPlan.resumenPlan(plan, cat);
+    const abierta = r.etapas.find((e) => e.id === (etapaAbierta || r.etapaActual)) || r.etapas[0];
+    const proximas = ctx.contenido
+      .filter((i) => i.status === 'aprobado' && !(i.publicacion && i.publicacion.estado === 'publicada') && i.publicarEl)
       .sort((a, b) => Date.parse(a.publicarEl) - Date.parse(b.publicarEl))
       .slice(0, 4);
-
-    const pasos = [
-      { ok: !!n.bienvenidaCompletada, titulo: 'Cuéntanos de tu negocio y tu objetivo', detalle: 'Público, qué te hace distinto y cuánto quieres publicar.', ir: 'bienvenida', boton: 'Empezar' },
-      { ok: !!n.bienvenidaCompletada && !!(ctx.estrategia && ctx.estrategia.resumen), titulo: 'Revisa tu estrategia', detalle: 'Tono y temas que se van turnando en tus publicaciones.', ir: 'estrategia', boton: 'Ver estrategia' },
-      { ok: aprobadas.length > 0, titulo: 'Aprueba tu primera publicación', detalle: 'Edita, pide otra versión o aprueba.', ir: 'cola', boton: 'Ir a Por aprobar' },
-      { ok: !!n.instagramConectado && n.instagramEstado !== 'reconectar', titulo: n.instagramEstado === 'reconectar' ? 'Reconecta Instagram' : 'Conecta Instagram', detalle: 'Para que lo aprobado se publique solo, en su fecha.', ir: 'config', boton: 'Conectar' },
-      { ok: totalFotos > 0, titulo: 'Sube fotos de tu negocio', detalle: 'Tus publicaciones usan tus fotos reales.', ir: 'fotos', boton: 'Subir fotos' },
-      { ok: referenciasCache.n >= 5, titulo: 'Muéstrale tu estilo', detalle: 'Sube o importa 5 publicaciones tuyas para que escriba como tú.', ir: 'estilo', boton: 'Ir a Mi estilo' },
-    ];
-    if (ctx.planIncluye('ads')) {
-      pasos.push({ ok: !!(n.metaConexion || n.googleConexion), titulo: 'Conecta tu publicidad', detalle: 'Meta Ads y Google Ads, junto a tu Instagram.', ir: 'config', boton: 'Conectar' });
-    }
-    const hechos = pasos.filter((p) => p.ok).length;
-    const pc = window.RubrofyPlan.resumenPlan(plan, cat);
+    const pendientes = ctx.contenido.filter((i) => i.status === 'pendiente').length;
+    const nombreEtapa = (id) => (r.etapas.find((e) => e.id === id) || {}).titulo;
 
     cont.innerHTML = `
       <div class="ini-head">
         <div>
           <h1>Hola, ${esc(n.nombre)}</h1>
-          <p class="sub">${pendientes.length ? `Tienes <b>${pendientes.length}</b> publicaciones esperando tu aprobación.` : 'No tienes publicaciones pendientes. Genera la próxima semana cuando quieras.'}</p>
+          <p class="sub">${r.siguientes.length ? `Estás en <b>${esc(nombreEtapa(r.etapaActual))}</b>. Esto es lo que te toca ahora.` : 'Estás al día. Rubrofy sigue publicando y midiendo por ti.'}</p>
         </div>
         <div class="ini-acciones">
-          ${pendientes.length ? '<button type="button" class="btn-approve" data-ir="cola">Revisar pendientes</button>' : ''}
-          <button type="button" class="btn-ghost" data-generar-semana>+ Generar semana</button>
+          ${pendientes ? `<button type="button" class="btn-approve" data-accion='{"tipo":"vista","vista":"cola"}'>Revisar pendientes (${pendientes})</button>` : ''}
+          <button type="button" class="btn-ghost" data-accion='{"tipo":"generar"}'>+ Generar semana</button>
         </div>
       </div>
 
-      ${hechos < pasos.length ? `
-      <section class="ig-card ini-pasos">
-        <div class="ig-card-head"><h2>Primeros pasos</h2><span class="ini-prog-txt">${hechos} de ${pasos.length}</span></div>
-        <div class="ini-prog"><i style="width:${Math.round((hechos / pasos.length) * 100)}%"></i></div>
-        <ol>
-          ${pasos.map((p) => `
-            <li class="${p.ok ? 'ok' : ''}">
-              <span class="ini-check">${p.ok ? '✓' : ''}</span>
-              <div><b>${esc(p.titulo)}</b><span>${esc(p.detalle)}</span></div>
-              ${p.ok ? '' : `<button type="button" class="btn-ghost" data-ir="${p.ir}">${esc(p.boton)}</button>`}
-            </li>`).join('')}
-        </ol>
+      ${r.siguientes.length ? `
+      <section class="ru-ahora" aria-label="Qué hacer ahora">
+        ${r.siguientes.map((p, i) => `
+          <article class="ru-accion${i === 0 ? ' primera' : ''}">
+            <span class="ru-num">${i + 1}</span>
+            <div class="ru-accion-txt">
+              <span class="ru-etapa-chip">${esc(nombreEtapa(p.etapa))}</span>
+              <b>${esc(p.titulo)}</b>
+              <p>${esc(p.detalle)}</p>
+            </div>
+            ${botonPaso(p, i === 0 ? 'ru-btn-principal' : '')}
+          </article>`).join('')}
       </section>` : ''}
+
+      <section class="ig-card ru-ruta">
+        <div class="ig-card-head"><h2>Tu ruta en Rubrofy</h2><span class="ru-ayuda">Configura una vez; después, un ciclo semanal y uno mensual.</span></div>
+        <div class="ru-etapas" role="tablist">
+          ${r.etapas.map((e, i) => {
+            const completa = e.total && e.hechos === e.total;
+            return `<button type="button" role="tab" class="ru-etapa${e.id === abierta.id ? ' abierta' : ''}${e.id === r.etapaActual ? ' actual' : ''}${completa ? ' completa' : ''}" data-etapa="${e.id}" aria-selected="${e.id === abierta.id}">
+              <span class="ru-ic">${icono(e.id)}</span>
+              <span class="ru-e-txt"><b>${i + 1}. ${esc(e.titulo)}</b><em>${esc(e.cuando)}</em></span>
+              <span class="ru-e-prog">${e.total ? `${e.hechos}/${e.total}` : ''}${e.bloqueados ? ' <i class="ru-lock-mini" title="Hay pasos de otro plan">+</i>' : ''}</span>
+              ${e.id === r.etapaActual ? '<span class="ru-aqui">Estás aquí</span>' : ''}
+            </button>`;
+          }).join('')}
+        </div>
+        <div class="ru-panel" role="tabpanel">
+          <p class="ru-resumen">${esc(abierta.resumen)}</p>
+          <ol class="ru-pasos">
+            ${abierta.pasos.map((p) => `
+              <li class="${p.estado}">
+                ${marcaEstado(p)}
+                <div><b>${esc(p.titulo)}</b>${p.requierePlan ? `<span class="rail-plan">${esc(p.requierePlan)}</span>` : ''}<span>${esc(p.detalle)}</span></div>
+                ${botonPaso(p)}
+              </li>`).join('')}
+          </ol>
+        </div>
+      </section>
 
       <div class="ini-grid">
         <section class="ig-card">
-          <div class="ig-card-head"><h2>Próximas publicaciones</h2><button type="button" class="ini-link" data-ir="calendario">Ver calendario</button></div>
+          <div class="ig-card-head"><h2>Próximas publicaciones</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"calendario"}'>Ver calendario</button></div>
           ${proximas.length ? `<ul class="ini-lista">${proximas.map((i) => `
             <li><span class="ini-fecha">${esc(ctx.fechaCorta(i.publicarEl))}</span><span class="ini-fmt">${esc(window.RubrofyPlan.SINGULAR[i.formato] || 'Post')}</span><span class="ini-txt">${esc((i.variants && i.variants[i.variantIndex || 0]) || i.headline)}</span></li>`).join('')}</ul>`
-            : `<p class="sub">Todavía no hay publicaciones aprobadas. Lo que apruebes aparece aquí con su fecha.</p>`}
-          ${n.instagramConectado ? '' : '<p class="ini-aviso">Instagram no está conectado: lo aprobado queda guardado pero no se publica. <button type="button" class="ini-link" data-ir="config">Conectar</button></p>'}
+            : '<p class="sub">Todavía no hay publicaciones aprobadas. Lo que apruebes aparece aquí con su fecha.</p>'}
+          ${n.instagramConectado ? '' : '<p class="ini-aviso">Instagram no está conectado: lo aprobado queda guardado pero no se publica. <button type="button" class="ini-link" data-accion=\'{"tipo":"vista","vista":"config"}\'>Conectar</button></p>'}
         </section>
 
         <section class="ig-card">
-          <div class="ig-card-head"><h2>Tu plan</h2><button type="button" class="ini-link" data-ir="estrategia">Cambiar</button></div>
+          <div class="ig-card-head"><h2>Tu plan de contenido</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"estrategia"}'>Cambiar</button></div>
           ${plan ? `
             <dl class="ini-dl">
               <dt>Objetivo</dt><dd>${esc(pc.objetivos.join(' · ') || '—')}</dd>
@@ -91,14 +123,28 @@
         </section>
       </div>`;
 
-    cont.onclick = (e) => {
-      const ir = e.target.closest('[data-ir]');
-      if (ir) return ir.dataset.ir === 'bienvenida' ? ctx.abrirBienvenida() : ctx.irA(ir.dataset.ir);
-      if (e.target.closest('[data-generar-semana]')) ctx.abrirGenerar();
+    cont.onclick = async (e) => {
+      const etapa = e.target.closest('[data-etapa]');
+      if (etapa) {
+        etapaAbierta = etapa.dataset.etapa;
+        return render(cont, ctx);
+      }
+      if (e.target.closest('[data-planes]')) return ctx.irA('config', null, 'cfg-plan');
+      const b = e.target.closest('[data-accion]');
+      if (!b) return;
+      const a = JSON.parse(b.dataset.accion);
+      if (a.tipo === 'vista') return ctx.irA(a.vista, a.tab);
+      if (a.tipo === 'bienvenida') return ctx.abrirBienvenida();
+      if (a.tipo === 'generar') return ctx.abrirGenerar();
+      if (a.tipo === 'informe') {
+        window.open(`/app/informe.html?mes=${encodeURIComponent(a.mes)}`, '_blank', 'noopener');
+        await ctx.api(`/api/negocios/${n.id}/ruta/informe-visto`, { method: 'POST', body: JSON.stringify({ mes: a.mes }) }).catch(() => {});
+        return render(cont, ctx);
+      }
     };
   }
 
-  function invalidar() { referenciasCache = { id: null, n: 0 }; }
+  function invalidar() { etapaAbierta = null; }
 
   window.RubrofyInicio = { render, invalidar };
 })();
