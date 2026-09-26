@@ -3,7 +3,7 @@
 Motor de generación y aprobación de contenido para redes sociales: genera un
 banco de publicaciones con datos reales del negocio, el dueño aprueba (o pide
 otra versión, o edita el texto a mano), y si el negocio conectó su Instagram,
-al aprobar se publica de verdad. La aprobación humana (**Capa A**) funciona
+lo aprobado se publica solo en su fecha y hora. La aprobación humana (**Capa A**) funciona
 sin depender de nada externo; la publicación real (**Capa B**) usa la API de
 Instagram y hoy está probada con cuentas agregadas como tester en la app de
 Meta — abrirla a cualquier negocio sin agregarlo a mano requiere que Meta
@@ -86,8 +86,12 @@ header lo podría escribir cualquiera para esquivar el límite.
 Definir también `PUBLIC_URL` (ej. `https://rubrofy.com`) para que el enlace
 temporal que se le manda a Instagram para descargar cada foto apunte al
 dominio público real y no a la URL interna del servidor. Sin esta variable,
-la usa deducida del request — funciona igual en producción normalmente, pero
+el publicador usa la URL desde la que se aprobó cada pieza — funciona, pero
 `PUBLIC_URL` es más confiable detrás de balanceadores/proxies.
+
+Opcionales del publicador: `RUBROFY_TZ` (zona horaria de las fechas de
+publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
+(cada cuántos segundos revisa lo programado, por defecto 30).
 
 ## Qué incluye
 
@@ -109,13 +113,16 @@ la usa deducida del request — funciona igual en producción normalmente, pero
 - **Configuración** — editar el nombre y los datos del negocio, o eliminar
   la cuenta (borra también su contenido, sus fotos y cierra la sesión). El
   rubro y su estrategia de contenido no se pueden cambiar una vez creados.
-- **Conexión con Instagram y publicación real** — cada negocio conecta su
-  cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
-  Configuración. Al aprobar una pieza que tiene una foto asignada (real, o
-  generada por IA como respaldo), se publica de verdad vía la Instagram
-  Graph API; si falla, la pieza queda igual como aprobada y el error se
-  muestra en la tarjeta, sin bloquear el flujo. Sin conexión, o sin foto,
-  aprobar solo marca la pieza como aprobada (como antes).
+- **Conexión con Instagram y publicación programada** — cada negocio conecta
+  su cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
+  Configuración. Aprobar deja la pieza **programada** para su fecha y hora
+  (hora de Chile, no la del servidor); el publicador la publica solo cuando
+  llega el momento, con su foto real o una generada por IA como respaldo.
+  Ver "Cómo publica" más abajo. Sin Instagram conectado, aprobar solo marca
+  la pieza como aprobada.
+- **Fecha y hora editables** — se cambian tocando la fecha en la tarjeta.
+  "Publicar ahora" adelanta una programada; "Reintentar" vuelve a intentar
+  una que falló.
 - **Fotos generadas por IA** — cuando una pieza no tiene una foto real
   subida para su categoría, se puede pedir una foto generada por IA
   (botón "Generar foto con IA" en la tarjeta, o automáticamente al aprobar
@@ -129,10 +136,32 @@ la usa deducida del request — funciona igual en producción normalmente, pero
   Portal). El plan Gratis usa solo plantillas; Pro y Estudio habilitan la
   IA de texto (con un techo mensual de piezas, contra el abuso), y Estudio
   agrega una cuota mensual de fotos con IA.
-- **Publicación sin duplicados** — aprobar publica una sola vez: un doble
-  clic mientras se publica se ignora, y una pieza ya publicada que se
+- **Publicación sin duplicados** — cada pieza se publica una sola vez: un
+  doble clic mientras se publica se ignora, y una pieza ya publicada que se
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
+
+## Cómo publica (server/publicador.js)
+
+Un proceso dentro del mismo servidor revisa cada 30 segundos las piezas
+aprobadas cuya hora ya llegó y las publica en dos pasos (crear el contenedor
+en Instagram, luego publicarlo). Lo que hace ante cada problema:
+
+| Situación | Qué pasa |
+|---|---|
+| Error pasajero de Instagram o de red | Reintenta a los 1, 5, 15, 60 y 180 minutos; después queda "No se publicó" con el motivo y el botón "Reintentar" |
+| Meta dice "límite de llamadas" | Igual, pero espera al menos 15 minutos |
+| Falló al publicar un contenedor ya creado | El reintento publica **ese mismo** contenedor (no crea otro post) |
+| El servidor se cae a mitad de una publicación | Al arrancar, la pieza vuelve a programada y se retoma con su contenedor |
+| Token vencido o revocado | El negocio queda en "Reconectar" (aviso en Configuración y en las tarjetas); sus piezas esperan sin gastar reintentos y se publican solas al pegar un token nuevo |
+| Contenido inválido (ej. texto demasiado largo) o pieza sin foto | "No se publicó" con el motivo, sin reintentos automáticos |
+
+El token de Instagram (dura 60 días) se renueva solo: el primero a las
+24 horas de conectado y después cada 7 días.
+
+Corre en un solo proceso, sin colas externas: suficiente para una
+instancia. Con varias instancias habría que mover el bloqueo a la base de
+datos (parte del paso a Postgres).
 
 ## Cómo genera el contenido
 
@@ -231,7 +260,9 @@ se puede cobrar todavía.
 server/
   server.js     API REST + servidor estático (Node puro, sin dependencias)
   auth.js       Contraseñas (scrypt), sesiones firmadas y token temporal de foto
-  instagram.js  Publicación real vía Instagram Graph API
+  instagram.js  Cliente de la Instagram Graph API (contenedor, publicación, renovación de token)
+  publicador.js Proceso de fondo: publica lo programado, reintenta y renueva tokens
+  programacion.js Fechas de publicación en la zona horaria del negocio
   imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
   store.js      Persistencia en JSON (negocios, contenido y fotos) — swap a Postgres futuro
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro

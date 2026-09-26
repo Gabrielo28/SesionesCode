@@ -12,6 +12,7 @@
   let vistaActual = 'cola';
   let calSelectedId = null;
   const editingIds = new Set();
+  const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
 
   const $ = (sel) => document.querySelector(sel);
 
@@ -50,20 +51,59 @@
     return { color: 'var(--amber)', label: 'Pendiente' };
   }
 
-  // Qué mostrar en la tarjeta ya decidida: si Instagram está conectado y la
-  // pieza tenía foto real, dice si la publicación de verdad funcionó o no.
+  // Fecha/hora en la zona del negocio (la misma que usa el servidor para
+  // publicar), no la del navegador.
+  function partesEnZona(iso) {
+    const formato = new Intl.DateTimeFormat('en-US', {
+      timeZone: (negocioActual && negocioActual.zonaHoraria) || 'America/Santiago', hourCycle: 'h23',
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+    });
+    const p = {};
+    formato.formatToParts(new Date(iso)).forEach(({ type, value }) => { p[type] = value; });
+    return p;
+  }
+
+  function fechaCorta(iso) {
+    const p = partesEnZona(iso);
+    return `${p.day} ${MESES[Number(p.month) - 1]} ${p.hour}:${p.minute}`;
+  }
+
+  function horaCorta(iso) {
+    const p = partesEnZona(iso);
+    return `${p.hour}:${p.minute}`;
+  }
+
+  // Valor para <input type="datetime-local">: "2026-09-28T09:00".
+  function valorInputFecha(iso) {
+    const p = partesEnZona(iso);
+    return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+  }
+
+  // Qué mostrar en la tarjeta ya decidida: si quedó programada, se está
+  // publicando, se publicó, o por qué no se pudo publicar.
   function notaAprobacion(item) {
     if (item.status !== 'aprobado') return { color: 'var(--coral)', texto: 'No se publicará' };
     const dateShort = item.date.split(' - ').slice(0, 2).join(' - ');
+    const pub = item.publicacion;
     const ig = item.instagram;
-    if (!ig || !ig.intentado) {
-      return { color: 'var(--ink-faint)', texto: 'Aprobado &middot; ' + escapeHtml(dateShort) };
+    if ((pub && pub.estado === 'publicada') || (ig && ig.ok)) {
+      const conFoto = (pub && pub.generadaPorIA) || (ig && ig.generadaPorIA) ? ' (foto generada por IA)' : '';
+      const cuando = (pub && pub.publicadoEl) || (ig && ig.publicadoEl);
+      return { color: 'var(--green)', texto: 'Publicado en Instagram' + conFoto + (cuando ? ' &middot; ' + escapeHtml(fechaCorta(cuando)) : '') };
     }
-    if (ig.ok) {
-      const conFoto = ig.generadaPorIA ? ' (foto generada por IA)' : '';
-      return { color: 'var(--green)', texto: 'Publicado en Instagram' + conFoto + ' &middot; ' + escapeHtml(dateShort) };
+    if (!pub) {
+      const sinIG = negocioActual.instagramConectado ? '' : ' (Instagram no conectado)';
+      return { color: 'var(--ink-faint)', texto: 'Aprobado &middot; ' + escapeHtml(dateShort) + sinIG };
     }
-    return { color: 'var(--coral)', texto: 'Error al publicar: ' + escapeHtml(ig.error || 'desconocido') };
+    if (pub.estado === 'publicando') return { color: 'var(--amber)', texto: 'Publicando en Instagram&hellip;' };
+    if (pub.estado === 'fallida') return { color: 'var(--coral)', texto: 'No se publicó: ' + escapeHtml(pub.motivo || 'error desconocido') };
+    if (negocioActual.instagramEstado === 'reconectar') {
+      return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Configuración' };
+    }
+    if (pub.intentos) {
+      return { color: 'var(--amber)', texto: `Reintento ${pub.intentos} a las ${escapeHtml(horaCorta(pub.proximoIntento))} &middot; ${escapeHtml(pub.ultimoError || '')}` };
+    }
+    return { color: 'var(--ink-faint)', texto: 'Programada &middot; ' + escapeHtml(fechaCorta(item.publicarEl || pub.proximoIntento)) };
   }
 
   function parseItemDate(dateStr) {
@@ -150,6 +190,10 @@
     const isPost = item.aspect.trim().startsWith('4');
     const isPending = item.status === 'pendiente';
     const isEditing = editingIds.has(item.id);
+    const pub = item.publicacion;
+    const publicada = (pub && pub.estado === 'publicada') || !!(item.instagram && item.instagram.ok);
+    const publicando = !!(pub && pub.estado === 'publicando');
+    const puedeCambiarFecha = !publicada && !publicando && item.status !== 'rechazado';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
     const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
@@ -171,7 +215,11 @@
         <div class="card-body">
           <div class="card-meta">
             <span class="card-tag">${escapeHtml(item.tag)}</span>
-            <span class="card-date">${escapeHtml(item.date)}</span>
+            ${fechaEditIds.has(item.id)
+              ? `<input type="datetime-local" class="card-date-input" data-fecha-id="${item.id}" value="${item.publicarEl ? valorInputFecha(item.publicarEl) : ''}">`
+              : (puedeCambiarFecha
+                ? `<button class="card-date card-date-btn" data-action="fecha" data-id="${item.id}" title="Cambiar fecha y hora">${escapeHtml(item.date)}</button>`
+                : `<span class="card-date">${escapeHtml(item.date)}</span>`)}
           </div>
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
@@ -187,7 +235,11 @@
           ` : `
             <div class="card-note">
               <span class="note-text" style="color:${notaAprobacion(item).color}">${notaAprobacion(item).texto}</span>
-              <button data-action="undo" data-id="${item.id}">Deshacer</button>
+              <span class="note-actions">
+                ${pub && pub.estado === 'programada' && !publicada && negocioActual.instagramEstado === 'ok' ? `<button data-action="publish-now" data-id="${item.id}">Publicar ahora</button>` : ''}
+                ${pub && pub.estado === 'fallida' ? `<button data-action="retry" data-id="${item.id}">Reintentar</button>` : ''}
+                ${publicando ? '' : `<button data-action="undo" data-id="${item.id}">Deshacer</button>`}
+              </span>
             </div>
           `}
         </div>
@@ -331,11 +383,25 @@
     $('#config-ok').hidden = true;
 
     const conectado = !!negocioActual.instagramConectado;
-    $('#ig-estado').textContent = conectado ? 'Conectado' : 'Sin conectar';
-    $('#ig-estado').classList.toggle('conectado', conectado);
-    $('#form-instagram').hidden = conectado;
+    const reconectar = negocioActual.instagramEstado === 'reconectar';
+    $('#ig-estado').textContent = reconectar ? 'Reconectar' : (conectado ? 'Conectado' : 'Sin conectar');
+    $('#ig-estado').classList.toggle('conectado', conectado && !reconectar);
+    $('#ig-estado').classList.toggle('reconectar', reconectar);
+    // Con el token vencido se muestra el formulario para pegar uno nuevo; las
+    // publicaciones programadas esperan y salen solas al reconectar.
+    $('#form-instagram').hidden = conectado && !reconectar;
     $('#btn-desconectar-ig').hidden = !conectado;
     $('#ig-error').hidden = true;
+    const aviso = $('#ig-aviso');
+    if (reconectar) {
+      aviso.textContent = 'Instagram rechazó el token (' + (negocioActual.instagramMotivoReconexion || 'venció o fue revocado') + '). Pega un token nuevo: las publicaciones programadas se publicarán solas al reconectar.';
+    } else if (conectado && negocioActual.instagramVenceEl) {
+      aviso.textContent = 'El token se renueva solo. Vence el ' + fechaCorta(negocioActual.instagramVenceEl) + ' si no se pudiera renovar.';
+    } else {
+      aviso.textContent = '';
+    }
+    aviso.hidden = !aviso.textContent;
+    aviso.style.color = reconectar ? 'var(--coral)' : '';
 
     renderPlan();
   }
@@ -706,6 +772,21 @@
         return accionConAviso('aprobar', id);
       }
       if (accion === 'reject') return accionConAviso('rechazar', id);
+      if (accion === 'publish-now') {
+        btn.disabled = true;
+        return accionConAviso('publicar-ahora', id);
+      }
+      if (accion === 'retry') {
+        btn.disabled = true;
+        return accionConAviso('reintentar', id);
+      }
+      if (accion === 'fecha') {
+        fechaEditIds.add(id);
+        renderCola();
+        const input = document.querySelector(`input[data-fecha-id="${id}"]`);
+        if (input) input.focus();
+        return;
+      }
       if (accion === 'undo') {
         const item = contenido.find((i) => i.id === id);
         if (item && item.instagram && item.instagram.ok) {
@@ -731,6 +812,45 @@
         return;
       }
     });
+
+    // cambio de fecha y hora de una pieza (selector abierto desde la tarjeta)
+    $('#cola-grid').addEventListener('change', async (e) => {
+      const input = e.target.closest('input[data-fecha-id]');
+      if (!input || !input.value) return;
+      const id = input.dataset.fechaId;
+      try {
+        await api(`/api/negocios/${negocioActual.id}/contenido/${id}/reprogramar`, {
+          method: 'PUT',
+          body: JSON.stringify({ fecha: input.value }),
+        });
+        fechaEditIds.delete(id);
+        await refreshContenido();
+      } catch (err) {
+        alert(err.mensaje || 'No se pudo cambiar la fecha.');
+      }
+    });
+    $('#cola-grid').addEventListener('focusout', (e) => {
+      const input = e.target.closest('input[data-fecha-id]');
+      if (!input) return;
+      // Si se sale sin elegir una fecha nueva, se cierra el selector.
+      setTimeout(() => {
+        if (fechaEditIds.has(input.dataset.fechaId) && document.activeElement !== input) {
+          fechaEditIds.delete(input.dataset.fechaId);
+          renderCola();
+        }
+      }, 200);
+    });
+
+    // Mientras haya piezas programadas o publicándose, refresca la cola cada
+    // 30 s para mostrar el resultado del publicador (sin pisar una edición).
+    setInterval(async () => {
+      if (!negocioActual || document.hidden) return;
+      if (vistaActual !== 'cola' && vistaActual !== 'calendario') return;
+      if (editingIds.size || fechaEditIds.size) return;
+      const pendientes = contenido.some((i) => i.publicacion && ['programada', 'publicando'].includes(i.publicacion.estado));
+      if (!pendientes) return;
+      try { await refreshContenido(); } catch (err) { /* reintenta en la próxima vuelta */ }
+    }, 30000);
 
     // delegación de eventos en el calendario
     $('#cal-grid').addEventListener('click', (e) => {

@@ -10,7 +10,8 @@ const store = require('./store');
 const auth = require('./auth');
 const { generarEstrategia } = require('./estrategia');
 const { generarBanco, generarVarianteConClaude } = require('./generator');
-const { publicarEnInstagram } = require('./instagram');
+const { crearPublicador } = require('./publicador');
+const programacion = require('./programacion');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
@@ -33,11 +34,6 @@ const limiteLoginFallido = crearLimitador({ max: 10, ventanaMs: 15 * 60 * 1000 }
 // Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
 // cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
 const SUSCRIPCION_TERMINADA = new Set(['canceled', 'incomplete_expired']);
-
-// Piezas que se están publicando en Instagram en este momento
-// ("negocioId/itemId"). Corta el doble clic: mientras la primera aprobación
-// espera a Instagram, una segunda no puede lanzar otra publicación.
-const publicando = new Set();
 
 // El acceso es self-service: cada negocio es su propia cuenta (email +
 // clave), no hay una clave maestra que vea todos los negocios juntos.
@@ -116,6 +112,12 @@ function sendJSON(res, status, data, extraHeaders) {
 function negocioPublico(negocio) {
   const { auth: _auth, instagram, stripe: stripeInfo, ...resto } = negocio;
   resto.instagramConectado = !!(instagram && instagram.accessToken);
+  // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
+  // programadas esperan hasta que se reconecte).
+  resto.instagramEstado = instagram && instagram.accessToken ? (instagram.estado || 'ok') : null;
+  resto.instagramMotivoReconexion = (instagram && instagram.motivoReconexion) || null;
+  resto.instagramVenceEl = (instagram && instagram.venceEl) || null;
+  resto.zonaHoraria = programacion.ZONA;
   resto.plan = negocio.plan || 'gratis';
   resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
@@ -243,15 +245,12 @@ function buscarNegocioPorStripeSubscriptionId(subscriptionId) {
   return store.listNegocios().find((n) => n.stripe && n.stripe.subscriptionId === subscriptionId) || null;
 }
 
-// Al aprobar, si el negocio ya conectó Instagram y la pieza tiene una foto
-// asignada (real, o generada por IA como respaldo), se publica de verdad.
-// Si falta cualquiera de las dos cosas, queda aprobada igual pero sin
-// publicación automática (no es un error).
-async function intentarPublicarEnInstagram(req, negocio, item) {
-  if (!negocio.instagram || !negocio.instagram.accessToken) {
-    return { intentado: false, motivo: 'Instagram no está conectado' };
-  }
-
+// Lo que el publicador (server/publicador.js) necesita para crear el post:
+// la foto de la pieza (real, o generada por IA como respaldo) expuesta con un
+// enlace temporal firmado que Instagram pueda descargar, y el caption. Si no
+// hay foto, devuelve { motivo } y la pieza queda fallida hasta que se suba
+// una y se reintente.
+async function prepararPublicacion(negocio, item) {
   let categoria = item.categoriaFoto;
   let archivo = categoria ? elegirFoto(negocio.id, categoria, item.id) : null;
   let generadaPorIA = false;
@@ -272,21 +271,45 @@ async function intentarPublicarEnInstagram(req, negocio, item) {
   }
 
   if (!archivo) {
-    return { intentado: false, motivo: 'Esta pieza no tiene una foto asignada todavía' };
+    return { motivo: 'Esta pieza no tiene foto. Sube una en Fotos y usa "Reintentar".' };
   }
 
+  // El publicador corre sin un request a mano: usa PUBLIC_URL, o la URL
+  // desde la que se aprobó la pieza.
+  const base = process.env.PUBLIC_URL
+    ? process.env.PUBLIC_URL.replace(/\/$/, '')
+    : item.publicacion && item.publicacion.urlBase;
+  if (!base) return { motivo: 'Falta configurar PUBLIC_URL en el servidor' };
+
   const token = auth.crearTokenFoto(negocio.id, categoria, archivo);
-  const imageUrl = `${urlBase(req)}/fotos/${negocio.id}/${categoria}/${archivo}?t=${token}`;
-  const caption = item.variants[item.variantIndex];
+  return {
+    imageUrl: `${base}/fotos/${negocio.id}/${categoria}/${archivo}?t=${token}`,
+    caption: item.variants[item.variantIndex],
+    generadaPorIA,
+  };
+}
 
-  const resultado = await publicarEnInstagram({
-    userId: negocio.instagram.userId,
-    accessToken: negocio.instagram.accessToken,
-    imageUrl,
-    caption,
+const publicador = crearPublicador({
+  prepararPublicacion,
+  intervaloMs: (Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30) * 1000,
+});
+
+// Deja una pieza aprobada lista para que el publicador la publique en
+// `cuando` (ISO), sin perder el contenedor ya creado si lo había.
+function programar(it, cuando, req) {
+  it.publicacion = Object.assign({}, it.publicacion, {
+    estado: 'programada',
+    intentos: 0,
+    proximoIntento: cuando,
+    urlBase: urlBase(req),
   });
+  delete it.publicacion.motivo;
+  delete it.publicacion.ultimoError;
+  delete it.instagram;
+}
 
-  return { intentado: true, publicadoEl: new Date().toISOString(), generadaPorIA, ...resultado };
+function maxISO(a, b) {
+  return Date.parse(a) > Date.parse(b) ? a : b;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -507,6 +530,19 @@ const server = http.createServer(async (req, res) => {
           if (!accessToken) return sendJSON(res, 400, { error: 'Falta el token de acceso' });
           negocio.instagram = { userId, accessToken, conectadoEl: new Date().toISOString() };
           store.saveNegocio(negocio);
+          // Lo aprobado antes de conectar, con fecha futura, entra a la cola.
+          // Lo que esperaba una reconexión ya está programado: se publica solo.
+          const items = store.getContenido(negocioId);
+          const ahora = new Date().toISOString();
+          let programadas = 0;
+          for (const it of items) {
+            const publicable = it.status === 'aprobado' && !it.publicacion && !(it.instagram && it.instagram.ok);
+            if (publicable && Date.parse(programacion.asegurarPublicarEl(it)) > Date.parse(ahora)) {
+              programar(it, it.publicarEl, req);
+              programadas += 1;
+            }
+          }
+          if (programadas) store.saveContenido(negocioId, items);
           return sendJSON(res, 200, negocioPublico(negocio));
         }
 
@@ -659,31 +695,70 @@ const server = http.createServer(async (req, res) => {
           const item = encontrarItem(store.getContenido(negocioId), itemId);
           if (!item) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
 
+          const publicada = !!(item.instagram && item.instagram.ok);
+          const seEstaPublicando = (item.publicacion && item.publicacion.estado === 'publicando')
+            || publicador.estaPublicando(negocioId, itemId);
+          const igConectado = !!(negocio.instagram && negocio.instagram.accessToken);
+          const ocupada = () => sendJSON(res, 409, { error: 'Esta pieza se está publicando en este momento. Intenta en unos segundos.' });
+          // Tras guardar: si la pieza ya está vencida (su hora pasó, o se pidió
+          // "publicar ahora"), se publica en este mismo request en vez de
+          // esperar la próxima pasada del publicador.
+          let publicarYa = false;
+
           let aplicar;
           if (accion === 'aprobar' && req.method === 'POST') {
-            const yaPublicada = !!(item.instagram && item.instagram.ok);
-            if (yaPublicada) {
+            if (publicada) {
               // Ya está en Instagram (se aprobó, se deshizo y se vuelve a
               // aprobar): se marca aprobada sin publicarla por segunda vez.
               aplicar = (it) => { it.status = 'aprobado'; };
             } else {
-              const clave = `${negocioId}/${itemId}`;
-              if (publicando.has(clave)) {
-                return sendJSON(res, 409, { error: 'Esta pieza ya se está publicando' });
-              }
-              publicando.add(clave);
-              let resultadoIG;
-              try {
-                resultadoIG = await intentarPublicarEnInstagram(req, negocio, item);
-              } finally {
-                publicando.delete(clave);
-              }
-              aplicar = (it) => { it.status = 'aprobado'; it.instagram = resultadoIG; };
+              // Aprobar ya no publica en el acto: deja la pieza programada
+              // para su fecha. Sin Instagram conectado queda solo aprobada.
+              aplicar = (it) => {
+                const cuando = programacion.asegurarPublicarEl(it);
+                it.status = 'aprobado';
+                const yaEnCola = it.publicacion && ['programada', 'publicando'].includes(it.publicacion.estado);
+                if (igConectado && !yaEnCola) programar(it, maxISO(cuando, new Date().toISOString()), req);
+              };
+              publicarYa = true;
             }
-          } else if (accion === 'rechazar' && req.method === 'POST') {
-            aplicar = (it) => { it.status = 'rechazado'; };
-          } else if (accion === 'deshacer' && req.method === 'POST') {
-            aplicar = (it) => { it.status = 'pendiente'; };
+          } else if ((accion === 'rechazar' || accion === 'deshacer') && req.method === 'POST') {
+            if (seEstaPublicando) return ocupada();
+            aplicar = (it) => {
+              it.status = accion === 'rechazar' ? 'rechazado' : 'pendiente';
+              // Sale de la cola de publicación; el registro de una ya
+              // publicada se conserva (así no se publica de nuevo al re-aprobar).
+              if (it.publicacion && it.publicacion.estado !== 'publicada') delete it.publicacion;
+            };
+          } else if ((accion === 'publicar-ahora' || accion === 'reintentar') && req.method === 'POST') {
+            if (item.status !== 'aprobado') return sendJSON(res, 400, { error: 'Primero aprueba la pieza' });
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
+            if (!igConectado) return sendJSON(res, 400, { error: 'Conecta Instagram en Configuración para publicar' });
+            if (seEstaPublicando) return ocupada();
+            aplicar = (it) => {
+              const ahora = new Date().toISOString();
+              // "Publicar ahora" también mueve la fecha; "Reintentar" la deja.
+              if (accion === 'publicar-ahora') programacion.fijarPublicarEl(it, ahora);
+              else programacion.asegurarPublicarEl(it);
+              programar(it, ahora, req);
+            };
+            publicarYa = true;
+          } else if (accion === 'reprogramar' && req.method === 'PUT') {
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
+            if (seEstaPublicando) return ocupada();
+            const body = await readBody(req);
+            const cuando = programacion.isoDesdeInputLocal(body.fecha);
+            if (!cuando) return sendJSON(res, 400, { error: 'Fecha inválida' });
+            const diferencia = Date.parse(cuando) - Date.now();
+            if (diferencia < -60 * 1000) {
+              return sendJSON(res, 400, { error: 'Esa fecha ya pasó. Para publicar de inmediato, aprueba la pieza y usa "Publicar ahora".' });
+            }
+            if (diferencia > 366 * 24 * 60 * 60 * 1000) return sendJSON(res, 400, { error: 'La fecha puede ser hasta un año adelante' });
+            aplicar = (it) => {
+              programacion.fijarPublicarEl(it, cuando);
+              const enCola = it.status === 'aprobado' && it.publicacion && ['programada', 'fallida'].includes(it.publicacion.estado);
+              if (enCola) programar(it, cuando, req);
+            };
           } else if (accion === 'editar' && req.method === 'PUT') {
             const body = await readBody(req);
             if (typeof body.caption !== 'string') return sendJSON(res, 400, { error: 'Falta el texto' });
@@ -730,6 +805,10 @@ const server = http.createServer(async (req, res) => {
           if (!fresco) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
           aplicar(fresco);
           store.saveContenido(negocioId, items);
+          if (publicarYa && publicador.estaVencida(fresco)) {
+            const procesado = await publicador.procesar(negocioId, itemId);
+            if (procesado) return sendJSON(res, 200, procesado);
+          }
           return sendJSON(res, 200, fresco);
         }
       }
@@ -777,6 +856,11 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Rubrofy corriendo en http://localhost:${PORT}`);
+  publicador.iniciar();
+  console.log(`Publicador activo: revisa las publicaciones programadas cada ${Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30} s (zona ${programacion.ZONA}).`);
+  if (!process.env.PUBLIC_URL) {
+    console.log('PUBLIC_URL no configurada: el publicador usará la URL desde la que se aprobó cada pieza. En producción conviene definirla.');
+  }
   if (process.env.ANTHROPIC_API_KEY) {
     console.log(`Usando modelo ${process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001'} para estrategia y contenido.`);
   } else {

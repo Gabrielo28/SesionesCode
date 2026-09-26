@@ -6,6 +6,8 @@
 // escribe los titulares y captions reales; en el plan gratis, o sin key,
 // usa plantillas genéricas con los datos del negocio.
 
+const { fechaProgramada, etiquetaFecha } = require('./programacion');
+
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
 // Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
@@ -17,13 +19,6 @@ const HUES = [
   ['#5a4526', '#20160a'],
   ['#4a3624', '#1c130a'],
 ];
-
-const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-const pad2 = (n) => (n < 10 ? '0' + n : '' + n);
-
-function formatDate(date) {
-  return pad2(date.getDate()) + ' ' + MESES[date.getMonth()];
-}
 
 function headlineGenerico(enfoque) {
   const palabras = enfoque.label.toUpperCase().split(/\s+/);
@@ -114,21 +109,21 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
   if (!estrategia) throw new Error('El negocio no tiene una estrategia de contenido');
 
   const enfoques = estrategia.enfoques;
-  const hoy = new Date();
   const plan = [];
 
   for (let i = 0; i < cantidad; i++) {
     const idx = startIndex + i;
     const enfoque = enfoques[idx % enfoques.length];
     const esHistoria = idx % 3 === 2;
-    const fecha = new Date(hoy);
-    fecha.setDate(hoy.getDate() + 2 + idx * 2);
-    const hora = esHistoria ? '18:30' : '09:00';
+    // Fecha real en la hora del negocio (ver server/programacion.js): es la
+    // que usa el publicador para publicar la pieza una vez aprobada.
+    const publicarEl = fechaProgramada(2 + idx * 2, esHistoria ? '18:30' : '09:00');
     plan.push({
       idx,
       enfoque,
       esHistoria,
-      dateLabel: `${formatDate(fecha)} - ${hora} - ${esHistoria ? 'Historia' : 'Post'}`,
+      publicarEl,
+      dateLabel: etiquetaFecha(publicarEl, esHistoria ? 'Historia' : 'Post'),
       hue: HUES[idx % HUES.length],
     });
   }
@@ -150,6 +145,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       enfoqueId: p.enfoque.id,
       categoriaFoto: p.enfoque.categoriaFoto || estrategia.categoriasFoto[0] || null,
       date: p.dateLabel,
+      publicarEl: p.publicarEl,
       hueFrom: p.hue[0],
       hueTo: p.hue[1],
       variants: [caption],
