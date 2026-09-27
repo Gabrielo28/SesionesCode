@@ -69,7 +69,7 @@ queda apagada y el resto funciona igual)
 | Google Ads | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
-| Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma) |
+| Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
 | Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
 

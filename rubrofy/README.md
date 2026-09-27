@@ -175,7 +175,9 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
 Para quien administra la plataforma. Se activa con `ADMIN_EMAILS` (emails
 separados por coma de cuentas de Rubrofy); esas cuentas ven el enlace
 "Administración" en su menú y entran a `/admin`. Sin la variable, `/admin`
-y `/api/admin/*` responden 404, y también para cualquier otra cuenta.
+y `/api/admin/*` responden 404, y también para cualquier otra cuenta. Como
+los emails no se verifican al registrarse, un email de `ADMIN_EMAILS` no se
+puede registrar: la cuenta administradora se crea antes de listarla.
 
 Muestra **métricas y estado, no el contenido de cada negocio** (decisión
 explícita: no hay acceso total): negocios, activos en 7 días, cuántos pagan

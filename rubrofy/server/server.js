@@ -714,6 +714,10 @@ const server = http.createServer(async (req, res) => {
         if (password.length < 8) return sendJSON(res, 400, { error: 'La clave debe tener al menos 8 caracteres' });
         if (body.acepto !== true) return sendJSON(res, 400, { error: 'Para crear la cuenta tienes que aceptar los términos y la política de privacidad' });
         if (buscarNegocioPorEmail(email)) return sendJSON(res, 409, { error: 'Ya existe una cuenta con ese email' });
+        // Los emails no se verifican al registrarse: un email de ADMIN_EMAILS
+        // sin cuenta no puede crearse aquí (si no, quien lo conozca se haría
+        // administrador). La cuenta administradora se crea antes de listarla.
+        if (admin.adminEmails().includes(email)) return sendJSON(res, 409, { error: 'Ese email no está disponible' });
 
         const id = idUnico(slugify(nombre));
         const estrategia = await generarEstrategia({ nombre, rubro });

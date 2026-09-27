@@ -156,7 +156,9 @@
 
   function descargarCSV() {
     const cab = ['nombre', 'email', 'plan', 'alta', 'ultima_actividad', 'bienvenida', 'etapa', 'instagram', 'publicidad', 'resumen_semanal', 'por_semana', 'pendientes', 'aprobadas', 'publicadas', 'fallidas', 'ia_textos_mes', 'ia_fotos_mes'];
-    const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    // Comillas escapadas y sin fórmulas: un nombre que empiece con = + - @
+    // se antepone con ' para que Excel no lo ejecute.
+    const q = (v) => '"' + String(v == null ? '' : v).replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""') + '"';
     const filas = visibles().map((n) => [n.nombre, n.email, n.plan, n.creadoEl, n.ultimoAcceso, n.bienvenida ? 'si' : 'no', n.etapa, n.instagram, n.publicidad ? 'si' : 'no', n.avisos ? 'si' : 'no', n.semanal,
       n.piezas.pendientes, n.piezas.aprobadas, n.piezas.publicadas, n.piezas.fallidas, n.iaMes.textos, n.iaMes.fotos].map(q).join(','));
     const blob = new Blob(['﻿' + [cab.join(',')].concat(filas).join('\n')], { type: 'text/csv;charset=utf-8' });
