@@ -4,6 +4,7 @@
 // conectar sus cuentas y genera su primera semana de contenido.
 (function () {
   'use strict';
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
 
   const P = () => window.RubrofyPlan;
   const PASOS = ['Tu negocio', 'Objetivo', 'Cuánto publicar', 'Tu estrategia', 'Conexiones'];
@@ -34,24 +35,24 @@
     function cuerpoPaso() {
       const n = Object.assign({}, ctx.negocio(), { datos, planContenido: plan });
       if (paso === 0) {
-        return `<h2>Hola, ${esc(n.nombre)} 👋</h2>
+        return `<h2>Hola, ${esc(n.nombre)} 👋${AY('bv-negocio')}</h2>
           <p class="bv-lead">Antes de crear tu contenido, cuéntanos un poco de tu negocio. Con esto Rubrofy arma tu estrategia y escribe con tus datos reales. Toma unos 3 minutos.</p>
           ${P().camposNegocio(n)}`;
       }
-      if (paso === 1) return P().camposObjetivo(plan, cat);
+      if (paso === 1) return `<h2>Tu objetivo${AY('bv-objetivo')}</h2>` + P().camposObjetivo(plan, cat);
       if (paso === 2) {
-        return `${P().camposRitmo(plan, cat)}
+        return `<h2>Cuánto publicar${AY('bv-ritmo')}</h2>${P().camposRitmo(plan, cat)}
           <p class="bv-nota">Puedes cambiarlo cuando quieras desde <b>Estrategia</b>. Cada vez que pulses <b>Generar semana</b>, Rubrofy crea esta mezcla y la reparte en la semana.</p>`;
       }
       if (paso === 3) {
-        return `<h2>Tu estrategia de contenido</h2>
+        return `<h2>Tu estrategia de contenido${AY('bv-estrategia')}</h2>
           <p class="bv-lead">La armamos con lo que nos contaste. Ajusta lo que quieras: el resumen, el tono y los temas que se van turnando.</p>
           <div data-bv-est>${P().estrategiaEditable(ctx.estrategia())}</div>
           <button type="button" class="btn-ghost bv-proponer" data-bv="proponer">Proponer otra con IA</button>`;
       }
       const neg = ctx.negocio();
       const estado = (ok, txtOk, txtNo) => `<span class="bv-estado ${ok ? 'ok' : ''}">${ok ? txtOk : txtNo}</span>`;
-      return `<h2>Conecta tus cuentas</h2>
+      return `<h2>Conecta tus cuentas${AY('bv-conexiones')}</h2>
         <p class="bv-lead">Puedes hacerlo ahora o después. Todas se conectan desde <b>Conexiones</b>, abajo a la izquierda del menú.</p>
         <div class="bv-conexiones">
           <div class="bv-con"><i class="c-ig"></i><div><b>Instagram</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible

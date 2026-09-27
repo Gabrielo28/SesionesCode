@@ -71,7 +71,7 @@
     main.innerHTML = `
       <header class="portada">
         <div>
-          <h1>Informe de ${e(d.etiquetaMes)}</h1>
+          <h1>Informe de ${e(d.etiquetaMes)}${window.Ayuda && !d.compartido ? window.Ayuda.boton('informe') : ''}</h1>
           <p class="sub">${e(d.negocio.nombre)}${d.negocio.rubro ? ' · ' + e(d.negocio.rubro) : ''}${d.completo ? '' : ' · mes en curso, datos hasta hoy'}</p>
         </div>
         <div class="marca">Rubrofy<br>Instagram · resultados del mes</div>

@@ -2,6 +2,7 @@
 // gasto, resultados, costo por resultado, gasto y resultados por día y una
 // tabla por campaña. Las dos fuentes entregan la misma forma de datos.
 (function () {
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
   const G = () => window.RubrofyGraficos;
   const FUENTES = {
     meta: { ruta: 'ads', nombre: 'Meta Ads', resultados: 'compras, formularios y conversaciones iniciadas' },
@@ -57,6 +58,7 @@
         <button class="btn-ghost" data-sync>Actualizar ahora</button>
       </div>
       ${sync && sync.error ? aviso(g.escapar(sync.detalle || 'No se pudo actualizar.'), 'error') : ''}
+      <p class="res-ayuda">Cómo leer estos números ${AY('ads-numeros')} · Qué es esta sección ${AY('publicidad')}</p>
       <div class="kpis">
         <div class="kpi"><span class="kpi-label">Inversión</span><b class="kpi-valor">${dinero(t.gasto, moneda)}</b><span class="kpi-extra">${g.numero(t.impresiones)} impresiones</span></div>
         <div class="kpi"><span class="kpi-label">Resultados</span><b class="kpi-valor">${g.numero(t.resultados)}</b><span class="kpi-extra">${f.resultados}</span></div>
@@ -66,11 +68,11 @@
       </div>
       ${t.gasto > 0 && !t.resultados ? aviso(`Se invirtieron ${dinero(t.gasto, moneda)} y no hay resultados registrados. Puede que las conversiones no estén bien configuradas (píxel, API de conversiones o seguimiento de WhatsApp): vale la pena revisarlo antes de seguir invirtiendo.`, 'error') : ''}
       <div class="res-grid">
-        <div class="res-card"><h2>Inversión diaria</h2><div data-graf="gasto"></div></div>
-        <div class="res-card"><h2>Resultados diarios</h2><div data-graf="resultados"></div></div>
+        <div class="res-card"><h2>Inversión diaria${AY('res-graficos')}</h2><div data-graf="gasto"></div></div>
+        <div class="res-card"><h2>Resultados diarios${AY('res-graficos')}</h2><div data-graf="resultados"></div></div>
       </div>
       <div class="res-card">
-        <h2>Campañas</h2>
+        <h2>Campañas${AY('campanas')}</h2>
         ${d.resumen.campanas.length ? `
         <div class="tabla-scroll"><table class="tabla-ads">
           <thead><tr><th>Campaña</th><th>Inversión</th><th>Clics</th><th>CTR</th><th>Resultados</th><th>Costo / resultado</th><th>ROAS</th></tr></thead>

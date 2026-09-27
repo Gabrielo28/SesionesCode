@@ -2,6 +2,7 @@
 // bienvenida (bienvenida.js) y la vista "Estrategia" (este mismo archivo).
 (function () {
   'use strict';
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
 
   const ETIQUETAS = { post: 'Posts', carrusel: 'Carruseles', reel: 'Reels', historia: 'Historias' };
   const SINGULAR = { post: 'Post', carrusel: 'Carrusel', reel: 'Reel', historia: 'Historia' };
@@ -177,7 +178,7 @@
       <label class="pc-bloque">Tono de voz
         <input type="text" data-est="tono" value="${esc(est.tono)}" maxlength="300"></label>
       <div class="pc-bloque">
-        <span class="pc-etq">Enfoques de contenido <span class="opc">Los temas que se van turnando en tus publicaciones</span></span>
+        <span class="pc-etq">Enfoques de contenido ${AY('enfoques')} <span class="opc">Los temas que se van turnando en tus publicaciones</span></span>
         <div class="pc-enfoques" data-enfoques>${(est.enfoques || []).map(fila).join('')}</div>
         <button type="button" class="btn-ghost pc-agregar" data-agregar-enfoque>+ Agregar enfoque</button>
       </div>
@@ -229,7 +230,7 @@
     cont.innerHTML = `
       <div class="est-grid">
         <section class="ig-card est-card" data-seccion="estrategia">
-          <div class="ig-card-head"><h2>Tu estrategia</h2>
+          <div class="ig-card-head"><h2>Tu estrategia${AY('estrategia-editar')}</h2>
             <button type="button" class="btn-ghost" data-est-accion="proponer">Proponer otra con IA</button></div>
           <p class="sub">Rubrofy la usa para escribir cada publicación. Cámbiala cuando quieras.</p>
           <div data-est-form>${estrategiaEditable(ctx.estrategia)}</div>
@@ -238,12 +239,12 @@
           <div class="config-actions"><button type="button" class="btn-approve" data-est-accion="guardar-estrategia">Guardar estrategia</button></div>
         </section>
         <section class="ig-card est-card" data-seccion="plan">
-          <div class="ig-card-head"><h2>Tu negocio y objetivo</h2></div>
+          <div class="ig-card-head"><h2>Tu negocio y objetivo${AY('negocio-objetivo')}</h2></div>
           ${camposNegocio(n)}
           ${camposObjetivo(n.planContenido, cat)}
         </section>
         <section class="ig-card est-card" data-seccion="ritmo">
-          <div class="ig-card-head"><h2>Cuánto publicar</h2></div>
+          <div class="ig-card-head"><h2>Cuánto publicar${AY('cuanto-publicar')}</h2></div>
           <p class="sub">"Generar semana" crea exactamente esta mezcla y la reparte en los días de la semana.</p>
           ${camposRitmo(n.planContenido, cat)}
           <p class="config-error" data-plan-error hidden></p>

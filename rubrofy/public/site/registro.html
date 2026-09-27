@@ -51,7 +51,7 @@
         <label>Nombre del negocio
           <input type="text" id="reg-nombre" required placeholder="Ej: Cabañas Los Alerces">
         </label>
-        <label>Rubro
+        <label><span>Rubro <button type="button" class="ay" data-ayuda="reg-rubro" aria-label="Ayuda: Rubro" aria-expanded="false">?</button></span>
           <textarea id="reg-rubro" required rows="2" maxlength="300" placeholder="Ej: panadería artesanal de barrio, hacemos pan y pasteles"></textarea>
         </label>
         <label>Email
@@ -61,7 +61,7 @@
           <input type="password" id="reg-password" required minlength="8" autocomplete="new-password">
         </label>
         <div class="form-row">
-          <label>Precio desde
+          <label><span>Precio desde <button type="button" class="ay" data-ayuda="reg-datos" aria-label="Ayuda: Precio, promoción y producto" aria-expanded="false">?</button></span>
             <input type="text" id="reg-precio" placeholder="$XX.XXX">
           </label>
           <label>Unidad
@@ -122,5 +122,6 @@
       });
     })();
   </script>
+  <script src="/app/ayuda.js"></script>
 </body>
 </html>

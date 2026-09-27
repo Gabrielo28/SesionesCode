@@ -289,3 +289,5 @@ mark { background: var(--rosa); color: var(--negro); padding: 0 .12em; border-ra
 .legal b { color: var(--texto); }
 .legal a { color: var(--rosa-texto); text-decoration: underline; }
 .legal code { font-size: 14px; background: var(--gris-fondo); padding: 1px 6px; border-radius: 5px; }
+.registro-card label > span { display: inline-flex; align-items: center; }
+.comparar h3 { display: flex; align-items: center; justify-content: center; }

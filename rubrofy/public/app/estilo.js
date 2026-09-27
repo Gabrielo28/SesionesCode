@@ -2,6 +2,7 @@
 // hace (importado de Instagram o agregado a mano) y revisa la guía de
 // estilo que la IA aprende de eso. Datos de /api/negocios/:id/estilo.
 (function () {
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
   const FORMATOS = [
     { id: 'post', label: 'Post', plural: 'posts' }, { id: 'carrusel', label: 'Carrusel', plural: 'carruseles' },
     { id: 'reel', label: 'Reel', plural: 'reels' }, { id: 'historia', label: 'Historia', plural: 'historias' },
@@ -48,7 +49,7 @@
 
       <div class="res-grid">
         <div class="res-card">
-          <h2>Tu guía de estilo</h2>
+          <h2>Tu guía de estilo${AY('estilo-guia')}</h2>
           <p class="sub">La IA la sigue al escribir tu contenido. Puedes corregirla: lo que escribas aquí manda.</p>
           <label class="estilo-campo">General
             <textarea data-guia="general" rows="3" placeholder="Ej: cercano, tuteo, frases cortas, 1-2 emojis, siempre cierra invitando a escribir por WhatsApp">${e(g.general)}</textarea>
@@ -67,7 +68,7 @@
         </div>
 
         <form class="res-card" data-form="referencia">
-          <h2>Agregar un ejemplo</h2>
+          <h2>Agregar un ejemplo${AY('estilo-agregar')}</h2>
           <p class="sub">Pega el texto de una publicación, sube una captura, o ambas. La nota le explica a la IA qué es (ej: "así hacemos las promos de los viernes").</p>
           <label class="estilo-campo">Formato
             <select name="formato">${FORMATOS.map((f) => `<option value="${f.id}">${f.label}</option>`).join('')}</select>
@@ -87,7 +88,7 @@
 
       <div class="res-card">
         <div class="estilo-cabecera">
-          <h2>Tus ejemplos (${refs.length})</h2>
+          <h2>Tus ejemplos (${refs.length})${AY('estilo-ejemplos')}</h2>
           <div class="segmentado">
             ${[{ id: 'todos', label: 'Todos' }, ...FORMATOS].map((f) => `<button data-filtro="${f.id}" class="${filtro === f.id ? 'activo' : ''}">${f.label}</button>`).join('')}
           </div>

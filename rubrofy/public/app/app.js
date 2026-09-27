@@ -15,6 +15,7 @@
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
 
   const $ = (sel) => document.querySelector(sel);
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
 
   function escapeHtml(str) {
     return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
@@ -248,6 +249,7 @@
               <select data-formato-id="${item.id}" aria-label="Formato de publicación">
                 ${Object.keys(FORMATOS).map((f) => `<option value="${f}"${f === formato ? ' selected' : ''}>${FORMATOS[f]}</option>`).join('')}
               </select>
+              ${AY('pieza-formato')}
               ${conVideo ? (item.video
                 ? `<span class="card-video-ok">Video cargado (${(item.video.bytes / 1048576).toFixed(1)} MB)</span><button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
                 : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>`) : ''}
@@ -257,7 +259,7 @@
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
-          ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}</ul>` : ''}
+          ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}<li class="alerta-ayuda">Qué hacer ${AY('alertas')}</li></ul>` : ''}
           ${isPending ? `
             <div class="card-actions">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
@@ -265,6 +267,7 @@
               ${!fotoUrl ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
+              ${AY('pieza-acciones')}
             </div>
           ` : `
             <div class="card-note">
@@ -273,6 +276,7 @@
                 ${pub && pub.estado === 'programada' && !publicada && negocioActual.instagramEstado === 'ok' ? `<button data-action="publish-now" data-id="${item.id}">Publicar ahora</button>` : ''}
                 ${pub && pub.estado === 'fallida' ? `<button data-action="retry" data-id="${item.id}">Reintentar</button>` : ''}
                 ${publicando ? '' : `<button data-action="undo" data-id="${item.id}">Deshacer</button>`}
+                ${AY('pieza-acciones')}
               </span>
             </div>
           `}
@@ -463,7 +467,7 @@
     const cont = $('#google-card');
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     const g = negocioActual.googleConexion;
-    const cabecera = `<div class="ig-card-head"><h2>Conexión con Google Ads</h2>
+    const cabecera = `<div class="ig-card-head"><h2>Conexión con Google Ads${AY('google')}</h2>
       <span class="ig-estado ${g && g.customerId ? (g.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${g && g.customerId ? (g.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
     if (!plan.ads) {
       cont.innerHTML = cabecera + '<p class="sub">Para ver tus campañas de Google junto a tu Instagram. Disponible en el plan Estudio.</p>';
@@ -510,7 +514,7 @@
     const cont = $('#meta-card');
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     const c = negocioActual.metaConexion;
-    const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)</h2>
+    const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2>
       <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
     if (!plan.ads && !plan.competencia) {
       cont.innerHTML = cabecera + '<p class="sub">Para ver tu publicidad en Meta y seguir a tu competencia. Disponible en el plan Estudio.</p>';
@@ -665,7 +669,7 @@
     if (!plan[clave]) {
       cont.innerHTML = `<div class="res-aviso">${tabResultados === 'competencia'
         ? 'Sigue a tus competidores en Instagram (seguidores, frecuencia e interacción) y compáralos contigo.'
-        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="config">Ver planes</button></div>`;
+        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'}${AY(tabResultados === 'competencia' ? 'competencia' : 'publicidad')} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="config">Ver planes</button></div>`;
       cont.querySelector('[data-ir]').addEventListener('click', () => irAVista('config'));
       return;
     }

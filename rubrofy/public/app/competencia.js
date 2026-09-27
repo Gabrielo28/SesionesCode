@@ -2,6 +2,7 @@
 // Instagram (datos públicos vía Business Discovery) y enlace a sus anuncios
 // en la Biblioteca de Anuncios de Meta.
 (function () {
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
   const G = () => window.RubrofyGraficos;
 
   async function render(cont, ctx) {
@@ -40,12 +41,12 @@
       <div class="res-aviso"><span>Solo se pueden seguir cuentas profesionales (empresa o creador). Instagram entrega sus datos públicos: seguidores, publicaciones y me gusta y comentarios; no su alcance.</span></div>
       ${competidores.length ? `
       <div class="res-card">
-        <h2>Interacción promedio por publicación</h2>
+        <h2>Interacción promedio por publicación${AY('competencia')}</h2>
         <p class="sub">Me gusta + comentarios de las últimas 12 publicaciones de cada cuenta.</p>
         <div data-graf="interaccion"></div>
       </div>` : ''}
       <div class="res-card">
-        <h2>Comparación</h2>
+        <h2>Comparación${AY('competencia')}</h2>
         <div class="tabla-scroll"><table class="tabla-ads">
           <thead><tr><th>Cuenta</th><th>Seguidores</th><th>Variación 30 días</th><th>Posts 30 días</th><th>Interacción / post</th><th>Mejor post reciente</th><th></th></tr></thead>
           <tbody>${filas.map((f) => `<tr class="${f.propio ? 'comp-propio' : ''}">

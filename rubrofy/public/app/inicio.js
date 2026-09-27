@@ -3,6 +3,7 @@
 // próximo que se publica y su plan.
 (function () {
   'use strict';
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -53,7 +54,7 @@
     cont.innerHTML = `
       <div class="ini-head">
         <div>
-          <h1>Hola, ${esc(n.nombre)}</h1>
+          <h1>Hola, ${esc(n.nombre)}${AY('inicio')}</h1>
           <p class="sub">${r.siguientes.length ? `Estás en <b>${esc(nombreEtapa(r.etapaActual))}</b>. Esto es lo que te toca ahora.` : 'Estás al día. Rubrofy sigue publicando y midiendo por ti.'}</p>
         </div>
         <div class="ini-acciones">
@@ -63,6 +64,7 @@
       </div>
 
       ${r.siguientes.length ? `
+      <h2 class="ru-ahora-t">Qué hacer ahora${AY('que-hacer')}</h2>
       <section class="ru-ahora" aria-label="Qué hacer ahora">
         ${r.siguientes.map((p, i) => `
           <article class="ru-accion${i === 0 ? ' primera' : ''}">
@@ -77,7 +79,7 @@
       </section>` : ''}
 
       <section class="ig-card ru-ruta">
-        <div class="ig-card-head"><h2>Tu ruta en Rubrofy</h2><span class="ru-ayuda">Configura una vez; después, un ciclo semanal y uno mensual.</span></div>
+        <div class="ig-card-head"><h2>Tu ruta en Rubrofy${AY('ruta')}</h2><span class="ru-ayuda">Configura una vez; después, un ciclo semanal y uno mensual.</span></div>
         <div class="ru-etapas" role="tablist">
           ${r.etapas.map((e, i) => {
             const completa = e.total && e.hechos === e.total;
@@ -104,7 +106,7 @@
 
       <div class="ini-grid">
         <section class="ig-card">
-          <div class="ig-card-head"><h2>Próximas publicaciones</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"calendario"}'>Ver calendario</button></div>
+          <div class="ig-card-head"><h2>Próximas publicaciones${AY('proximas')}</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"calendario"}'>Ver calendario</button></div>
           ${proximas.length ? `<ul class="ini-lista">${proximas.map((i) => `
             <li><span class="ini-fecha">${esc(ctx.fechaCorta(i.publicarEl))}</span><span class="ini-fmt">${esc(window.RubrofyPlan.SINGULAR[i.formato] || 'Post')}</span><span class="ini-txt">${esc((i.variants && i.variants[i.variantIndex || 0]) || i.headline)}</span></li>`).join('')}</ul>`
             : '<p class="sub">Todavía no hay publicaciones aprobadas. Lo que apruebes aparece aquí con su fecha.</p>'}
@@ -112,7 +114,7 @@
         </section>
 
         <section class="ig-card">
-          <div class="ig-card-head"><h2>Tu plan de contenido</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"estrategia"}'>Cambiar</button></div>
+          <div class="ig-card-head"><h2>Tu plan de contenido${AY('plan-inicio')}</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"estrategia"}'>Cambiar</button></div>
           ${plan ? `
             <dl class="ini-dl">
               <dt>Objetivo</dt><dd>${esc(pc.objetivos.join(' · ') || '—')}</dd>

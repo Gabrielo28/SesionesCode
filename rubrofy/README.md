@@ -155,6 +155,15 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Ayuda contextual (public/app/ayuda.js)
+
+Cada sección y proceso del panel, la bienvenida, la administración, el
+registro y los precios tiene un "?". Al pasar el mouse, tocarlo en el
+celular o llegar con Tab, muestra qué es y los pasos para hacerlo (Esc
+cierra). Todos los textos están en `AYUDA` dentro de `ayuda.js`; para
+agregar uno: una clave nueva con `t` (título), `d` (qué es), `p` (pasos) y
+`n` (nota), y `Ayuda.boton('clave')` donde se quiera mostrar.
+
 ## Cuenta: recuperar clave y correos del servicio
 
 - **Olvidé mi clave** (`/app/recuperar.html`): `POST /api/auth/recuperar

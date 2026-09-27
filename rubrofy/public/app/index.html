@@ -92,6 +92,7 @@
           <div class="stat amber"><b id="stat-pendientes">0</b><span>Pendientes</span></div>
           <div class="stat green"><b id="stat-aprobados">0</b><span>Aprobados</span></div>
           <div class="stat"><b id="stat-total">0</b><span>En cola</span></div>
+          <button type="button" class="ay" data-ayuda="contadores" aria-label="Ayuda: Contadores" aria-expanded="false">?</button>
           <button id="btn-generar" title="Crea la próxima semana según tu plan">+ Generar semana</button>
           <button id="btn-logout" class="btn-icon" title="Cerrar sesión">⏻</button>
         </div>
@@ -103,7 +104,7 @@
 
       <section id="view-estrategia" class="view" hidden>
         <div>
-          <h1>Estrategia</h1>
+          <h1>Estrategia<button type="button" class="ay" data-ayuda="estrategia" aria-label="Ayuda: Estrategia" aria-expanded="false">?</button></h1>
           <p class="sub">Qué quieres lograr, cómo suenas, de qué hablas y cuánto publicas. Rubrofy usa todo esto para crear tu contenido.</p>
         </div>
         <div id="estrategia"></div>
@@ -111,7 +112,7 @@
 
       <section id="view-cola" class="view" hidden>
         <div>
-          <h1>Cola de aprobación</h1>
+          <h1>Cola de aprobación<button type="button" class="ay" data-ayuda="cola" aria-label="Ayuda: Por aprobar" aria-expanded="false">?</button></h1>
           <p class="sub">Revisa lo que se publicará. Nada sale a Instagram sin tu visto bueno.</p>
         </div>
         <div class="grid" id="cola-grid"></div>
@@ -120,7 +121,7 @@
       <section id="view-calendario" class="view" hidden>
         <div class="cal-header">
           <div>
-            <h1>Calendario de contenido</h1>
+            <h1>Calendario de contenido<button type="button" class="ay" data-ayuda="calendario" aria-label="Ayuda: Calendario" aria-expanded="false">?</button></h1>
             <p class="sub">Publicaciones del mes ubicadas en su fecha.</p>
           </div>
           <span class="month" id="cal-month"></span>
@@ -141,7 +142,7 @@
 
       <section id="view-fotos" class="view" hidden>
         <div>
-          <h1>Fotos del negocio</h1>
+          <h1>Fotos del negocio<button type="button" class="ay" data-ayuda="fotos" aria-label="Ayuda: Fotos del negocio" aria-expanded="false">?</button></h1>
           <p class="sub">El contenido usa estas fotos según la categoría de cada pieza. Sin foto, la tarjeta muestra un color de marcador.</p>
         </div>
         <div id="fotos-categorias"></div>
@@ -149,7 +150,7 @@
 
       <section id="view-estilo" class="view" hidden>
         <div>
-          <h1>Mi estilo</h1>
+          <h1>Mi estilo<button type="button" class="ay" data-ayuda="estilo" aria-label="Ayuda: Mi estilo" aria-expanded="false">?</button></h1>
           <p class="sub">Muéstrale a Rubrofy el contenido que ya haces — posts, carruseles, reels e historias — y aprenderá a escribir y proponer contenido como el tuyo.</p>
         </div>
         <div id="estilo" class="estilo"></div>
@@ -157,7 +158,7 @@
 
       <section id="view-resultados" class="view" hidden>
         <div>
-          <h1>Resultados</h1>
+          <h1>Resultados<button type="button" class="ay" data-ayuda="resultados" aria-label="Ayuda: Resultados" aria-expanded="false">?</button></h1>
           <p class="sub">Cómo le va a tu Instagram y qué le está funcionando. Con esto la IA aprende a escribir lo que te sirve.</p>
         </div>
         <div class="pestanas" role="tablist" id="resultados-pestanas">
@@ -171,7 +172,7 @@
 
       <section id="view-config" class="view" hidden>
         <div>
-          <h1>Conexiones y ajustes</h1>
+          <h1>Conexiones y ajustes<button type="button" class="ay" data-ayuda="config" aria-label="Ayuda: Conexiones y ajustes" aria-expanded="false">?</button></h1>
           <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y administra tu plan.</p>
         </div>
         <nav class="cfg-indice" aria-label="Secciones de ajustes">
@@ -181,7 +182,7 @@
         <h2 class="cfg-titulo" id="cfg-conexiones">Conexiones</h2>
         <div class="ig-card" id="ig-card">
           <div class="ig-card-head">
-            <h2>Conexión con Instagram</h2>
+            <h2>Conexión con Instagram<button type="button" class="ay" data-ayuda="instagram" aria-label="Ayuda: Conectar Instagram" aria-expanded="false">?</button></h2>
             <span class="ig-estado" id="ig-estado">Sin conectar</span>
           </div>
           <p class="sub">Cuando está conectado, las piezas aprobadas se publican solas en Instagram en su fecha y hora (si una falla, se reintenta y te avisamos en la tarjeta).</p>
@@ -226,7 +227,7 @@
 
         <h2 class="cfg-titulo" id="cfg-avisos">Avisos por correo</h2>
         <div class="ig-card" id="avisos-card">
-          <div class="ig-card-head"><h2>Resumen semanal</h2><span class="ig-estado" id="avisos-estado"></span></div>
+          <div class="ig-card-head"><h2>Resumen semanal<button type="button" class="ay" data-ayuda="avisos" aria-label="Ayuda: Resumen semanal" aria-expanded="false">?</button></h2><span class="ig-estado" id="avisos-estado"></span></div>
           <p class="sub">Cada lunes en la mañana te llega un correo con lo que te toca esa semana (qué aprobar, videos o fotos que faltan) y lo que se publica en los próximos 7 días.</p>
           <label class="switch"><input type="checkbox" id="avisos-semanal"> <span>Recibir el resumen semanal en <b id="avisos-email"></b></span></label>
           <p class="sub" id="avisos-no-config" hidden>El envío de correos todavía no está configurado en este servidor.</p>
@@ -235,7 +236,7 @@
           <div class="config-actions"><button type="button" class="btn-ghost" id="btn-avisos-prueba">Enviarme uno ahora</button></div>
         </div>
 
-        <h2 class="cfg-titulo" id="cfg-datos">Datos del negocio</h2>
+        <h2 class="cfg-titulo" id="cfg-datos">Datos del negocio<button type="button" class="ay" data-ayuda="datos" aria-label="Ayuda: Datos del negocio" aria-expanded="false">?</button></h2>
         <p class="sub">Rubrofy usa estos datos tal cual en tus publicaciones y te avisa si un texto menciona algo que no está aquí. El rubro no se cambia aquí: define tu estrategia.</p>
         <form id="form-config" class="config-form">
           <label>Nombre
@@ -255,7 +256,7 @@
           <label>Producto o servicio destacado
             <input type="text" id="config-producto">
           </label>
-          <label>Fotos generadas por IA (cuando no hay una foto real subida)
+          <label>Fotos generadas por IA (cuando no hay una foto real subida) <button type="button" class="ay" data-ayuda="fotos-ia" aria-label="Ayuda: Fotos generadas por IA" aria-expanded="false">?</button>
             <select id="config-estilo-imagen">
               <option value="limpia">Foto limpia, sin texto</option>
               <option value="texto">Con el titular incrustado en la imagen</option>
@@ -264,12 +265,12 @@
           <p class="config-error" id="config-error" hidden></p>
           <p class="config-ok" id="config-ok" hidden>Guardado.</p>
           <div class="config-actions">
-            <button type="button" id="btn-eliminar-negocio" class="btn-danger">Eliminar negocio</button>
+            <span><button type="button" id="btn-eliminar-negocio" class="btn-danger">Eliminar negocio</button><button type="button" class="ay" data-ayuda="eliminar" aria-label="Ayuda: Eliminar negocio" aria-expanded="false">?</button></span>
             <button type="submit" class="btn-approve">Guardar cambios</button>
           </div>
         </form>
 
-        <h2 class="cfg-titulo" id="cfg-plan">Plan y pago</h2>
+        <h2 class="cfg-titulo" id="cfg-plan">Plan y pago<button type="button" class="ay" data-ayuda="plan-pago" aria-label="Ayuda: Plan y pago" aria-expanded="false">?</button></h2>
         <div class="ig-card" id="plan-card"></div>
       </section>
     </div>
@@ -277,7 +278,7 @@
 
   <dialog id="dlg-generar" class="dlg">
     <form method="dialog" class="dlg-caja">
-      <h2>Generar la próxima semana</h2>
+      <h2>Generar la próxima semana<button type="button" class="ay" data-ayuda="generar-semana" aria-label="Ayuda: Generar semana" aria-expanded="false">?</button></h2>
       <p class="sub" id="dlg-generar-texto"></p>
       <p class="sub" id="dlg-generar-fechas"></p>
       <p class="config-error" id="dlg-generar-error" hidden></p>
@@ -289,6 +290,7 @@
     </form>
   </dialog>
 
+  <script src="/app/ayuda.js"></script>
   <script src="/app/graficos.js"></script>
   <script src="/app/plan.js"></script>
   <script src="/app/bienvenida.js"></script>

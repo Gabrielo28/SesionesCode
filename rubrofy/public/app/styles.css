@@ -159,10 +159,10 @@ a { color: var(--amber); }
 .btn-text { background: transparent; border: none; color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 8px 2px; text-decoration: underline; white-space: nowrap; }
 .btn-x { background: transparent; border: none; color: var(--ink-faint); font-size: 16px; line-height: 1; padding: 8px 4px; }
 
-.card-note { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px; gap: 8px; }
+.card-note { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px; gap: 8px; flex-wrap: wrap; }
 .card-note .note-text { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; }
 .card-note button { background: transparent; border: none; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; font-size: 10px; text-decoration: underline; }
-.card-note .note-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.card-note .note-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .card-formato { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .card-formato select { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; background: var(--bg); color: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 2px 4px; color-scheme: dark; }
 .card-video-ok { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); }
@@ -654,3 +654,13 @@ a { color: var(--amber); }
 button.btn-ig { border: none; }
 .bv-ig { padding: 8px 14px; font-size: 12px; }
 .login-ok { margin: 0; font-size: 13px; color: var(--green); line-height: 1.5; }
+
+/* --- ayuda contextual (ayuda.js) --- */
+h1 .ay, h2 .ay { margin-left: 8px; }
+.card-actions .ay, .note-actions .ay { margin-left: 2px; color: var(--ink-faint); }
+.card-meta .ay, .card-formato .ay { color: var(--ink-faint); margin-left: 4px; }
+.card-alertas li.alerta-ayuda { background: none; border: none; padding: 0 2px; color: var(--ink-faint); font-size: 11px; display: flex; align-items: center; }
+.res-ayuda { margin: 0; font-size: 12px; color: var(--ink-faint); display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.ru-ahora-t { font-size: 14px; margin: 0 0 8px; display: flex; align-items: center; }
+.pc-etq .ay { margin-left: 4px; }
+.stats .ay { color: var(--ink-faint); }

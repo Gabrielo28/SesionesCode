@@ -2,6 +2,7 @@
 // visitas, salud y lista de negocios SIN su contenido (ver server/admin.js).
 (function () {
   'use strict';
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
 
   const G = window.RubrofyGraficos;
   const $ = (s) => document.querySelector(s);
@@ -52,7 +53,7 @@
     const main = $('#adm');
     main.innerHTML = `
       <div class="adm-cab">
-        <div><h1>Resumen de la plataforma</h1>
+        <div><h1>Resumen de la plataforma${AY('adm-kpis')}</h1>
         <p class="sub">${esc(fecha(r.periodo.desde))} – ${esc(fecha(r.periodo.hasta))}. Solo métricas y estado: aquí no se ven textos, fotos, estrategias ni resultados de cada negocio.</p></div>
       </div>
 
@@ -66,33 +67,33 @@
       </section>
 
       <section class="adm-grid tres">
-        <div class="ig-card"><div class="ig-card-head"><h2>Visitas al sitio por día</h2></div><div data-g="visitas"></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Visitas al sitio por día${AY('adm-series')}</h2></div><div data-g="visitas"></div>
           <p class="adm-nota">${num(k.visitasRegistro)} vistas de la página de registro en el periodo.</p></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Registros por día</h2></div><div data-g="registros"></div></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Publicaciones por día</h2></div><div data-g="publicaciones"></div></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Registros por día${AY('adm-series')}</h2></div><div data-g="registros"></div></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Publicaciones por día${AY('adm-series')}</h2></div><div data-g="publicaciones"></div></div>
       </section>
 
       <section class="adm-grid tres">
-        <div class="ig-card"><div class="ig-card-head"><h2>Embudo</h2><span class="adm-ayuda">todos los negocios</span></div><div data-g="embudo"></div></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Etapa de la ruta</h2></div><div data-g="etapas"></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Embudo${AY('adm-embudo')}</h2><span class="adm-ayuda">todos los negocios</span></div><div data-g="embudo"></div></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Etapa de la ruta${AY('adm-etapas')}</h2></div><div data-g="etapas"></div>
           <p class="adm-nota">Dónde está cada negocio hoy según su Inicio.</p></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Planes</h2></div><div data-g="planes"></div></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Planes${AY('adm-planes')}</h2></div><div data-g="planes"></div></div>
       </section>
 
       <section class="adm-grid tres">
-        <div class="ig-card"><div class="ig-card-head"><h2>De dónde llegan</h2></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>De dónde llegan${AY('adm-referentes')}</h2></div>
           ${r.referentes.length ? `<ul class="adm-lista">${r.referentes.map((x) => `<li><span>${esc(x.dominio)}</span><b>${num(x.n)}</b></li>`).join('')}</ul>`
             : '<p class="sub">Todavía no hay visitas desde otros sitios en el periodo.</p>'}
           <p class="adm-nota">Sin cookies ni IP: solo el dominio desde el que llegan.</p></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Uso de IA este mes</h2></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Uso de IA este mes${AY('adm-ia')}</h2></div>
           <ul class="adm-lista"><li><span>Textos escritos con IA</span><b>${num(k.iaTextosMes)}</b></li><li><span>Fotos generadas con IA</span><b>${num(k.iaFotosMes)}</b></li></ul></div>
-        <div class="ig-card"><div class="ig-card-head"><h2>Sistema</h2><span class="adm-ayuda">v${esc(r.sistema.version)}</span></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Sistema${AY('adm-sistema')}</h2><span class="adm-ayuda">v${esc(r.sistema.version)}</span></div>
           <ul class="adm-lista adm-config">${Object.entries(r.sistema.config).map(([n, ok]) => `<li><span>${esc(n)}</span><b class="${ok ? 'ok' : 'no'}">${ok ? 'Activo' : 'Falta configurar'}</b></li>`).join('')}</ul>
           <p class="adm-nota">Encendido ${esc(hace(r.sistema.encendidoDesde))} · base de datos ${esc(bytes(r.sistema.tamanoDb))} · zona ${esc(r.sistema.zona)}</p></div>
       </section>
 
       <section class="ig-card adm-negocios">
-        <div class="ig-card-head"><h2>Negocios</h2>
+        <div class="ig-card-head"><h2>Negocios${AY('adm-negocios')}</h2>
           <div class="adm-filtros">
             <input type="search" id="adm-buscar" placeholder="Buscar por nombre o email" value="${esc(filtro)}" aria-label="Buscar negocio">
             <select id="adm-orden" aria-label="Ordenar por">

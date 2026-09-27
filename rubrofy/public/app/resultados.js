@@ -2,6 +2,7 @@
 // horarios funcionan, las mejores publicaciones y cuánto aprueba el dueño
 // lo que propone la IA sin cambios. Los datos vienen de /api/negocios/:id/analitica.
 (function () {
+  const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
   const G = () => window.RubrofyGraficos;
   let dias = 30;
 
@@ -80,9 +81,10 @@
         </div>
         <span class="res-estado">${estado}</span>
         <button class="btn-ghost" data-res="sync">Actualizar ahora</button>
-        <a class="btn-approve res-informe" href="/app/informe.html" target="_blank" rel="noopener">Informe mensual</a>
+        <a class="btn-approve res-informe" href="/app/informe.html" target="_blank" rel="noopener">Informe mensual</a>${AY('informe')}
       </div>
       ${errorSync}
+      <p class="res-ayuda">Cómo leer estos números ${AY('res-numeros')}</p>
       <div class="kpis">
         ${tile('Seguidores', g.numero(r.seguidores), delta(r.seguidoresDelta))}
         ${tile('Alcance', g.numero(r.alcance), 'cuentas alcanzadas, suma diaria')}
@@ -92,21 +94,21 @@
       </div>
       ${sinDatos ? aviso('Todavía no hay datos de este período. Instagram entrega las métricas con hasta 48 horas de atraso.') : ''}
       <div class="res-grid">
-        <div class="res-card"><h2>Alcance diario</h2><div data-graf="alcance"></div></div>
-        <div class="res-card"><h2>Interacciones diarias</h2><div data-graf="interacciones"></div></div>
+        <div class="res-card"><h2>Alcance diario${AY('res-graficos')}</h2><div data-graf="alcance"></div></div>
+        <div class="res-card"><h2>Interacciones diarias${AY('res-graficos')}</h2><div data-graf="interacciones"></div></div>
         <div class="res-card">
-          <h2>Qué enfoques funcionan</h2>
+          <h2>Qué enfoques funcionan${AY('res-enfoques')}</h2>
           <p class="sub">Interacciones promedio por publicación, según el enfoque con que la escribió Rubrofy.</p>
           <div data-graf="enfoques"></div>
         </div>
         <div class="res-card">
-          <h2>Cuándo publicar</h2>
+          <h2>Cuándo publicar${AY('res-horario')}</h2>
           <p class="sub" data-texto="horario"></p>
           <div data-graf="horario"></div>
         </div>
       </div>
       <div class="res-card">
-        <h2>Tus mejores publicaciones</h2>
+        <h2>Tus mejores publicaciones${AY('res-mejores')}</h2>
         <div data-lista="top"></div>
       </div>
       <details class="res-tabla">
