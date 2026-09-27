@@ -72,6 +72,7 @@
         <label>Producto o servicio destacado
           <input type="text" id="reg-producto" placeholder="Ej: domo con tina caliente">
         </label>
+        <label class="acepto"><input type="checkbox" id="reg-acepto" required> <span>Acepto los <a href="/terminos.html" target="_blank" rel="noopener">términos del servicio</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
         <p class="registro-error" id="registro-error" hidden></p>
         <button type="submit" class="btn btn-primary" id="btn-registro" style="margin-top:6px;">Crear negocio</button>
         <p class="registro-nota">¿Ya tienes cuenta? <a href="/app">Inicia sesión</a>.</p>
@@ -99,6 +100,7 @@
             rubro: $('#reg-rubro').value,
             email: $('#reg-email').value,
             password: $('#reg-password').value,
+            acepto: $('#reg-acepto').checked,
             datos: {
               precioDesde: $('#reg-precio').value,
               unidad: $('#reg-unidad').value,

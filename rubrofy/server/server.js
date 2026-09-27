@@ -233,6 +233,21 @@ function readBody(req, maxBytes) {
   });
 }
 
+// Páginas legales: el email de contacto sale de CONTACTO_EMAIL (o del
+// remitente de los correos). Sin ninguno, el enlace queda como texto.
+const PAGINAS_CON_CONTACTO = new Set(['/privacidad.html', '/terminos.html', '/eliminar-datos.html']);
+function emailContacto() {
+  const directo = String(process.env.CONTACTO_EMAIL || '').trim();
+  if (directo) return directo;
+  const m = /<([^>]+)>/.exec(process.env.EMAIL_FROM || '') || /^\s*(\S+@\S+)\s*$/.exec(process.env.EMAIL_FROM || '');
+  return m ? m[1] : null;
+}
+function conContacto(html) {
+  const email = emailContacto();
+  if (email) return html.split('{{CONTACTO}}').join(email.replace(/[<>"&]/g, ''));
+  return html.replace(/<a href="mailto:\{\{CONTACTO\}\}">\{\{CONTACTO\}\}<\/a>/g, 'nuestro correo de contacto');
+}
+
 function serveStatic(res, baseDir, rel) {
   const relLimpio = rel === '' || rel === '/' ? '/index.html' : rel;
   const filePath = path.join(baseDir, relLimpio);
@@ -240,6 +255,7 @@ function serveStatic(res, baseDir, rel) {
 
   fs.readFile(filePath, (err, content) => {
     if (err) return notFound(res);
+    if (baseDir === SITE_DIR && PAGINAS_CON_CONTACTO.has(relLimpio)) content = Buffer.from(conContacto(content.toString('utf8')));
     const ext = path.extname(filePath);
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
@@ -671,6 +687,7 @@ const server = http.createServer(async (req, res) => {
         if (rubro.length > 300) return sendJSON(res, 400, { error: 'La descripción del rubro es muy larga' });
         if (!EMAIL_RE.test(email)) return sendJSON(res, 400, { error: 'Email inválido' });
         if (password.length < 8) return sendJSON(res, 400, { error: 'La clave debe tener al menos 8 caracteres' });
+        if (body.acepto !== true) return sendJSON(res, 400, { error: 'Para crear la cuenta tienes que aceptar los términos y la política de privacidad' });
         if (buscarNegocioPorEmail(email)) return sendJSON(res, 409, { error: 'Ya existe una cuenta con ese email' });
 
         const id = idUnico(slugify(nombre));
@@ -685,6 +702,7 @@ const server = http.createServer(async (req, res) => {
           plan: 'gratis',
           estiloImagen: 'limpia',
           creadoEl: new Date().toISOString(),
+          aceptoTerminosEl: new Date().toISOString(), // versión: la de /terminos.html y /privacidad.html a esa fecha
           ultimoAcceso: new Date().toISOString(),
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',

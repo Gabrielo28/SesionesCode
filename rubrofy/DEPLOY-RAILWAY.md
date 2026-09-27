@@ -68,6 +68,7 @@ queda apagada y el resto funciona igual)
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |
 | Google Ads | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
+| Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma) |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
 | Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
@@ -115,9 +116,12 @@ Una vez que `https://rubrofy.com` funcione:
   `STRIPE_PRICE_ESTUDIO`.
 - **Google Ads** → en el cliente OAuth de Google Cloud, URI de redirección
   autorizada: `https://rubrofy.com/api/google/callback`.
-- **Meta** → en la app de Meta, dominio de la app `rubrofy.com`. Para la
-  revisión de Meta (App Review) también van a pedir la URL de la política
-  de privacidad y la de eliminación de datos, que el sitio todavía no tiene.
+- **Meta** → en la app de Meta (Configuración → Básica): dominio de la app
+  `rubrofy.com`, URL de la política de privacidad
+  `https://rubrofy.com/privacidad.html`, URL de las condiciones del servicio
+  `https://rubrofy.com/terminos.html` y, en "Eliminación de datos", la URL de
+  instrucciones `https://rubrofy.com/eliminar-datos.html`. Revisa el texto de
+  esas páginas con un abogado antes de lanzar.
 - **Instagram**: Meta descarga las fotos y videos desde `PUBLIC_URL` con
   enlaces firmados temporales.
 - **"Conectar con Instagram"** (para que el cliente inicie sesión en vez de
