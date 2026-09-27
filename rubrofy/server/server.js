@@ -30,6 +30,7 @@ const contextoIA = require('./contexto-ia');
 const voz = require('./voz');
 const reelsPrueba = require('./reels-prueba');
 const push = require('./push');
+const costos = require('./costos');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -421,6 +422,7 @@ async function prepararPublicacion(negocio, item) {
       if (buffer) {
         store.guardarFotoIA(negocio.id, item.id, buffer);
         registrarUsoIA(negocio.id, 'usoFotosIA', 1);
+        costos.imagen(negocio.id, medios.proveedorImagen(), medios.estado().modeloImagen);
       }
     }
     if (store.tieneFotoIA(negocio.id, item.id)) {
@@ -610,6 +612,7 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
     it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
     it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
     descartarContenedor(it);
+    costos.video(t.negocio_id, t.proveedor, medios.estado().modeloVideo, Number(process.env.VIDEO_IA_SEGUNDOS) || 5);
     notificar(t.negocio_id, { titulo: 'Tu video con IA está listo', cuerpo: 'Revísalo en la tarjeta y aprueba la pieza cuando te guste.', url: '/app#cola', tag: 'video-' + it.id });
   } else if (r.ok) {
     store.borrarVideo(t.negocio_id, r.archivo); // mientras tanto subió uno real: gana el real
@@ -825,7 +828,7 @@ const server = http.createServer(async (req, res) => {
         if (admin.adminEmails().includes(email)) return sendJSON(res, 409, { error: 'Ese email no está disponible' });
 
         const id = idUnico(slugify(nombre));
-        const estrategia = await generarEstrategia({ nombre, rubro });
+        const estrategia = await generarEstrategia({ nombre, rubro, negocioId: id });
         const negocio = {
           id,
           nombre,
@@ -951,6 +954,14 @@ const server = http.createServer(async (req, res) => {
         }
         if (parts[2] === 'negocios' && parts.length === 3) {
           return sendJSON(res, 200, admin.negocios({ calcularRuta }));
+        }
+        // GET /api/admin/costos?dias=30 — gasto en IA (solo cifras de uso)
+        if (parts[2] === 'costos' && parts.length === 3) {
+          const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+          return sendJSON(res, 200, costos.resumen({
+            dias, negocios: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, plan: n.plan })),
+            precioPlan: (p) => getPlan(p).precioClp || 0,
+          }));
         }
         return sendJSON(res, 404, { error: 'No encontrado' });
       }
@@ -1216,6 +1227,7 @@ const server = http.createServer(async (req, res) => {
             plan: negocio.planContenido,
             categoriasFoto: negocio.estrategia.categoriasFoto,
             contextoExtra: voz.textoParaPrompt(negocio) + contextoIA.bloque(negocio, ['general', 'voz', 'estrategia'], cuerpoEstrategia && cuerpoEstrategia.indicacion),
+            negocioId,
           });
           const actual = store.getNegocio(negocioId); // releído: Claude tarda
           actual.estrategia = nueva;
@@ -1997,6 +2009,7 @@ const server = http.createServer(async (req, res) => {
               }
               store.guardarFotoIA(negocioId, item.id, buffer);
               registrarUsoIA(negocioId, 'usoFotosIA', 1);
+              costos.imagen(negocioId, medios.proveedorImagen(), medios.estado().modeloImagen);
             }
             aplicar = (it) => { it.imagenIA = true; it.imagenIAVersion = Date.now(); };
           } else if (accion === 'video-ia' && req.method === 'POST') {

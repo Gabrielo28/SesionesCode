@@ -137,7 +137,7 @@ function conclusionAutomatica(d) {
   return [bloque('Qué pasó', pasó), bloque('Qué funcionó', funcionó), bloque('Qué haremos el próximo mes', haremos)].join('\n\n');
 }
 
-async function conclusionConClaude(d, apiKey) {
+async function conclusionConClaude(d, apiKey, negocioId) {
   const r = d.resumen;
   const resumenParaIA = {
     negocio: d.negocio.nombre, rubro: d.negocio.rubro, mes: d.etiquetaMes, mesCompleto: d.completo,
@@ -168,6 +168,7 @@ async function conclusionConClaude(d, apiKey) {
   });
   if (!res.ok) return null;
   const data = await res.json();
+  require('./costos').claude(negocioId, 'informe', MODEL, data && data.usage);
   if (data.stop_reason === 'refusal') return null;
   const texto = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
   return texto || null;
@@ -180,7 +181,7 @@ async function generarConclusion(negocio, mes, d, conIA) {
   let origen = 'automatico';
   if (conIA && process.env.ANTHROPIC_API_KEY) {
     try {
-      texto = await conclusionConClaude(d, process.env.ANTHROPIC_API_KEY);
+      texto = await conclusionConClaude(d, process.env.ANTHROPIC_API_KEY, negocio.id);
       if (texto) origen = 'ia';
     } catch (err) {
       texto = null;

@@ -255,6 +255,7 @@ async function analizar(negocio, apiKey) {
   });
   if (!res.ok) return { error: 'No se pudo analizar el estilo en este momento' };
   const data = await res.json();
+  require('./costos').claude(negocio.id, 'estilo', MODEL, data && data.usage);
   if (data.stop_reason === 'refusal') return { error: 'No se pudo analizar el estilo con estos ejemplos' };
   const texto = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
   const guia = extraerJSON(texto);

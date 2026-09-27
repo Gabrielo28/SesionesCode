@@ -189,7 +189,7 @@ async function sugerir(negocio) {
     + '"emojis": "ninguno" | "pocos" | "varios", "largo": "corto" | "medio" | "largo", "palabrasSi": ["expresiones propias, máx 10"], '
     + '"palabrasNo": ["palabras o muletillas a evitar, máx 10"], "frases": ["frases de marca, máx 4"], "prohibido": ["promesas o temas a evitar, máx 6"]}. '
     + 'Básate en los textos reales si los hay; no inventes datos del negocio.';
-  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 900 }));
+  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 900, negocioId: negocio.id, uso: 'voz' }));
   if (!r || typeof r !== 'object') return { ficha: sugerenciaBasica(negocio), conIA: false };
   const actual = negocio.voz || {};
   // Los ejemplos elegidos por el dueño no se pisan.
@@ -209,7 +209,7 @@ async function redactar(negocio, { tipo, tema, indicaciones }) {
     + contextoIA.bloque(negocio, ['general', 'voz', 'copys'], indicaciones)
     + `\n\nEscribe 3 versiones distintas de ${TIPOS_REDACCION[t].pide}. Tema: ${temaLimpio}\n\n`
     + 'Responde SOLO con un JSON array de 3 objetos: [{"titulo": "...", "texto": "..."}]';
-  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 1500 }), 'arreglo');
+  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 1500, negocioId: negocio.id, uso: 'redactor' }), 'arreglo');
   if (!Array.isArray(r) || !r.length) return { error: 'La IA no respondió. Intenta de nuevo en un momento.' };
   const versiones = r.slice(0, 3).filter((x) => x && typeof x.texto === 'string' && x.texto.trim()).map((x) => ({
     titulo: txt(x.titulo, 120), texto: txt(x.texto, 1500), voz: puntuar(`${x.titulo || ''} ${x.texto}`, negocio),

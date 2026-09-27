@@ -8,7 +8,8 @@ function configurado() {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
-async function pedir({ prompt, maxTokens = 800, imagenes }) {
+// negocioId / uso: para registrar el costo (server/costos.js).
+async function pedir({ prompt, maxTokens = 800, imagenes, negocioId, uso }) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
   const content = imagenes && imagenes.length
@@ -22,6 +23,7 @@ async function pedir({ prompt, maxTokens = 800, imagenes }) {
     });
     if (!res.ok) return null;
     const data = await res.json();
+    require('./costos').claude(negocioId, uso || 'otro', MODEL, data && data.usage);
     const texto = data && data.content && data.content.filter((c) => c.type === 'text').map((c) => c.text).join('');
     return texto || null;
   } catch (err) {

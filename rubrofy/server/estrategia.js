@@ -66,7 +66,7 @@ function extraerJSON(texto) {
 // categoriasFoto: si el negocio ya tiene categorías (y quizás fotos subidas),
 // se mantienen para no dejar fotos huérfanas.
 // contextoExtra: bloque de contexto para la IA (server/contexto-ia.js) y voz de marca.
-async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contextoExtra }) {
+async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contextoExtra, negocioId }) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const respaldo = () => estrategiaGenerica(rubro, plan, categoriasFoto);
   if (!apiKey) return respaldo();
@@ -108,6 +108,7 @@ async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contexto
     });
     if (!res.ok) return respaldo();
     const data = await res.json();
+    require('./costos').claude(negocioId, 'estrategia', MODEL, data && data.usage);
     const texto = data && data.content && data.content[0] && data.content[0].text;
     const parsed = texto && extraerJSON(texto);
     if (!esEstrategiaValida(parsed)) return respaldo();

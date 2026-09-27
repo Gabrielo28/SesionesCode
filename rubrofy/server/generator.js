@@ -13,6 +13,7 @@ const guardian = require('./guardian');
 const planContenido = require('./plan-contenido');
 const voz = require('./voz');
 const contextoIA = require('./contexto-ia');
+const costos = require('./costos');
 
 const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
 
@@ -129,6 +130,7 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
     });
     if (!res.ok) return null;
     const data = await res.json();
+    costos.claude(negocio.id, 'contenido', MODEL, data && data.usage);
     const texto = data && data.content && data.content[0] && data.content[0].text;
     const parsed = texto && extraerJSONArray(texto);
     if (!Array.isArray(parsed) || parsed.length !== enfoquesDelLote.length) return null;
@@ -280,6 +282,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     });
     if (!res.ok) return null;
     const data = await res.json();
+    costos.claude(negocio.id, 'contenido', MODEL, data && data.usage);
     const text = data && data.content && data.content[0] && data.content[0].text;
     return text ? text.trim() : null;
   } catch (err) {

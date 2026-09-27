@@ -58,3 +58,4 @@ body.adm { height: auto; min-height: 100%; }
 .adm-bloque-cab h2 { margin: 0; font-size: 18px; }
 .adm-reglas { gap: 12px; }
 .adm-no { color: var(--ink-faint); }
+.adm-tabla td.adm-alerta { color: var(--coral); font-weight: 600; }

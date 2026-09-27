@@ -108,7 +108,7 @@ async function textoParaPrueba(negocio, original) {
     + '\n\nReescribe el texto para esa audiencia nueva: primera línea con un gancho que haga detenerse, presenta brevemente '
     + 'quiénes son y cierra con una invitación a seguir la cuenta o a escribir. Máximo 220 caracteres, pocos hashtags. '
     + 'Responde SOLO con un JSON: {"caption": "..."}';
-  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 400 }));
+  const r = claude.extraerJSON(await claude.pedir({ prompt, maxTokens: 400, negocioId: negocio.id, uso: 'reels de prueba' }));
   return r && typeof r.caption === 'string' && r.caption.trim() ? r.caption.trim().slice(0, 2200) : null;
 }
 

@@ -212,11 +212,63 @@
     });
   }
 
+  // Costo de IA de la plataforma: lo que se paga a Anthropic, Higgsfield u
+  // OpenAI, contra lo que pagan los planes. Solo cifras de uso.
+  async function pintarCostos() {
+    let c;
+    try { c = await api('/api/admin/costos?dias=' + dias); } catch (err) { return; }
+    const usd = (v) => 'US$' + (v || 0).toLocaleString('es-CL', { minimumFractionDigits: v && v < 10 ? 2 : 0, maximumFractionDigits: 2 });
+    const clp = (v) => '$' + Math.round((v || 0) * c.dolarClp).toLocaleString('es-CL');
+    const pctTxt = (v) => (v == null ? '–' : Math.round(v * 100) + ' %');
+    const tipo = (k) => c.porTipo[k] || { costo: 0, llamadas: 0, cantidad: 0, entrada: 0, salida: 0 };
+    const sec = document.createElement('section');
+    sec.className = 'adm-bloque';
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Costo de IA${AY('admin-costos')}</h2></div>
+      <section class="adm-kpis">
+        ${tile('Gasto del periodo', usd(c.totalUsd), `${clp(c.totalUsd)} · ${num(c.llamadas)} llamadas`)}
+        ${tile('Este mes', usd(c.mesUsd), `proyección a fin de mes: ${usd(c.proyeccionMesUsd)}`)}
+        ${tile('Ingresos de planes', usd(c.ingresosUsd), `${clp(c.ingresosUsd)} en el periodo (precio de lista)`)}
+        ${tile('Margen sobre la IA', pctTxt(c.margen), 'ingresos menos gasto en IA', c.margen != null && c.margen < 0.6)}
+      </section>
+      <section class="adm-grid tres">
+        <div class="ig-card"><div class="ig-card-head"><h2>Gasto por día</h2></div><div data-g="costo-dia"></div></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>En qué se gasta</h2></div><div data-g="costo-uso"></div>
+          <p class="adm-nota">Textos: ${num(tipo('textos').entrada)} tokens de entrada y ${num(tipo('textos').salida)} de salida · Imágenes: ${num(tipo('imagen').cantidad)} · Videos: ${num(tipo('video').cantidad)} s</p></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Costo promedio por negocio</h2></div><div data-g="costo-plan"></div>
+          <p class="adm-nota">En el periodo, según el plan.</p></div>
+      </section>
+      <div class="ig-card">
+        <div class="ig-card-head"><h2>Por negocio</h2><span class="adm-ayuda">los que más gastan primero</span></div>
+        <div class="adm-tabla-scroll"><table class="adm-tabla">
+          <thead><tr><th>Negocio</th><th>Plan</th><th>Gasto IA</th><th>Llamadas</th><th>Paga en el periodo</th><th>Margen</th></tr></thead>
+          <tbody>${c.negocios.length ? c.negocios.map((n) => `<tr><td>${esc(n.nombre)}</td><td>${esc(PLANES[n.plan] || n.plan)}</td><td>${usd(n.costoUsd)}</td><td>${num(n.llamadas)}</td><td>${usd(n.ingresoUsd)}</td>
+            <td class="${n.margen != null && n.margen < 0.5 ? 'adm-alerta' : ''}">${pctTxt(n.margen)}</td></tr>`).join('') : '<tr><td colspan="6">Todavía no hay gasto de IA en el periodo.</td></tr>'}</tbody>
+        </table></div>
+        <p class="adm-nota">Textos: tokens reales que informa Claude. Imágenes (US$${c.tarifas.imagen.higgsfield} Higgsfield / US$${c.tarifas.imagen.openai} OpenAI) y videos (US$${c.tarifas.videoSegundo.higgsfield} por segundo en Higgsfield) son tarifas estimadas: ajústalas con variables de entorno si cambian. Dólar a $${num(c.dolarClp)} (DOLAR_CLP).${c.sinNegocioUsd ? ` Incluye ${usd(c.sinNegocioUsd)} de negocios ya eliminados.` : ''}</p>
+      </div>`;
+    const ancla = $('#adm').querySelector('.adm-bloque');
+    if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+    const desde = new Date(c.desde);
+    const porDia = new Map(c.serie.map((f) => [f.dia, f.costo]));
+    const serie = [];
+    for (let i = 1; i <= c.dias; i++) {
+      const f = new Date(desde.getTime() + i * 86400000).toISOString().slice(0, 10);
+      serie.push({ fecha: f, valor: porDia.get(f) || 0 });
+    }
+    sec.querySelector('[data-g="costo-dia"]').appendChild(G.serieTemporal(serie, { alto: 170, tipo: 'columnas', etiqueta: 'Gasto por día', formato: usd }));
+    const usos = c.porUso.map((u) => ({ label: u.uso.charAt(0).toUpperCase() + u.uso.slice(1), valor: u.costo, detalle: `${num(u.llamadas)} llamadas` }));
+    sec.querySelector('[data-g="costo-uso"]').appendChild(usos.length ? G.barras(usos, { formato: usd, todasEnAcento: true }) : Object.assign(document.createElement('p'), { className: 'adm-nota', textContent: 'Sin gasto en el periodo.' }));
+    const planes = ['gratis', 'pro', 'estudio'].filter((p) => c.porPlan[p]).map((p) => ({ label: PLANES[p], valor: c.porPlan[p].promedioUsd, detalle: `${c.porPlan[p].negocios} negocios` }));
+    sec.querySelector('[data-g="costo-plan"]').appendChild(planes.length ? G.barras(planes, { formato: usd, todasEnAcento: true }) : Object.assign(document.createElement('p'), { className: 'adm-nota', textContent: 'Sin datos.' }));
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
       negocios = n;
       pintar(r);
+      await pintarCostos();
       pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401
