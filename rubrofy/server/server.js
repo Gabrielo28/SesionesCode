@@ -112,6 +112,8 @@ const MIME = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.gif': 'image/gif',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
 };
 
 const FOTO_EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp']);
