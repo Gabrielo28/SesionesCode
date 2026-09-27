@@ -140,7 +140,7 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
 - **Fotos generadas por IA** — cuando una pieza no tiene una foto real
   subida para su categoría, se puede pedir una foto generada por IA
   (botón "Generar foto con IA" en la tarjeta, o automáticamente al aprobar
-  si Instagram está conectado). Requiere `OPENAI_API_KEY` y el plan
+  si Instagram está conectado). Requiere `HIGGSFIELD_API_KEY` u `OPENAI_API_KEY` y el plan
   Estudio; sin ellos, la pieza sigue mostrando el degradé de marcador de
   siempre. En Configuración, cada negocio elige si esa foto generada debe
   quedar limpia (sin texto) o con el titular incrustado como una gráfica de
@@ -391,6 +391,45 @@ más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
 ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
 qué hashtags usan que tú no.
 
+## Voz de marca (server/voz.js)
+
+La ficha de cómo habla la marca ("ADN"): quiénes son, a quién le hablan,
+personalidad, trato (tú o usted), variante del español, emojis, largo,
+palabras propias y prohibidas, frases de marca, promesas o temas prohibidos
+y ejemplos que "sí suenan a la marca". Vista **Voz de marca** del panel.
+
+- **Completar con IA**: Claude propone la ficha a partir de la estrategia,
+  el plan, "Mi estilo" y lo aprobado. No se guarda hasta que el dueño la
+  revisa.
+- **Puntaje de fidelidad** (0-100) en cada pieza y en cualquier texto, con
+  reglas explicables y sin IA (palabras vetadas, promesas prohibidas, trato,
+  emojis, chilenismos, frases de plantilla, palabras propias, largo). Se
+  recalcula al editar, al pedir otra versión y al cambiar la ficha. El panel
+  muestra el promedio de lo pendiente y el % aprobado sin cambios.
+- **Escribir con mi voz**: anuncios de Meta Ads, correos, WhatsApp, fichas
+  de producto, textos web, bio de Instagram o publicaciones, en 3 versiones
+  puntuadas (1 texto de IA por pedido). "Así sí suena" guarda el texto como
+  ejemplo de la ficha.
+- La ficha entra en todos los prompts que escriben por el negocio.
+
+## Contexto para la IA (server/contexto-ia.js)
+
+Tres capas, de menos a más específica:
+
+1. **Reglas de la plataforma** (administración, `/admin`): valen para todos
+   los negocios. Son criterios de calidad; el administrador sigue sin ver el
+   contenido de ningún negocio.
+2. **Contexto del negocio** por sección: general, voz, estrategia, copys,
+   post, carrusel, reel, historia, imágenes y videos. Vista **Contexto para
+   la IA** y editores plegables en Estrategia, Por aprobar, Voz de marca y
+   Fotos.
+3. **Indicación del pedido**: al generar la semana ("esta semana es el
+   aniversario") o con **Pedir cambio** en una pieza ("más corto").
+
+Cada pedido recibe solo sus secciones: la estrategia, general + voz +
+estrategia; los textos, general + voz + copys + su formato; imágenes y
+videos, su sección visual.
+
 ## Mi estilo (server/estilo.js)
 
 El negocio le muestra a Rubrofy el contenido que ya hace para que la IA
@@ -503,19 +542,31 @@ calidad de escritura a cambio de más costo por llamada):
 ANTHROPIC_API_KEY=sk-ant-... ANTHROPIC_MODEL=claude-sonnet-5 npm start
 ```
 
-## Cómo genera las fotos por IA
+## Imágenes y videos con IA (server/medios.js)
 
-Es un proveedor separado (OpenAI) con su propio costo, aparte del de
-Claude — por eso es una variable de entorno distinta. Sin `OPENAI_API_KEY`
-configurada, esta función queda desactivada por completo (el botón
-"Generar foto con IA" muestra un error, y al aprobar sin foto real sigue
-funcionando igual que siempre, sin publicar).
+Dos proveedores; si están los dos, se usa Higgsfield:
 
-```bash
-OPENAI_API_KEY=sk-... npm start
-```
+| Proveedor | Variable | Imágenes | Videos |
+|---|---|---|---|
+| Higgsfield | `HIGGSFIELD_API_KEY` = `id:secreto` (de cloud.higgsfield.ai) | Soul 2 (`HIGGSFIELD_MODELO_IMAGEN`) | Seedance 2.0 (`HIGGSFIELD_MODELO_VIDEO`) |
+| OpenAI | `OPENAI_API_KEY` | gpt-image-1 (`OPENAI_IMAGE_MODEL`) | Sora 2 (`OPENAI_VIDEO_MODEL`) |
 
-Por defecto usa `gpt-image-1`; se puede cambiar con `OPENAI_IMAGE_MODEL`.
+- **Imágenes**: botón "Generar foto con IA" (y "Otra foto con IA") en la
+  tarjeta, o automáticamente al publicar una pieza sin foto real. Feed en
+  1:1 e historias en 9:16. El pedido espera el resultado (segundos).
+- **Videos** (Reels e historias): "o generarlo con IA" junto a "Subir
+  video". Si la pieza tiene foto, Higgsfield la anima (image-to-video, por
+  eso necesita `PUBLIC_URL`); si no, lo crea desde la idea de la pieza.
+  Tarda minutos: queda en la tabla `trabajos_media` y un sondeo cada 15 s
+  (`MEDIOS_INTERVALO_SEG`) lo baja y lo deja como video de la pieza, aunque
+  el dueño haya cerrado el panel. Si falla, no se descuenta del cupo. Un
+  video subido por el negocio nunca se reemplaza. Duración con
+  `VIDEO_IA_SEGUNDOS` (5 por defecto) y audio con `VIDEO_IA_AUDIO=1`.
+- **Prompts**: idea visual de la pieza, rubro y categoría de foto, más el
+  contexto de "Imágenes con IA" / "Videos con IA" de la plataforma y del
+  negocio.
+- **Cupos por plan** (`server/planes.js`): Estudio, 20 imágenes y 6 videos
+  al mes. Cada video de 5 s cuesta del orden de USD 0,5 a 1 en el proveedor.
 
 ## Planes y cobro (Stripe)
 
@@ -585,7 +636,10 @@ server/
   competencia.js Seguimiento de competidores en Instagram (Business Discovery)
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
-  imagenes.js   Genera fotos de respaldo con IA (OpenAI) para piezas sin foto real
+  medios.js     Imágenes y videos con IA (Higgsfield u OpenAI), videos en segundo plano
+  voz.js        Voz de marca: ficha, puntaje de fidelidad, completar con IA y redactor
+  contexto-ia.js Contexto para la IA por capas: plataforma (admin), negocio y pedido
+  claude.js     Cliente mínimo de la API de Claude para los módulos nuevos
   datos.js      Carpeta de datos (RUBROFY_DATA_DIR / Volume de Railway)
   store.js      Persistencia: SQLite (node:sqlite) para negocios, contenido y métricas; fotos y videos en disco
   estrategia.js Genera con Claude la estrategia de contenido de cada negocio (tono, enfoques, categorías de foto) a partir de su rubro

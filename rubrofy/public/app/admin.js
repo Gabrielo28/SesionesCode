@@ -170,11 +170,54 @@
     URL.revokeObjectURL(a.href);
   }
 
+  // Reglas de la plataforma para la IA: valen para todos los negocios.
+  // Son criterios de calidad; el administrador no ve el contexto de nadie.
+  async function pintarIA() {
+    let d;
+    try { d = await api('/api/admin/contexto-ia'); } catch (err) { return; }
+    const sec = document.createElement('section');
+    sec.className = 'adm-bloque';
+    const prov = d.proveedores;
+    const fila = (k, v) => `<tr><td>${k}</td><td>${v ? `<b>${esc(v)}</b>` : '<span class="adm-no">No configurado</span>'}</td></tr>`;
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>IA de la plataforma${window.Ayuda ? window.Ayuda.boton('admin-ia') : ''}</h2></div>
+      <div class="res-grid">
+        <div class="res-card">
+          <h2>Proveedores</h2>
+          <table class="tabla-ads"><tbody>
+            ${fila('Textos (Anthropic)', prov.textos)}
+            ${fila('Imágenes', prov.imagen ? `${prov.imagen} · ${prov.modeloImagen}` : null)}
+            ${fila('Videos', prov.video ? `${prov.video} · ${prov.modeloVideo}` : null)}
+          </tbody></table>
+          <p class="sub">Imágenes y videos: <code>HIGGSFIELD_API_KEY</code> (preferido) u <code>OPENAI_API_KEY</code> en Railway.</p>
+        </div>
+        <div class="res-card">
+          <h2>Cómo funcionan las reglas</h2>
+          <p class="sub">Lo que escribas aquí se agrega a cada pedido a la IA de todos los negocios, en la sección que corresponda. Úsalo para criterios de calidad (por ejemplo "sin anglicismos", "no prometer resultados de salud"), no para datos de un negocio. Cada negocio ve estas reglas en su "Contexto para la IA".</p>
+        </div>
+      </div>
+      <form class="res-card adm-reglas" data-reglas>
+        ${d.secciones.map((x) => `<label class="ctx-campo"><span class="ctx-nombre">${esc(x.nombre)}</span>
+          <textarea name="${x.id}" rows="2" maxlength="${x.maximo}">${esc(d.contexto[x.id] || '')}</textarea></label>`).join('')}
+        <div class="estilo-acciones"><button class="btn-approve estilo-btn">Guardar reglas</button><span class="res-estado" data-msg></span></div>
+      </form>`;
+    $('#adm').appendChild(sec);
+    sec.querySelector('[data-reglas]').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const body = Object.fromEntries(new FormData(ev.target).entries());
+      const msg = sec.querySelector('[data-msg]');
+      msg.textContent = 'Guardando…';
+      const res = await fetch('/api/admin/contexto-ia', { method: 'PUT', headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' }, body: JSON.stringify(body) });
+      msg.textContent = res.ok ? 'Guardado. Se aplica desde el próximo pedido a la IA.' : 'No se pudo guardar.';
+    });
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
       negocios = n;
       pintar(r);
+      pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401
         ? '<div class="ig-card adm-sin"><h2>No tienes acceso a la administración</h2><p class="sub">Entra en <a href="/app">tu panel</a> con una cuenta de administrador y vuelve a esta página.</p></div>'

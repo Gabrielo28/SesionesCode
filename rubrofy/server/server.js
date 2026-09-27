@@ -26,8 +26,10 @@ const meta = require('./meta');
 const google = require('./google');
 const competencia = require('./competencia');
 const analisisAds = require('./analisis-ads');
+const contextoIA = require('./contexto-ia');
+const voz = require('./voz');
 const guardian = require('./guardian');
-const { generarImagenIA } = require('./imagenes');
+const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
 const { crearLimitador, ipCliente } = require('./limites');
@@ -199,6 +201,9 @@ function negocioPublico(negocio) {
   resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
+  resto.videosIADisponibles = videosIADisponibles(negocio);
+  resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
+  resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
   return resto;
 }
 
@@ -328,6 +333,12 @@ function fotosIADisponibles(negocio) {
   return Math.max(0, cuota - usoDelMes(negocio, 'usoFotosIA'));
 }
 
+function videosIADisponibles(negocio) {
+  const cuota = getPlan(negocio.plan).cuotaVideosIA;
+  if (!cuota) return 0;
+  return Math.max(0, cuota - usoDelMes(negocio, 'usoVideosIA'));
+}
+
 function textosIADisponibles(negocio) {
   const cuota = getPlan(negocio.plan).cuotaTextosIA;
   if (!cuota) return 0;
@@ -344,7 +355,7 @@ function registrarUsoIA(negocioId, campo, cantidad) {
   if (!fresco) return;
   const mes = mesActual();
   if (!fresco[campo] || fresco[campo].mes !== mes) fresco[campo] = { mes, cantidad: 0 };
-  fresco[campo].cantidad += cantidad;
+  fresco[campo].cantidad = Math.max(0, fresco[campo].cantidad + cantidad);
   store.saveNegocio(fresco);
 }
 
@@ -402,9 +413,9 @@ async function prepararPublicacion(negocio, item) {
   let archivo = categoria ? elegirFoto(negocio.id, categoria, item.id) : null;
   let generadaPorIA = false;
 
-  if (!archivo && process.env.OPENAI_API_KEY) {
+  if (!archivo && medios.proveedorImagen()) {
     if (!store.tieneFotoIA(negocio.id, item.id) && fotosIADisponibles(negocio) > 0) {
-      const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
+      const buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' }).catch(() => null);
       if (buffer) {
         store.guardarFotoIA(negocio.id, item.id, buffer);
         registrarUsoIA(negocio.id, 'usoFotosIA', 1);
@@ -503,7 +514,7 @@ function calcularRuta(negocio) {
     fotos: store.listFotos(negocio.id),
     referencias: estilo.listar(negocio.id).length,
     competidores: competencia.contar(negocio.id),
-    fotosIA: process.env.OPENAI_API_KEY ? fotosIADisponibles(negocio) : 0,
+    fotosIA: medios.proveedorImagen() ? fotosIADisponibles(negocio) : 0,
     syncInstagram: analitica.estadoSync(negocio.id, 'instagram'),
     mesHoy: informe.mesActual(),
   });
@@ -522,6 +533,29 @@ function urlPublica(req) {
 informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
   if (!getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
   return Object.assign(meta.resumenAds(negocio.id, desde, hasta), { moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre });
+});
+
+// Videos con IA: cuando uno termina, queda como el video de la pieza.
+const sondeoMedios = medios.crearSondeo(async (t, r) => {
+  const items = store.getContenido(t.negocio_id);
+  const it = encontrarItem(items, t.item_id);
+  if (!it) {
+    if (r.ok) store.borrarVideo(t.negocio_id, r.archivo);
+    return;
+  }
+  if (r.ok && !(it.video && !it.video.generadoIA)) {
+    if (it.video && it.video.archivo !== r.archivo) store.borrarVideo(t.negocio_id, it.video.archivo);
+    it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
+    it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
+    descartarContenedor(it);
+  } else if (r.ok) {
+    store.borrarVideo(t.negocio_id, r.archivo); // mientras tanto subió uno real: gana el real
+    delete it.videoIA;
+  } else {
+    it.videoIA = { estado: 'error', error: r.error };
+    registrarUsoIA(t.negocio_id, 'usoVideosIA', -1); // no se cobra un video que no llegó
+  }
+  store.saveContenido(t.negocio_id, items);
 });
 
 const avisador = avisos.crearAvisador({
@@ -833,9 +867,19 @@ const server = http.createServer(async (req, res) => {
       // Panel de administración (server/admin.js): solo cuentas en ADMIN_EMAILS.
       // Para cualquier otro, no existe (404).
       //   GET /api/admin/resumen?dias=30 · GET /api/admin/negocios
-      if (parts[1] === 'admin' && req.method === 'GET') {
+      //   GET/PUT /api/admin/contexto-ia — reglas de la plataforma para la IA
+      if (parts[1] === 'admin' && (req.method === 'GET' || req.method === 'PUT')) {
         const quien = store.getNegocio(sesionActual(req) || '');
         if (!admin.activo() || !admin.esAdmin(quien)) return sendJSON(res, 404, { error: 'No encontrado' });
+        if (parts[2] === 'contexto-ia' && parts.length === 3) {
+          const vista = () => ({
+            contexto: contextoIA.dePlataforma(), secciones: contextoIA.catalogo(),
+            proveedores: Object.assign({ textos: process.env.ANTHROPIC_API_KEY ? (process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001') : null }, medios.estado()),
+          });
+          if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
+          return sendJSON(res, 200, vista());
+        }
+        if (req.method !== 'GET') return sendJSON(res, 404, { error: 'No encontrado' });
         if (parts[2] === 'resumen' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           return sendJSON(res, 200, admin.resumen({ dias, calcularRuta, inicio: INICIO, version: VERSION }));
@@ -1095,11 +1139,13 @@ const server = http.createServer(async (req, res) => {
           const espera = limiteEstrategia.esperaSegundos(negocioId);
           if (espera) return sendJSON(res, 429, { error: 'Ya propusiste varias estrategias esta hora. Intenta más tarde.' }, { 'Retry-After': String(espera) });
           limiteEstrategia.registrar(negocioId);
+          const cuerpoEstrategia = await readBody(req).catch(() => ({}));
           const nueva = await generarEstrategia({
             nombre: negocio.nombre,
             rubro: negocio.estrategia.rubro,
             plan: negocio.planContenido,
             categoriasFoto: negocio.estrategia.categoriasFoto,
+            contextoExtra: voz.textoParaPrompt(negocio) + contextoIA.bloque(negocio, ['general', 'voz', 'estrategia'], cuerpoEstrategia && cuerpoEstrategia.indicacion),
           });
           const actual = store.getNegocio(negocioId); // releído: Claude tarda
           actual.estrategia = nueva;
@@ -1219,7 +1265,9 @@ const server = http.createServer(async (req, res) => {
             cantidad = Math.min(cantidad, disponibles);
           }
           const existentes = store.getContenido(negocioId);
-          const nuevos = await generarBanco(negocio, cantidad, existentes.length, { usarIA: usaIA, diaInicio: diaSiguienteDeLaCola(existentes) });
+          const nuevos = await generarBanco(negocio, cantidad, existentes.length, {
+            usarIA: usaIA, diaInicio: diaSiguienteDeLaCola(existentes), indicaciones: contextoIA.indicacion(body.indicaciones),
+          });
           registrarUsoIA(negocioId, 'usoTextosIA', nuevos.filter((n) => n.generadoConIA).length);
           nuevos.sort((a, b) => Date.parse(a.publicarEl) - Date.parse(b.publicarEl)); // en la cola, por fecha
           // Se relee la cola después de esperar a Claude, para no pisar lo que
@@ -1394,6 +1442,82 @@ const server = http.createServer(async (req, res) => {
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
           })));
+        }
+
+        // Contexto para la IA del negocio, por sección (server/contexto-ia.js).
+        //   GET /api/negocios/:id/contexto-ia · PUT { general, estrategia, copys, post, … }
+        if (parts[3] === 'contexto-ia' && parts.length === 4) {
+          const vista = (n) => ({ contexto: contextoIA.delNegocio(n), plataforma: contextoIA.dePlataforma(), secciones: contextoIA.catalogo() });
+          if (req.method === 'GET') return sendJSON(res, 200, vista(negocio));
+          if (req.method === 'PUT') {
+            const fresco = store.getNegocio(negocioId);
+            fresco.contextoIA = contextoIA.editarNegocio(fresco, await readBody(req));
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, vista(fresco));
+          }
+          return sendJSON(res, 400, { error: 'Método inválido' });
+        }
+
+        // Voz de marca (server/voz.js).
+        //   GET  /api/negocios/:id/voz              ficha, opciones y cómo va la cola
+        //   PUT  /api/negocios/:id/voz              guarda la ficha y repuntúa lo pendiente
+        //   POST /api/negocios/:id/voz/sugerir      propuesta de ficha con IA (no la guarda)
+        //   POST /api/negocios/:id/voz/redactar     { tipo, tema, indicaciones } → 3 versiones
+        //   POST /api/negocios/:id/voz/puntuar      { texto } → puntaje (sin IA)
+        //   POST /api/negocios/:id/voz/ejemplos     { texto } → "así sí suena" pasa a la ficha
+        if (parts[3] === 'voz') {
+          const usaIA = getPlan(negocio.plan).usaIA;
+          const vistaVoz = (n) => {
+            const pendientes = store.getContenido(negocioId).filter((i) => i.status === 'pendiente' && i.voz);
+            const aprobadas = store.getContenido(negocioId).filter((i) => i.status === 'aprobado');
+            return {
+              ficha: n.voz || null, opciones: voz.catalogo(), tieneFicha: voz.tieneFicha(n),
+              puntajeCola: pendientes.length ? Math.round(pendientes.reduce((t, i) => t + i.voz.puntaje, 0) / pendientes.length) : null,
+              sinCambios: aprobadas.length ? Math.round((aprobadas.filter((i) => !i.editado).length / aprobadas.length) * 100) : null,
+              aprobadas: aprobadas.length,
+              puedeIA: usaIA, iaConfigurada: !!process.env.ANTHROPIC_API_KEY, textosIADisponibles: textosIADisponibles(n),
+            };
+          };
+          const conIA = async (fn) => {
+            if (!usaIA) return sendJSON(res, 403, { error: 'Escribir con IA está disponible en los planes Pro y Estudio' });
+            if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
+            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+            const r = await fn();
+            if (r && r.error) return sendJSON(res, 400, r);
+            registrarUsoIA(negocioId, 'usoTextosIA', 1);
+            return sendJSON(res, 200, r);
+          };
+          if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vistaVoz(negocio));
+          if (parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            const fresco = store.getNegocio(negocioId);
+            fresco.voz = voz.normalizar(body, fresco.voz);
+            store.saveNegocio(fresco);
+            const piezas = store.getContenido(negocioId);
+            for (const it of piezas) if (!(it.publicacion && it.publicacion.estado === 'publicada')) guardian.aplicar(it, fresco);
+            store.saveContenido(negocioId, piezas);
+            return sendJSON(res, 200, vistaVoz(fresco));
+          }
+          if (parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req);
+            if (parts[4] === 'sugerir') return conIA(() => voz.sugerir(negocio));
+            if (parts[4] === 'redactar') return conIA(() => voz.redactar(negocio, body));
+            if (parts[4] === 'puntuar') {
+              if (!voz.tieneFicha(negocio)) return sendJSON(res, 400, { error: 'Completa primero la ficha de tu voz de marca' });
+              return sendJSON(res, 200, { voz: voz.puntuar(String(body.texto || '').slice(0, 3000), negocio) });
+            }
+            if (parts[4] === 'ejemplos') {
+              const texto = String(body.texto || '').trim();
+              if (!texto) return sendJSON(res, 400, { error: 'Falta el texto' });
+              const fresco = store.getNegocio(negocioId);
+              const actual = fresco.voz || voz.normalizar({}, null);
+              const ejemplos = [texto, ...(actual.ejemplos || []).filter((e) => e !== texto)].slice(0, 8);
+              fresco.voz = voz.normalizar({ ejemplos }, actual);
+              store.saveNegocio(fresco);
+              return sendJSON(res, 200, vistaVoz(fresco));
+            }
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
         }
 
         // "Mi estilo": ejemplos del contenido que ya hace el negocio y la guía
@@ -1704,14 +1828,17 @@ const server = http.createServer(async (req, res) => {
               guardian.aplicar(it, negocio);
             };
           } else if (accion === 'regenerar' && req.method === 'POST') {
-            if (item.variantIndex + 1 < item.variants.length) {
+            // indicacion: "más corto", "menciona el despacho gratis"… pide
+            // siempre un texto nuevo a la IA en vez de rotar versiones.
+            const indicacion = contextoIA.indicacion((await readBody(req).catch(() => ({}))).indicacion);
+            if (!indicacion && item.variantIndex + 1 < item.variants.length) {
               aplicar = (it) => { it.variantIndex = Math.min(it.variantIndex + 1, it.variants.length - 1); };
             } else {
               const usaIA = getPlan(negocio.plan).usaIA;
               if (usaIA && textosIADisponibles(negocio) <= 0) {
                 return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
               }
-              const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants, formatoDe(item)) : null;
+              const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants, formatoDe(item), indicacion) : null;
               if (nueva) {
                 registrarUsoIA(negocioId, 'usoTextosIA', 1);
                 aplicar = (it) => { it.variants.push(nueva); it.variantIndex = it.variants.length - 1; };
@@ -1727,19 +1854,55 @@ const server = http.createServer(async (req, res) => {
             if (!getPlan(negocio.plan).cuotaFotosIA) {
               return sendJSON(res, 403, { error: 'Las fotos generadas por IA están disponibles en el plan Estudio' });
             }
-            if (!process.env.OPENAI_API_KEY) {
+            if (!medios.proveedorImagen()) {
               return sendJSON(res, 400, { error: 'La generación de imágenes con IA no está configurada' });
             }
+            // rehacer: descarta la imagen anterior y genera otra (cuenta en la cuota).
+            const cuerpoImagen = await readBody(req).catch(() => ({}));
+            if (cuerpoImagen.rehacer && store.tieneFotoIA(negocioId, item.id)) fs.rmSync(store.fotoIAAbsolutePath(negocioId, item.id), { force: true });
             if (!store.tieneFotoIA(negocioId, item.id)) {
               if (fotosIADisponibles(negocio) <= 0) {
                 return sendJSON(res, 403, { error: 'Ya usaste tu cuota de fotos con IA de este mes' });
               }
-              const buffer = await generarImagenIA({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
-              if (!buffer) return sendJSON(res, 502, { error: 'No se pudo generar la imagen con IA' });
+              let buffer;
+              try {
+                buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
+              } catch (err) {
+                return sendJSON(res, 502, { error: `No se pudo generar la imagen con IA: ${err.message}` });
+              }
               store.guardarFotoIA(negocioId, item.id, buffer);
               registrarUsoIA(negocioId, 'usoFotosIA', 1);
             }
-            aplicar = (it) => { it.imagenIA = true; };
+            aplicar = (it) => { it.imagenIA = true; it.imagenIAVersion = Date.now(); };
+          } else if (accion === 'video-ia' && req.method === 'POST') {
+            // Video con IA para un Reel o historia: se anima la foto de la
+            // pieza si tiene una (real o IA), si no se genera desde el texto.
+            if (!getPlan(negocio.plan).cuotaVideosIA) {
+              return sendJSON(res, 403, { error: 'Los videos con IA están disponibles en el plan Estudio' });
+            }
+            if (!medios.proveedorVideo()) return sendJSON(res, 400, { error: 'La generación de videos con IA no está configurada' });
+            if (!['reel', 'historia'].includes(formatoDe(item))) return sendJSON(res, 400, { error: 'Los videos con IA son para Reels e historias' });
+            if (item.video && !item.video.generadoIA) return sendJSON(res, 409, { error: 'Esta pieza ya tiene un video subido. Quítalo primero si quieres uno con IA.' });
+            if (videosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste tu cuota de videos con IA de este mes' });
+            let imagenUrl = null;
+            const base = process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null;
+            if (base) {
+              const cat = item.categoriaFoto;
+              const real = cat ? elegirFoto(negocioId, cat, item.id) : null;
+              if (real) imagenUrl = `${base}/fotos/${negocioId}/${cat}/${real}?t=${auth.crearTokenFoto(negocioId, cat, real, 60)}`;
+              else if (store.tieneFotoIA(negocioId, item.id)) {
+                const a = item.id + '.png';
+                imagenUrl = `${base}/fotos/${negocioId}/_ia/${a}?t=${auth.crearTokenFoto(negocioId, '_ia', a, 60)}`;
+              }
+            }
+            let inicio;
+            try {
+              inicio = await medios.iniciarVideo({ negocio, item, imagenUrl });
+            } catch (err) {
+              return sendJSON(res, 502, { error: `No se pudo iniciar el video: ${err.message}` });
+            }
+            registrarUsoIA(negocioId, 'usoVideosIA', 1);
+            aplicar = (it) => { it.videoIA = { estado: 'generando', desdeFoto: inicio.desdeFoto, iniciadoEl: new Date().toISOString() }; };
           } else {
             return sendJSON(res, 400, { error: 'Acción o método inválido' });
           }
@@ -1848,6 +2011,7 @@ function apagar(senal) {
   publicador.detener();
   sincronizador.detener();
   avisador.detener();
+  sondeoMedios.detener();
   server.close(() => {
     try { store.db.close(); } catch (err) { /* ya cerrada */ }
     process.exit(0);
@@ -1872,11 +2036,10 @@ server.listen(PORT, () => {
   } else {
     console.log('ANTHROPIC_API_KEY no configurada: estrategia y contenido usan las plantillas genéricas de respaldo.');
   }
-  if (process.env.OPENAI_API_KEY) {
-    console.log(`Usando modelo ${process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1'} para fotos generadas por IA.`);
-  } else {
-    console.log('OPENAI_API_KEY no configurada: sin foto real ni generada, las piezas muestran un degradé de marcador.');
-  }
+  const med = medios.estado();
+  console.log(med.imagen
+    ? `Imágenes y videos con IA vía ${med.imagen} (imagen: ${med.modeloImagen}, video: ${med.modeloVideo}).`
+    : 'HIGGSFIELD_API_KEY / OPENAI_API_KEY no configuradas: sin imágenes ni videos con IA.');
   console.log(instagram.loginConfigurado()
     ? '"Conectar con Instagram" activo (INSTAGRAM_APP_ID configurado).'
     : 'INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET no configurados: Instagram se conecta pegando ID y token.');

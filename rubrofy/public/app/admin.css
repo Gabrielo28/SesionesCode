@@ -52,3 +52,9 @@ body.adm { height: auto; min-height: 100%; }
   .adm-filtros input { width: 100%; }
 }
 .adm-main .viz-barra-fila { grid-template-columns: minmax(150px, 46%) 1fr auto; }
+
+/* IA de la plataforma */
+.adm-bloque { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.adm-bloque-cab h2 { margin: 0; font-size: 18px; }
+.adm-reglas { gap: 12px; }
+.adm-no { color: var(--ink-faint); }

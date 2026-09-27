@@ -65,7 +65,8 @@ function extraerJSON(texto) {
 // y, si ya lo respondió, su plan de contenido (objetivo, público, tono).
 // categoriasFoto: si el negocio ya tiene categorías (y quizás fotos subidas),
 // se mantienen para no dejar fotos huérfanas.
-async function generarEstrategia({ nombre, rubro, plan, categoriasFoto }) {
+// contextoExtra: bloque de contexto para la IA (server/contexto-ia.js) y voz de marca.
+async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contextoExtra }) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const respaldo = () => estrategiaGenerica(rubro, plan, categoriasFoto);
   if (!apiKey) return respaldo();
@@ -74,7 +75,7 @@ async function generarEstrategia({ nombre, rubro, plan, categoriasFoto }) {
   const cats = categoriasFoto && categoriasFoto.length ? categoriasFoto : null;
   const prompt =
     `Eres un estratega de contenido para redes sociales. Un negocio llamado "${nombre}" ` +
-    `se describe a sí mismo así: "${rubro}".` + (contexto ? ` ${contexto}` : '') + `\n\n` +
+    `se describe a sí mismo así: "${rubro}".` + (contexto ? ` ${contexto}` : '') + (contextoExtra || '') + `\n\n` +
     `Diseña su estrategia de contenido para Instagram en JSON puro (sin texto fuera del JSON, ` +
     `sin markdown), con esta forma exacta:\n` +
     `{"resumen": "2 frases: qué va a comunicar el negocio en Instagram y cómo eso lo acerca a su objetivo", ` +

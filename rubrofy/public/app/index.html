@@ -9,7 +9,7 @@
   <link rel="icon" href="/app/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
   <link rel="manifest" href="/app/manifest.json">
-  <link rel="stylesheet" href="/app/styles.css?v=3">
+  <link rel="stylesheet" href="/app/styles.css?v=4">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -43,11 +43,17 @@
       <button class="rail-btn" data-view="estrategia" title="Estrategia">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2"/></svg><span class="rail-label">Estrategia</span>
       </button>
+      <button class="rail-btn" data-view="voz" title="Voz de marca">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 V14.5 H7.5 L12.5 18.5 V5.5 L7.5 9.5 Z"/><path d="M15.5 9 C16.8 10.4 16.8 13.6 15.5 15"/><path d="M18 6.5 C20.6 9.3 20.6 14.7 18 17.5"/></svg><span class="rail-label">Voz de marca</span>
+      </button>
       <button class="rail-btn" data-view="fotos" title="Fotos del negocio">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16 L15 11 L6 19"/></svg><span class="rail-label">Fotos del negocio</span>
       </button>
       <button class="rail-btn" data-view="estilo" title="Mi estilo">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg><span class="rail-label">Mi estilo</span>
+      </button>
+      <button class="rail-btn" data-view="contexto" title="Contexto para la IA">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8 H16 M8 12 H16 M8 16 H12.5"/></svg><span class="rail-label">Contexto para la IA</span>
       </button>
       <span class="rail-grupo">2 · Cada semana</span>
       <button class="rail-btn" data-view="cola" title="Cola de aprobación">
@@ -108,6 +114,7 @@
           <p class="sub">Qué quieres lograr, cómo suenas, de qué hablas y cuánto publicas. Rubrofy usa todo esto para crear tu contenido.</p>
         </div>
         <div id="estrategia"></div>
+        <div id="ctx-estrategia"></div>
       </section>
 
       <section id="view-cola" class="view" hidden>
@@ -115,6 +122,7 @@
           <h1>Cola de aprobación<button type="button" class="ay" data-ayuda="cola" aria-label="Ayuda: Por aprobar" aria-expanded="false">?</button></h1>
           <p class="sub">Revisa lo que se publicará. Nada sale a Instagram sin tu visto bueno.</p>
         </div>
+        <div id="ctx-cola"></div>
         <div class="grid" id="cola-grid"></div>
       </section>
 
@@ -140,11 +148,28 @@
         </div>
       </section>
 
+      <section id="view-voz" class="view" hidden>
+        <div>
+          <h1>Voz de marca<button type="button" class="ay" data-ayuda="voz" aria-label="Ayuda: Voz de marca" aria-expanded="false">?</button></h1>
+          <p class="sub">Cómo habla tu marca. La IA la usa en todo lo que escribe, mide qué tan fiel es cada texto y escribe con tu voz cualquier texto que necesites.</p>
+        </div>
+        <div id="voz" class="estilo"></div>
+      </section>
+
+      <section id="view-contexto" class="view" hidden>
+        <div>
+          <h1>Contexto para la IA<button type="button" class="ay" data-ayuda="contexto" aria-label="Ayuda: Contexto para la IA" aria-expanded="false">?</button></h1>
+          <p class="sub">Todo lo que la IA debe saber de tu negocio, ordenado por sección: estrategia, textos, cada formato, imágenes y videos.</p>
+        </div>
+        <div id="contexto" class="estilo"></div>
+      </section>
+
       <section id="view-fotos" class="view" hidden>
         <div>
           <h1>Fotos del negocio<button type="button" class="ay" data-ayuda="fotos" aria-label="Ayuda: Fotos del negocio" aria-expanded="false">?</button></h1>
           <p class="sub">El contenido usa estas fotos según la categoría de cada pieza. Sin foto, la tarjeta muestra un color de marcador.</p>
         </div>
+        <div id="ctx-fotos"></div>
         <div id="fotos-categorias"></div>
       </section>
 
@@ -281,6 +306,9 @@
       <h2>Generar la próxima semana<button type="button" class="ay" data-ayuda="generar-semana" aria-label="Ayuda: Generar semana" aria-expanded="false">?</button></h2>
       <p class="sub" id="dlg-generar-texto"></p>
       <p class="sub" id="dlg-generar-fechas"></p>
+      <label class="estilo-campo dlg-indicaciones">Indicaciones para esta tanda (opcional)<button type="button" class="ay" data-ayuda="indicacion" aria-label="Ayuda: Indicaciones" aria-expanded="false">?</button>
+        <input id="dlg-generar-indicaciones" maxlength="500" placeholder="Ej: esta semana es nuestro aniversario, 20% en tortas">
+      </label>
       <p class="config-error" id="dlg-generar-error" hidden></p>
       <div class="config-actions">
         <button type="button" class="btn-ghost" id="dlg-generar-plan">Cambiar mi plan</button>
@@ -290,15 +318,17 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=3"></script>
-  <script src="/app/graficos.js?v=3"></script>
-  <script src="/app/plan.js?v=3"></script>
-  <script src="/app/bienvenida.js?v=3"></script>
-  <script src="/app/inicio.js?v=3"></script>
-  <script src="/app/resultados.js?v=3"></script>
-  <script src="/app/estilo.js?v=3"></script>
-  <script src="/app/ads.js?v=3"></script>
-  <script src="/app/competencia.js?v=3"></script>
-  <script src="/app/app.js?v=3"></script>
+  <script src="/app/ayuda.js?v=4"></script>
+  <script src="/app/graficos.js?v=4"></script>
+  <script src="/app/plan.js?v=4"></script>
+  <script src="/app/bienvenida.js?v=4"></script>
+  <script src="/app/inicio.js?v=4"></script>
+  <script src="/app/resultados.js?v=4"></script>
+  <script src="/app/estilo.js?v=4"></script>
+  <script src="/app/ads.js?v=4"></script>
+  <script src="/app/competencia.js?v=4"></script>
+  <script src="/app/contexto.js?v=4"></script>
+  <script src="/app/voz.js?v=4"></script>
+  <script src="/app/app.js?v=4"></script>
 </body>
 </html>

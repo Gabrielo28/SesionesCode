@@ -179,7 +179,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
 
   const config = {
     'IA de textos (Anthropic)': !!process.env.ANTHROPIC_API_KEY,
-    'Fotos con IA (OpenAI)': !!process.env.OPENAI_API_KEY,
+    'Imágenes y videos con IA (Higgsfield u OpenAI)': !!(process.env.HIGGSFIELD_API_KEY || process.env.OPENAI_API_KEY),
     'Cobro (Stripe)': !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Meta Ads y competencia': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),

@@ -13,6 +13,7 @@
   let calSelectedId = null;
   const editingIds = new Set();
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
+  const pedirCambioIds = new Set(); // piezas con el campo "Pedir cambio" abierto
 
   const $ = (sel) => document.querySelector(sel);
   const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
@@ -222,7 +223,9 @@
     const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
     const fotoUrl = fotoNombre
       ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}`
-      : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png` : null);
+      : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null);
+    const mediosIA = negocioActual.mediosIA || {};
+    const videoIA = item.videoIA || null;
     const canvasW = 480;
     const canvasH = isPost ? 600 : 854;
 
@@ -250,21 +253,28 @@
                 ${Object.keys(FORMATOS).map((f) => `<option value="${f}"${f === formato ? ' selected' : ''}>${FORMATOS[f]}</option>`).join('')}
               </select>
               ${AY('pieza-formato')}
-              ${conVideo ? (item.video
-                ? `<span class="card-video-ok">Video cargado (${(item.video.bytes / 1048576).toFixed(1)} MB)</span><button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
-                : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>`) : ''}
+              ${conVideo ? (videoIA && videoIA.estado === 'generando'
+                ? `<span class="card-video-ok card-video-ia">Generando video con IA… suele tardar 1 a 3 minutos</span>`
+                : (item.video
+                  ? `<span class="card-video-ok">${item.video.generadoIA ? 'Video con IA' : 'Video cargado'} (${(item.video.bytes / 1048576).toFixed(1)} MB)</span>${item.video.generadoIA ? `<a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>` : ''}<button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
+                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && negocioActual.videosIADisponibles > 0 ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
+              ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
               ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
             </div>` : ''}
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
+          ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span>${AY('voz-puntaje')}</div>` : ''}
+          ${isPending && pedirCambioIds.has(item.id) ? `<form class="card-pedir" data-pedir-id="${item.id}"><input name="indicacion" maxlength="500" placeholder="Ej: más corto, menciona el despacho gratis" required><button class="btn-approve">Pedir</button><button type="button" class="btn-text" data-action="cancelar-pedir" data-id="${item.id}">Cancelar</button></form>` : ''}
           ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}<li class="alerta-ayuda">Qué hacer ${AY('alertas')}</li></ul>` : ''}
           ${isPending ? `
             <div class="card-actions">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
               <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
-              ${!fotoUrl ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
+              <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
+              ${!fotoUrl && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
+              ${!fotoNombre && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
               ${AY('pieza-acciones')}
@@ -285,7 +295,13 @@
     `;
   }
 
+  let ctxColaListo = false;
   function renderCola() {
+    if (!ctxColaListo) {
+      ctxColaListo = true;
+      window.RubrofyContexto.editor($('#ctx-cola'), ctxPanel(), ['copys', 'post', 'carrusel', 'reel', 'historia'], 'textos y formatos');
+    }
+    vigilarVideos();
     const grid = $('#cola-grid');
     if (!contenido.length) {
       grid.innerHTML = '<p class="empty-state">Sin contenido todavía. Usa "Generar más contenido" para crear el primer lote.</p>';
@@ -404,6 +420,7 @@
   }
 
   function renderFotos() {
+    window.RubrofyContexto.editor($('#ctx-fotos'), ctxPanel(), ['imagen', 'video'], 'imágenes y videos con IA');
     const cont = $('#fotos-categorias');
     if (!nichoActual) { cont.innerHTML = ''; return; }
     cont.innerHTML = nichoActual.categoriasFoto.map(fotoCategoriaHTML).join('');
@@ -677,7 +694,7 @@
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
+  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -728,7 +745,12 @@
     }
     else if (vistaActual === 'resultados') renderResultados();
     else if (vistaActual === 'inicio') window.RubrofyInicio.render($('#inicio'), ctxPanel()).catch(() => {});
-    else if (vistaActual === 'estrategia') window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
+    else if (vistaActual === 'estrategia') {
+      window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
+      window.RubrofyContexto.editor($('#ctx-estrategia'), ctxPanel(), ['estrategia'], 'estrategia');
+    }
+    else if (vistaActual === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
+    else if (vistaActual === 'contexto') window.RubrofyContexto.render($('#contexto'), ctxPanel());
   }
 
   // Lo que necesitan Inicio, Estrategia y la bienvenida del resto del panel.
@@ -749,6 +771,7 @@
       guardarDatos: (datos) => guardarConfig({ nombre: negocioActual.nombre, datos, estiloImagen: negocioActual.estiloImagen }),
       setNegocio: (n) => { negocioActual = n; actualizarSwitcher(); },
       setEstrategia: (e) => { nichoActual = e; negocioActual.estrategia = e; },
+      recargarContenido: () => api('/api/negocios/' + negocioActual.id + '/contenido').then((c) => { contenido = c; renderStats(); renderMenu(); }).catch(() => {}),
     };
   }
 
@@ -773,13 +796,14 @@
       : 'Se crearán 6 publicaciones. Define tu plan en <b>Estrategia</b> para elegir cuántos posts, carruseles, reels e historias quieres.';
     $('#dlg-generar-fechas').textContent = 'Siguen después de lo que ya tienes programado y llegan a Por aprobar.';
     $('#dlg-generar-error').hidden = true;
+    $('#dlg-generar-indicaciones').value = '';
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
   }
 
   async function generarSemana() {
     contenido = await api(`/api/negocios/${negocioActual.id}/generar`, {
       method: 'POST',
-      body: JSON.stringify(negocioActual.planContenido ? { segunPlan: true } : { cantidad: 6 }),
+      body: JSON.stringify(Object.assign(negocioActual.planContenido ? { segunPlan: true } : { cantidad: 6 }, { indicaciones: ($('#dlg-generar-indicaciones') || {}).value || '' })),
     });
     render();
   }
@@ -825,6 +849,21 @@
   }
 
   // ---------- acciones ----------
+  // Mientras haya videos con IA generándose, la cola se refresca sola.
+  let vigilancia = null;
+  function vigilarVideos() {
+    const hay = contenido.some((i) => i.videoIA && i.videoIA.estado === 'generando');
+    if (hay && !vigilancia) {
+      vigilancia = setInterval(() => {
+        if (vistaActual !== 'cola' || document.hidden) return;
+        refreshContenido().catch(() => {});
+      }, 10000);
+    } else if (!hay && vigilancia) {
+      clearInterval(vigilancia);
+      vigilancia = null;
+    }
+  }
+
   async function refreshContenido() {
     contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
     render();
@@ -1182,6 +1221,40 @@
         return accionConAviso('deshacer', id);
       }
       if (accion === 'regenerate') return accionConAviso('regenerar', id);
+      if (accion === 'pedir' || accion === 'cancelar-pedir') {
+        if (accion === 'pedir') pedirCambioIds.add(id); else pedirCambioIds.delete(id);
+        renderCola();
+        const input = document.querySelector(`form[data-pedir-id="${id}"] input`);
+        if (input) input.focus();
+        return;
+      }
+      if (accion === 'video-ia') {
+        btn.disabled = true;
+        btn.textContent = 'Iniciando…';
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video-ia`, { method: 'POST' });
+          negocioActual.videosIADisponibles = Math.max(0, (negocioActual.videosIADisponibles || 1) - 1);
+          await refreshContenido();
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo iniciar el video con IA.');
+          btn.disabled = false;
+          btn.textContent = 'o generarlo con IA';
+        }
+        return;
+      }
+      if (accion === 'imagen-otra') {
+        btn.disabled = true;
+        btn.textContent = 'Generando…';
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/imagen`, { method: 'POST', body: JSON.stringify({ rehacer: true }) });
+          await refreshContenido();
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo generar otra imagen.');
+          btn.disabled = false;
+          btn.textContent = 'Otra foto con IA';
+        }
+        return;
+      }
       if (accion === 'imagen') {
         const textoOriginal = btn.textContent;
         btn.disabled = true;
@@ -1196,6 +1269,26 @@
           btn.textContent = textoOriginal;
         }
         return;
+      }
+    });
+
+    // "Pedir cambio": otra versión con una indicación para la IA
+    $('#cola-grid').addEventListener('submit', async (e) => {
+      const form = e.target.closest('form[data-pedir-id]');
+      if (!form) return;
+      e.preventDefault();
+      const id = form.dataset.pedirId;
+      const boton = form.querySelector('.btn-approve');
+      boton.disabled = true;
+      boton.textContent = 'Escribiendo…';
+      try {
+        await api(`/api/negocios/${negocioActual.id}/contenido/${id}/regenerar`, { method: 'POST', body: JSON.stringify({ indicacion: form.indicacion.value }) });
+        pedirCambioIds.delete(id);
+        await refreshContenido();
+      } catch (err) {
+        alert(err.mensaje || 'No se pudo pedir el cambio.');
+        boton.disabled = false;
+        boton.textContent = 'Pedir';
       }
     });
 

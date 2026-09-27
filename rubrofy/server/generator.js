@@ -11,6 +11,8 @@ const aprendizaje = require('./aprendizaje');
 const estilo = require('./estilo');
 const guardian = require('./guardian');
 const planContenido = require('./plan-contenido');
+const voz = require('./voz');
+const contextoIA = require('./contexto-ia');
 
 const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
 
@@ -84,7 +86,7 @@ function extraerJSONArray(texto) {
 // Pide a Claude titulares + captions reales para un lote de piezas nuevas,
 // en una sola llamada. Devuelve null si no hay API key o si algo falla — el
 // llamador cae de vuelta a las plantillas genéricas.
-async function generarLoteConClaude(negocio, piezas, ctx) {
+async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
@@ -100,7 +102,9 @@ async function generarLoteConClaude(negocio, piezas, ctx) {
     `datos que no aparecen aquí: ${JSON.stringify(negocio.datos || {})}.` +
     (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') +
     (ctx ? aprendizaje.textoParaPrompt(ctx) : '') +
-    bloqueEstilo(negocio, piezas.map((p) => p.formato)) + '\n\n' +
+    bloqueEstilo(negocio, piezas.map((p) => p.formato)) +
+    voz.textoParaPrompt(negocio) +
+    contextoIA.bloque(negocio, ['general', 'voz', 'copys', ...new Set(piezas.map((p) => p.formato))], indicaciones) + '\n\n' +
     `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por línea, con el formato y enfoque indicados, en este orden:\n${lista}\n\n` +
     `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
     `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación", "idea": "qué mostrar"}]\n` +
@@ -185,7 +189,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     });
   }
 
-  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan, ctx);
+  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan, ctx, opciones.indicaciones);
 
   return plan.map((p, i) => {
     const generado = lote && lote[i];
@@ -210,6 +214,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       hueTo: p.hue[1],
       variants: [caption],
       alertas: guardian.revisar(caption, negocio), // qué verificar antes de aprobar
+      voz: voz.puntuar(caption, negocio) || undefined, // fidelidad a la voz de marca
       generadoConIA: !!generado, // para descontar de la cuota mensual de textos con IA
     };
   });
@@ -244,7 +249,7 @@ function ordenarEnfoques(enfoques, ctx) {
 // Pide a Claude una variante nueva para "Otra versión" cuando ya no quedan
 // variantes precalculadas. Devuelve null si no hay API key o si algo falla —
 // el llamador debe tener un plan B (rotar de nuevo desde el principio).
-async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = 'post') {
+async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = 'post', indicacion = '') {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
@@ -255,7 +260,8 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
     `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram (${estilo.ETIQUETAS[formato] || 'Post'}) con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
-    `${JSON.stringify(negocio.datos || {})}.` + (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
+    `${JSON.stringify(negocio.datos || {})}.` + (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + voz.textoParaPrompt(negocio) +
+    contextoIA.bloque(negocio, ['general', 'voz', 'copys', formato], indicacion) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
 
   try {

@@ -7,6 +7,8 @@
 // analitica: Resultados e informe mensual. ads / competencia: Meta Ads,
 // Google Ads y seguimiento de competidores (pensados para un futuro plan
 // Agencia; mientras no exista, van en Estudio).
+// cuotaFotosIA / cuotaVideosIA: imágenes y videos con IA por mes (cuestan
+// dinero real en Higgsfield u OpenAI: un video de 5 s ronda USD 0,5-1).
 // cuotaTextosIA: cuántas piezas de texto puede escribir Claude por mes
 // (generar + "otra versión"). Es un techo contra el abuso, no un límite que
 // un negocio normal debiera tocar: ~150 piezas son varias veces lo que
@@ -19,6 +21,7 @@ const PLANES = {
     usaIA: false,
     cuotaTextosIA: 0,
     cuotaFotosIA: 0,
+    cuotaVideosIA: 0,
     analitica: false,
     ads: false,
     competencia: false,
@@ -31,6 +34,7 @@ const PLANES = {
     usaIA: true,
     cuotaTextosIA: 150,
     cuotaFotosIA: 0,
+    cuotaVideosIA: 0,
     analitica: true,
     ads: false,
     competencia: false,
@@ -43,6 +47,7 @@ const PLANES = {
     usaIA: true,
     cuotaTextosIA: 300,
     cuotaFotosIA: 20,
+    cuotaVideosIA: 6,
     analitica: true,
     ads: true,
     competencia: true,
@@ -64,6 +69,7 @@ function listPlanesPublico() {
     usaIA: p.usaIA,
     cuotaTextosIA: p.cuotaTextosIA,
     cuotaFotosIA: p.cuotaFotosIA,
+    cuotaVideosIA: p.cuotaVideosIA,
     analitica: p.analitica,
     ads: p.ads,
     competencia: p.competencia,

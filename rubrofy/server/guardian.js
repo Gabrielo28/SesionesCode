@@ -63,8 +63,12 @@ function revisar(texto, negocio) {
 }
 
 // Recalcula las alertas del texto vigente de una pieza.
+// También el puntaje de voz de marca (server/voz.js), si el negocio tiene ficha.
 function aplicar(item, negocio) {
-  item.alertas = revisar(item.variants[item.variantIndex], negocio);
+  const texto = item.variants[item.variantIndex];
+  item.alertas = revisar(texto, negocio);
+  const v = require('./voz').puntuar(texto, negocio);
+  if (v) item.voz = v; else delete item.voz;
   return item;
 }
 
