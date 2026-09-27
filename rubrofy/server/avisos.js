@@ -98,7 +98,7 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
 function plantilla({ titulo, parrafos, boton, pie }) {
   const html = `<!doctype html><html lang="es"><body style="margin:0;background:#f7f1e8;padding:24px 12px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;border:1px solid #eee3d3">
-    <tr><td style="padding:24px 28px 8px;font:700 18px Arial,sans-serif;color:#111014">rubrofy</td></tr>
+    <tr><td style="padding:24px 28px 8px;font:700 18px Arial,sans-serif;color:#111014">Rubrofy</td></tr>
     <tr><td style="padding:0 28px;font:15px/1.55 Arial,sans-serif;color:#2b2118">
       <p style="margin:8px 0 12px;font-size:20px;font-weight:700">${esc(titulo)}</p>
       ${parrafos.map((p) => `<p style="margin:0 0 12px;color:#4a4050">${esc(p)}</p>`).join('')}
