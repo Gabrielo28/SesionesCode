@@ -29,6 +29,7 @@ const analisisAds = require('./analisis-ads');
 const contextoIA = require('./contexto-ia');
 const voz = require('./voz');
 const reelsPrueba = require('./reels-prueba');
+const push = require('./push');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -499,6 +500,10 @@ const sincronizador = analitica.crearSincronizador({
         try {
           const creado = await reelsPrueba.automatico(n, { usarIA, diaInicio: diaSiguienteDeLaCola(store.getContenido(id)) });
           if (creado && creado.conIA) registrarUsoIA(id, 'usoTextosIA', 1);
+          if (creado && creado.item) {
+            const o = creado.item.prueba.origen;
+            notificar(id, { titulo: 'Un Reel tuyo funcionó muy bien', cuerpo: `Tuvo ${String(o.factor).replace('.', ',')} veces tus vistas de siempre. Su Reel de prueba para gente que no te sigue está listo para aprobar.`, url: '/app#cola', tag: 'reel-prueba' });
+          }
         } catch (err) {
           console.log(`Reels de prueba: ${id}: ${err.message}`);
         }
@@ -552,6 +557,46 @@ informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
   return Object.assign(meta.resumenAds(negocio.id, desde, hasta), { moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre });
 });
 
+// --- notificaciones push (server/push.js) ---
+const NOMBRE_FORMATO = { post: 'post', carrusel: 'carrusel', reel: 'Reel', historia: 'historia' };
+function notificar(negocioId, mensaje) {
+  push.enviar(negocioId, mensaje).catch((err) => console.log(`Push ${negocioId}: ${err.message}`));
+}
+function avisoPublicador(evento, negocioId, item) {
+  const formato = item ? (NOMBRE_FORMATO[formatoDe(item)] || 'publicación') : '';
+  if (evento === 'publicada') {
+    notificar(negocioId, { titulo: `Se publicó tu ${formato} en Instagram`, cuerpo: (item.variants[item.variantIndex] || '').slice(0, 120), url: '/app#cola', tag: 'publicada' });
+  } else if (evento === 'fallida') {
+    notificar(negocioId, { titulo: `No se pudo publicar tu ${formato}`, cuerpo: (item.publicacion && item.publicacion.motivo) || 'Revísala en Por aprobar y usa "Reintentar".', url: '/app#cola', tag: 'fallida-' + item.id, urgente: true });
+  } else if (evento === 'reconectar') {
+    notificar(negocioId, { titulo: 'Instagram se desconectó', cuerpo: 'Tus publicaciones programadas esperan hasta que lo vuelvas a conectar en Conexiones y ajustes.', url: '/app#config', tag: 'reconectar', urgente: true });
+  }
+}
+
+// Recordatorio de los lunes (desde las 9:00, una vez por semana): cuántas
+// piezas esperan aprobación. Solo a quien activó las notificaciones.
+async function recordatoriosSemanales(ahora = new Date()) {
+  const p = programacion.partesEnZona(ahora);
+  const lunes = new Date(Date.UTC(p.anio, p.mes - 1, p.dia)).getUTCDay() === 1;
+  if (!lunes || p.hora < 9) return 0;
+  const semana = avisos.semanaISO(p);
+  let n = 0;
+  for (const negocio of store.listNegocios()) {
+    if ((negocio.avisos || {}).ultimaSemanaPush === semana || !push.dispositivos(negocio.id).length) continue;
+    const fresco = store.getNegocio(negocio.id);
+    fresco.avisos = Object.assign({}, fresco.avisos, { ultimaSemanaPush: semana });
+    store.saveNegocio(fresco);
+    const pendientes = store.getContenido(negocio.id).filter((i) => i.status === 'pendiente').length;
+    const mensaje = pendientes
+      ? { titulo: `Tienes ${pendientes} publicacion${pendientes === 1 ? '' : 'es'} por aprobar`, cuerpo: 'Apruébalas en un par de minutos y se publican solas en su fecha.', url: '/app#cola', tag: 'semana' }
+      : { titulo: 'Tu semana está vacía', cuerpo: 'Genera la próxima semana de contenido: Rubrofy la deja lista para aprobar.', url: '/app#cola', tag: 'semana' };
+    if (await push.enviar(negocio.id, mensaje)) n += 1;
+  }
+  return n;
+}
+const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); }, 30 * 60 * 1000);
+timerRecordatorios.unref();
+
 // Videos con IA: cuando uno termina, queda como el video de la pieza.
 const sondeoMedios = medios.crearSondeo(async (t, r) => {
   const items = store.getContenido(t.negocio_id);
@@ -565,12 +610,14 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
     it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
     it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
     descartarContenedor(it);
+    notificar(t.negocio_id, { titulo: 'Tu video con IA está listo', cuerpo: 'Revísalo en la tarjeta y aprueba la pieza cuando te guste.', url: '/app#cola', tag: 'video-' + it.id });
   } else if (r.ok) {
     store.borrarVideo(t.negocio_id, r.archivo); // mientras tanto subió uno real: gana el real
     delete it.videoIA;
   } else {
     it.videoIA = { estado: 'error', error: r.error };
     registrarUsoIA(t.negocio_id, 'usoVideosIA', -1); // no se cobra un video que no llegó
+    notificar(t.negocio_id, { titulo: 'El video con IA no se pudo generar', cuerpo: `${r.error}. No se descontó de tu cupo.`, url: '/app#cola', tag: 'video-' + it.id });
   }
   store.saveContenido(t.negocio_id, items);
 });
@@ -596,6 +643,7 @@ const avisador = avisos.crearAvisador({
 
 const publicador = crearPublicador({
   prepararPublicacion,
+  alAvisar: avisoPublicador,
   intervaloMs: (Number(process.env.PUBLICADOR_INTERVALO_SEG) || 30) * 1000,
 });
 
@@ -922,6 +970,11 @@ const server = http.createServer(async (req, res) => {
       }
 
       // GET /api/avisos/baja?n&t — enlace "No quiero recibirlo más" del resumen semanal
+      // GET /api/push/clave — clave pública VAPID para suscribirse (no es secreta)
+      if (parts[1] === 'push' && parts[2] === 'clave' && parts.length === 3 && req.method === 'GET') {
+        return sendJSON(res, 200, { clave: push.clavePublica() });
+      }
+
       if (parts[1] === 'avisos' && parts[2] === 'baja' && parts.length === 3 && req.method === 'GET') {
         const id = url.searchParams.get('n');
         const n = id && store.getNegocio(id);
@@ -1459,6 +1512,31 @@ const server = http.createServer(async (req, res) => {
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
           })));
+        }
+
+        // Notificaciones push de este negocio (cada dispositivo es una suscripción).
+        //   GET    /api/negocios/:id/push            dispositivos activos
+        //   POST   /api/negocios/:id/push            { suscripcion, dispositivo }
+        //   DELETE /api/negocios/:id/push            { endpoint }
+        //   POST   /api/negocios/:id/push/prueba
+        if (parts[3] === 'push') {
+          const vistaPush = () => ({ dispositivos: push.dispositivos(negocioId).map((d) => ({ dispositivo: d.dispositivo, creadoEl: d.creadoEl, ultimoEnvio: d.ultimoEnvio, endpoint: d.endpoint })) });
+          if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vistaPush());
+          if (parts.length === 4 && req.method === 'POST') {
+            const body = await readBody(req);
+            const r = push.suscribir(negocioId, body.suscripcion, body.dispositivo);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 201, vistaPush());
+          }
+          if (parts.length === 4 && req.method === 'DELETE') {
+            push.desuscribir(negocioId, (await readBody(req)).endpoint);
+            return sendJSON(res, 200, vistaPush());
+          }
+          if (parts.length === 5 && parts[4] === 'prueba' && req.method === 'POST') {
+            const n = await push.enviar(negocioId, { titulo: 'Notificaciones activadas', cuerpo: 'Así te avisaremos cuando tengas contenido por aprobar o algo necesite tu atención.', url: '/app', tag: 'prueba' });
+            return sendJSON(res, 200, { enviados: n });
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
         }
 
         // Reels de prueba (server/reels-prueba.js).
@@ -2059,6 +2137,7 @@ function apagar(senal) {
   sincronizador.detener();
   avisador.detener();
   sondeoMedios.detener();
+  clearInterval(timerRecordatorios);
   server.close(() => {
     try { store.db.close(); } catch (err) { /* ya cerrada */ }
     process.exit(0);

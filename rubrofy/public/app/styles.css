@@ -787,3 +787,9 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 .rp-ajustes { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 10px; }
 .rp-auto { display: flex; gap: 8px; align-items: center; font-size: 12.5px; color: var(--ink-dim); flex: 1 1 260px; }
 @media (max-width: 600px) { .rp-item { grid-template-columns: 70px 1fr; } .rp-item > button, .rp-item > .rp-enviado { grid-column: 1 / -1; justify-self: start; } }
+
+/* --- app instalable y notificaciones --- */
+.rail-instalar { color: var(--amber) !important; }
+.instalar-pasos { margin: 8px 0 12px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--ink); }
+.push-aviso { margin-bottom: 14px; border-color: rgba(255,77,148,0.4); }
+.push-aviso span { flex: 1 1 260px; color: var(--ink); }

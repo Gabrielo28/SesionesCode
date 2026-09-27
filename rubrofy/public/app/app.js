@@ -300,6 +300,7 @@
   function renderCola() {
     if (!ctxColaListo) {
       ctxColaListo = true;
+      window.RubrofyPWA.aviso($('#push-aviso'), ctxPanel());
       window.RubrofyContexto.editor($('#ctx-cola'), ctxPanel(), ['copys', 'post', 'carrusel', 'reel', 'historia'], 'textos y formatos');
     }
     vigilarVideos();
@@ -429,6 +430,7 @@
 
   function renderConfig() {
     if (!negocioActual) return;
+    window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
     $('#config-nombre').value = negocioActual.nombre || '';
     $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
     $('#config-unidad').value = (negocioActual.datos && negocioActual.datos.unidad) || '';
@@ -941,7 +943,10 @@
     $('#view-login').hidden = true;
     $('#view-app').hidden = false;
     vistaActual = 'inicio';
-    irAVista('inicio');
+    // Enlaces de las notificaciones: /app#cola, /app#config…
+    const destino = window.location.hash.slice(1);
+    irAVista(VISTAS.includes(destino) ? destino : 'inicio');
+    if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
     const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
     avisarRetornoCheckout();
     avisarRetornoGoogle();
@@ -996,6 +1001,8 @@
   }
 
   async function init() {
+    $('#btn-instalar').addEventListener('click', () => window.RubrofyPWA.instalar());
+    window.RubrofyPWA.mostrarBotonInstalar();
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('#btn-login');

@@ -9,7 +9,11 @@
   <link rel="icon" href="/app/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
   <link rel="manifest" href="/app/manifest.json">
-  <link rel="stylesheet" href="/app/styles.css?v=5">
+  <meta name="theme-color" content="#0f0e11">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rubrofy">
+  <link rel="stylesheet" href="/app/styles.css?v=6">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -76,6 +80,9 @@
       <a class="rail-btn" href="/app/informe.html" target="_blank" rel="noopener" title="Informe mensual">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5 H14 L18.5 8 V20.5 H7 Z"/><path d="M14 3.5 V8 H18.5"/><path d="M10 13 H15.5 M10 16.5 H15.5"/></svg><span class="rail-label">Informe mensual</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
       </a>
+      <button class="rail-btn rail-instalar" id="btn-instalar" type="button" title="Instalar Rubrofy en este dispositivo" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5 V14.5 M9 11.5 L12 14.5 L15 11.5"/></svg><span class="rail-label">Instalar Rubrofy</span>
+      </button>
       <a class="rail-btn spacer" href="/admin" id="rail-admin" title="Administración" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L19.5 6.5 V11.5 C19.5 16 16.3 19.3 12 20.5 C7.7 19.3 4.5 16 4.5 11.5 V6.5 Z"/><path d="M9 12 L11.2 14.2 L15.2 10"/></svg><span class="rail-label">Administración</span>
       </a>
@@ -122,6 +129,7 @@
           <h1>Cola de aprobación<button type="button" class="ay" data-ayuda="cola" aria-label="Ayuda: Por aprobar" aria-expanded="false">?</button></h1>
           <p class="sub">Revisa lo que se publicará. Nada sale a Instagram sin tu visto bueno.</p>
         </div>
+        <div id="push-aviso"></div>
         <div id="ctx-cola"></div>
         <div class="grid" id="cola-grid"></div>
       </section>
@@ -201,7 +209,7 @@
           <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y administra tu plan.</p>
         </div>
         <nav class="cfg-indice" aria-label="Secciones de ajustes">
-          <a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos por correo</a><a href="#cfg-datos">Datos del negocio</a><a href="#cfg-plan">Plan y pago</a>
+          <a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos</a><a href="#cfg-datos">Datos del negocio</a><a href="#cfg-plan">Plan y pago</a>
         </nav>
 
         <h2 class="cfg-titulo" id="cfg-conexiones">Conexiones</h2>
@@ -250,7 +258,8 @@
 
         <div class="ig-card" id="google-card"></div>
 
-        <h2 class="cfg-titulo" id="cfg-avisos">Avisos por correo</h2>
+        <h2 class="cfg-titulo" id="cfg-avisos">Avisos</h2>
+        <div class="ig-card" id="push-card"></div>
         <div class="ig-card" id="avisos-card">
           <div class="ig-card-head"><h2>Resumen semanal<button type="button" class="ay" data-ayuda="avisos" aria-label="Ayuda: Resumen semanal" aria-expanded="false">?</button></h2><span class="ig-estado" id="avisos-estado"></span></div>
           <p class="sub">Cada lunes en la mañana te llega un correo con lo que te toca esa semana (qué aprobar, videos o fotos que faltan) y lo que se publica en los próximos 7 días.</p>
@@ -301,6 +310,20 @@
     </div>
   </div>
 
+  <dialog id="dlg-instalar" class="dlg">
+    <form method="dialog" class="dlg-caja">
+      <h2>Instalar Rubrofy en tu iPhone</h2>
+      <ol class="instalar-pasos">
+        <li>Abre rubrofy.com/app en <b>Safari</b>.</li>
+        <li>Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).</li>
+        <li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li>
+        <li>Abre Rubrofy desde el ícono y activa las notificaciones en <b>Conexiones y ajustes → Avisos</b>.</li>
+      </ol>
+      <p class="sub">Las notificaciones en iPhone funcionan con iOS 16.4 o superior y solo desde la app instalada.</p>
+      <div class="config-actions"><button class="btn-approve" value="ok">Entendido</button></div>
+    </form>
+  </dialog>
+
   <dialog id="dlg-generar" class="dlg">
     <form method="dialog" class="dlg-caja">
       <h2>Generar la próxima semana<button type="button" class="ay" data-ayuda="generar-semana" aria-label="Ayuda: Generar semana" aria-expanded="false">?</button></h2>
@@ -318,17 +341,18 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=5"></script>
-  <script src="/app/graficos.js?v=5"></script>
-  <script src="/app/plan.js?v=5"></script>
-  <script src="/app/bienvenida.js?v=5"></script>
-  <script src="/app/inicio.js?v=5"></script>
-  <script src="/app/resultados.js?v=5"></script>
-  <script src="/app/estilo.js?v=5"></script>
-  <script src="/app/ads.js?v=5"></script>
-  <script src="/app/competencia.js?v=5"></script>
-  <script src="/app/contexto.js?v=5"></script>
-  <script src="/app/voz.js?v=5"></script>
-  <script src="/app/app.js?v=5"></script>
+  <script src="/app/ayuda.js?v=6"></script>
+  <script src="/app/graficos.js?v=6"></script>
+  <script src="/app/plan.js?v=6"></script>
+  <script src="/app/bienvenida.js?v=6"></script>
+  <script src="/app/inicio.js?v=6"></script>
+  <script src="/app/resultados.js?v=6"></script>
+  <script src="/app/estilo.js?v=6"></script>
+  <script src="/app/ads.js?v=6"></script>
+  <script src="/app/competencia.js?v=6"></script>
+  <script src="/app/contexto.js?v=6"></script>
+  <script src="/app/voz.js?v=6"></script>
+  <script src="/app/pwa.js?v=6"></script>
+  <script src="/app/app.js?v=6"></script>
 </body>
 </html>

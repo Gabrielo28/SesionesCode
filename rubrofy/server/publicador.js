@@ -66,7 +66,13 @@ function estaVencida(item, ahora = Date.now()) {
 // prepararPublicacion(negocio, item) → { imageUrl, caption, generadaPorIA }
 // o { motivo } si la pieza no se puede publicar (ej. no tiene foto). La
 // entrega server.js porque sabe elegir la foto y firmar su enlace temporal.
-function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = console.log }) {
+// alAvisar(evento, negocioId, item): 'publicada' | 'fallida' | 'reconectar'
+// (para las notificaciones push; nunca bloquea ni rompe la publicación).
+function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = console.log, alAvisar }) {
+  const avisar = (evento, negocioId, item) => {
+    if (!alAvisar) return;
+    Promise.resolve().then(() => alAvisar(evento, negocioId, item)).catch((err) => log(`Aviso ${evento} de ${negocioId}: ${err.message}`));
+  };
   const enCurso = new Set(); // "negocioId/itemId" que se están publicando ahora
   let recorriendo = false;
   let timer = null;
@@ -74,7 +80,8 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
   // descartarContenedor: el contenedor no sirve (Meta no pudo procesar el
   // archivo), así que "Reintentar" debe crear uno nuevo con el archivo actual.
   function marcarFallida(negocioId, itemId, motivo, opciones = {}) {
-    return actualizarItem(negocioId, itemId, (it) => {
+    const avisarAlFinal = (it) => { if (it) avisar('fallida', negocioId, it); return it; };
+    return avisarAlFinal(actualizarItem(negocioId, itemId, (it) => {
       it.publicacion = Object.assign({}, it.publicacion, { estado: 'fallida', motivo, falloEl: ahoraISO() });
       delete it.publicacion.procesando;
       if (opciones.descartarContenedor) {
@@ -82,7 +89,7 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
         delete it.publicacion.creationEl;
       }
       it.instagram = { intentado: true, ok: false, error: motivo };
-    });
+    }));
   }
 
   // Programa el próximo reintento, o la da por fallida si ya no quedan.
@@ -112,18 +119,22 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
       it.publicacion = pub;
     });
     log(`Publicador: ${negocioId}/${itemId} ${fallida ? 'falló definitivamente' : 'se reintentará'}: ${resultado.error}`);
+    if (fallida && item) avisar('fallida', negocioId, item);
     return item;
   }
 
   // El token ya no sirve: el negocio pasa a "reconectar" y la pieza vuelve
   // a esperar programada, sin gastar un reintento.
   function pausarPorToken(negocioId, itemId, resultado) {
+    let recien = false;
     actualizarNegocio(negocioId, (n) => {
       if (!n.instagram) return;
+      recien = n.instagram.estado !== 'reconectar';
       n.instagram.estado = 'reconectar';
       n.instagram.motivoReconexion = resultado.error;
     });
     log(`Publicador: ${negocioId} debe reconectar Instagram: ${resultado.error}`);
+    if (recien) avisar('reconectar', negocioId, null);
     return actualizarItem(negocioId, itemId, (it) => {
       it.publicacion = Object.assign({}, it.publicacion, { estado: 'programada', proximoIntento: ahoraISO() });
     });
@@ -226,13 +237,14 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
 
   function marcarPublicada(negocioId, itemId, mediaId) {
     log(`Publicador: ${negocioId}/${itemId} publicado en Instagram (${mediaId || 'id no informado'}).`);
-    return actualizarItem(negocioId, itemId, (it) => {
+    const avisarAlFinal = (it) => { if (it) avisar('publicada', negocioId, it); return it; };
+    return avisarAlFinal(actualizarItem(negocioId, itemId, (it) => {
       const publicadoEl = ahoraISO();
       it.publicacion = Object.assign({}, it.publicacion, { estado: 'publicada', publicadoEl, mediaId });
       delete it.publicacion.ultimoError;
       delete it.publicacion.procesando;
       it.instagram = { intentado: true, ok: true, mediaId, publicadoEl, generadaPorIA: !!it.publicacion.generadaPorIA };
-    });
+    }));
   }
 
   // Publica una pieza si ya le toca. Nunca dos veces a la vez la misma: un

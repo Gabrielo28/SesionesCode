@@ -391,6 +391,28 @@ más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
 ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
 qué hashtags usan que tú no.
 
+## App instalable y notificaciones push (server/push.js, public/app/sw.js, pwa.js)
+
+El panel se instala como app (PWA): ícono en la pantalla de inicio, abre a
+pantalla completa y muestra una página propia sin conexión. Botón "Instalar
+Rubrofy" en el menú (en iPhone explica cómo agregarlo desde Safari).
+
+**Notificaciones push** (Web Push, sin dependencias: VAPID con ES256 y
+contenido cifrado aes128gcm, todo con `node:crypto`). Cada dispositivo se
+activa en Conexiones y ajustes → Avisos (o desde el aviso en Por aprobar).
+Se avisa cuando:
+
+- se publica una pieza, falla una publicación o Instagram se desconecta;
+- un video con IA está listo o falló;
+- un Reel destacado dejó listo su Reel de prueba;
+- cada lunes desde las 9:00, cuántas piezas esperan aprobación.
+
+Las claves VAPID se generan solas la primera vez y se guardan en la base;
+se pueden fijar con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (base64url).
+Cambiarlas invalida las suscripciones. En iPhone requiere iOS 16.4+ y la
+app instalada. Una suscripción que el navegador da de baja (404/410) se
+borra sola.
+
 ## Reels de prueba (server/reels-prueba.js)
 
 Un Reel de prueba (trial reel) se muestra primero solo a quienes no siguen
@@ -659,6 +681,7 @@ server/
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   medios.js     Imágenes y videos con IA (Higgsfield u OpenAI), videos en segundo plano
+  push.js       Notificaciones push (Web Push: VAPID + aes128gcm) por dispositivo
   reels-prueba.js Reels destacados → Reel de prueba (trial reels) para público nuevo
   voz.js        Voz de marca: ficha, puntaje de fidelidad, completar con IA y redactor
   contexto-ia.js Contexto para la IA por capas: plataforma (admin), negocio y pedido
