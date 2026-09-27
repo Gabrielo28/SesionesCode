@@ -152,6 +152,7 @@
 
   // Barras horizontales: comparar magnitudes entre categorías. La mejor en
   // acento y el resto en gris (énfasis), valor en la punta de cada barra.
+  // opciones.todasEnAcento: una sola serie (ej: un embudo), todas en acento.
   function barras(filas, opciones) {
     const o = Object.assign({ formato: numero, sufijo: '' }, opciones);
     const div = document.createElement('div');
@@ -160,7 +161,7 @@
     div.innerHTML = filas.map((f, i) => `
       <div class="viz-barra-fila" title="${escapar(f.label)}: ${o.formato(f.valor)}${escapar(o.sufijo)}${f.detalle ? ' · ' + escapar(f.detalle) : ''}">
         <span class="viz-barra-label">${escapar(f.label)}</span>
-        <span class="viz-barra-pista"><span class="viz-barra ${i === 0 ? 'destacada' : ''}" style="width:${Math.max(2, (f.valor / max) * 100)}%"></span></span>
+        <span class="viz-barra-pista"><span class="viz-barra ${o.todasEnAcento || i === 0 ? 'destacada' : ''}" style="width:${Math.max(2, (f.valor / max) * 100)}%"></span></span>
         <span class="viz-barra-valor">${o.formato(f.valor)}${escapar(o.sufijo)}</span>
       </div>`).join('');
     return div;

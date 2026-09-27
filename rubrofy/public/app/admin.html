@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Administración · Rubrofy</title>
+  <link rel="icon" href="/app/favicon-32.png" sizes="32x32">
+  <link rel="stylesheet" href="/app/styles.css">
+  <link rel="stylesheet" href="/app/admin.css">
+</head>
+<body class="adm">
+  <header class="adm-top">
+    <a class="adm-marca" href="/admin"><img src="/app/icon-192.png" width="30" height="30" alt="">Rubrofy <span>Administración</span></a>
+    <div class="adm-top-der">
+      <div class="pestanas adm-periodo" role="tablist" aria-label="Periodo">
+        <button role="tab" data-dias="7">7 días</button>
+        <button role="tab" data-dias="30" class="activa">30 días</button>
+        <button role="tab" data-dias="90">90 días</button>
+      </div>
+      <a class="btn-ghost" href="/app">Ir a mi panel</a>
+    </div>
+  </header>
+  <main class="adm-main" id="adm">
+    <p class="sub">Cargando…</p>
+  </main>
+  <script src="/app/graficos.js"></script>
+  <script src="/app/admin.js"></script>
+</body>
+</html>

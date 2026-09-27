@@ -155,6 +155,28 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Panel de administración (server/admin.js, /admin)
+
+Para quien administra la plataforma. Se activa con `ADMIN_EMAILS` (emails
+separados por coma de cuentas de Rubrofy); esas cuentas ven el enlace
+"Administración" en su menú y entran a `/admin`. Sin la variable, `/admin`
+y `/api/admin/*` responden 404, y también para cualquier otra cuenta.
+
+Muestra **métricas y estado, no el contenido de cada negocio** (decisión
+explícita: no hay acceso total): negocios, activos en 7 días, cuántos pagan
+y el ingreso mensual (MRR), visitas al sitio y conversión a registro,
+publicaciones y aprobaciones por día, lo que está por resolver (fallidas,
+Instagram por reconectar), el embudo (registro → bienvenida → primera
+aprobación → Instagram → primera publicación → pago), la etapa de la ruta de
+cada negocio, planes, de dónde llegan las visitas, uso de IA del mes y qué
+integraciones están configuradas. La lista de negocios trae nombre, email,
+plan, alta, última actividad, etapa, estado de Instagram y conteos de
+piezas; se puede buscar, ordenar y descargar en CSV. Nunca incluye textos,
+fotos, estrategias, datos, resultados ni tokens.
+
+Visitas: se cuentan en el servidor por día y página (`/` y `/registro.html`),
+sin cookies ni IP y sin bots; el origen se guarda solo como dominio.
+
 ## Conectar con Instagram y resumen semanal (server/instagram.js, server/avisos.js, server/correo.js)
 
 **Conectar con Instagram**: con `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`,

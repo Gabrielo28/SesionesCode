@@ -1,0 +1,54 @@
+/* Panel de administración (/admin). Usa los tokens de styles.css. */
+body.adm { height: auto; min-height: 100%; }
+.adm-top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 28px; background: var(--rail); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.adm-marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; }
+.adm-marca img { border-radius: 8px; }
+.adm-marca span { font-weight: 500; color: var(--amber); font-size: 13px; border: 1px solid rgba(255, 77, 148, 0.4); border-radius: 999px; padding: 2px 10px; }
+.adm-top-der { display: flex; align-items: center; gap: 12px; }
+.adm-top-der .btn-ghost { text-decoration: none; padding: 8px 14px; font-size: 12.5px; }
+.adm-periodo { margin: 0; }
+.adm-main { max-width: 1400px; margin: 0 auto; padding: 26px 28px 60px; display: flex; flex-direction: column; gap: 18px; }
+.adm-cab h1 { margin: 0 0 4px; font-size: 22px; }
+.adm-cab .sub { font-size: 13px; color: var(--ink-dim); margin: 0; }
+.adm-main .ig-card { max-width: none; margin: 0; }
+.adm-kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.adm-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.adm-kpi span { font-size: 12px; color: var(--ink-dim); }
+.adm-kpi b { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.adm-kpi em { font-style: normal; font-size: 11.5px; color: var(--ink-faint); }
+.adm-kpi.alerta { border-color: rgba(255, 107, 90, 0.55); }
+.adm-kpi.alerta b { color: var(--coral); }
+.adm-grid { display: grid; gap: 16px; }
+.adm-grid.tres { grid-template-columns: repeat(3, 1fr); }
+.adm-ayuda { font-size: 11.5px; color: var(--ink-faint); }
+.adm-nota { margin: 4px 0 0; font-size: 11.5px; color: var(--ink-faint); }
+.adm-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.adm-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; }
+.adm-lista li:first-child { border-top: none; }
+.adm-lista b { font-variant-numeric: tabular-nums; }
+.adm-config b.ok { color: var(--green); font-weight: 600; }
+.adm-config b.no { color: var(--ink-faint); font-weight: 500; }
+.adm-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+.adm-filtros input, .adm-filtros select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 12.5px; padding: 7px 10px; }
+.adm-filtros input { width: 220px; }
+.adm-tabla-scroll { overflow-x: auto; }
+.adm-tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 980px; }
+.adm-tabla th, .adm-tabla td { text-align: left; padding: 10px 10px; border-top: 1px solid var(--border); vertical-align: top; }
+.adm-tabla thead th { border-top: none; font-size: 11px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+.adm-tabla .n { text-align: right; font-variant-numeric: tabular-nums; }
+.adm-tabla td small { display: block; color: var(--ink-faint); font-size: 11.5px; margin-top: 2px; }
+.adm-plan { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.adm-plan.p-pro, .adm-plan.p-estudio { background: rgba(255, 77, 148, 0.14); color: var(--amber); border-color: transparent; }
+.adm-ok { color: var(--green); }
+.adm-mal { color: var(--coral); }
+.adm-no { color: var(--ink-faint); }
+.adm-vacio { text-align: center; color: var(--ink-faint); padding: 24px; }
+.adm-sin { max-width: 520px !important; margin: 40px auto !important; }
+@media (max-width: 1100px) { .adm-kpis { grid-template-columns: repeat(3, 1fr); } .adm-grid.tres { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px) {
+  .adm-top, .adm-main { padding-left: 16px; padding-right: 16px; }
+  .adm-kpis { grid-template-columns: 1fr 1fr; }
+  .adm-grid.tres { grid-template-columns: 1fr; }
+  .adm-filtros input { width: 100%; }
+}
+.adm-main .viz-barra-fila { grid-template-columns: minmax(150px, 46%) 1fr auto; }

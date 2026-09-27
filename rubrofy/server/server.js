@@ -14,6 +14,8 @@ const ruta = require('./ruta');
 const instagram = require('./instagram');
 const correo = require('./correo');
 const avisos = require('./avisos');
+const admin = require('./admin');
+const INICIO = Date.now();
 const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
 const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
@@ -171,6 +173,7 @@ function negocioPublico(negocio) {
   resto.instagramLoginDisponible = instagram.loginConfigurado();
   resto.avisosSemanal = !(negocio.avisos && negocio.avisos.semanal === false);
   resto.correoConfigurado = correo.configurado();
+  resto.esAdmin = admin.esAdmin(negocio); // solo muestra el enlace; /api/admin valida por su cuenta
   resto.zonaHoraria = programacion.ZONA;
   resto.plan = negocio.plan || 'gratis';
   resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
@@ -681,6 +684,8 @@ const server = http.createServer(async (req, res) => {
           marca: { color: '#ff4d94' },
           plan: 'gratis',
           estiloImagen: 'limpia',
+          creadoEl: new Date().toISOString(),
+          ultimoAcceso: new Date().toISOString(),
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
             unidad: body.datos && body.datos.unidad ? String(body.datos.unidad).trim() : '',
@@ -710,6 +715,8 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 401, { error: 'Email o clave incorrectos' });
         }
         limiteLoginFallido.reiniciar(ip);
+        negocio.ultimoAcceso = new Date().toISOString();
+        store.saveNegocio(negocio);
         const cookie = auth.cookieSesion(req, auth.crearSesion(negocio.id));
         return sendJSON(res, 200, negocioPublico(negocio), { 'Set-Cookie': cookie });
       }
@@ -724,7 +731,28 @@ const server = http.createServer(async (req, res) => {
         const negocioId = sesionActual(req);
         const negocio = negocioId && store.getNegocio(negocioId);
         if (!negocio) return noAutorizado(res);
+        // Última actividad (para el panel de administración), como mucho una vez por hora.
+        if (!negocio.ultimoAcceso || Date.now() - Date.parse(negocio.ultimoAcceso) > 3600000) {
+          negocio.ultimoAcceso = new Date().toISOString();
+          store.saveNegocio(negocio);
+        }
         return sendJSON(res, 200, negocioPublico(negocio));
+      }
+
+      // Panel de administración (server/admin.js): solo cuentas en ADMIN_EMAILS.
+      // Para cualquier otro, no existe (404).
+      //   GET /api/admin/resumen?dias=30 · GET /api/admin/negocios
+      if (parts[1] === 'admin' && req.method === 'GET') {
+        const quien = store.getNegocio(sesionActual(req) || '');
+        if (!admin.activo() || !admin.esAdmin(quien)) return sendJSON(res, 404, { error: 'No encontrado' });
+        if (parts[2] === 'resumen' && parts.length === 3) {
+          const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+          return sendJSON(res, 200, admin.resumen({ dias, calcularRuta, inicio: INICIO, version: VERSION }));
+        }
+        if (parts[2] === 'negocios' && parts.length === 3) {
+          return sendJSON(res, 200, admin.negocios({ calcularRuta }));
+        }
+        return sendJSON(res, 404, { error: 'No encontrado' });
       }
 
       // GET /api/negocios/:id/informe?mes=AAAA-MM&t=... — informe compartido
@@ -1694,12 +1722,17 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-    // --- estáticos ---
-    if (req.method === 'GET') {
+    // --- estáticos --- (HEAD igual que GET: Node no manda el cuerpo)
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      if (parts[0] === 'admin' && parts.length === 1) {
+        if (!admin.activo()) return notFound(res);
+        return serveStatic(res, APP_DIR, '/admin.html');
+      }
       if (parts[0] === 'app') {
         const rel = '/' + parts.slice(1).join('/');
         return serveStatic(res, APP_DIR, rel);
       }
+      if (req.method === 'GET') admin.registrarVisita(req, url.pathname);
       return serveStatic(res, SITE_DIR, url.pathname);
     }
     return notFound(res);

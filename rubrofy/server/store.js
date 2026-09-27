@@ -230,6 +230,7 @@ module.exports = {
   videoDir,
   videoAbsolutePath,
   borrarVideo,
+  DB_PATH,
   FOTOS_DIR,
   FOTOS_IA_DIR,
   VIDEOS_DIR,
