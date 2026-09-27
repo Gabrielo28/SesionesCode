@@ -277,9 +277,14 @@ function serveStatic(res, baseDir, rel) {
     if (err) return notFound(res);
     if (baseDir === SITE_DIR && PAGINAS_CON_CONTACTO.has(relLimpio)) content = Buffer.from(conContacto(content.toString('utf8')));
     const ext = path.extname(filePath);
+    // HTML, JS y CSS se revalidan en cada visita (sin versión en la URL, un
+    // caché de horas mezclaría el panel nuevo con archivos viejos tras un
+    // deploy). Imágenes y fuentes se pueden guardar un día.
+    const cache = ['.html', '.js', '.css', '.json', '.txt', '.xml', '.webmanifest'].includes(ext) ? 'no-cache' : 'public, max-age=86400';
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': cache,
     });
     res.end(content);
   });
