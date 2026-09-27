@@ -391,6 +391,36 @@ más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
 ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
 qué hashtags usan que tú no.
 
+## Perfil del negocio y bienvenida (server/perfil.js, public/app/bienvenida.js)
+
+Lo primero que hace un negocio nuevo es presentarse: **qué es y qué hace**,
+ciudad, **cómo vende** (local, online, domicilio, WhatsApp, agenda, ferias),
+**sus redes y su web** (Instagram, TikTok, Facebook, WhatsApp, sitio) y,
+en el paso siguiente, **qué vende**, a quién y por qué lo eligen. Precio y
+promoción quedan como opcionales. Después: objetivo, cuánto publicar,
+estrategia, conexiones y primera semana.
+
+- **Leer mi web con IA** (Pro y Estudio): descarga el sitio (solo URL
+  públicas: se resuelve el dominio y se rechazan IP privadas, también en
+  cada redirección; máximo 500 KB) y Claude propone descripción, productos,
+  público, diferenciador, ciudad y WhatsApp. Completa solo lo vacío y no
+  guarda hasta que el dueño continúa.
+- El perfil entra en **todos** los pedidos a la IA (vía `contexto-ia.js`),
+  y la IA solo menciona las redes y canales que el negocio escribió.
+- Las cuentas que ya habían pasado la bienvenida ven una vez por sesión
+  solo "Tu negocio" y "Lo que vendes" hasta completar el perfil. También se
+  edita en Conexiones y ajustes → Tu negocio.
+
+## Costo de IA (server/costos.js)
+
+Cada llamada a Claude registra sus tokens reales (tabla `uso_ia`);
+imágenes y videos, una tarifa por unidad ajustable (`COSTO_IMAGEN_HIGGSFIELD_USD`,
+`COSTO_IMAGEN_OPENAI_USD`, `COSTO_VIDEO_SEG_HIGGSFIELD_USD`,
+`COSTO_VIDEO_SEG_OPENAI_USD`; dólar con `DOLAR_CLP`). En `/admin`: gasto del
+periodo y del mes con proyección, ingresos de planes y margen, en qué se
+gasta, promedio por plan y gasto contra lo que paga cada negocio. Solo
+cifras de uso.
+
 ## App instalable y notificaciones push (server/push.js, public/app/sw.js, pwa.js)
 
 El panel se instala como app (PWA): ícono en la pantalla de inicio, abre a
@@ -681,6 +711,8 @@ server/
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   medios.js     Imágenes y videos con IA (Higgsfield u OpenAI), videos en segundo plano
+  perfil.js     Perfil del negocio (qué es, redes, web) y "Leer mi web con IA"
+  costos.js     Registro del costo de IA por llamada y resumen para /admin
   push.js       Notificaciones push (Web Push: VAPID + aes128gcm) por dispositivo
   reels-prueba.js Reels destacados → Reel de prueba (trial reels) para público nuevo
   voz.js        Voz de marca: ficha, puntaje de fidelidad, completar con IA y redactor

@@ -135,7 +135,7 @@
       const b = e.target.closest('[data-accion]');
       if (!b) return;
       const a = JSON.parse(b.dataset.accion);
-      if (a.tipo === 'vista') return ctx.irA(a.vista, a.tab);
+      if (a.tipo === 'vista') return ctx.irA(a.vista, a.tab, a.ancla);
       if (a.tipo === 'bienvenida') return ctx.abrirBienvenida();
       if (a.tipo === 'generar') return ctx.abrirGenerar();
       if (a.tipo === 'informe') {

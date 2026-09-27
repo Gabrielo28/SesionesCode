@@ -1,23 +1,38 @@
-// Bienvenida: la primera vez que un negocio entra al panel le pregunta lo
-// necesario para armar su estrategia (datos, objetivo, tono y cuánto
-// publicar), le muestra la estrategia para que la ajuste, le explica dónde
-// conectar sus cuentas y genera su primera semana de contenido.
+// Bienvenida: la primera vez que un negocio entra al panel, Rubrofy lo
+// conoce antes de crear nada: qué es, dónde está, cómo vende, sus redes y
+// su web (y puede leer su web con IA), qué vende y a quién. Después su
+// objetivo, cuánto publicar, su estrategia (que puede ajustar), dónde
+// conectar sus cuentas, y genera su primera semana.
+//
+// Cuentas que ya habían pasado la bienvenida antes de que existiera el
+// perfil ven solo los dos primeros pasos (modo "perfil").
 (function () {
   'use strict';
   const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
-
   const P = () => window.RubrofyPlan;
-  const PASOS = ['Tu negocio', 'Objetivo', 'Cuánto publicar', 'Tu estrategia', 'Conexiones'];
+
+  const TODOS = [
+    { id: 'negocio', t: 'Tu negocio' },
+    { id: 'venta', t: 'Lo que vendes' },
+    { id: 'objetivo', t: 'Objetivo' },
+    { id: 'ritmo', t: 'Cuánto publicar' },
+    { id: 'estrategia', t: 'Tu estrategia' },
+    { id: 'conexiones', t: 'Conexiones' },
+  ];
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  async function abrir(ctx) {
+  // opciones.soloPerfil: completar solo "Tu negocio" y "Lo que vendes".
+  async function abrir(ctx, opciones = {}) {
     const cat = await P().catalogo(ctx.api);
+    const PASOS = opciones.soloPerfil ? TODOS.slice(0, 2) : TODOS;
     let paso = 0;
     let plan = Object.assign({}, ctx.negocio().planContenido || {});
     let datos = Object.assign({}, ctx.negocio().datos || {});
+    let perfil = Object.assign({}, ctx.negocio().perfil || {});
+    let sugerido = null; // lo que la IA leyó de su web, para el paso "Lo que vendes"
 
     const capa = document.createElement('div');
     capa.className = 'bv-capa';
@@ -25,26 +40,34 @@
     capa.setAttribute('aria-modal', 'true');
     capa.setAttribute('aria-label', 'Bienvenida a Rubrofy');
     document.body.appendChild(capa);
-
     const cerrar = () => capa.remove();
+    const actual = () => PASOS[paso].id;
 
     function progreso() {
-      return `<ol class="bv-pasos">${PASOS.map((p, i) => `<li class="${i < paso ? 'hecho' : i === paso ? 'actual' : ''}"><span>${i < paso ? '✓' : i + 1}</span>${esc(p)}</li>`).join('')}</ol>`;
+      return `<ol class="bv-pasos">${PASOS.map((p, i) => `<li class="${i < paso ? 'hecho' : i === paso ? 'actual' : ''}"><span>${i < paso ? '✓' : i + 1}</span>${esc(p.t)}</li>`).join('')}</ol>`;
     }
 
     function cuerpoPaso() {
-      const n = Object.assign({}, ctx.negocio(), { datos, planContenido: plan });
-      if (paso === 0) {
-        return `<h2>Hola, ${esc(n.nombre)} 👋${AY('bv-negocio')}</h2>
-          <p class="bv-lead">Antes de crear tu contenido, cuéntanos un poco de tu negocio. Con esto Rubrofy arma tu estrategia y escribe con tus datos reales. Toma unos 3 minutos.</p>
-          ${P().camposNegocio(n)}`;
+      const n = Object.assign({}, ctx.negocio(), { datos, planContenido: plan, perfil });
+      const id = actual();
+      if (id === 'negocio') {
+        return `<h2>${opciones.soloPerfil ? 'Cuéntanos de tu negocio' : `Hola, ${esc(n.nombre)} 👋`}${AY('bv-negocio')}</h2>
+          <p class="bv-lead">${opciones.soloPerfil
+            ? 'Rubrofy escribe mejor cuando conoce tu negocio. Completa esto una vez y toda la IA lo usa: estrategia, publicaciones, voz y anuncios.'
+            : 'Antes de crear tu contenido, queremos conocer tu negocio. Con esto Rubrofy arma tu estrategia y escribe como tú. Toma unos 3 minutos.'}</p>
+          ${P().camposPerfil(n, { leerWeb: n.usaIA && n.iaConfigurada })}`;
       }
-      if (paso === 1) return `<h2>Tu objetivo${AY('bv-objetivo')}</h2>` + P().camposObjetivo(plan, cat);
-      if (paso === 2) {
+      if (id === 'venta') {
+        return `<h2>Lo que vendes${AY('bv-venta')}</h2>
+          <p class="bv-lead">Qué ofreces y a quién. La IA solo usa los datos que escribas aquí: nunca inventa precios ni promociones.</p>
+          ${P().camposVenta(n, sugerido)}`;
+      }
+      if (id === 'objetivo') return `<h2>Tu objetivo${AY('bv-objetivo')}</h2>` + P().camposObjetivo(plan, cat);
+      if (id === 'ritmo') {
         return `<h2>Cuánto publicar${AY('bv-ritmo')}</h2>${P().camposRitmo(plan, cat)}
           <p class="bv-nota">Puedes cambiarlo cuando quieras desde <b>Estrategia</b>. Cada vez que pulses <b>Generar semana</b>, Rubrofy crea esta mezcla y la reparte en la semana.</p>`;
       }
-      if (paso === 3) {
+      if (id === 'estrategia') {
         return `<h2>Tu estrategia de contenido${AY('bv-estrategia')}</h2>
           <p class="bv-lead">La armamos con lo que nos contaste. Ajusta lo que quieras: el resumen, el tono y los temas que se van turnando.</p>
           <div data-bv-est>${P().estrategiaEditable(ctx.estrategia())}</div>
@@ -53,9 +76,9 @@
       const neg = ctx.negocio();
       const estado = (ok, txtOk, txtNo) => `<span class="bv-estado ${ok ? 'ok' : ''}">${ok ? txtOk : txtNo}</span>`;
       return `<h2>Conecta tus cuentas${AY('bv-conexiones')}</h2>
-        <p class="bv-lead">Puedes hacerlo ahora o después. Todas se conectan desde <b>Conexiones</b>, abajo a la izquierda del menú.</p>
+        <p class="bv-lead">Puedes hacerlo ahora o después. Todas se conectan desde <b>Conexiones y ajustes</b>, abajo en el menú.</p>
         <div class="bv-conexiones">
-          <div class="bv-con"><i class="c-ig"></i><div><b>Instagram</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible
+          <div class="bv-con"><i class="c-ig"></i><div><b>Instagram${perfil.instagram ? ` @${esc(perfil.instagram)}` : ''}</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible
             ? '<button type="button" class="btn-ig bv-ig" data-bv="conectar-ig">Conectar ahora</button>'
             : estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
           <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
@@ -67,28 +90,34 @@
         </div>`;
     }
 
+    function textoBoton() {
+      const id = actual();
+      if (paso === PASOS.length - 1) return opciones.soloPerfil ? 'Guardar' : 'Generar mi primera semana';
+      return id === 'ritmo' ? 'Crear mi estrategia' : 'Continuar';
+    }
+
     function pintar(error) {
-      const ultimo = paso === PASOS.length - 1;
       capa.innerHTML = `
         <div class="bv-caja">
           <header class="bv-top">
             <img src="/app/icon-192.png" width="30" height="30" alt="">
             ${progreso()}
-            <button type="button" class="bv-saltar" data-bv="saltar">Saltar por ahora</button>
+            <button type="button" class="bv-saltar" data-bv="saltar">${opciones.soloPerfil ? 'Ahora no' : 'Saltar por ahora'}</button>
           </header>
           <div class="bv-cuerpo" data-bv-cuerpo>${cuerpoPaso()}</div>
           <p class="config-error bv-error" ${error ? '' : 'hidden'}>${esc(error || '')}</p>
           <footer class="bv-pie">
             ${paso > 0 ? '<button type="button" class="btn-ghost" data-bv="atras">Atrás</button>' : '<span></span>'}
-            <button type="button" class="btn-approve" data-bv="siguiente">${ultimo ? 'Generar mi primera semana' : paso === 2 ? 'Crear mi estrategia' : 'Continuar'}</button>
+            <button type="button" class="btn-approve" data-bv="siguiente">${textoBoton()}</button>
           </footer>
         </div>`;
       const cuerpo = capa.querySelector('[data-bv-cuerpo]');
       delete cuerpo.dataset.pcActivo;
       P().activar(cuerpo, cat.maxPorFormato);
-      if (paso === 3) P().activarEstrategia(cuerpo);
-      const primero = cuerpo.querySelector('input, textarea');
-      if (primero && paso === 0) primero.focus();
+      if (actual() === 'negocio') P().activarPerfil(cuerpo, ctx, (propuesta) => { sugerido = propuesta; });
+      if (actual() === 'estrategia') P().activarEstrategia(cuerpo);
+      const primero = cuerpo.querySelector('textarea, input');
+      if (primero && paso === 0 && window.matchMedia('(min-width: 700px)').matches) primero.focus();
     }
 
     function ocupado(btn, texto) {
@@ -96,17 +125,32 @@
       btn.textContent = texto;
     }
 
+    async function guardarPerfil(cuerpo) {
+      const leido = P().leerPerfil(cuerpo);
+      ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/perfil`, { method: 'PUT', body: JSON.stringify(leido) }));
+      perfil = Object.assign({}, ctx.negocio().perfil || {});
+    }
+
     // Guarda lo del paso actual antes de avanzar.
     async function guardarPaso(btn) {
       const cuerpo = capa.querySelector('[data-bv-cuerpo]');
-      if (paso === 0) {
+      const id = actual();
+      if (id === 'negocio') {
+        const leido = P().leerPerfil(cuerpo);
+        if (!leido.descripcion || leido.descripcion.trim().length < 10) throw new Error('Cuéntanos en una o dos frases qué es tu negocio.');
+        await guardarPerfil(cuerpo);
+      } else if (id === 'venta') {
+        await guardarPerfil(cuerpo);
         datos = P().leerDatos(cuerpo, { datos });
         plan = P().leerPlan(cuerpo, plan);
         await ctx.guardarDatos(datos);
-      } else if (paso === 1) {
+        if (opciones.soloPerfil && plan.objetivos && plan.objetivos.length) {
+          ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/plan-contenido`, { method: 'PUT', body: JSON.stringify(plan) }));
+        }
+      } else if (id === 'objetivo') {
         plan = P().leerPlan(cuerpo, plan);
         if (!plan.objetivos || !plan.objetivos.length) throw new Error('Elige al menos un objetivo.');
-      } else if (paso === 2) {
+      } else if (id === 'ritmo') {
         plan = P().leerPlan(cuerpo, plan);
         ocupado(btn, 'Creando tu estrategia…');
         ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/plan-contenido`, { method: 'PUT', body: JSON.stringify(plan) }));
@@ -115,9 +159,9 @@
         } catch (err) {
           // Sin IA disponible se sigue con la estrategia que ya tenía.
         }
-      } else if (paso === 3) {
+      } else if (id === 'estrategia') {
         ctx.setEstrategia(await ctx.api(`/api/negocios/${ctx.negocio().id}/estrategia`, { method: 'PUT', body: JSON.stringify(P().leerEstrategia(cuerpo)) }));
-      } else if (paso === 4) {
+      } else if (id === 'conexiones') {
         ocupado(btn, 'Creando tu primera semana…');
         ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
         await ctx.generarSemana();
@@ -130,6 +174,10 @@
       const accion = b.dataset.bv;
       if (accion === 'atras') { paso -= 1; return pintar(); }
       if (accion === 'saltar') {
+        if (opciones.soloPerfil) {
+          cerrar();
+          return ctx.alTerminar(false);
+        }
         if (!confirm('¿Saltar la bienvenida? Usaremos un plan recomendado y podrás cambiarlo en Estrategia.')) return;
         try {
           ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: false }) }));
@@ -171,7 +219,7 @@
         }
         if (paso === PASOS.length - 1) {
           cerrar();
-          return ctx.alTerminar(true);
+          return ctx.alTerminar(!opciones.soloPerfil);
         }
         paso += 1;
         pintar();

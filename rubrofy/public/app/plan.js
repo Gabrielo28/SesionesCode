@@ -43,6 +43,109 @@
       </div>`;
   }
 
+  // --- perfil: qué es el negocio y dónde existe ---
+  const CANALES = [
+    ['local', 'Local físico'], ['online', 'Tienda online'], ['domicilio', 'Despacho a domicilio'],
+    ['whatsapp', 'Pedidos por WhatsApp o DM'], ['agenda', 'Reservas o agenda'], ['eventos', 'Ferias o eventos'],
+  ];
+
+  // opciones.leerWeb: muestra "Leer mi web con IA".
+  function camposPerfil(negocio, opciones) {
+    const p = negocio.perfil || {};
+    const o = opciones || {};
+    const descripcion = p.descripcion || (negocio.estrategia && negocio.estrategia.rubro) || '';
+    const canales = new Set(p.canales || []);
+    return `
+      <div class="pc-campos">
+        <label>¿Qué es tu negocio y qué hace? <span class="opc">En tus palabras, como se lo contarías a un cliente nuevo</span>
+          <textarea data-pf="descripcion" rows="3" maxlength="800" placeholder="Ej: Panadería familiar de barrio en Ñuñoa. Hacemos pan de masa madre, pasteles y tortas por encargo desde 1998.">${esc(descripcion)}</textarea></label>
+        <label>Ciudad o zona<input type="text" data-pf="ciudad" value="${esc(p.ciudad)}" placeholder="Ej: Ñuñoa, Santiago" maxlength="120"></label>
+        <h3 class="pc-sub">¿Cómo te compran? <span class="opc">Elige todas las que correspondan</span></h3>
+        <div class="pc-opciones compactas" data-pc-grupo="canales" data-max="6">
+          ${CANALES.map(([id, l]) => `<button type="button" class="pc-op${canales.has(id) ? ' on' : ''}" data-valor="${id}"><b>${esc(l)}</b></button>`).join('')}
+        </div>
+        <h3 class="pc-sub">¿Dónde te encuentran? <span class="opc">Tus redes, tu web y tu WhatsApp</span></h3>
+        <div class="form-row">
+          <label>Instagram<input type="text" data-pf="instagram" value="${esc(p.instagram ? '@' + p.instagram : '')}" placeholder="@tunegocio" autocapitalize="off"></label>
+          <label>TikTok<input type="text" data-pf="tiktok" value="${esc(p.tiktok ? '@' + p.tiktok : '')}" placeholder="@tunegocio" autocapitalize="off"></label>
+        </div>
+        <div class="form-row">
+          <label>Facebook<input type="text" data-pf="facebook" value="${esc(p.facebook)}" placeholder="tunegocio" autocapitalize="off"></label>
+          <label>WhatsApp<input type="tel" data-pf="whatsapp" value="${esc(p.whatsapp)}" placeholder="+56 9 1234 5678"></label>
+        </div>
+        <label>Sitio web<span class="pf-web"><input type="url" data-pf="web" value="${esc(p.web)}" placeholder="tunegocio.cl" autocapitalize="off">
+          ${o.leerWeb ? '<button type="button" class="btn-ghost" data-pf-leer>Leer mi web con IA</button>' : ''}</span></label>
+        <p class="pf-msg" data-pf-msg hidden></p>
+      </div>`;
+  }
+
+  // Lo que vende: productos, precio de referencia y promoción.
+  function camposVenta(negocio, sugerido) {
+    const d = negocio.datos || {};
+    const p = negocio.perfil || {};
+    const pc = negocio.planContenido || {};
+    const s = sugerido || {};
+    return `
+      <div class="pc-campos">
+        <label>¿Qué vendes? <span class="opc">Tus productos o servicios principales</span>
+          <textarea data-pf="productos" rows="3" maxlength="800" placeholder="Ej: pan de masa madre, marraquetas, pasteles, tortas por encargo, café">${esc(p.productos || s.productos)}</textarea></label>
+        <label>Producto o servicio estrella<input type="text" data-pc="productoDestacado" value="${esc(d.productoDestacado)}" placeholder="Ej: pan de masa madre"></label>
+        <label>¿A quién le vendes? <span class="opc">Tu cliente ideal</span>
+          <textarea data-pc="publico" rows="2" maxlength="300" placeholder="Ej: familias del barrio y oficinistas que pasan camino al trabajo">${esc(pc.publico || s.publico)}</textarea></label>
+        <label>¿Por qué te eligen a ti? <span class="opc">Lo que te hace distinto</span>
+          <textarea data-pc="diferenciador" rows="2" maxlength="300" placeholder="Ej: fermentación de 24 horas y horno a leña">${esc(pc.diferenciador || s.diferenciador)}</textarea></label>
+        <details class="pf-precio"${d.precioDesde || d.promo ? ' open' : ''}>
+          <summary>Precios y promoción <span class="opc">(opcional: la IA solo menciona precios que tú escribas aquí)</span></summary>
+          <div class="form-row">
+            <label>Precio desde<input type="text" data-pc="precioDesde" value="${esc(d.precioDesde)}" placeholder="$2.500"></label>
+            <label>Por<input type="text" data-pc="unidad" value="${esc(d.unidad)}" placeholder="kilo, sesión, noche…"></label>
+          </div>
+          <label>Promoción vigente<input type="text" data-pc="promo" value="${esc(d.promo)}" placeholder="Ej: 2x1 los miércoles"></label>
+        </details>
+      </div>`;
+  }
+
+  function leerPerfil(root) {
+    const out = {};
+    ['descripcion', 'ciudad', 'productos', 'instagram', 'tiktok', 'facebook', 'whatsapp', 'web'].forEach((c) => {
+      const el = root.querySelector(`[data-pf="${c}"]`);
+      if (el) out[c] = el.value;
+    });
+    const g = root.querySelector('[data-pc-grupo="canales"]');
+    if (g) out.canales = [...g.querySelectorAll('.pc-op.on')].map((b) => b.dataset.valor);
+    return out;
+  }
+
+  // "Leer mi web con IA": completa lo que esté vacío y avisa qué llenó.
+  function activarPerfil(root, ctx, alSugerir) {
+    const b = root.querySelector('[data-pf-leer]');
+    if (!b) return;
+    b.addEventListener('click', async () => {
+      const msg = root.querySelector('[data-pf-msg]');
+      const web = root.querySelector('[data-pf="web"]').value.trim();
+      msg.hidden = false;
+      if (!web) { msg.textContent = 'Escribe primero la dirección de tu sitio web.'; return; }
+      b.disabled = true;
+      b.textContent = 'Leyendo tu web…';
+      try {
+        const r = await ctx.api(`/api/negocios/${ctx.negocio().id}/perfil/leer-web`, { method: 'POST', body: JSON.stringify({ url: web }) });
+        const llenados = [];
+        for (const [campo, valorNuevo] of Object.entries(r.propuesta)) {
+          const el = root.querySelector(`[data-pf="${campo}"]`);
+          if (el && valorNuevo && !el.value.trim()) { el.value = campo === 'instagram' ? '@' + valorNuevo : valorNuevo; llenados.push(campo); }
+        }
+        if (alSugerir) alSugerir(r.propuesta);
+        msg.textContent = llenados.length || r.propuesta.productos
+          ? 'Listo: completamos lo que encontramos en tu web. Revísalo y corrige lo que haga falta.'
+          : 'Leímos tu web, pero no encontramos datos nuevos para completar.';
+      } catch (err) {
+        msg.textContent = err.mensaje || 'No pudimos leer tu web. Completa los datos a mano.';
+      }
+      b.disabled = false;
+      b.textContent = 'Leer mi web con IA';
+    });
+  }
+
   function camposObjetivo(plan, cat) {
     const elegidos = new Set((plan && plan.objetivos) || []);
     return `
@@ -301,6 +404,7 @@
   }
 
   window.RubrofyPlan = {
+    camposPerfil, camposVenta, leerPerfil, activarPerfil,
     catalogo, camposNegocio, camposObjetivo, camposRitmo, activar, leerPlan, leerDatos,
     estrategiaEditable, activarEstrategia, leerEstrategia, resumenPlan, textoTotal, renderVista, ETIQUETAS, SINGULAR,
   };

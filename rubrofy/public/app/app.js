@@ -428,8 +428,41 @@
     cont.innerHTML = nichoActual.categoriasFoto.map(fotoCategoriaHTML).join('');
   }
 
+  // "Tu negocio" en Conexiones y ajustes: el mismo perfil de la bienvenida.
+  function renderPerfil() {
+    const cont = $('#perfil-card');
+    if (!cont) return;
+    const P = window.RubrofyPlan;
+    const ctx = Object.assign({}, ctxPanel(), { negocio: () => negocioActual });
+    const n = negocioActual;
+    cont.innerHTML = `<div class="ig-card-head"><h2>Perfil del negocio${window.Ayuda ? window.Ayuda.boton('perfil') : ''}</h2><span class="ig-estado ${n.perfilCompleto ? 'conectado' : ''}">${n.perfilCompleto ? 'Completo' : 'Falta completar'}</span></div>
+      <p class="sub">Toda la IA usa esto: estrategia, publicaciones, voz y anuncios.</p>
+      <div data-perfil>${P.camposPerfil(n, { leerWeb: n.usaIA && n.iaConfigurada })}
+        <label class="pf-productos">¿Qué vendes?<textarea data-pf="productos" rows="2" maxlength="800" placeholder="Tus productos o servicios principales">${escapeHtml((n.perfil && n.perfil.productos) || '')}</textarea></label></div>
+      <p class="config-ok" data-perfil-ok hidden></p>
+      <div class="config-actions"><button type="button" class="btn-approve" data-perfil-guardar>Guardar perfil</button></div>`;
+    const cuerpo = cont.querySelector('[data-perfil]');
+    P.activar(cuerpo, 14);
+    P.activarPerfil(cuerpo, ctx);
+    cont.querySelector('[data-perfil-guardar]').addEventListener('click', async (ev) => {
+      ev.target.disabled = true;
+      try {
+        negocioActual = await api(`/api/negocios/${n.id}/perfil`, { method: 'PUT', body: JSON.stringify(P.leerPerfil(cuerpo)) });
+        window.RubrofyInicio.invalidar();
+        renderPerfil();
+        const ok = $('#perfil-card [data-perfil-ok]');
+        ok.textContent = 'Guardado. La IA lo usa desde ahora.';
+        ok.hidden = false;
+      } catch (err) {
+        alert(err.mensaje || 'No se pudo guardar el perfil.');
+        ev.target.disabled = false;
+      }
+    });
+  }
+
   function renderConfig() {
     if (!negocioActual) return;
+    renderPerfil();
     window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
     $('#config-nombre').value = negocioActual.nombre || '';
     $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
@@ -779,14 +812,17 @@
   }
 
   // Bienvenida: se abre sola mientras el negocio no la termine.
+  // Sin la bienvenida hecha: completa. Hecha pero sin perfil (cuentas de
+  // antes): solo "Tu negocio" y "Lo que vendes".
   function abrirBienvenida() {
     const base = ctxPanel();
+    const soloPerfil = !!negocioActual.bienvenidaCompletada && !negocioActual.perfilCompleto;
     window.RubrofyBienvenida.abrir(Object.assign({}, base, {
       negocio: () => negocioActual,
       estrategia: () => nichoActual,
       generarSemana: () => generarSemana(),
-      alTerminar: (generado) => { window.RubrofyInicio.invalidar(); irAVista(generado ? 'cola' : 'inicio'); },
-    })).catch(() => {});
+      alTerminar: (generado) => { window.RubrofyInicio.invalidar(); irAVista(generado ? 'cola' : (soloPerfil ? vistaActual : 'inicio')); },
+    }), { soloPerfil }).catch(() => {});
   }
 
   // "Generar semana": muestra qué se va a crear según el plan y lo genera.
@@ -951,7 +987,9 @@
     avisarRetornoCheckout();
     avisarRetornoGoogle();
     avisarRetornoInstagram();
-    if (!negocioActual.bienvenidaCompletada && !volvioDeOAuth) abrirBienvenida();
+    let yaPregunto = false;
+    try { yaPregunto = sessionStorage.getItem('rubrofy-perfil-' + negocioActual.id) === '1'; sessionStorage.setItem('rubrofy-perfil-' + negocioActual.id, '1'); } catch (err) { yaPregunto = false; }
+    if (!volvioDeOAuth && (!negocioActual.bienvenidaCompletada || (!negocioActual.perfilCompleto && !yaPregunto))) abrirBienvenida();
   }
 
   // Vuelta de "Conectar con Instagram": avisa si falló y abre Conexiones.

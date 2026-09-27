@@ -95,6 +95,9 @@
       n: 'Con la opción automática, el Reel más destacado llega solo a Por aprobar (máximo uno por semana). Instagram habilita los Reels de prueba solo en algunas cuentas profesionales; si la tuya no puede, la pieza queda marcada con el motivo.' },
     'notificaciones': { t: 'Notificaciones', d: 'Avisos en este celular o computador: cuando se publica algo, si una publicación falla o Instagram se desconecta, cuando un video con IA o un Reel de prueba está listo, y cada lunes lo que tienes por aprobar.',
       p: ['Pulsa "Activar notificaciones" y acepta el permiso.', 'Repite en cada dispositivo donde quieras recibirlas.', 'Para dejar de recibirlas en uno, pulsa "Desactivar en este dispositivo".'], n: 'En iPhone, primero instala Rubrofy en tu pantalla de inicio (iOS 16.4 o superior).' },
+    'perfil': { t: 'Perfil del negocio', d: 'Qué es tu negocio, dónde está, cómo te compran, tus redes, tu web y lo que vendes. La IA lo usa en todo lo que crea para ti.',
+      p: ['Escribe qué es tu negocio como se lo contarías a un cliente nuevo.', 'Agrega tus redes y tu web: la IA solo menciona los canales que escribas.', 'Si tienes web, pulsa "Leer mi web con IA" para completar lo que falte.', 'Pulsa "Guardar perfil".'] },
+    'bv-venta': { t: 'Lo que vendes', d: 'Tus productos o servicios, tu cliente ideal y por qué te eligen. El precio y la promoción son opcionales: la IA solo menciona los que escribas aquí.' },
     'voz': { t: 'Voz de marca', d: 'La ficha de cómo habla tu marca. La IA la sigue en todo lo que escribe y cada texto recibe un puntaje de fidelidad.',
       p: ['Pulsa "Completar con IA" para una primera propuesta, o llénala tú.', 'Revisa trato, emojis y las palabras que sí y que no usas.', 'Guarda: las piezas por aprobar se puntúan al tiro.', 'Usa "Escribir con mi voz" para cualquier otro texto del negocio.'] },
     'voz-ficha': { t: 'Quién es tu marca', d: 'Lo esencial: qué son, a quién le hablan y 3 a 5 adjetivos de personalidad. Escríbelo como se lo explicarías a alguien nuevo en tu equipo.' },
@@ -155,15 +158,15 @@
       p: ['Pulsa "Eliminar negocio".', 'Confirma.'], n: 'Si tienes un plan de pago, la suscripción se cancela.' },
 
     // ---------- Bienvenida ----------
-    'bv-negocio': { t: 'Paso 1: tu negocio', d: 'Datos reales que Rubrofy usa en tus textos.',
-      p: ['Precio y unidad: desde cuánto cobras y por qué (kilo, noche, sesión).', 'Producto destacado: lo que más quieres vender.', 'A quién le hablas: tu cliente ideal.', 'Qué te hace distinto: por qué te eligen.'], n: 'Deja en blanco lo que no aplique; puedes cambiarlo después.' },
-    'bv-objetivo': { t: 'Paso 2: objetivo y tono', d: 'Qué quieres lograr y cómo quieres sonar.',
+    'bv-negocio': { t: 'Tu negocio', d: 'Lo primero es que Rubrofy te conozca: qué es tu negocio, dónde está, cómo te compran y dónde te encuentran.',
+      p: ['Describe tu negocio en una o dos frases.', 'Marca cómo te compran (local, online, WhatsApp…).', 'Agrega tus redes y tu web.', 'Con web y plan Pro o Estudio, "Leer mi web con IA" completa lo que falte.'], n: 'La IA solo menciona las redes y canales que escribas aquí.' },
+    'bv-objetivo': { t: 'Objetivo y tono', d: 'Qué quieres lograr y cómo quieres sonar.',
       p: ['Elige uno o dos objetivos.', 'Elige un tono (opcional).', 'Pulsa "Continuar".'] },
-    'bv-ritmo': { t: 'Paso 3: cuánto publicar', d: 'Cuántas publicaciones de cada formato quieres por semana.',
+    'bv-ritmo': { t: 'Cuánto publicar', d: 'Cuántas publicaciones de cada formato quieres por semana.',
       p: ['Elige un ritmo sugerido o ajusta con − y +.', 'Elige la hora de los posts.', 'Pulsa "Crear mi estrategia".'] },
-    'bv-estrategia': { t: 'Paso 4: tu estrategia', d: 'La IA la armó con lo que contaste. Ajústala a tu gusto.',
+    'bv-estrategia': { t: 'Tu estrategia', d: 'La IA la armó con lo que contaste. Ajústala a tu gusto.',
       p: ['Revisa el resumen y el tono.', 'Cambia o agrega enfoques.', 'Si no te convence, "Proponer otra con IA".', 'Pulsa "Continuar".'] },
-    'bv-conexiones': { t: 'Paso 5: conexiones', d: 'Instagram es necesario para publicar solo. Meta Ads y Google Ads son opcionales.',
+    'bv-conexiones': { t: 'Conexiones', d: 'Instagram es necesario para publicar solo. Meta Ads y Google Ads son opcionales.',
       p: ['Si puedes, pulsa "Conectar ahora" en Instagram.', 'Si no, pulsa "Generar mi primera semana": puedes conectar después en Conexiones y ajustes.'] },
 
     // ---------- Administración ----------

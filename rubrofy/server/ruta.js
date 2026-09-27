@@ -63,10 +63,10 @@ function calcular(input) {
     {
       id: 'bienvenida',
       titulo: 'Cuéntanos de tu negocio y tu objetivo',
-      detalle: 'Público, qué te hace distinto, objetivo, tono y cuánto publicar. Con eso la IA arma tu estrategia.',
-      estado: negocio.bienvenidaCompletada ? 'hecho' : 'pendiente',
+      detalle: 'Qué haces, qué vendes, tus redes y tu web, a quién le hablas, tu objetivo y cuánto publicar. Con eso la IA arma tu estrategia.',
+      estado: negocio.bienvenidaCompletada && negocio.perfilCompleto !== false ? 'hecho' : 'pendiente',
       prioridad: 1,
-      accion: negocio.bienvenidaCompletada ? { tipo: 'vista', vista: 'estrategia' } : { tipo: 'bienvenida' },
+      accion: negocio.bienvenidaCompletada && negocio.perfilCompleto !== false ? { tipo: 'vista', vista: 'config', ancla: 'cfg-perfil' } : { tipo: 'bienvenida' },
       boton: 'Empezar',
       botonHecho: 'Ver o cambiar',
     },

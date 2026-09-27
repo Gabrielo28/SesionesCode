@@ -31,6 +31,7 @@ const voz = require('./voz');
 const reelsPrueba = require('./reels-prueba');
 const push = require('./push');
 const costos = require('./costos');
+const perfil = require('./perfil');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -207,6 +208,8 @@ function negocioPublico(negocio) {
   resto.videosIADisponibles = videosIADisponibles(negocio);
   resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
+  resto.perfilCompleto = perfil.completo(negocio);
+  resto.usaIA = !!getPlan(negocio.plan).usaIA;
   return resto;
 }
 
@@ -1524,6 +1527,30 @@ const server = http.createServer(async (req, res) => {
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
           })));
+        }
+
+        // Perfil del negocio (server/perfil.js): la introducción que usa toda la IA.
+        //   PUT  /api/negocios/:id/perfil            { descripcion, ciudad, canales, productos, instagram, … }
+        //   POST /api/negocios/:id/perfil/leer-web   { url } → propuesta leída de su sitio (no se guarda)
+        if (parts[3] === 'perfil') {
+          if (parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            const fresco = store.getNegocio(negocioId);
+            fresco.perfil = perfil.normalizar(body, fresco.perfil);
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          if (parts.length === 5 && parts[4] === 'leer-web' && req.method === 'POST') {
+            if (!getPlan(negocio.plan).usaIA) return sendJSON(res, 403, { error: 'Leer tu web con IA está en los planes Pro y Estudio' });
+            if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
+            const espera = limiteEstrategia.esperaSegundos(negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos esta hora. Intenta más tarde.' });
+            limiteEstrategia.registrar(negocioId);
+            const r = await perfil.leerWeb(negocio, (await readBody(req)).url);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 200, r);
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
         }
 
         // Notificaciones push de este negocio (cada dispositivo es una suscripción).

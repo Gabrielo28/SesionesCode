@@ -88,6 +88,9 @@ function bloque(negocio, secciones, indicacionPuntual) {
   const reglas = secciones.filter((s) => plataforma[s]).map((s) => `- ${SECCIONES[s].nombre}: ${plataforma[s]}`);
   const contexto = secciones.filter((s) => propio[s]).map((s) => `- ${SECCIONES[s].nombre}: ${propio[s]}`);
   const partes = [];
+  // El perfil del negocio (qué es, qué vende, dónde está) va en todos los pedidos.
+  const perfilTexto = require('./perfil').textoParaPrompt(negocio);
+  if (perfilTexto) partes.push(perfilTexto);
   if (reglas.length) partes.push('Reglas de calidad de la plataforma (síguelas siempre):\n' + reglas.join('\n'));
   if (contexto.length) partes.push('Contexto e indicaciones del negocio (tienen prioridad sobre tus supuestos):\n' + contexto.join('\n'));
   const ind = indicacion(indicacionPuntual);
