@@ -320,6 +320,26 @@ conexión queda en "Reconectar" sin afectar la publicación en Instagram.
 Se sincroniza cada 12 h: la primera vez 30 días, después los últimos 3
 (Meta sigue atribuyendo conversiones a días anteriores).
 
+**Desgloses** (mismo permiso `ads_read`, tabla `meta_ads_desglose`): por
+anuncio (con su miniatura, tabla `meta_anuncios`), por edad y sexo, y por
+ubicación (plataforma y posición: Feed, Historias, Reels…). Se guardan por
+día, así que siguen el selector de 7, 30 o 90 días. Si Meta no entrega uno
+de ellos, el resumen por campaña igual se actualiza.
+
+## Análisis de publicidad (server/analisis-ads.js)
+
+Común a Meta Ads y Google Ads, con reglas explicables (sin IA):
+
+- **Variación contra el período anterior** del mismo largo en inversión,
+  resultados, costo por resultado, clics y ROAS. Solo se muestra si hay
+  datos de todo el período anterior (una cuenta recién conectada no tiene
+  con qué compararse).
+- **Diagnóstico** con "qué hacer": campañas o anuncios que gastan sin
+  resultados, diferencia de costo por resultado entre campañas, CTR bajo,
+  ventas que no cubren la inversión, costo que subió o bajó contra el
+  período anterior y, en Meta, el público (edad y sexo) y la ubicación con
+  resultados más baratos.
+
 ## Google Ads (server/google.js)
 
 En el plan Estudio, Resultados → **Google Ads** muestra inversión, clics,
@@ -360,6 +380,16 @@ profesionales y entrega datos públicos (no el alcance de otros). Los
 anuncios de la competencia no se leen por API porque, en Chile, la API de
 la Biblioteca de Anuncios solo incluye anuncios políticos; se enlaza la
 búsqueda pública. Una foto por competidor al día (1 llamada cada uno).
+
+Con las mismas 25 publicaciones recientes de cada cuenta (sin llamadas
+extra) y las de la cuenta propia, se analiza con la misma vara: **tasa de
+interacción** (interacción por post ÷ seguidores), **publicaciones por
+semana**, **mezcla de formatos** (videos y reels, carruseles, fotos) con la
+interacción de cada uno, **día y franja** en que más publican, **hashtags**
+más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
+"qué hacer": el formato que más rinde en el rubro, si publicas menos que
+ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
+qué hashtags usan que tú no.
 
 ## Mi estilo (server/estilo.js)
 
@@ -550,6 +580,7 @@ server/
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
+  analisis-ads.js Variación contra el período anterior y diagnóstico de publicidad
   google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
   competencia.js Seguimiento de competidores en Instagram (Business Discovery)
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)

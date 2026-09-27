@@ -234,6 +234,10 @@ function resumen(negocioId, desde, hasta) {
   };
 }
 
+function primeraFecha(negocioId) {
+  return db.prepare('SELECT MIN(fecha) AS f FROM google_ads_diario WHERE negocio_id = ?').get(negocioId).f;
+}
+
 function publico(g) {
   if (!g || !g.refreshToken) return null;
   return {
@@ -247,5 +251,5 @@ function nuevoEstadoOAuth() {
 }
 
 module.exports = {
-  configurado, urlAutorizacion, canjearCodigo, cuentasAccesibles, sincronizar, resumen, publico, nuevoEstadoOAuth, SCOPE,
+  configurado, urlAutorizacion, canjearCodigo, cuentasAccesibles, sincronizar, resumen, primeraFecha, publico, nuevoEstadoOAuth, SCOPE,
 };

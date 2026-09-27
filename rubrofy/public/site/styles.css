@@ -123,7 +123,13 @@ mark { background: var(--rosa); color: var(--negro); padding: 0 .12em; border-ra
 .mini-tabla, .mini-barras { background: var(--negro-2); border: 1px solid #2e2c33; border-radius: 14px; padding: 16px 18px; color: #f6f3f7; }
 .mt-fila { display: grid; grid-template-columns: 1.6fr 1fr 0.9fr 0.8fr; gap: 10px; font-size: 14px; padding: 10px 0; border-top: 1px solid #2e2c33; font-variant-numeric: tabular-nums; }
 .mt-fila span:not(:first-child) { text-align: right; }
-.mt-fila span:first-child { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-fila span:first-child { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.mt-fila span:first-child i { flex-shrink: 0; }
+.mini-diag { display: grid; grid-template-columns: 28px 1fr; gap: 12px; background: var(--negro-2); border: 1px solid #2e2c33; border-radius: 14px; padding: 14px 16px; color: #f6f3f7; }
+.mini-diag b { display: block; font-size: 14px; line-height: 1.35; }
+.mini-diag small { display: block; margin-top: 4px; font-size: 13px; color: #b3adb8; line-height: 1.4; }
+.mini-diag em { font-style: normal; font-weight: 700; color: var(--rosa); }
+.md-icono { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(232,80,142,0.18); color: var(--rosa); font-weight: 700; }
 .mt-cab { border-top: none; padding-top: 0; font-size: 12px; color: #9a94a0; }
 .mini-barras p { margin: 0 0 8px; font-size: 13px; color: #9a94a0; }
 .mb { display: grid; grid-template-columns: 150px 1fr 48px; gap: 12px; align-items: center; font-size: 14px; padding: 5px 0; }

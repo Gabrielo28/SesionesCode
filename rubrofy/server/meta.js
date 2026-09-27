@@ -29,8 +29,35 @@ db.exec(`
     valor_compras REAL,
     PRIMARY KEY (negocio_id, campana_id, fecha)
   );
+  -- Desgloses por día: por anuncio (clave = ad_id), por edad y sexo
+  -- (clave = "25-34|female") y por ubicación (clave = "instagram|reels").
+  CREATE TABLE IF NOT EXISTS meta_ads_desglose (
+    negocio_id TEXT NOT NULL,
+    tipo TEXT NOT NULL,              -- anuncio | edad_sexo | ubicacion
+    clave TEXT NOT NULL,
+    fecha TEXT NOT NULL,
+    gasto REAL,
+    impresiones INTEGER,
+    clics INTEGER,
+    resultados REAL,
+    valor_compras REAL,
+    PRIMARY KEY (negocio_id, tipo, clave, fecha)
+  );
+  CREATE TABLE IF NOT EXISTS meta_anuncios (
+    negocio_id TEXT NOT NULL,
+    ad_id TEXT NOT NULL,
+    nombre TEXT,
+    campana TEXT,
+    miniatura TEXT,
+    estado TEXT,
+    PRIMARY KEY (negocio_id, ad_id)
+  );
 `);
-store.registrarLimpieza((negocioId) => db.prepare('DELETE FROM meta_ads_diario WHERE negocio_id = ?').run(negocioId));
+store.registrarLimpieza((negocioId) => {
+  for (const tabla of ['meta_ads_diario', 'meta_ads_desglose', 'meta_anuncios']) {
+    db.prepare(`DELETE FROM ${tabla} WHERE negocio_id = ?`).run(negocioId);
+  }
+});
 
 // Qué cuenta como "resultado" para una pyme: compras, formularios (leads) y
 // conversaciones iniciadas (WhatsApp / Messenger / Instagram Direct).
@@ -128,7 +155,69 @@ const sqlAds = {
       gasto = excluded.gasto, impresiones = excluded.impresiones, clics = excluded.clics, compras = excluded.compras,
       leads = excluded.leads, mensajes = excluded.mensajes, valor_compras = excluded.valor_compras`),
   hayDatos: db.prepare('SELECT COUNT(*) AS n FROM meta_ads_diario WHERE negocio_id = ?'),
+  upsertDesglose: db.prepare(`INSERT INTO meta_ads_desglose (negocio_id, tipo, clave, fecha, gasto, impresiones, clics, resultados, valor_compras)
+    VALUES (@negocio_id, @tipo, @clave, @fecha, @gasto, @impresiones, @clics, @resultados, @valor_compras)
+    ON CONFLICT (negocio_id, tipo, clave, fecha) DO UPDATE SET gasto = excluded.gasto, impresiones = excluded.impresiones,
+      clics = excluded.clics, resultados = excluded.resultados, valor_compras = excluded.valor_compras`),
+  hayDesglose: db.prepare('SELECT COUNT(*) AS n FROM meta_ads_desglose WHERE negocio_id = ?'),
+  upsertAnuncio: db.prepare(`INSERT INTO meta_anuncios (negocio_id, ad_id, nombre, campana, miniatura, estado)
+    VALUES (@negocio_id, @ad_id, @nombre, @campana, @miniatura, @estado)
+    ON CONFLICT (negocio_id, ad_id) DO UPDATE SET nombre = COALESCE(excluded.nombre, nombre), campana = COALESCE(excluded.campana, campana),
+      miniatura = COALESCE(excluded.miniatura, miniatura), estado = COALESCE(excluded.estado, estado)`),
 };
+
+const resultadosDe = (f) => sumarAcciones(f.actions, ACCIONES.compras) + sumarAcciones(f.actions, ACCIONES.leads)
+  + sumarAcciones(f.actions, ACCIONES.mensajes);
+
+// Los desgloses usan el mismo permiso (ads_read) y se piden aparte: si uno
+// falla (por ejemplo, Meta no entrega edad y sexo para cierta cuenta), el
+// resumen por campaña igual queda al día.
+const DESGLOSES = [
+  { tipo: 'anuncio', params: { level: 'ad', fields: 'ad_id,ad_name,campaign_name,spend,impressions,clicks,actions,action_values' }, clave: (f) => String(f.ad_id) },
+  { tipo: 'edad_sexo', params: { level: 'account', breakdowns: 'age,gender', fields: 'spend,impressions,clicks,actions,action_values' }, clave: (f) => `${f.age}|${f.gender}` },
+  { tipo: 'ubicacion', params: { level: 'account', breakdowns: 'publisher_platform,platform_position', fields: 'spend,impressions,clicks,actions,action_values' },
+    clave: (f) => `${f.publisher_platform}|${f.platform_position}` },
+];
+
+async function sincronizarDesgloses(negocioId, meta, hoy) {
+  const dias = sqlAds.hayDesglose.get(negocioId).n ? 3 : 30;
+  const rango = JSON.stringify({ since: analitica.sumarDias(hoy, -dias), until: hoy });
+  const nombres = new Map();
+  for (const d of DESGLOSES) {
+    let filas;
+    try {
+      filas = await todasLasPaginas(`/${meta.adAccountId}/insights`, Object.assign({ time_increment: '1', time_range: rango, limit: '500' }, d.params), meta.accessToken);
+    } catch (err) {
+      if (err.tipo === 'token') throw err;
+      continue;
+    }
+    store.transaccion(() => {
+      for (const f of filas) {
+        sqlAds.upsertDesglose.run({
+          negocio_id: negocioId, tipo: d.tipo, clave: d.clave(f), fecha: f.date_start,
+          gasto: Number(f.spend) || 0, impresiones: Number(f.impressions) || 0, clics: Number(f.clicks) || 0,
+          resultados: resultadosDe(f), valor_compras: sumarAcciones(f.action_values, ACCIONES.compras),
+        });
+        if (d.tipo === 'anuncio') nombres.set(String(f.ad_id), { nombre: f.ad_name, campana: f.campaign_name });
+      }
+    });
+  }
+  // Miniaturas de los anuncios (una llamada; las URL de Meta vencen, por eso se refrescan en cada sincronización).
+  try {
+    const ads = await todasLasPaginas(`/${meta.adAccountId}/ads`, { fields: 'id,name,effective_status,creative{thumbnail_url,image_url}', limit: '100' }, meta.accessToken, 5);
+    for (const a of ads) {
+      const n = nombres.get(String(a.id)) || {};
+      sqlAds.upsertAnuncio.run({
+        negocio_id: negocioId, ad_id: String(a.id), nombre: a.name || n.nombre || null, campana: n.campana || null,
+        miniatura: (a.creative && (a.creative.thumbnail_url || a.creative.image_url)) || null, estado: a.effective_status || null,
+      });
+      nombres.delete(String(a.id));
+    }
+  } catch (err) {
+    if (err.tipo === 'token') throw err;
+  }
+  for (const [id, n] of nombres) sqlAds.upsertAnuncio.run({ negocio_id: negocioId, ad_id: id, nombre: n.nombre || null, campana: n.campana || null, miniatura: null, estado: null });
+}
 
 // Primera vez: 30 días. Después: los últimos 3 (Meta sigue atribuyendo
 // conversiones a días anteriores). Consultas por campaña y por día, en
@@ -165,6 +254,7 @@ async function sincronizarAds(negocioId) {
         });
       }
     });
+    await sincronizarDesgloses(negocioId, meta, hoy);
     analitica.registrarSync(negocioId, 'meta_ads', null, null);
     return { ok: true, filas: filas.length };
   } catch (err) {
@@ -213,6 +303,10 @@ function metricasDe(t) {
   };
 }
 
+function primeraFechaAds(negocioId) {
+  return db.prepare('SELECT MIN(fecha) AS f FROM meta_ads_diario WHERE negocio_id = ?').get(negocioId).f;
+}
+
 function resumenAds(negocioId, desde, hasta) {
   const campanas = sqlResumen.campanas.all(negocioId, desde, hasta).map((c) => Object.assign({
     id: c.campana_id, nombre: c.campana, objetivo: c.objetivo,
@@ -230,6 +324,52 @@ function resumenAds(negocioId, desde, hasta) {
   };
 }
 
+const sqlDesglose = {
+  porClave: db.prepare(`SELECT clave, SUM(gasto) AS gasto, SUM(impresiones) AS impresiones, SUM(clics) AS clics,
+      SUM(resultados) AS resultados, SUM(valor_compras) AS valor_compras
+    FROM meta_ads_desglose WHERE negocio_id = ? AND tipo = ? AND fecha BETWEEN ? AND ? GROUP BY clave ORDER BY gasto DESC`),
+  anuncios: db.prepare('SELECT * FROM meta_anuncios WHERE negocio_id = ?'),
+};
+
+const EDADES = ['13-17', '18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
+const SEXOS = { female: 'Mujeres', male: 'Hombres', unknown: 'Sin dato' };
+const PLATAFORMAS = { instagram: 'Instagram', facebook: 'Facebook', messenger: 'Messenger', audience_network: 'Audience Network', threads: 'Threads' };
+const POSICIONES = {
+  feed: 'Feed', story: 'Historias', instagram_stories: 'Historias', reels: 'Reels', instagram_reels: 'Reels', facebook_reels: 'Reels',
+  instagram_explore: 'Explorar', instagram_explore_grid_home: 'Explorar', marketplace: 'Marketplace', video_feeds: 'Videos',
+  right_hand_column: 'Columna derecha', search: 'Búsqueda', instream_video: 'Video in-stream', an_classic: 'Apps y sitios',
+  messenger_inbox: 'Bandeja de Messenger', profile_feed: 'Perfil', facebook_stories: 'Historias', instagram_profile_feed: 'Perfil',
+};
+
+function conCosto(f) {
+  return Object.assign(f, {
+    ctr: f.impresiones ? f.clics / f.impresiones : null,
+    costoPorResultado: f.resultados ? f.gasto / f.resultados : null,
+    cpm: f.impresiones ? (f.gasto / f.impresiones) * 1000 : null,
+  });
+}
+
+// Anuncios, edad y sexo, y ubicaciones del período, listos para el panel.
+function desglosesAds(negocioId, desde, hasta) {
+  const leer = (tipo) => sqlDesglose.porClave.all(negocioId, tipo, desde, hasta).map((f) => Object.assign({}, f));
+  const fichas = new Map(sqlDesglose.anuncios.all(negocioId).map((a) => [a.ad_id, a]));
+  const anuncios = leer('anuncio').filter((f) => f.gasto > 0 || f.resultados > 0).map((f) => {
+    const a = fichas.get(f.clave) || {};
+    return conCosto({ id: f.clave, nombre: a.nombre || f.clave, campana: a.campana || null, miniatura: a.miniatura || null, estado: a.estado || null,
+      gasto: f.gasto, impresiones: f.impresiones, clics: f.clics, resultados: f.resultados, valorCompras: f.valor_compras });
+  });
+  const edadSexo = leer('edad_sexo').map((f) => {
+    const [edad, sexo] = f.clave.split('|');
+    return conCosto({ edad, sexo, sexoNombre: SEXOS[sexo] || sexo, gasto: f.gasto, impresiones: f.impresiones, clics: f.clics, resultados: f.resultados });
+  }).sort((a, b) => EDADES.indexOf(a.edad) - EDADES.indexOf(b.edad) || a.sexo.localeCompare(b.sexo));
+  const ubicaciones = leer('ubicacion').map((f) => {
+    const [plataforma, posicion] = f.clave.split('|');
+    return conCosto({ plataforma, posicion, nombre: `${PLATAFORMAS[plataforma] || plataforma} · ${POSICIONES[posicion] || posicion}`,
+      gasto: f.gasto, impresiones: f.impresiones, clics: f.clics, resultados: f.resultados });
+  }).filter((f) => f.gasto > 0);
+  return { anuncios, edadSexo, ubicaciones, edades: EDADES };
+}
+
 function publicoMeta(meta) {
   if (!meta || !meta.accessToken) return null;
   return {
@@ -240,5 +380,5 @@ function publicoMeta(meta) {
 }
 
 module.exports = {
-  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, sincronizarAds, resumenAds, publicoMeta, ErrorMeta, sumarAcciones,
+  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
 };

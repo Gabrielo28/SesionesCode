@@ -172,10 +172,12 @@
   // Rampa por defecto: fondo oscuro (más = más claro). El informe impreso
   // pasa la suya para fondo blanco (más = más oscuro).
   const RAMPA = ['#3a1a29', '#6b2447', '#a32f66', '#d9437f', '#ff7fb0']; // un tono, L 0.27 → 0.76
-  function mapaCalor(celdas, filas, columnas, rampa) {
+  // textoDe(celda, fila, columna): tooltip propio (por defecto, interacciones de posts).
+  function mapaCalor(celdas, filas, columnas, rampa, textoDe) {
     const RAMPA_USADA = rampa || RAMPA;
     const div = document.createElement('div');
     div.className = 'viz-calor';
+    div.style.gridTemplateColumns = `76px repeat(${columnas.length}, 1fr)`;
     const valores = celdas.filter((c) => c.promedio != null).map((c) => c.promedio);
     const min = Math.min(...valores);
     const max = Math.max(...valores);
@@ -190,9 +192,9 @@
       for (const c of columnas) {
         const celda = celdas.find((x) => x.dia === f.id && x.franja === c.id);
         const color = celda && tono(celda.promedio);
-        const texto = celda && celda.posts
+        const texto = textoDe ? (celda ? textoDe(celda, f, c) : `${f.label} · ${c.label}: sin datos`) : (celda && celda.posts
           ? `${f.label} en la ${c.label}: ${numero(celda.promedio)} interacciones promedio (${celda.posts} post${celda.posts === 1 ? '' : 's'})`
-          : `${f.label} en la ${c.label}: sin publicaciones`;
+          : `${f.label} en la ${c.label}: sin publicaciones`);
         html += `<span class="viz-calor-celda${color ? '' : ' vacia'}" style="${color ? 'background:' + color : ''}" title="${escapar(texto)}"></span>`;
       }
     }

@@ -25,6 +25,7 @@ const informe = require('./informe');
 const meta = require('./meta');
 const google = require('./google');
 const competencia = require('./competencia');
+const analisisAds = require('./analisis-ads');
 const guardian = require('./guardian');
 const { generarImagenIA } = require('./imagenes');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -1354,12 +1355,14 @@ const server = http.createServer(async (req, res) => {
             const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
             const hasta = analitica.fechaLocal(new Date());
             const n = store.getNegocio(negocioId);
-            return sendJSON(res, 200, {
+            return sendJSON(res, 200, Object.assign({
               dias,
               conexion: google.publico(n.google),
               sync: analitica.estadoSync(negocioId, 'google_ads'),
-              resumen: google.resumen(negocioId, analitica.sumarDias(hasta, -(dias - 1)), hasta),
-            });
+            }, analisisAds.analizar({
+              resumenDe: (d, h) => google.resumen(negocioId, d, h),
+              desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.google.moneda, sumarDias: analitica.sumarDias, primeraFecha: google.primeraFecha(negocioId),
+            })));
           }
           return sendJSON(res, 400, { error: 'Acción inválida' });
         }
@@ -1378,12 +1381,14 @@ const server = http.createServer(async (req, res) => {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           const hasta = analitica.fechaLocal(new Date());
           const n = store.getNegocio(negocioId);
-          return sendJSON(res, 200, {
+          return sendJSON(res, 200, Object.assign({
             dias,
             conexion: meta.publicoMeta(n.meta),
             sync: analitica.estadoSync(negocioId, 'meta_ads'),
-            resumen: meta.resumenAds(negocioId, analitica.sumarDias(hasta, -(dias - 1)), hasta),
-          });
+          }, analisisAds.analizar({
+            resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
+            desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
+          })));
         }
 
         // "Mi estilo": ejemplos del contenido que ya hace el negocio y la guía
