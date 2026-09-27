@@ -653,3 +653,4 @@ a { color: var(--amber); }
 .switch input { width: 18px; height: 18px; accent-color: var(--amber); }
 button.btn-ig { border: none; }
 .bv-ig { padding: 8px 14px; font-size: 12px; }
+.login-ok { margin: 0; font-size: 13px; color: var(--green); line-height: 1.5; }

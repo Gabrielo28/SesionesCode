@@ -69,6 +69,13 @@ function verificarSesion(token) {
   return negocioId;
 }
 
+// Cuándo se emitió una sesión válida (ms), para invalidar las anteriores a
+// un cambio de clave. null si el token no es válido.
+function emisionSesion(token) {
+  if (!verificarSesion(token)) return null;
+  return Number(String(token).split('.')[1]) - SESSION_DIAS * 24 * 60 * 60 * 1000;
+}
+
 // Token de corta duración para exponer UNA foto puntual sin sesión —
 // Instagram necesita descargar la imagen desde un servidor público para
 // poder publicarla, así que en vez de abrir /fotos entero, generamos un
@@ -115,5 +122,5 @@ function cookieSesion(req, token) {
 
 module.exports = {
   hashPassword, verifyPassword, crearSesion, verificarSesion, leerCookie, cookieSesion,
-  crearTokenFoto, verificarTokenFoto,
+  crearTokenFoto, verificarTokenFoto, emisionSesion,
 };

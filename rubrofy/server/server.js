@@ -45,6 +45,8 @@ const MAX_PIEZAS_POR_GENERACION = 12;
 // cuentan los intentos fallidos, para no molestar a quien entra bien.
 const limiteRegistro = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 const limiteLoginFallido = crearLimitador({ max: 10, ventanaMs: 15 * 60 * 1000 });
+// "Olvidé mi clave": tope por conexión.
+const limiteRecuperar = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 // Correo de prueba del resumen semanal: tope por negocio.
 const limiteCorreoPrueba = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
 // Regenerar la estrategia llama a Claude: tope por negocio.
@@ -57,7 +59,22 @@ const SUSCRIPCION_TERMINADA = new Set(['canceled', 'incomplete_expired']);
 // El acceso es self-service: cada negocio es su propia cuenta (email +
 // clave), no hay una clave maestra que vea todos los negocios juntos.
 function sesionActual(req) {
-  return auth.verificarSesion(auth.leerCookie(req, 'rubrofy_sesion'));
+  const token = auth.leerCookie(req, 'rubrofy_sesion');
+  const negocioId = auth.verificarSesion(token);
+  if (!negocioId) return null;
+  // Después de cambiar la clave, las sesiones abiertas antes dejan de valer.
+  const n = store.getNegocio(negocioId);
+  if (n && n.sesionesDesde && auth.emisionSesion(token) < Date.parse(n.sesionesDesde)) return null;
+  return negocioId;
+}
+
+// Enlace para elegir una clave nueva: vale 30 minutos y una sola vez (va
+// ligado al hash de la clave actual, que cambia al usarlo).
+function tokenClave(negocio) {
+  return auth.crearTokenFoto(negocio.id, 'clave', negocio.auth.hash.slice(0, 16), 30);
+}
+function tokenClaveValido(negocio, token) {
+  return !!(negocio && negocio.auth && auth.verificarTokenFoto(token, negocio.id, 'clave', negocio.auth.hash.slice(0, 16)));
 }
 
 function noAutorizado(res) {
@@ -504,6 +521,12 @@ const avisador = avisos.crearAvisador({
   datosDe: (negocio) => ({ negocioPublico: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocio.id) }),
   urlPublica: () => (process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null),
   enlaceBaja: enlaceBajaAvisos,
+  guardarAvisoReconectar: (negocioId) => {
+    const n = store.getNegocio(negocioId);
+    if (!n || !n.instagram) return;
+    n.instagram.avisoReconectarEl = new Date().toISOString();
+    store.saveNegocio(n);
+  },
   guardarEnvio: (negocioId, semana) => {
     const n = store.getNegocio(negocioId);
     if (!n) return;
@@ -712,10 +735,48 @@ const server = http.createServer(async (req, res) => {
           },
         };
         store.saveNegocio(negocio);
+        if (correo.configurado()) {
+          correo.enviar(avisos.correoBienvenida({ negocio, urlPanel: urlPublica(req) + '/app' }))
+            .then((r) => { if (!r.ok) console.log(`Bienvenida de ${id} no enviada: ${r.error}`); });
+        }
         // Sin contenido todavía: la bienvenida del panel pregunta objetivo,
         // público y cuánto publicar, y con eso genera la primera semana.
         const cookie = auth.cookieSesion(req, auth.crearSesion(id));
         return sendJSON(res, 201, negocioPublico(negocio), { 'Set-Cookie': cookie });
+      }
+
+      // POST /api/auth/recuperar { email } — manda un enlace para elegir una
+      // clave nueva. Responde lo mismo exista o no la cuenta.
+      if (parts[1] === 'auth' && parts[2] === 'recuperar' && parts.length === 3 && req.method === 'POST') {
+        const ip = ipCliente(req);
+        const espera = limiteRecuperar.esperaSegundos(ip);
+        if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato e intenta de nuevo.' }, { 'Retry-After': String(espera) });
+        limiteRecuperar.registrar(ip);
+        const body = await readBody(req);
+        const negocio = buscarNegocioPorEmail(body.email);
+        if (negocio && negocio.auth && correo.configurado()) {
+          const enlace = `${urlPublica(req)}/app/restablecer.html?n=${encodeURIComponent(negocio.id)}&t=${tokenClave(negocio)}`;
+          // Sin esperar el envío: la respuesta tarda lo mismo exista o no la cuenta.
+          correo.enviar(avisos.correoClave({ negocio, enlace }))
+            .then((r) => { if (!r.ok) console.log(`No se pudo enviar el correo de clave a ${negocio.id}: ${r.error}`); });
+        }
+        return sendJSON(res, 200, { ok: true, correoDisponible: correo.configurado() });
+      }
+
+      // POST /api/auth/restablecer { n, t, password } — guarda la clave nueva
+      // y cierra las sesiones abiertas en otros dispositivos.
+      if (parts[1] === 'auth' && parts[2] === 'restablecer' && parts.length === 3 && req.method === 'POST') {
+        const body = await readBody(req);
+        const negocio = store.getNegocio(String(body.n || ''));
+        if (!tokenClaveValido(negocio, body.t)) return sendJSON(res, 400, { error: 'El enlace venció o ya se usó. Pide uno nuevo.' });
+        const password = String(body.password || '');
+        if (password.length < 8) return sendJSON(res, 400, { error: 'La clave debe tener al menos 8 caracteres' });
+        negocio.auth = auth.hashPassword(password);
+        negocio.sesionesDesde = new Date().toISOString();
+        negocio.ultimoAcceso = negocio.sesionesDesde;
+        store.saveNegocio(negocio);
+        const cookie = auth.cookieSesion(req, auth.crearSesion(negocio.id));
+        return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': cookie });
       }
 
       // POST /api/auth/login  { email, password }

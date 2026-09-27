@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Clave nueva · Rubrofy</title>
+  <link rel="icon" href="/app/favicon-32.png" sizes="32x32">
+  <link rel="stylesheet" href="/app/styles.css">
+</head>
+<body>
+  <section class="login-view">
+    <form id="form" class="login-form">
+      <img src="/app/icon-192.png" width="44" height="44" alt="Rubrofy" class="login-logo">
+      <h1>Elige una clave nueva</h1>
+      <p class="sub">Al guardarla se cierran las sesiones abiertas en otros dispositivos.</p>
+      <label>Clave nueva (mínimo 8 caracteres)<input type="password" id="clave" required minlength="8" autocomplete="new-password"></label>
+      <label>Repite la clave<input type="password" id="clave2" required minlength="8" autocomplete="new-password"></label>
+      <p class="login-error" id="error" hidden></p>
+      <button type="submit" class="btn-approve" id="btn">Guardar y entrar</button>
+      <p class="login-note"><a href="/app/recuperar.html">Pedir un enlace nuevo</a></p>
+    </form>
+  </section>
+  <script>
+    (function () {
+      var $ = function (s) { return document.querySelector(s); };
+      var q = new URLSearchParams(location.search);
+      var n = q.get('n'), t = q.get('t');
+      history.replaceState(null, '', '/app/restablecer.html'); // el enlace no queda en el historial
+      function error(m) { $('#error').textContent = m; $('#error').hidden = false; $('#btn').disabled = false; }
+      if (!n || !t) error('Este enlace no es válido. Pide uno nuevo.');
+      $('#form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        if ($('#clave').value !== $('#clave2').value) return error('Las claves no coinciden.');
+        $('#btn').disabled = true; $('#error').hidden = true;
+        fetch('/api/auth/restablecer', { method: 'POST', headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' }, body: JSON.stringify({ n: n, t: t, password: $('#clave').value }) })
+          .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'No se pudo guardar'); }); })
+          .then(function () { location.href = '/app'; })
+          .catch(function (err) { error(err.message); });
+      });
+    })();
+  </script>
+</body>
+</html>

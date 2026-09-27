@@ -155,6 +155,21 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
   borra de Instagram; el panel lo advierte).
 
+## Cuenta: recuperar clave y correos del servicio
+
+- **Olvidé mi clave** (`/app/recuperar.html`): `POST /api/auth/recuperar
+  { email }` responde lo mismo exista o no la cuenta (y sin esperar el envío,
+  para que el tiempo tampoco lo delate; 5 por hora por conexión). Manda un
+  enlace a `/app/restablecer.html` que vale 30 minutos y sirve una vez (va
+  ligado a la clave actual). `POST /api/auth/restablecer` guarda la clave
+  nueva y cierra las sesiones abiertas antes (`sesionesDesde`).
+- **Correos** (con `RESEND_API_KEY` y `EMAIL_FROM`, ver server/avisos.js):
+  bienvenida al registrarse, enlace para cambiar la clave, aviso inmediato
+  cuando Instagram deja de aceptar la conexión (una vez por desconexión) y
+  el resumen semanal de los lunes.
+- **Legal**: `/privacidad.html`, `/terminos.html` y `/eliminar-datos.html`
+  (email de contacto desde `CONTACTO_EMAIL`). Registrarse exige aceptarlos.
+
 ## Panel de administración (server/admin.js, /admin)
 
 Para quien administra la plataforma. Se activa con `ADMIN_EMAILS` (emails

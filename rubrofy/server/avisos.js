@@ -93,6 +93,54 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
   return { asunto, html, texto };
 }
 
+// --- correos puntuales (mismo diseño que el resumen) ---
+
+function plantilla({ titulo, parrafos, boton, pie }) {
+  const html = `<!doctype html><html lang="es"><body style="margin:0;background:#f7f1e8;padding:24px 12px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;border:1px solid #eee3d3">
+    <tr><td style="padding:24px 28px 8px;font:700 18px Arial,sans-serif;color:#111014">rubrofy</td></tr>
+    <tr><td style="padding:0 28px;font:15px/1.55 Arial,sans-serif;color:#2b2118">
+      <p style="margin:8px 0 12px;font-size:20px;font-weight:700">${esc(titulo)}</p>
+      ${parrafos.map((p) => `<p style="margin:0 0 12px;color:#4a4050">${esc(p)}</p>`).join('')}
+    </td></tr>
+    ${boton ? `<tr><td style="padding:10px 28px 6px"><a href="${esc(boton.url)}" style="display:inline-block;background:#111014;color:#ff4d94;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">${esc(boton.texto)}</a></td></tr>` : ''}
+    <tr><td style="padding:22px 28px 24px;font:11.5px/1.5 Arial,sans-serif;color:#8f8578">${esc(pie || 'Recibes este correo porque tienes una cuenta en Rubrofy.')}</td></tr>
+  </table></body></html>`;
+  const texto = [titulo, '', ...parrafos, '', boton ? `${boton.texto}: ${boton.url}` : '', '', pie || ''].join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  return { html, texto };
+}
+
+function correoClave({ negocio, enlace }) {
+  const { html, texto } = plantilla({
+    titulo: 'Elige una clave nueva',
+    parrafos: [`Alguien pidió cambiar la clave de ${negocio.nombre} en Rubrofy. Si fuiste tú, usa el botón: el enlace vale 30 minutos y sirve una sola vez.`,
+      'Si no lo pediste, ignora este correo: tu clave sigue igual.'],
+    boton: { texto: 'Elegir clave nueva', url: enlace },
+    pie: 'Por seguridad, al cambiar la clave se cierran las sesiones abiertas en otros dispositivos.',
+  });
+  return { para: negocio.email, asunto: 'Cambia tu clave de Rubrofy', html, texto };
+}
+
+function correoBienvenida({ negocio, urlPanel }) {
+  const { html, texto } = plantilla({
+    titulo: `Bienvenido a Rubrofy, ${negocio.nombre}`,
+    parrafos: ['Tu cuenta está lista. Al entrar al panel, la bienvenida te pregunta tu objetivo, a quién le hablas y cuánto quieres publicar, y con eso arma tu estrategia y tu primera semana de contenido.',
+      'Después conecta Instagram: lo que apruebes se publica solo, en su fecha y hora. Nada sale sin tu visto bueno.'],
+    boton: { texto: 'Ir a mi panel', url: urlPanel },
+  });
+  return { para: negocio.email, asunto: 'Tu cuenta de Rubrofy está lista', html, texto };
+}
+
+function correoReconectar({ negocio, urlPanel, motivo }) {
+  const { html, texto } = plantilla({
+    titulo: 'Reconecta tu Instagram',
+    parrafos: [`Instagram dejó de aceptar la conexión de ${negocio.nombre}${motivo ? ` (${motivo})` : ''}. Lo que tienes programado está en espera: no se pierde, pero no se publicará hasta que reconectes.`,
+      'Entra a Conexiones y ajustes y vuelve a conectar Instagram. Lo programado sale solo al reconectar.'],
+    boton: { texto: 'Reconectar Instagram', url: urlPanel },
+  });
+  return { para: negocio.email, asunto: 'Tu Instagram se desconectó de Rubrofy', html, texto };
+}
+
 // deps: { listarNegocios(), datosDe(negocio) → { negocioPublico, ruta, contenido },
 //         urlPublica() → string|null, enlaceBaja(negocioId) → path, guardarEnvio(negocioId, semana), log }
 function crearAvisador(deps) {
@@ -100,10 +148,34 @@ function crearAvisador(deps) {
   let timer = null;
   let corriendo = false;
 
+  // Aviso inmediato (cualquier día) cuando Instagram deja de aceptar la
+  // conexión: una vez por desconexión; al reconectar se reinicia solo.
+  async function reconexiones(base) {
+    let enviados = 0;
+    for (const negocio of deps.listarNegocios()) {
+      const ig = negocio.instagram;
+      if (!negocio.email || !ig || ig.estado !== 'reconectar' || ig.avisoReconectarEl) continue;
+      deps.guardarAvisoReconectar(negocio.id);
+      const r = await correo.enviar(correoReconectar({ negocio, urlPanel: base + '/app', motivo: ig.motivoReconexion }));
+      if (r.ok) enviados += 1;
+      else log(`Aviso de reconexión de ${negocio.id} no enviado: ${r.error}`);
+    }
+    return enviados;
+  }
+
   async function revisar(ahoraDate = new Date()) {
     if (corriendo || !correo.configurado()) return { enviados: 0 };
     const base = deps.urlPublica();
     if (!base) return { enviados: 0 };
+    corriendo = true;
+    let avisosReconexion = 0;
+    try { avisosReconexion = await reconexiones(base); } finally { corriendo = false; }
+    const resultado = await resumenesSemanales(base, ahoraDate);
+    return Object.assign(resultado, { reconexiones: avisosReconexion });
+  }
+
+  async function resumenesSemanales(base, ahoraDate) {
+    if (corriendo) return { enviados: 0 };
     const p = programacion.partesEnZona(ahoraDate);
     if (diaDeSemana(p) !== 1 || p.hora < HORA_ENVIO) return { enviados: 0 };
     const semana = semanaISO(p);
@@ -141,4 +213,4 @@ function crearAvisador(deps) {
   };
 }
 
-module.exports = { construir, crearAvisador, semanaISO };
+module.exports = { construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar };

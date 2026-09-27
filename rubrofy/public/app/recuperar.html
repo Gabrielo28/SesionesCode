@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Recuperar clave · Rubrofy</title>
+  <link rel="icon" href="/app/favicon-32.png" sizes="32x32">
+  <link rel="stylesheet" href="/app/styles.css">
+</head>
+<body>
+  <section class="login-view">
+    <form id="form" class="login-form">
+      <img src="/app/icon-192.png" width="44" height="44" alt="Rubrofy" class="login-logo">
+      <h1>¿Olvidaste tu clave?</h1>
+      <p class="sub">Escribe el email de tu cuenta y te mandamos un enlace para elegir una nueva.</p>
+      <label>Email<input type="email" id="email" required autocomplete="username"></label>
+      <p class="login-error" id="error" hidden></p>
+      <p class="login-ok" id="ok" hidden></p>
+      <button type="submit" class="btn-approve" id="btn">Enviarme el enlace</button>
+      <p class="login-note"><a href="/app">Volver a entrar</a></p>
+    </form>
+  </section>
+  <script>
+    (function () {
+      var $ = function (s) { return document.querySelector(s); };
+      $('#form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        $('#btn').disabled = true; $('#error').hidden = true;
+        fetch('/api/auth/recuperar', { method: 'POST', headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' }, body: JSON.stringify({ email: $('#email').value.trim() }) })
+          .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'No se pudo enviar'); return d; }); })
+          .then(function (d) {
+            $('#ok').textContent = d.correoDisponible
+              ? 'Si hay una cuenta con ese email, te llegará un enlace en unos minutos (revisa también spam). Vale 30 minutos.'
+              : 'El envío de correos todavía no está disponible. Escríbenos desde el email de tu cuenta y te ayudamos a recuperarla.';
+            $('#ok').hidden = false; $('#btn').hidden = true;
+          })
+          .catch(function (err) { $('#error').textContent = err.message; $('#error').hidden = false; $('#btn').disabled = false; });
+      });
+    })();
+  </script>
+</body>
+</html>
