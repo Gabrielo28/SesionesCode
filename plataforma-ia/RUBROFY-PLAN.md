@@ -196,7 +196,7 @@ Después de todo eso, una segunda revisión de seguridad del flujo completo (reg
 
 ---
 
-## 5. Estado al 26 de septiembre de 2026
+## 5. Estado al 27 de septiembre de 2026
 
 Todo lo de este plan y del análisis de plataformas (Metricool) está
 construido en la rama `claude/strategy-content-generator-yvx3rx`, con una
@@ -217,10 +217,29 @@ simulados) en verde:
 | Competencia en Instagram | `c72cd96` |
 | Página de precios pública y guardián de marca (§3.2, §3.5) | `3c5b86c` |
 
-**Lo que no depende del código y sigue pendiente:** deploy en Railway con
-Volume en `data/` y `PUBLIC_URL`; Meta App Review + Business Verification
-(publicar, métricas, `ads_read`, páginas); proyecto de Google Cloud con
-acceso a la API de Google Ads y verificación del permiso `adwords`; cuenta
-de Stripe (o Flow/Mercado Pago) y las claves de IA. También quedan
-decisiones de producto: plan anual, un plan Agencia (varios negocios por
-cuenta) y si Ads y competencia se quedan en Estudio.
+**Después (26 y 27 de septiembre), ya en producción en rubrofy.com:**
+
+| Pieza | Commit |
+|---|---|
+| Listo para Railway (Volume, healthcheck, cierre ordenado) | `9086334` |
+| Bienvenida paso a paso, estrategia editable y plan semanal | `ecb3232` |
+| Ruta del cliente: Configura, Crea, Mide, Mejora (Inicio y menú) | `5bcb5e3` |
+| Conectar con Instagram (inicio de sesión) y resumen semanal por correo | `3ead513` |
+| Nueva imagen rosado y negro, sitio con estructura tipo Metricool | `3eab9e6` |
+| Panel de administración (métricas y estado, sin contenido de negocios) | `f7f4a6c` |
+| Privacidad, términos y eliminación de datos (URLs para Meta) | `1fa75db` |
+| Recuperar clave, correo de bienvenida y aviso de Instagram desconectado | `7e19008` |
+| SEO: robots.txt, sitemap e imagen para compartir | `947dbec` |
+| Seguridad: emails de administrador reservados, CSV sin fórmulas | `900b8aa` |
+
+Regresión: 78 escenarios de API más 10 de publicación, en verde.
+
+**Lo que no depende del código y sigue pendiente** (pasos en
+`rubrofy/DEPLOY-RAILWAY.md`): variables en Railway (`ANTHROPIC_API_KEY`,
+`ADMIN_EMAILS`, `CONTACTO_EMAIL`, `INSTAGRAM_APP_ID`/`SECRET`,
+`RESEND_API_KEY`/`EMAIL_FROM`, Stripe, Meta y Google); dominio verificado en
+Resend; app de Meta con las URLs legales y App Review + Business
+Verification; revisión de los textos legales por un abogado; proyecto de
+Google Cloud para Google Ads. Decisiones de producto: plan anual, plan
+Agencia (varios negocios por cuenta) y si Ads y competencia se quedan en
+Estudio.
