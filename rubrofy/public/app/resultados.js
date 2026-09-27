@@ -107,6 +107,7 @@
           <div data-graf="horario"></div>
         </div>
       </div>
+      <div class="res-card" data-reels-prueba hidden></div>
       <div class="res-card">
         <h2>Tus mejores publicaciones${AY('res-mejores')}</h2>
         <div data-lista="top"></div>
@@ -167,6 +168,8 @@
         </div>
       </div>`).join('') : '<p class="sub vacio">Todavía no hay publicaciones con métricas en este período.</p>';
 
+    pintarReelsPrueba(cont.querySelector('[data-reels-prueba]'), ctx);
+
     cont.querySelectorAll('[data-dias]').forEach((b) => b.addEventListener('click', () => {
       dias = Number(b.dataset.dias);
       render(cont, ctx);
@@ -181,6 +184,62 @@
       }
       render(cont, ctx);
     });
+  }
+
+  // Reels destacados → Reel de prueba (se muestra primero a quienes no te siguen).
+  async function pintarReelsPrueba(caja, ctx) {
+    const g = G();
+    const e = g.escapar;
+    let d;
+    try {
+      d = await ctx.api(`/api/negocios/${ctx.negocio.id}/reels-prueba`);
+    } catch (err) {
+      return;
+    }
+    caja.hidden = false;
+    const fecha = (iso) => new Date(iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+    const lista = d.candidatos;
+    caja.innerHTML = `
+      <h2>Reels para volver a probar${AY('reels-prueba')}</h2>
+      <p class="sub">Tus Reels que tuvieron al menos ${String(d.factorMinimo).replace('.', ',')} veces las vistas de tu Reel típico${d.mediana != null ? ` (${g.numero(d.mediana)})` : ''}. Como <b>Reel de prueba</b>, Instagram los muestra primero solo a gente que no te sigue: el mismo video, con un texto pensado para quien no te conoce.</p>
+      ${d.reelsAnalizados < 3 ? `<p class="sub vacio">Se necesitan al menos 3 Reels con métricas para comparar (llevas ${d.reelsAnalizados}).</p>`
+        : (lista.length ? `<div class="rp-lista">${lista.map((c) => `<div class="rp-item">
+          <div class="rp-cifras"><b>${String(c.factor).replace('.', ',')}×</b><span>${c.vistas != null ? g.numero(c.vistas) + ' vistas' : g.numero(c.alcance) + ' de alcance'}</span></div>
+          <div class="rp-texto"><span class="tabla-sub">${fecha(c.publicadoEl)}${c.permalink ? ` · <a href="${e(c.permalink)}" target="_blank" rel="noopener">Ver en Instagram</a>` : ''}</span><p>${e(c.caption || '(sin texto)')}</p></div>
+          ${c.enviado ? '<span class="rp-enviado">En Por aprobar</span>' : `<button class="btn-approve estilo-btn" data-rp="${e(c.mediaId)}">Enviar a Reel de prueba</button>`}
+        </div>`).join('')}</div>` : '<p class="sub vacio">Por ahora ningún Reel reciente destaca claramente sobre los demás.</p>')}
+      <div class="rp-ajustes">
+        <label class="rp-auto"><input type="checkbox" data-rp-auto ${d.auto ? 'checked' : ''}> Enviar solo el Reel más destacado a Por aprobar (máximo uno por semana)</label>
+        <label class="estilo-campo">Si le va bien al Reel de prueba
+          <select data-rp-grad>${Object.entries(d.graduaciones).map(([k, v]) => `<option value="${k}" ${k === d.graduacion ? 'selected' : ''}>${e(v)}</option>`).join('')}</select>
+        </label>
+        <span class="res-estado" data-rp-msg></span>
+      </div>`;
+    const msg = caja.querySelector('[data-rp-msg]');
+    const guardarAjustes = async () => {
+      try {
+        await ctx.api(`/api/negocios/${ctx.negocio.id}/reels-prueba`, { method: 'PUT', body: JSON.stringify({ auto: caja.querySelector('[data-rp-auto]').checked, graduacion: caja.querySelector('[data-rp-grad]').value }) });
+        msg.textContent = 'Guardado.';
+      } catch (err) {
+        msg.textContent = err.mensaje || 'No se pudo guardar.';
+      }
+    };
+    caja.querySelector('[data-rp-auto]').addEventListener('change', guardarAjustes);
+    caja.querySelector('[data-rp-grad]').addEventListener('change', guardarAjustes);
+    caja.querySelectorAll('[data-rp]').forEach((b) => b.addEventListener('click', async () => {
+      b.disabled = true;
+      b.textContent = 'Preparando…';
+      try {
+        await ctx.api(`/api/negocios/${ctx.negocio.id}/reels-prueba`, { method: 'POST', body: JSON.stringify({ mediaId: b.dataset.rp, graduacion: caja.querySelector('[data-rp-grad]').value }) });
+        b.outerHTML = '<span class="rp-enviado">En Por aprobar</span>';
+        msg.innerHTML = 'Listo: revisa el texto y apruébalo en <b>Por aprobar</b>.';
+        if (ctx.recargarContenido) ctx.recargarContenido();
+      } catch (err) {
+        msg.textContent = err.mensaje || 'No se pudo preparar el Reel de prueba.';
+        b.disabled = false;
+        b.textContent = 'Enviar a Reel de prueba';
+      }
+    }));
   }
 
   window.RubrofyResultados = { render };

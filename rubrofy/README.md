@@ -391,6 +391,28 @@ más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
 ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
 qué hashtags usan que tú no.
 
+## Reels de prueba (server/reels-prueba.js)
+
+Un Reel de prueba (trial reel) se muestra primero solo a quienes no siguen
+la cuenta. Rubrofy los usa para sacarle más provecho a lo que ya funcionó:
+
+- **Destacados**: Reels de los últimos 60 días (con 2+ días publicados)
+  cuyas vistas, o alcance, son al menos 1,5 veces la mediana de los Reels
+  de la cuenta (se necesitan 3 o más). Se ven en Resultados → "Reels para
+  volver a probar".
+- **Enviar a Reel de prueba** crea una pieza en Por aprobar con el mismo
+  video (el subido a Rubrofy o, si no, el que entrega Instagram; no lo
+  entrega para Reels con música con derechos) y un texto nuevo escrito con
+  IA para quien no conoce la marca (el original queda como otra versión).
+- **Automático** (se puede apagar): tras cada sincronización, el Reel más
+  destacado pasa solo a Por aprobar, máximo uno por semana. Nada se publica
+  sin aprobación.
+- Al publicar, el contenedor lleva `trial_params` con la graduación:
+  `SS_PERFORMANCE` (Instagram lo comparte con los seguidores si le va bien)
+  o `MANUAL` (lo decide el dueño en la app). Si la cuenta no puede publicar
+  Reels de prueba, la pieza queda fallida con el motivo.
+- Rechazar la pieza libera el Reel original para volver a intentarlo.
+
 ## Voz de marca (server/voz.js)
 
 La ficha de cómo habla la marca ("ADN"): quiénes son, a quién le hablan,
@@ -637,6 +659,7 @@ server/
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   medios.js     Imágenes y videos con IA (Higgsfield u OpenAI), videos en segundo plano
+  reels-prueba.js Reels destacados → Reel de prueba (trial reels) para público nuevo
   voz.js        Voz de marca: ficha, puntaje de fidelidad, completar con IA y redactor
   contexto-ia.js Contexto para la IA por capas: plataforma (admin), negocio y pedido
   claude.js     Cliente mínimo de la API de Claude para los módulos nuevos

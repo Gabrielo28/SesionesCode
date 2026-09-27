@@ -772,3 +772,18 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 .card-video-error { display: block; width: 100%; font-size: 11.5px; color: var(--coral); margin-top: 4px; }
 .dlg-indicaciones { margin: 10px 0 4px; }
 .dlg-indicaciones input { width: 100%; box-sizing: border-box; }
+
+/* --- Reels de prueba --- */
+.card-prueba { margin: 0; font-size: 11.5px; color: var(--ink-dim); background: rgba(255,77,148,0.1); border: 1px solid rgba(255,77,148,0.35); border-radius: 6px; padding: 5px 8px; }
+.card-prueba b { color: var(--amber); }
+.rp-lista { display: flex; flex-direction: column; gap: 8px; }
+.rp-item { display: grid; grid-template-columns: 90px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+.rp-cifras { display: flex; flex-direction: column; }
+.rp-cifras b { font-size: 22px; color: var(--amber); }
+.rp-cifras span { font-size: 11px; color: var(--ink-faint); }
+.rp-texto { min-width: 0; }
+.rp-texto p { margin: 2px 0 0; font-size: 13px; color: var(--ink-dim); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rp-enviado { font-size: 12px; font-weight: 600; color: var(--green); white-space: nowrap; }
+.rp-ajustes { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; border-top: 1px solid var(--border); padding-top: 10px; }
+.rp-auto { display: flex; gap: 8px; align-items: center; font-size: 12.5px; color: var(--ink-dim); flex: 1 1 260px; }
+@media (max-width: 600px) { .rp-item { grid-template-columns: 70px 1fr; } .rp-item > button, .rp-item > .rp-enviado { grid-column: 1 / -1; justify-self: start; } }

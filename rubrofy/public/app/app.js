@@ -264,6 +264,7 @@
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
             : `<p class="card-caption">${escapeHtml(caption)}</p>`}
+          ${item.prueba ? `<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen${item.prueba.origen && item.prueba.origen.permalink ? ` · <a href="${escapeHtml(item.prueba.origen.permalink)}" target="_blank" rel="noopener">ver el original</a>` : ''} ${AY('reels-prueba')}</p>` : ''}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
           ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span>${AY('voz-puntaje')}</div>` : ''}
           ${isPending && pedirCambioIds.has(item.id) ? `<form class="card-pedir" data-pedir-id="${item.id}"><input name="indicacion" maxlength="500" placeholder="Ej: más corto, menciona el despacho gratis" required><button class="btn-approve">Pedir</button><button type="button" class="btn-text" data-action="cancelar-pedir" data-id="${item.id}">Cancelar</button></form>` : ''}
@@ -273,7 +274,7 @@
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
               <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
               <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
-              ${!fotoUrl && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
+              ${!fotoUrl && mediosIA.imagen && !(formato === 'reel' && item.video) ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
               ${!fotoNombre && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
@@ -678,7 +679,7 @@
   let tabResultados = 'instagram';
   function renderResultados() {
     document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.classList.toggle('activa', b.dataset.tab === tabResultados));
-    const ctx = { api, negocio: negocioActual, planes: planesInfo, irA: irAVista };
+    const ctx = { api, negocio: negocioActual, planes: planesInfo, irA: irAVista, recargarContenido: ctxPanel().recargarContenido };
     const cont = $('#resultados');
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     if (tabResultados === 'instagram') return window.RubrofyResultados.render(cont, ctx);

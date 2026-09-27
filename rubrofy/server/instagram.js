@@ -58,7 +58,9 @@ async function graphPost(path, params) {
 //              padre que las agrupa; el que se publica es el padre
 //   reel     → video 9:16 (videoUrl); Meta lo procesa unos minutos
 //   historia → foto (imageUrl) o video (videoUrl)
-async function crearContenedor({ userId, accessToken, tipo = 'imagen', imageUrl, imageUrls, videoUrl, caption }) {
+// prueba (solo reel): 'SS_PERFORMANCE' | 'MANUAL' → Reel de prueba (trial
+// reel), que Instagram muestra primero solo a quienes no siguen la cuenta.
+async function crearContenedor({ userId, accessToken, tipo = 'imagen', imageUrl, imageUrls, videoUrl, caption, prueba }) {
   const base = { access_token: accessToken };
   if (tipo === 'carrusel') {
     const hijos = [];
@@ -68,6 +70,16 @@ async function crearContenedor({ userId, accessToken, tipo = 'imagen', imageUrl,
       hijos.push(hijo.id);
     }
     return graphPost(`/${userId}/media`, Object.assign({ media_type: 'CAROUSEL', children: hijos.join(','), caption: caption || '' }, base));
+  }
+  if (tipo === 'reel' && prueba) {
+    const r = await graphPost(`/${userId}/media`, Object.assign({
+      media_type: 'REELS', video_url: videoUrl, caption: caption || '', trial_params: JSON.stringify({ graduation_strategy: prueba }),
+    }, base));
+    if (!r.ok && /trial/i.test(r.error || '')) {
+      r.error += ' — Instagram no permite Reels de prueba en esta cuenta todavía (los habilita en cuentas profesionales que cumplen sus requisitos). Cambia la pieza a Reel normal o recházala.';
+      r.tipo = 'permanente';
+    }
+    return r;
   }
   if (tipo === 'reel') {
     return graphPost(`/${userId}/media`, Object.assign({ media_type: 'REELS', video_url: videoUrl, caption: caption || '', share_to_feed: 'true' }, base));

@@ -28,6 +28,7 @@ const competencia = require('./competencia');
 const analisisAds = require('./analisis-ads');
 const contextoIA = require('./contexto-ia');
 const voz = require('./voz');
+const reelsPrueba = require('./reels-prueba');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -390,7 +391,7 @@ async function prepararPublicacion(negocio, item) {
 
   if (formato === 'reel') {
     if (!video) return { motivo: 'Este Reel no tiene video. Súbelo en la tarjeta y usa "Reintentar".' };
-    return { tipo: 'reel', videoUrl: enlaceVideo(video), caption };
+    return { tipo: 'reel', videoUrl: enlaceVideo(video), caption, prueba: item.prueba ? item.prueba.graduacion : undefined };
   }
   if (formato === 'historia' && video) {
     return { tipo: 'historia', videoUrl: enlaceVideo(video) };
@@ -488,6 +489,22 @@ const sincronizador = analitica.crearSincronizador({
     return false;
   },
   fuentes: {
+    // Tras cada sincronización de Instagram, el Reel más destacado pasa solo
+    // a Por aprobar como Reel de prueba (server/reels-prueba.js).
+    instagram: async (id) => {
+      const r = await analitica.sincronizar(id);
+      if (r.ok) {
+        const n = store.getNegocio(id);
+        const usarIA = getPlan(n.plan).usaIA && textosIADisponibles(n) > 0;
+        try {
+          const creado = await reelsPrueba.automatico(n, { usarIA, diaInicio: diaSiguienteDeLaCola(store.getContenido(id)) });
+          if (creado && creado.conIA) registrarUsoIA(id, 'usoTextosIA', 1);
+        } catch (err) {
+          console.log(`Reels de prueba: ${id}: ${err.message}`);
+        }
+      }
+      return r;
+    },
     meta_ads: (id) => meta.sincronizarAds(id),
     google_ads: (id) => google.sincronizar(id),
     competencia: (id) => competencia.sincronizar(id),
@@ -1444,6 +1461,35 @@ const server = http.createServer(async (req, res) => {
           })));
         }
 
+        // Reels de prueba (server/reels-prueba.js).
+        //   GET  /api/negocios/:id/reels-prueba      destacados y ajustes
+        //   POST /api/negocios/:id/reels-prueba      { mediaId, graduacion } → pieza en Por aprobar
+        //   PUT  /api/negocios/:id/reels-prueba      { auto, graduacion }
+        if (parts[3] === 'reels-prueba' && parts.length === 4) {
+          if (!getPlan(negocio.plan).analitica) return sendJSON(res, 403, { error: 'Los Reels de prueba están en los planes Pro y Estudio' });
+          if (req.method === 'GET') return sendJSON(res, 200, reelsPrueba.vista(negocio));
+          const body = await readBody(req);
+          if (req.method === 'PUT') {
+            const fresco = store.getNegocio(negocioId);
+            fresco.reelsPrueba = {
+              auto: body.auto !== false,
+              graduacion: reelsPrueba.GRADUACIONES[body.graduacion] ? body.graduacion : 'SS_PERFORMANCE',
+            };
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, reelsPrueba.vista(fresco));
+          }
+          if (req.method === 'POST') {
+            const usarIA = getPlan(negocio.plan).usaIA && textosIADisponibles(negocio) > 0;
+            const r = await reelsPrueba.crear(negocio, body.mediaId, {
+              graduacion: body.graduacion, usarIA, diaInicio: diaSiguienteDeLaCola(store.getContenido(negocioId)),
+            });
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            if (r.conIA) registrarUsoIA(negocioId, 'usoTextosIA', 1);
+            return sendJSON(res, 201, { item: r.item, vista: reelsPrueba.vista(store.getNegocio(negocioId)) });
+          }
+          return sendJSON(res, 400, { error: 'Método inválido' });
+        }
+
         // Contexto para la IA del negocio, por sección (server/contexto-ia.js).
         //   GET /api/negocios/:id/contexto-ia · PUT { general, estrategia, copys, post, … }
         if (parts[3] === 'contexto-ia' && parts.length === 4) {
@@ -1767,6 +1813,7 @@ const server = http.createServer(async (req, res) => {
             aplicar = (it) => {
               it.status = accion === 'rechazar' ? 'rechazado' : 'pendiente';
               if (accion === 'rechazar') it.decididoEl = new Date().toISOString();
+              if (accion === 'rechazar') reelsPrueba.liberar(negocioId, it); // el Reel original vuelve a estar disponible
               // Sale de la cola de publicación; el registro de una ya
               // publicada se conserva (así no se publica de nuevo al re-aprobar).
               if (it.publicacion && it.publicacion.estado !== 'publicada') delete it.publicacion;
