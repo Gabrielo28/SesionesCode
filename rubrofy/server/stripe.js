@@ -59,6 +59,24 @@ async function crearCheckoutSession({ priceId, negocioId, planId, successUrl, ca
   return stripeFetch('/checkout/sessions', body);
 }
 
+// Recarga: pago único (modo "payment"), con el precio armado aquí mismo
+// (price_data): no hace falta crear productos en Stripe. CLP no tiene
+// decimales, así que unit_amount va en pesos.
+async function crearCheckoutPago({ nombre, precioClp, negocioId, recargaId, successUrl, cancelUrl, customerId, email }) {
+  const body = {
+    mode: 'payment',
+    line_items: [{ quantity: 1, price_data: { currency: 'clp', unit_amount: precioClp, product_data: { name: nombre } } }],
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    client_reference_id: negocioId,
+    metadata: { negocioId, recargaId, tipo: 'recarga' },
+    payment_intent_data: { metadata: { negocioId, recargaId, tipo: 'recarga' } },
+  };
+  if (customerId) body.customer = customerId;
+  else if (email) body.customer_email = email;
+  return stripeFetch('/checkout/sessions', body);
+}
+
 async function crearPortalSession({ customerId, returnUrl }) {
   return stripeFetch('/billing_portal/sessions', { customer: customerId, return_url: returnUrl });
 }
@@ -122,6 +140,6 @@ function verificarFirmaWebhook(payloadRaw, header, secret, toleranciaSeg = 300) 
 }
 
 module.exports = {
-  crearCheckoutSession, crearPortalSession, obtenerSuscripcion, cambiarPrecioSuscripcion,
+  crearCheckoutSession, crearCheckoutPago, crearPortalSession, obtenerSuscripcion, cambiarPrecioSuscripcion,
   cancelarSuscripcion, verificarFirmaWebhook,
 };

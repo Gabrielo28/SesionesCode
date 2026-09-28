@@ -72,6 +72,7 @@ queda apagada y el resto funciona igual)
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
+| Edición de reels | Nada que configurar: `railpack.json` instala `ffmpeg` y `fonts-dejavu-core` al desplegar. Si `/api/salud` dice `"edicionReels": false`, agrega la variable `RAILPACK_DEPLOY_APT_PACKAGES` = `ffmpeg fonts-dejavu-core` y vuelve a desplegar. Opcional: `OPENAI_API_KEY` para subtítulos automáticos (sin ella, el dueño escribe el texto), `EDICION_CONCURRENCIA` (1), `EDICION_TIMEOUT_SEG` (360). |
 | Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
 
 ## 4. Primer deploy y verificación

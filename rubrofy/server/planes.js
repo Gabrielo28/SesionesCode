@@ -9,6 +9,9 @@
 // Agencia; mientras no exista, van en Estudio).
 // cuotaFotosIA / cuotaVideosIA: imágenes y videos con IA por mes (cuestan
 // dinero real en Higgsfield u OpenAI: un video de 5 s ronda USD 0,5-1).
+// cuotaReelsEditados: reels que Rubrofy edita por mes a partir del video del
+// negocio (server/edicion-reels.js). Casi no usa IA: el límite cuida la CPU
+// del servidor.
 // cuotaTextosIA: cuántas piezas de texto puede escribir Claude por mes
 // (generar + "otra versión"). Es un techo contra el abuso, no un límite que
 // un negocio normal debiera tocar: ~150 piezas son varias veces lo que
@@ -25,6 +28,7 @@ const PLANES = {
     cuotaTextosIA: 0,
     cuotaFotosIA: 0,
     cuotaVideosIA: 0,
+    cuotaReelsEditados: 0,
     analitica: false,
     ads: false,
     competencia: false,
@@ -38,6 +42,7 @@ const PLANES = {
     cuotaTextosIA: 150,
     cuotaFotosIA: 0,
     cuotaVideosIA: 0,
+    cuotaReelsEditados: 10,
     analitica: true,
     ads: false,
     competencia: false,
@@ -51,6 +56,7 @@ const PLANES = {
     cuotaTextosIA: 300,
     cuotaFotosIA: 20,
     cuotaVideosIA: 6,
+    cuotaReelsEditados: 30,
     analitica: true,
     ads: true,
     competencia: true,
@@ -73,6 +79,7 @@ function listPlanesPublico() {
     cuotaTextosIA: p.cuotaTextosIA,
     cuotaFotosIA: p.cuotaFotosIA,
     cuotaVideosIA: p.cuotaVideosIA,
+    cuotaReelsEditados: p.cuotaReelsEditados,
     analitica: p.analitica,
     ads: p.ads,
     competencia: p.competencia,

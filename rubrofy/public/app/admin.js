@@ -307,6 +307,36 @@
     });
   }
 
+  // Recargas: paquetes que los negocios compran cuando se les acaba el cupo.
+  async function pintarRecargas() {
+    let d;
+    try { d = await api('/api/admin/recargas?dias=' + dias); } catch (err) { return; }
+    const sec = document.createElement('section');
+    sec.className = 'adm-bloque';
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Recargas${AY('admin-recargas')}</h2></div>
+      <section class="adm-kpis">
+        ${tile('Ventas del periodo', num(d.ventas), 'sin contar las simuladas')}
+        ${tile('Ingresos', clp(d.ingresosClp), 'con IVA')}
+        ${tile('Tu ganancia estimada', clp(d.gananciaClp), 'después de IVA, Stripe e IA')}
+      </section>
+      <section class="adm-grid">
+        <div class="ig-card"><div class="ig-card-head"><h2>Paquetes y ganancia por venta</h2></div>
+          <div class="adm-tabla-scroll"><table class="adm-tabla">
+            <thead><tr><th>Paquete</th><th>Precio</th><th>IVA</th><th>Stripe ~4%</th><th>IA (peor caso)</th><th>Ganancia</th></tr></thead>
+            <tbody>${d.paquetes.map((p) => `<tr><td>${esc(p.nombre)}</td><td>${clp(p.precioClp)}</td><td>${clp(p.iva)}</td><td>${clp(p.comision)}</td><td>${clp(p.ia)}</td><td><b>${clp(p.ganancia)}</b></td></tr>`).join('')}</tbody>
+          </table></div>
+          <p class="adm-nota">Precios en server/recargas.js. Costo de IA en el peor caso con el dólar a $950.</p></div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Últimas recargas</h2></div>
+          <div class="adm-tabla-scroll"><table class="adm-tabla">
+            <thead><tr><th>Fecha</th><th>Negocio</th><th>Paquete</th><th>Precio</th></tr></thead>
+            <tbody>${d.lista.length ? d.lista.map((v) => `<tr><td>${esc(fecha(v.fecha))}</td><td>${esc(v.negocio)}</td><td>${esc(v.nombre)}${v.simulada ? ' <small>simulada</small>' : ''}</td><td>${clp(v.precioClp)}</td></tr>`).join('') : '<tr><td colspan="4">Todavía no hay recargas.</td></tr>'}</tbody>
+          </table></div></div>
+      </section>`;
+    const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
+    if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
@@ -314,6 +344,7 @@
       pintar(r);
       await pintarCostos();
       await pintarPruebas();
+      await pintarRecargas();
       pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401

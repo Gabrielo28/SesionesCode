@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/styles.css?v=11">
+  <link rel="stylesheet" href="/styles.css?v=12">
 </head>
 <body>
   <a class="aviso aviso-prueba" href="/registro.html"><span class="aviso-regalo" aria-hidden="true">🎁</span> <b>7 días gratis del plan Pro.</b> Déjanos tu nombre, correo y teléfono, y pruébalo sin tarjeta <span class="aviso-cta">Quiero mis 7 días <span aria-hidden="true">→</span></span></a>
@@ -113,6 +113,8 @@
             <li>El <b>texto completo</b>, con tus precios reales y un llamado a la acción</li>
             <li>De 5 a 10 <b>hashtags</b> de tu rubro y tu zona</li>
             <li>La <b>idea de producción</b>: qué foto usar, qué va en cada lámina o qué tomas lleva el reel</li>
+            <li><b>Tu foto diseñada con tu marca</b>: logo, colores y el precio o el gancho encima</li>
+            <li><b>Tu video editado como reel</b>: sin silencios, en 9:16, con subtítulos, gancho, llamado a la acción y logo</li>
             <li>La <b>foto o el video hecho con IA</b> si no tienes uno (plan Estudio)</li>
           </ul>
           <p class="recibes-formatos">Para <b>posts, carruseles, reels e historias</b>, en la mezcla que tú elijas cada semana.</p>
@@ -314,7 +316,7 @@
     <section id="precios" class="precios">
       <div class="wrap">
         <h2 class="titulo-grande">Planes simples, sin permanencia</h2>
-        <p class="bajada">Precios mensuales por negocio, en pesos chilenos. Sin permanencia: cambias o cancelas cuando quieras. Cada publicación llega completa: gancho, texto con llamado a la acción y hashtags.</p>
+        <p class="bajada">Precios mensuales por negocio, en pesos chilenos. Sin permanencia: cambias o cancelas cuando quieras. ¿Se te acaba algo antes de fin de mes? Cargas más con un pago único.</p>
         <div class="planes" id="planes"><p class="planes-cargando">Cargando planes…</p></div>
         <a class="banner-prueba" href="/registro.html">
           <span class="banner-prueba-tag">7 días gratis</span>
@@ -336,6 +338,8 @@
           <details><summary>¿Va a sonar a robot o a texto de IA?</summary><p>No, y lo puedes comprobar: cada texto trae un puntaje de 0 a 100 que muestra qué tanto suena a tu marca. Rubrofy aprende de tu ficha de voz, de lo que ya publicabas y de cómo corriges sus textos. También te marca las frases que suenan a texto genérico.</p></details>
           <details><summary>¿La IA puede inventar precios o promociones?</summary><p>Rubrofy usa solo los datos que tú le das. Si un texto trae un precio, un descuento o una fecha que no está en tus datos, te lo marca antes de aprobar para que lo revises.</p></details>
           <details><summary>¿Cuánto tiempo me toma a la semana?</summary><p>Unos minutos: revisas la semana que Rubrofy te deja lista, apruebas o pides cambios, y listo. Lo configuras una vez al comenzar.</p></details>
+          <details><summary>¿Qué pasa si se me acaban las piezas o los reels del mes?</summary><p>Puedes cargar más con un pago único, sin cambiar de plan: por ejemplo 50 piezas con IA a $3.990 o 10 reels editados a $2.990. Lo que cargas dura 12 meses y se usa cuando se acaba el cupo del mes.</p></details>
+          <details><summary>¿Rubrofy edita mis videos?</summary><p>Sí. Subes el video de tu reel y Rubrofy lo deja listo: corta los silencios, lo pasa a formato vertical, agrega subtítulos, el gancho al inicio, el llamado a la acción al final y tu logo. También puedes silenciarlo, acelerarlo o cambiarle el color. Tu video original se guarda.</p></details>
           <details><summary>¿Se puede publicar algo sin que yo lo apruebe?</summary><p>No. Solo se publica lo que apruebas. Puedes editar el texto, pedir otra versión o deshacer la aprobación mientras la pieza no haya salido.</p></details>
           <details><summary>¿Qué necesito para publicar en Instagram?</summary><p>Una cuenta profesional de Instagram (de empresa o de creador). La conectas una vez desde tu panel y desde ahí Rubrofy publica lo que apruebes en su fecha y hora.</p></details>
           <details><summary>¿Qué formatos crea?</summary><p>Posts, carruseles, reels e historias. Eliges cuántos de cada uno quieres por semana. Para reels e historias con video, subes tu video o, en el plan Estudio, lo generas con IA.</p></details>
@@ -376,7 +380,7 @@
     // tabla que usa el cobro), para que el sitio nunca quede desactualizado.
     (function () {
       var DETALLES = {
-        pro: ['Estrategia de contenido para tu negocio', 'Cada pieza completa: gancho, texto con llamado a la acción y hashtags', 'La IA escribe con tu voz y aprende de tus correcciones', 'Publicación programada en Instagram, con tu aprobación', 'Resultados de Instagram, mejor horario e informe mensual'],
+        pro: ['Estrategia de contenido para tu negocio', 'Cada pieza completa: gancho, texto con llamado a la acción y hashtags', 'Tus fotos diseñadas con tu logo y tus colores', 'La IA escribe con tu voz y aprende de tus correcciones', 'Publicación programada en Instagram, con tu aprobación', 'Resultados de Instagram, mejor horario e informe mensual'],
         estudio: ['Todo lo del plan Pro', 'Fotos y videos generados con IA', 'Meta Ads y Google Ads en un solo lugar', 'Seguimiento de hasta 5 competidores', 'Todo en el informe mensual'],
       };
       var FILAS = [
@@ -388,6 +392,8 @@
         ['Guía de estilo aprendida de tu contenido', function (p) { return p.usaIA; }],
         ['Resultados de Instagram y mejor horario', function (p) { return p.analitica; }],
         ['Informe mensual', function (p) { return p.analitica; }],
+        ['Diseño de fotos con tu marca (logo y colores)', function () { return true; }],
+        ['Reels editados: cortes, subtítulos, textos y logo', function (p) { return p.cuotaReelsEditados ? p.cuotaReelsEditados + ' al mes' : false; }],
         ['Fotos generadas con IA', function (p) { return p.cuotaFotosIA ? p.cuotaFotosIA + ' al mes' : false; }],
         ['Videos generados con IA', function (p) { return p.cuotaVideosIA ? p.cuotaVideosIA + ' al mes' : false; }],
         ['Meta Ads y Google Ads', function (p) { return p.ads; }],
@@ -406,6 +412,7 @@
           if (p.cuotaTextosIA) extra.push(p.cuotaTextosIA + ' piezas con IA al mes');
           if (p.cuotaFotosIA) extra.push(p.cuotaFotosIA + ' fotos con IA al mes');
           if (p.cuotaVideosIA) extra.push(p.cuotaVideosIA + ' videos con IA al mes');
+          if (p.cuotaReelsEditados) extra.push(p.cuotaReelsEditados + ' reels editados al mes');
           var items = (DETALLES[p.id] || []).concat(extra);
           return '<div class="plan' + (p.id === 'pro' ? ' destacado' : '') + '">' +
             (p.id === 'pro' ? '<span class="plan-etiqueta">Recomendado</span>' : '') +
@@ -425,6 +432,6 @@
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=10"></script>
+  <script src="/app/ayuda.js?v=12"></script>
 </body>
 </html>

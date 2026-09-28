@@ -703,6 +703,71 @@ responden 402 `sinPlan`.
 - Cuentas que tenían una prueba con código (versión anterior): al arrancar
   el servidor quedan sin plan, salvo que paguen o sean administradoras.
 
+## Recargas (server/recargas.js, public/app/recargas.js)
+
+Cuando a un negocio se le acaba el cupo del mes puede comprar un paquete con
+un **pago único** (Stripe Checkout en modo `payment`, no una suscripción):
+
+| Paquete | Precio (IVA incl.) |
+|---|---|
+| 50 piezas con IA | $3.990 |
+| 150 piezas con IA | $9.990 |
+| 10 fotos con IA | $2.990 |
+| 3 videos con IA | $5.990 |
+| 10 reels editados | $2.990 |
+
+- Cada compra es un lote que dura **12 meses**; se usa solo después del cupo
+  del mes (`registrarUsoIA` descuenta primero del mes y el resto del lote
+  vigente más antiguo). Con un lote, Pro también puede usar fotos y videos
+  con IA.
+- Compran solo las cuentas con plan pagado (no en la prueba gratis ni sin
+  plan). Las cuentas de `ADMIN_EMAILS` tienen "Simular compra" (sin cobro,
+  no cuenta como ingreso) para probar.
+- El lote nace pendiente y lo acredita el webhook `checkout.session.completed`
+  (con `metadata.tipo = recarga`); un evento repetido no acredita dos veces.
+- El panel ofrece la recarga sola: el servidor responde 403 con
+  `{ recargar: 'piezas' | 'fotos' | 'videos' | 'reels' }` y se abre la
+  ventana "Cargar más". Con 15 piezas o menos, un aviso arriba del panel.
+- `/admin` → Recargas: ventas, ingresos y ganancia estimada por paquete
+  (descuenta IVA, ~4% de Stripe y el costo de IA en el peor caso).
+
+## Kit de marca y diseño de imágenes (server/marca.js, public/app/diseno.js)
+
+- **Kit de marca** (Configuración): logo (PNG, JPG o WebP, máx. 2 MB,
+  validado por sus bytes), color principal y de apoyo, tipografía (Moderna,
+  Impacto, Elegante, Manuscrita), posición del logo y llamado a la acción
+  por defecto.
+- **Diseñar con mi marca** en cada tarjeta con foto (post, portada de
+  carrusel, historia sin video): plantillas Titular grande, Precio o promo,
+  Frase, Solo logo e Historia con llamado; formato cuadrado o 4:5 (9:16 en
+  historias). Se dibuja en el navegador (sin costo de IA) y se guarda como
+  JPEG en `data/marca/<negocio>/`. Al publicar, la pieza usa el diseño; la
+  foto original no se toca.
+
+## Edición de reels (server/edicion-reels.js, public/app/reels.js)
+
+"Editar con Rubrofy" en un reel o historia con video. Con **ffmpeg** en el
+servidor:
+
+1. Mide el video (máx. 3 min) y detecta silencios (`silencedetect`, -35 dB).
+2. Deja los tramos del recorte sin silencios, hasta 15, 30, 60 o 90 s, los
+   une y ajusta la velocidad (1×, 1,25×, 1,5×).
+3. Subtítulos palabra por palabra (la que suena, resaltada con el color de
+   la marca): automáticos con OpenAI (`OPENAI_API_KEY`, ~USD 0,006/min,
+   queda en Costo de IA) o con el texto que escribe el dueño.
+4. 1080×1920, zoom suave, color (cálido, contraste, blanco y negro) y las
+   capas del panel (gancho los primeros 2 s, llamado a la acción los últimos
+   3, logo) como PNG transparentes dibujados con la tipografía de la marca.
+   Opción de silenciar el audio. Música: pendiente.
+
+- Cupos: Pro 10 y Estudio 30 reels editados al mes (más recargas). Una
+  edición que falla no descuenta.
+- Cola de a un trabajo (`EDICION_CONCURRENCIA`, `EDICION_TIMEOUT_SEG`): lo
+  caro es la CPU. Lo que quedó a medias al reiniciar vuelve a la cola.
+- El original se guarda (`videoOriginal`): "Volver al original" o "Editar de
+  nuevo" parte siempre del original. Push cuando termina o falla.
+- Sin ffmpeg el botón no aparece; `/api/salud` informa `edicionReels`.
+
 ## Planes y cobro (Stripe)
 
 Todo negocio nace **sin plan**. Para pasar a **Pro** o **Estudio** desde

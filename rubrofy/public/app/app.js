@@ -36,15 +36,20 @@
       // intentos, etc.); se guarda aparte para mostrárselo al usuario.
       let mensaje = null;
       let campo = null;
+      let recargar = null;
       try {
         const data = await res.json();
         mensaje = data && typeof data.error === 'string' ? data.error : null;
         campo = data && data.campo;
+        recargar = data && data.recargar;
       } catch (e) { /* respuesta sin JSON */ }
       const err = new Error(mensaje || ('Error de API (' + res.status + ') en ' + path));
       err.status = res.status;
       err.mensaje = mensaje;
       err.campo = campo;
+      err.recargar = recargar;
+      // Se acabó un cupo (piezas, fotos, videos o reels): se ofrece cargar más.
+      if (res.status === 403 && recargar && window.RubrofyRecargas) window.RubrofyRecargas.abrir(recargar);
       throw err;
     }
     return res.json();
@@ -209,6 +214,19 @@
     }
   }
 
+  // Edición de reels (public/app/reels.js): estado y botones en la tarjeta.
+  function edicionHTML(item) {
+    const ed = item.edicion || {};
+    const er = negocioActual.edicionReels || {};
+    if (ed.estado === 'editando') return '<span class="card-video-ok card-video-ia">Editando tu reel… suele tardar 1 o 2 minutos</span>';
+    const partes = [];
+    if (item.video.editado) partes.push(`<span class="card-video-ok card-editado">Reel editado${ed.duracion ? ` · ${String(ed.duracion).replace('.', ',')} s` : ''}</span><a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>`);
+    if (er.disponible) partes.push(`<button class="btn-text" data-action="editar-reel" data-id="${item.id}">${item.videoOriginal ? 'Editar de nuevo' : 'Editar con Rubrofy'}</button>${AY('editar-reel')}`);
+    if (item.videoOriginal) partes.push(`<button class="btn-text" data-action="video-original" data-id="${item.id}">Volver al original</button>`);
+    if (ed.estado === 'error') partes.push(`<span class="card-video-error">La edición falló: ${escapeHtml(ed.error || '')}</span>`);
+    return partes.join('');
+  }
+
   function cardHTML(item) {
     const meta = statusMeta(item.status);
     const caption = item.variants[item.variantIndex];
@@ -227,6 +245,9 @@
     const fotoUrl = fotoNombre
       ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}`
       : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null);
+    // Diseño con la marca: la tarjeta muestra la imagen diseñada.
+    const disenoUrl = item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
+    const puedeDisenar = !!fotoUrl && !publicada && (formato === 'post' || formato === 'carrusel' || (formato === 'historia' && !item.video));
     const mediosIA = negocioActual.mediosIA || {};
     const videoIA = item.videoIA || null;
     const canvasW = 480;
@@ -235,7 +256,9 @@
     return `
       <div class="card">
         <div class="card-media ${isPost ? 'post' : 'historia'}" ${fotoUrl ? '' : `style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
-          ${fotoUrl
+          ${disenoUrl
+            ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
+            : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
             : `<div class="card-texture"></div><div class="card-logo">${inicial}</div><div class="card-headline">${escapeHtml(item.headline)}</div>`}
           <div class="card-network"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f3ede1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#f3ede1" stroke="none"/></svg></div>
@@ -262,6 +285,7 @@
                   ? `<span class="card-video-ok">${item.video.generadoIA ? 'Video con IA' : 'Video cargado'} (${(item.video.bytes / 1048576).toFixed(1)} MB)</span>${item.video.generadoIA ? `<a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>` : ''}<button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
                   : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && negocioActual.videosIADisponibles > 0 ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
               ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
+              ${conVideo && item.video ? edicionHTML(item) : ''}
               ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
             </div>` : ''}
           ${item.gancho && !isEditing ? `<p class="card-gancho"><span>${formato === 'reel' ? 'Gancho · primeros 2 segundos' : formato === 'historia' ? 'Gancho' : 'Gancho · primera línea'}</span>${escapeHtml(item.gancho)}</p>` : ''}
@@ -283,6 +307,7 @@
               <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
               ${!fotoUrl && mediosIA.imagen && !(formato === 'reel' && item.video) ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
               ${!fotoNombre && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
+              ${puedeDisenar ? `<button class="btn-ghost" data-action="disenar" data-id="${item.id}" data-foto="${escapeHtml(fotoUrl)}">${item.diseno ? 'Cambiar diseño' : 'Diseñar con mi marca'}</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
               ${AY('pieza-acciones')}
@@ -472,6 +497,7 @@
   function renderConfig() {
     if (!negocioActual) return;
     renderPerfil();
+    if (window.RubrofyDiseno) window.RubrofyDiseno.renderKit($('#marca-card'));
     window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
     $('#config-nombre').value = negocioActual.nombre || '';
     $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
@@ -698,6 +724,13 @@
         <div class="aviso-botones">${botonesPago()}<button type="button" class="btn-text" data-ir-plan>Comparar planes</button></div>
         <p class="config-error" data-pago-error hidden></p>`;
       cont.hidden = false;
+    } else if (quedanPocas()) {
+      const q = window.RubrofyRecargas.quedan(negocioActual, 'piezas');
+      cont.className = 'aviso-plan aviso-prueba termina';
+      cont.innerHTML = `<div class="aviso-texto"><b>${q ? `Te quedan ${q} piezas con IA este mes` : 'Se acabaron tus piezas con IA de este mes'}</b>
+          <span>Se renuevan el día 1. Si necesitas más antes, carga un paquete: no vence a fin de mes.</span></div>
+        <div class="aviso-botones"><button type="button" class="btn-approve" data-recargar>Cargar más</button><button type="button" class="btn-text" data-ocultar-pocas>Ahora no</button></div>`;
+      cont.hidden = false;
     } else if (pr.vigente && !negocioActual.tieneSuscripcionStripe) {
       cont.className = 'aviso-plan aviso-prueba' + (pr.diasRestantes <= 2 ? ' termina' : '');
       cont.innerHTML = `<div class="aviso-texto"><b>Prueba gratis del plan ${escapeHtml(nombrePlan(pr.plan))}</b>
@@ -708,6 +741,15 @@
       cont.hidden = true;
       cont.innerHTML = '';
     }
+  }
+
+  // Aviso de "quedan pocas piezas": con 15 o menos entre cupo y saldo, hasta que lo cierre.
+  let pocasOcultas = false;
+  try { pocasOcultas = sessionStorage.getItem('rubrofy-pocas') === '1'; } catch (e) { pocasOcultas = false; }
+  function quedanPocas() {
+    if (pocasOcultas || !window.RubrofyRecargas || negocioActual.sinPlan) return false;
+    const c = (negocioActual.cupos || {}).piezas || {};
+    return !!c.cupo && window.RubrofyRecargas.quedan(negocioActual, 'piezas') <= 15;
   }
 
   // Formulario de la prueba gratis (public/app/prueba-form.js) en un diálogo.
@@ -807,9 +849,11 @@
       } else {
         boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">${negocioActual.sinPlan ? 'Elegir' : 'Actualizar a'} ${escapeHtml(p.nombre)}</button>`;
       }
-      const detalle = p.usaIA
-        ? (p.cuotaFotosIA ? `Texto con IA + ${p.cuotaFotosIA} fotos con IA/mes` : 'Texto con IA')
-        : 'Plantillas, sin IA';
+      const detalle = [
+        `${p.cuotaTextosIA} piezas con IA`,
+        p.cuotaFotosIA ? `${p.cuotaFotosIA} fotos y ${p.cuotaVideosIA} videos con IA` : '',
+        p.cuotaReelsEditados ? `${p.cuotaReelsEditados} reels editados` : '',
+      ].filter(Boolean).join(' · ') + ' al mes';
       return `
         <div class="plan-row${esActual ? ' plan-row-actual' : ''}">
           <div>
@@ -821,13 +865,6 @@
       `;
     }).join('');
 
-    const cuota = planesInfo.find((p) => p.id === planActualId);
-    const usoTextos = cuota && cuota.cuotaTextosIA
-      ? `<p class="sub">Piezas con IA disponibles este mes: ${negocioActual.textosIADisponibles} de ${cuota.cuotaTextosIA}.</p>`
-      : '';
-    const usoFotos = cuota && cuota.cuotaFotosIA
-      ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
-      : '';
 
     const pr = negocioActual.prueba || {};
     const estadoPlan = negocioActual.sinPlan && pr.disponible
@@ -844,11 +881,11 @@
       <div class="ig-card-head"><h2>Plan</h2></div>
       ${estadoPlan}
       ${filas}
-      ${usoTextos}
-      ${usoFotos}
+      <div class="rc-uso-caja" id="plan-uso"></div>
       <p class="config-error" id="plan-error" hidden></p>
       ${negocioActual.tieneSuscripcionStripe ? '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>' : ''}
     `;
+    if (window.RubrofyRecargas) window.RubrofyRecargas.renderUso($('#plan-uso'));
   }
 
   // Resultados tiene pestañas: Instagram, Meta Ads, Google Ads y Competencia.
@@ -1044,7 +1081,7 @@
   // Mientras haya videos con IA generándose, la cola se refresca sola.
   let vigilancia = null;
   function vigilarVideos() {
-    const hay = contenido.some((i) => i.videoIA && i.videoIA.estado === 'generando');
+    const hay = contenido.some((i) => (i.videoIA && i.videoIA.estado === 'generando') || (i.edicion && i.edicion.estado === 'editando'));
     if (hay && !vigilancia) {
       vigilancia = setInterval(() => {
         if (vistaActual !== 'cola' || document.hidden) return;
@@ -1129,6 +1166,35 @@
     ]);
     contenido = contenidoData;
     nichoActual = estrategiaData;
+    if (window.RubrofyDiseno) {
+      window.RubrofyDiseno.iniciar({
+        api,
+        negocio: () => negocioActual,
+        setNegocio: (n) => { negocioActual = n; },
+        irA: irAVista,
+        recargarContenido: async () => { contenido = await api('/api/negocios/' + negocioActual.id + '/contenido'); render(); },
+      });
+    }
+    if (window.RubrofyReels) {
+      window.RubrofyReels.iniciar({
+        api,
+        negocio: () => negocioActual,
+        recargar: async () => {
+          negocioActual = await api('/api/me');
+          contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
+          render();
+        },
+      });
+    }
+    if (window.RubrofyRecargas) {
+      window.RubrofyRecargas.iniciar({
+        api,
+        negocio: () => negocioActual,
+        setNegocio: (n) => { negocioActual = n; },
+        irA: irAVista,
+        alCerrar: () => render(),
+      });
+    }
     fotos = fotosData;
     planesInfo = planesData;
     editingIds.clear();
@@ -1143,6 +1209,7 @@
     if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
     const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
     avisarRetornoCheckout();
+    avisarRetornoRecarga();
     avisarRetornoGoogle();
     avisarRetornoInstagram();
     let yaPregunto = false;
@@ -1174,6 +1241,25 @@
 
   // Tras volver de Stripe Checkout (éxito o cancelado), refresca el negocio
   // por si el webhook ya actualizó el plan, avisa, y limpia la URL.
+  // Vuelta de pagar una recarga: el webhook de Stripe la acredita en segundos.
+  async function avisarRetornoRecarga() {
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('recarga');
+    if (!r) return;
+    history.replaceState(null, '', window.location.pathname);
+    if (r !== 'exito') return;
+    const antes = JSON.stringify(negocioActual.saldos || {});
+    for (let i = 0; i < 10; i++) {
+      negocioActual = await api('/api/me');
+      if (JSON.stringify(negocioActual.saldos || {}) !== antes) break;
+      await new Promise((res) => setTimeout(res, 1500));
+    }
+    render();
+    alert(JSON.stringify(negocioActual.saldos || {}) !== antes
+      ? '¡Listo! Tu recarga ya está disponible.'
+      : 'Recibimos tu pago. La recarga aparecerá en unos segundos: recarga la página si no la ves.');
+  }
+
   async function avisarRetornoCheckout() {
     const params = new URLSearchParams(window.location.search);
     const resultado = params.get('checkout');
@@ -1371,6 +1457,12 @@
     $('#aviso-plan').addEventListener('click', (e) => {
       if (e.target.closest('[data-ir-plan]')) return irAVista('config', null, 'cfg-plan');
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
+      if (e.target.closest('[data-recargar]')) return window.RubrofyRecargas.abrir('piezas');
+      if (e.target.closest('[data-ocultar-pocas]')) {
+        pocasOcultas = true;
+        try { sessionStorage.setItem('rubrofy-pocas', '1'); } catch (err) { /* sin almacenamiento */ }
+        return renderAvisoPlan();
+      }
       const btn = e.target.closest('[data-checkout-plan]');
       if (btn) pagarPlan(btn, $('#aviso-plan [data-pago-error]'));
     });
@@ -1397,6 +1489,22 @@
         return;
       }
       if (accion === 'expandir') return btn.classList.toggle('abierta');
+      if (accion === 'editar-reel') {
+        const it = contenido.find((x) => x.id === id);
+        if (it) window.RubrofyReels.abrir(it);
+        return;
+      }
+      if (accion === 'video-original') {
+        btn.disabled = true;
+        try { await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video-original`, { method: 'POST' }); await refreshContenido(); }
+        catch (err) { alert(err.mensaje || 'No se pudo volver al original.'); btn.disabled = false; }
+        return;
+      }
+      if (accion === 'disenar') {
+        const it = contenido.find((x) => x.id === id);
+        if (it) window.RubrofyDiseno.abrirEditor(it, btn.dataset.foto, formatoDe(it));
+        return;
+      }
       if (accion === 'copiar') {
         // El mismo texto que se publica: la versión elegida más sus hashtags.
         const it = contenido.find((x) => x.id === id);

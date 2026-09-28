@@ -136,4 +136,10 @@ function resumen({ dias, negocios, precioPlan, ahora = new Date() }) {
   };
 }
 
-module.exports = { claude, imagen, video, resumen, precioClaude };
+// Transcripción de voz a texto (subtítulos de reels editados), por minuto.
+function audio(negocioId, proveedor, modelo, segundos) {
+  const porMinuto = num(process.env.COSTO_TRANSCRIPCION_MIN_USD, 0.006);
+  guardar({ negocioId, proveedor, tipo: 'audio', uso: 'subtitulos', modelo, cantidad: Math.round(segundos), costo: porMinuto * (segundos / 60) });
+}
+
+module.exports = { claude, imagen, video, audio, resumen, precioClaude };

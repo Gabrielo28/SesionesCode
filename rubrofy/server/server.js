@@ -33,6 +33,9 @@ const push = require('./push');
 const costos = require('./costos');
 const perfil = require('./perfil');
 const pruebaGratis = require('./prueba-gratis');
+const recargas = require('./recargas');
+const marca = require('./marca');
+const edicionReels = require('./edicion-reels');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -211,6 +214,19 @@ function negocioPublico(negocio) {
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
   resto.perfilCompleto = perfil.completo(negocio);
   resto.prueba = pruebaGratis.publico(negocio);
+  resto.reelsEditadosDisponibles = reelsEditadosDisponibles(negocio);
+  resto.edicionReels = { disponible: edicionReels.disponible(), subtitulosAuto: edicionReels.subtitulosAuto() };
+  // Cupo del mes (usado / total) y saldo de recargas, para el panel.
+  const plan = getPlan(negocio.plan);
+  resto.cupos = {
+    piezas: { usado: usoDelMes(negocio, 'usoTextosIA'), cupo: plan.cuotaTextosIA },
+    fotos: { usado: usoDelMes(negocio, 'usoFotosIA'), cupo: plan.cuotaFotosIA },
+    videos: { usado: usoDelMes(negocio, 'usoVideosIA'), cupo: plan.cuotaVideosIA },
+    reels: { usado: usoDelMes(negocio, 'usoReelsEditados'), cupo: plan.cuotaReelsEditados },
+  };
+  resto.saldos = recargas.saldos(negocio.id);
+  const puede = recargas.puedeComprar(negocio, admin.esAdmin(negocio));
+  resto.recargas = { pago: !!process.env.STRIPE_SECRET_KEY, simular: admin.esAdmin(negocio), puede: puede.ok, motivo: puede.motivo || null };
   resto.sinPlan = (negocio.plan || 'gratis') === 'gratis';
   resto.usaIA = !!getPlan(negocio.plan).usaIA;
   return resto;
@@ -336,22 +352,33 @@ function usoDelMes(negocio, campo) {
   return uso && uso.mes === mesActual() ? uso.cantidad : 0;
 }
 
+// Lo que queda del cupo del mes más lo cargado con recargas (server/recargas.js).
+function disponibleIA(negocio, cuota, campo) {
+  const delMes = cuota ? Math.max(0, cuota - usoDelMes(negocio, campo)) : 0;
+  return delMes + recargas.saldo(negocio.id, recargas.tipoDeCampo(campo));
+}
+
 function fotosIADisponibles(negocio) {
-  const cuota = getPlan(negocio.plan).cuotaFotosIA;
-  if (!cuota) return 0;
-  return Math.max(0, cuota - usoDelMes(negocio, 'usoFotosIA'));
+  return disponibleIA(negocio, getPlan(negocio.plan).cuotaFotosIA, 'usoFotosIA');
 }
 
 function videosIADisponibles(negocio) {
-  const cuota = getPlan(negocio.plan).cuotaVideosIA;
-  if (!cuota) return 0;
-  return Math.max(0, cuota - usoDelMes(negocio, 'usoVideosIA'));
+  return disponibleIA(negocio, getPlan(negocio.plan).cuotaVideosIA, 'usoVideosIA');
 }
 
 function textosIADisponibles(negocio) {
-  const cuota = getPlan(negocio.plan).cuotaTextosIA;
-  if (!cuota) return 0;
-  return Math.max(0, cuota - usoDelMes(negocio, 'usoTextosIA'));
+  if (!getPlan(negocio.plan).usaIA) return 0;
+  return disponibleIA(negocio, getPlan(negocio.plan).cuotaTextosIA, 'usoTextosIA');
+}
+
+function reelsEditadosDisponibles(negocio) {
+  if ((negocio.plan || 'gratis') === 'gratis') return 0;
+  return disponibleIA(negocio, getPlan(negocio.plan).cuotaReelsEditados, 'usoReelsEditados');
+}
+
+// Mensaje de "se acabó" con lo que el panel necesita para ofrecer una recarga.
+function sinCupo(tipo, error) {
+  return { error, recargar: tipo };
 }
 
 // Registra el uso sobre el negocio recién leído de disco, no sobre el objeto
@@ -364,7 +391,16 @@ function registrarUsoIA(negocioId, campo, cantidad) {
   if (!fresco) return;
   const mes = mesActual();
   if (!fresco[campo] || fresco[campo].mes !== mes) fresco[campo] = { mes, cantidad: 0 };
-  fresco[campo].cantidad = Math.max(0, fresco[campo].cantidad + cantidad);
+  if (cantidad > 0) {
+    // Primero el cupo del mes; lo que pase de él sale de las recargas.
+    const cupo = getPlan(fresco.plan)[{ usoTextosIA: 'cuotaTextosIA', usoFotosIA: 'cuotaFotosIA', usoVideosIA: 'cuotaVideosIA', usoReelsEditados: 'cuotaReelsEditados' }[campo]] || 0;
+    const enCupo = Math.min(cantidad, Math.max(0, cupo - fresco[campo].cantidad));
+    fresco[campo].cantidad += enCupo;
+    const tipo = recargas.tipoDeCampo(campo);
+    if (cantidad > enCupo && tipo) recargas.consumir(negocioId, tipo, cantidad - enCupo);
+  } else {
+    fresco[campo].cantidad = Math.max(0, fresco[campo].cantidad + cantidad);
+  }
   store.saveNegocio(fresco);
 }
 
@@ -407,6 +443,11 @@ async function prepararPublicacion(negocio, item) {
   if (formato === 'historia' && video) {
     return { tipo: 'historia', videoUrl: enlaceVideo(video) };
   }
+  // Diseño con la marca (server/marca.js): reemplaza la foto de la pieza.
+  const diseno = item.diseno && item.diseno.archivo && fs.existsSync(marca.ruta(negocio.id, item.diseno.archivo)) ? item.diseno.archivo : null;
+  if (diseno && formato !== 'carrusel') {
+    return { tipo: formato === 'historia' ? 'historia' : 'imagen', imageUrl: enlace('_marca', diseno), caption, generadaPorIA: false };
+  }
   if (formato === 'carrusel') {
     const categoria = item.categoriaFoto;
     const disponibles = (categoria && store.listFotos(negocio.id)[categoria]) || [];
@@ -416,7 +457,9 @@ async function prepararPublicacion(negocio, item) {
     // Empieza en una foto distinta por pieza (mismo reparto que el panel).
     const inicio = hashString(item.id) % disponibles.length;
     const orden = disponibles.slice(inicio).concat(disponibles.slice(0, inicio)).slice(0, MAX_FOTOS_CARRUSEL);
-    return { tipo: 'carrusel', imageUrls: orden.map((archivo) => enlace(categoria, archivo)), caption };
+    const imageUrls = orden.map((archivo) => enlace(categoria, archivo));
+    if (diseno) imageUrls[0] = enlace('_marca', diseno); // la portada diseñada
+    return { tipo: 'carrusel', imageUrls, caption };
   }
 
   // Post o historia con una foto: la real de su categoría o, si no hay, una
@@ -638,6 +681,35 @@ for (const n of store.listNegocios()) {
   if (cambio) store.saveNegocio(n);
 }
 store.db.exec('DROP TABLE IF EXISTS canjes; DROP TABLE IF EXISTS codigos;');
+// Reels editados: el resultado reemplaza al video de la pieza (el original
+// se guarda para poder volver a él).
+edicionReels.iniciar({
+  alCosto: (negocioId, segundos) => costos.audio(negocioId, 'openai', process.env.OPENAI_TRANSCRIPCION_MODEL || 'whisper-1', segundos),
+  alTerminar: async ({ negocioId, itemId, ok, archivoTemporal, info, error }) => {
+    const items = store.getContenido(negocioId);
+    const it = encontrarItem(items, itemId);
+    if (!it) return;
+    if (!ok) {
+      it.edicion = { estado: 'error', error: String(error || '').slice(0, 300), terminadoEl: new Date().toISOString() };
+      store.saveContenido(negocioId, items);
+      registrarUsoIA(negocioId, 'usoReelsEditados', -1); // no se cobra una edición que falló
+      notificar(negocioId, { titulo: 'No se pudo editar tu reel', cuerpo: 'Revisa el video en la tarjeta e intenta de nuevo.', url: '/app#cola', tag: 'edicion-' + itemId });
+      return;
+    }
+    const archivo = `${itemId}-ed-${Date.now()}.mp4`;
+    fs.mkdirSync(store.videoDir(negocioId), { recursive: true });
+    fs.renameSync(archivoTemporal, store.videoAbsolutePath(negocioId, archivo));
+    if (!it.videoOriginal) it.videoOriginal = it.video;
+    else if (it.video && it.video.archivo !== it.videoOriginal.archivo) store.borrarVideo(negocioId, it.video.archivo);
+    const bytes = fs.statSync(store.videoAbsolutePath(negocioId, archivo)).size;
+    it.video = { archivo, bytes, editado: true, subidoEl: new Date().toISOString() };
+    it.edicion = { estado: 'lista', duracion: Math.round(info.duracion * 10) / 10, subtitulos: info.subtitulos, terminadoEl: new Date().toISOString() };
+    descartarContenedor(it);
+    store.saveContenido(negocioId, items);
+    notificar(negocioId, { titulo: 'Tu reel editado está listo', cuerpo: 'Revísalo en la tarjeta y apruébalo cuando te guste.', url: '/app#cola', tag: 'edicion-' + itemId });
+  },
+});
+
 // Prueba gratis (server/prueba-gratis.js): aviso 2 días antes y al terminar.
 function revisarPruebas(ahora = Date.now()) {
   for (const a of pruebaGratis.revisar(ahora)) {
@@ -756,7 +828,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/salud' && req.method === 'GET') {
     try {
       store.db.prepare('SELECT 1').get();
-      return sendJSON(res, 200, { ok: true, version: VERSION });
+      return sendJSON(res, 200, { ok: true, version: VERSION, edicionReels: edicionReels.disponible() });
     } catch (err) {
       return sendJSON(res, 503, { ok: false, error: 'La base de datos no responde' });
     }
@@ -793,7 +865,18 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 400, { error: 'JSON inválido' });
         }
 
-        if (evento.type === 'checkout.session.completed') {
+        if (evento.type === 'checkout.session.completed' && evento.data.object.metadata && evento.data.object.metadata.tipo === 'recarga') {
+          // Recarga pagada: se acredita una sola vez aunque Stripe repita el evento.
+          const session = evento.data.object;
+          if (session.payment_status === 'paid' || session.payment_status === 'no_payment_required') {
+            const lote = recargas.acreditar(session.metadata.recargaId, { sesion: session.id });
+            if (lote) {
+              const p = recargas.paquete(lote.paquete);
+              notificar(lote.negocio_id, { titulo: 'Recarga lista', cuerpo: `Se cargaron ${lote.cantidad} ${recargas.TIPOS[lote.tipo].nombre}. Ya puedes seguir creando.`, url: '/app', tag: 'recarga' });
+              if (!p) console.log(`Recarga ${lote.id} con un paquete que ya no existe`);
+            }
+          }
+        } else if (evento.type === 'checkout.session.completed') {
           const session = evento.data.object;
           const negocioId = session.client_reference_id || (session.metadata && session.metadata.negocioId);
           const planId = session.metadata && session.metadata.planId;
@@ -857,6 +940,11 @@ const server = http.createServer(async (req, res) => {
       // GET /api/prueba-gratis — plan, días y opciones del formulario.
       if (parts[1] === 'prueba-gratis' && parts.length === 2 && req.method === 'GET') {
         return sendJSON(res, 200, pruebaGratis.catalogo());
+      }
+
+      // GET /api/recargas — paquetes y precios (server/recargas.js).
+      if (parts[1] === 'recargas' && parts.length === 2 && req.method === 'GET') {
+        return sendJSON(res, 200, recargas.catalogo());
       }
 
       if (parts[1] === 'planes' && parts.length === 2 && req.method === 'GET') {
@@ -1028,6 +1116,14 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, admin.negocios({ calcularRuta }));
         }
         // GET /api/admin/costos?dias=30 — gasto en IA (solo cifras de uso)
+        // GET /api/admin/recargas?dias=30 — ventas de recargas y tu ganancia estimada.
+        if (parts[2] === 'recargas' && parts.length === 3) {
+          const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
+          const nombreDe = (id) => { const n = store.getNegocio(id); return n ? n.nombre : '(eliminado)'; };
+          return sendJSON(res, 200, Object.assign(recargas.resumenAdmin({ dias, nombreDe }), {
+            paquetes: recargas.PAQUETES.map((p) => Object.assign({ id: p.id, nombre: `${p.cantidad} ${recargas.TIPOS[p.tipo].nombre}`, precioClp: p.precioClp }, recargas.cuentas(p))),
+          }));
+        }
         // GET /api/admin/pruebas — quién pidió la prueba gratis (datos del formulario) y en qué quedó.
         if (parts[2] === 'pruebas' && parts.length === 3) {
           const lista = pruebaGratis.listar();
@@ -1259,6 +1355,45 @@ const server = http.createServer(async (req, res) => {
         // POST /api/negocios/:id/portal — enlace al Billing Portal de Stripe
         // (cambiar tarjeta, cancelar) para negocios que ya tienen una
         // suscripción; Stripe se encarga de esa pantalla, no nosotros.
+        // Recargas del negocio:
+        //   GET  /api/negocios/:id/recargas           saldo e historial
+        //   POST /api/negocios/:id/recargas           { paquete } → Stripe Checkout (pago único)
+        //   POST /api/negocios/:id/recargas/simular   { paquete } — solo cuentas administradoras, sin cobro
+        if (parts[3] === 'recargas') {
+          if (parts.length === 4 && req.method === 'GET') {
+            return sendJSON(res, 200, { saldos: recargas.saldos(negocioId), historial: recargas.historial(negocioId), catalogo: recargas.catalogo() });
+          }
+          if (req.method === 'POST' && (parts.length === 4 || (parts.length === 5 && parts[4] === 'simular'))) {
+            const simular = parts.length === 5;
+            const esAdm = admin.esAdmin(negocio);
+            if (simular && !esAdm) return sendJSON(res, 404, { error: 'No encontrado' });
+            const puede = recargas.puedeComprar(negocio, esAdm);
+            if (!puede.ok) return sendJSON(res, 403, { error: puede.motivo });
+            const body = await readBody(req);
+            const p = recargas.paquete(body.paquete);
+            if (!p) return sendJSON(res, 400, { error: 'Elige un paquete' });
+            if (simular) {
+              const r = recargas.crearPendiente(negocioId, p.id);
+              recargas.acreditar(r.id, { simulada: true });
+              return sendJSON(res, 200, { simulada: true, negocio: negocioPublico(store.getNegocio(negocioId)) });
+            }
+            if (!process.env.STRIPE_SECRET_KEY) return sendJSON(res, 503, { error: 'Los pagos todavía no están habilitados. Intenta más tarde.' });
+            const espera = limiteEstrategia.esperaSegundos('recarga:' + negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+            limiteEstrategia.registrar('recarga:' + negocioId);
+            const r = recargas.crearPendiente(negocioId, p.id);
+            const base = urlBase(req);
+            const resultado = await stripe.crearCheckoutPago({
+              nombre: `Rubrofy · ${p.cantidad} ${recargas.TIPOS[p.tipo].nombre}`, precioClp: p.precioClp, negocioId, recargaId: r.id,
+              successUrl: `${base}/app?recarga=exito`, cancelUrl: `${base}/app?recarga=cancelada`,
+              customerId: negocio.stripe && negocio.stripe.customerId, email: negocio.email,
+            });
+            if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+            recargas.registrarSesion(r.id, resultado.data.id);
+            return sendJSON(res, 200, { url: resultado.data.url });
+          }
+        }
+
         if (parts[3] === 'portal' && parts.length === 4 && req.method === 'POST') {
           if (!negocio.stripe || !negocio.stripe.customerId) {
             return sendJSON(res, 400, { error: 'Todavía no tienes una suscripción para gestionar' });
@@ -1410,6 +1545,34 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, store.listFotos(negocioId));
         }
 
+        // Kit de marca (server/marca.js):
+        //   PUT    /api/negocios/:id/marca       { color, color2, fuente, posLogo, cta }
+        //   POST   /api/negocios/:id/marca/logo  { dataBase64 }
+        //   DELETE /api/negocios/:id/marca/logo
+        if (parts[3] === 'marca') {
+          const fresco = store.getNegocio(negocioId);
+          if (parts.length === 4 && req.method === 'PUT') {
+            fresco.marca = Object.assign(marca.normalizar(await readBody(req), fresco.marca), { logo: (fresco.marca || {}).logo });
+            if (!fresco.marca.logo) delete fresco.marca.logo;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          if (parts.length === 5 && parts[4] === 'logo' && req.method === 'POST') {
+            const body = await readBody(req, 3e6);
+            const r = marca.guardarLogo(negocioId, body.dataBase64, (fresco.marca || {}).logo);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            fresco.marca = Object.assign(marca.normalizar({}, fresco.marca), { logo: r.archivo });
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, negocioPublico(fresco));
+          }
+          if (parts.length === 5 && parts[4] === 'logo' && req.method === 'DELETE') {
+            marca.borrar(negocioId, (fresco.marca || {}).logo);
+            if (fresco.marca) delete fresco.marca.logo;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, negocioPublico(fresco));
+          }
+        }
+
         // POST /api/negocios/:id/generar  { cantidad }
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
           if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan (o activa tu prueba gratis) para crear contenido.', sinPlan: true });
@@ -1421,7 +1584,7 @@ const server = http.createServer(async (req, res) => {
           if (usaIA) {
             const disponibles = textosIADisponibles(negocio);
             if (disponibles <= 0) {
-              return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+              return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
             }
             cantidad = Math.min(cantidad, disponibles);
           }
@@ -1731,7 +1894,7 @@ const server = http.createServer(async (req, res) => {
           const conIA = async (fn) => {
             if (!usaIA) return sendJSON(res, 403, { error: 'Escribir con IA está disponible en los planes Pro y Estudio' });
             if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
-            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
             const r = await fn();
             if (r && r.error) return sendJSON(res, 400, r);
             registrarUsoIA(negocioId, 'usoTextosIA', 1);
@@ -1819,7 +1982,7 @@ const server = http.createServer(async (req, res) => {
           if (parts[4] === 'analizar' && parts.length === 5 && req.method === 'POST') {
             if (!getPlan(negocio.plan).usaIA) return sendJSON(res, 403, { error: 'El análisis de estilo con IA está en los planes Pro y Estudio' });
             if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
-            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
             const r = await estilo.analizar(negocio, process.env.ANTHROPIC_API_KEY);
             if (r.error) return sendJSON(res, 400, { error: r.error });
             registrarUsoIA(negocioId, 'usoTextosIA', 1);
@@ -1895,6 +2058,68 @@ const server = http.createServer(async (req, res) => {
         // escribe por streaming a un archivo temporal y se corta si pasa del
         // máximo, sin cargarlo entero en memoria.
         // DELETE /api/negocios/:id/contenido/:itemId/video — lo quita.
+        // Diseño con la marca de una pieza (JPEG armado en el panel):
+        //   POST   /api/negocios/:id/contenido/:itemId/diseno { dataBase64, plantilla }
+        //   DELETE /api/negocios/:id/contenido/:itemId/diseno
+        if (parts[3] === 'contenido' && parts.length === 6 && parts[5] === 'diseno' && ['POST', 'DELETE'].includes(req.method)) {
+          const itemId = parts[4];
+          const items = store.getContenido(negocioId);
+          const item = encontrarItem(items, itemId);
+          if (!item) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+          const pub = item.publicacion;
+          if (pub && ['publicando', 'publicada'].includes(pub.estado)) return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
+          const anterior = item.diseno && item.diseno.archivo;
+          if (req.method === 'DELETE') {
+            marca.borrar(negocioId, anterior);
+            delete item.diseno;
+          } else {
+            const body = await readBody(req, 9e6);
+            const r = marca.guardarDiseno(negocioId, itemId, body.dataBase64, anterior);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            item.diseno = { archivo: r.archivo, plantilla: marca.PLANTILLAS.includes(body.plantilla) ? body.plantilla : 'titular', creadoEl: new Date().toISOString() };
+          }
+          store.saveContenido(negocioId, items);
+          return sendJSON(res, 200, item);
+        }
+
+        // Edición de reels (server/edicion-reels.js):
+        //   POST /api/negocios/:id/contenido/:itemId/editar-reel  { opciones, capas: { gancho, cta, logo } }
+        //   POST /api/negocios/:id/contenido/:itemId/video-original — deshace la edición
+        if (parts[3] === 'contenido' && parts.length === 6 && ['editar-reel', 'video-original'].includes(parts[5]) && req.method === 'POST') {
+          const itemId = parts[4];
+          const items = store.getContenido(negocioId);
+          const item = encontrarItem(items, itemId);
+          if (!item) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+          const pub = item.publicacion;
+          if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, itemId)) {
+            return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
+          }
+          if (edicionReels.enProceso(negocioId, itemId)) return sendJSON(res, 409, { error: 'Este reel se está editando. Espera a que termine.' });
+          if (parts[5] === 'video-original') {
+            if (!item.videoOriginal) return sendJSON(res, 400, { error: 'Este video no tiene una edición que deshacer' });
+            if (item.video) store.borrarVideo(negocioId, item.video.archivo);
+            item.video = item.videoOriginal;
+            delete item.videoOriginal;
+            delete item.edicion;
+            descartarContenedor(item);
+            store.saveContenido(negocioId, items);
+            return sendJSON(res, 200, item);
+          }
+          if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para editar reels.', sinPlan: true });
+          if (!edicionReels.disponible()) return sendJSON(res, 503, { error: 'La edición de reels todavía no está disponible. Intenta más tarde.' });
+          if (!['reel', 'historia'].includes(formatoDe(item))) return sendJSON(res, 400, { error: 'La edición es para Reels e historias con video' });
+          const base = item.videoOriginal || item.video;
+          if (!base) return sendJSON(res, 400, { error: 'Sube primero el video de este reel' });
+          if (reelsEditadosDisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('reels', 'Ya usaste tus reels editados de este mes. Puedes cargar más.'));
+          const body = await readBody(req, 14e6);
+          const r = edicionReels.encolar({ negocioId, itemId, entrada: base.archivo, opciones: body.opciones, capas: body.capas });
+          if (r.error) return sendJSON(res, 400, { error: r.error });
+          registrarUsoIA(negocioId, 'usoReelsEditados', 1);
+          item.edicion = { estado: 'editando', desde: new Date().toISOString() };
+          store.saveContenido(negocioId, items);
+          return sendJSON(res, 200, item);
+        }
+
         if (parts[3] === 'contenido' && parts.length === 6 && parts[5] === 'video') {
           const itemId = parts[4];
           const item = encontrarItem(store.getContenido(negocioId), itemId);
@@ -1909,7 +2134,10 @@ const server = http.createServer(async (req, res) => {
             const fresco = encontrarItem(items, itemId);
             if (fresco && fresco.video) {
               store.borrarVideo(negocioId, fresco.video.archivo);
+              if (fresco.videoOriginal) store.borrarVideo(negocioId, fresco.videoOriginal.archivo);
               delete fresco.video;
+              delete fresco.videoOriginal;
+              delete fresco.edicion;
               descartarContenedor(fresco);
               store.saveContenido(negocioId, items);
             }
@@ -1964,6 +2192,9 @@ const server = http.createServer(async (req, res) => {
               return sendJSON(res, 404, { error: 'Contenido no encontrado' });
             }
             if (fresco.video && fresco.video.archivo !== archivo) store.borrarVideo(negocioId, fresco.video.archivo);
+            if (fresco.videoOriginal && fresco.videoOriginal.archivo !== archivo) store.borrarVideo(negocioId, fresco.videoOriginal.archivo);
+            delete fresco.videoOriginal; // un video nuevo reemplaza también a la edición anterior
+            delete fresco.edicion;
             fs.renameSync(temporal, destino);
             fresco.video = { archivo, bytes, subidoEl: new Date().toISOString() };
             descartarContenedor(fresco);
@@ -2091,7 +2322,7 @@ const server = http.createServer(async (req, res) => {
             } else {
               const usaIA = getPlan(negocio.plan).usaIA;
               if (usaIA && textosIADisponibles(negocio) <= 0) {
-                return sendJSON(res, 403, { error: 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1.' });
+                return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
               }
               const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants, formatoDe(item), indicacion) : null;
               if (nueva) {
@@ -2111,8 +2342,8 @@ const server = http.createServer(async (req, res) => {
             const cambiarVersion = aplicar;
             aplicar = (it) => { cambiarVersion(it); delete it.editado; delete it.textoIA; guardian.aplicar(it, negocio); };
           } else if (accion === 'imagen' && req.method === 'POST') {
-            if (!getPlan(negocio.plan).cuotaFotosIA) {
-              return sendJSON(res, 403, { error: 'Las fotos generadas por IA están disponibles en el plan Estudio' });
+            if (!getPlan(negocio.plan).cuotaFotosIA && recargas.saldo(negocioId, 'fotos') <= 0) {
+              return sendJSON(res, 403, sinCupo('fotos', 'Las fotos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
             }
             if (!medios.proveedorImagen()) {
               return sendJSON(res, 400, { error: 'La generación de imágenes con IA no está configurada' });
@@ -2122,7 +2353,7 @@ const server = http.createServer(async (req, res) => {
             if (cuerpoImagen.rehacer && store.tieneFotoIA(negocioId, item.id)) fs.rmSync(store.fotoIAAbsolutePath(negocioId, item.id), { force: true });
             if (!store.tieneFotoIA(negocioId, item.id)) {
               if (fotosIADisponibles(negocio) <= 0) {
-                return sendJSON(res, 403, { error: 'Ya usaste tu cuota de fotos con IA de este mes' });
+                return sendJSON(res, 403, sinCupo('fotos', 'Ya usaste tus fotos con IA de este mes. Puedes cargar más.'));
               }
               let buffer;
               try {
@@ -2138,13 +2369,13 @@ const server = http.createServer(async (req, res) => {
           } else if (accion === 'video-ia' && req.method === 'POST') {
             // Video con IA para un Reel o historia: se anima la foto de la
             // pieza si tiene una (real o IA), si no se genera desde el texto.
-            if (!getPlan(negocio.plan).cuotaVideosIA) {
-              return sendJSON(res, 403, { error: 'Los videos con IA están disponibles en el plan Estudio' });
+            if (!getPlan(negocio.plan).cuotaVideosIA && recargas.saldo(negocioId, 'videos') <= 0) {
+              return sendJSON(res, 403, sinCupo('videos', 'Los videos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
             }
             if (!medios.proveedorVideo()) return sendJSON(res, 400, { error: 'La generación de videos con IA no está configurada' });
             if (!['reel', 'historia'].includes(formatoDe(item))) return sendJSON(res, 400, { error: 'Los videos con IA son para Reels e historias' });
             if (item.video && !item.video.generadoIA) return sendJSON(res, 409, { error: 'Esta pieza ya tiene un video subido. Quítalo primero si quieres uno con IA.' });
-            if (videosIADisponibles(negocio) <= 0) return sendJSON(res, 403, { error: 'Ya usaste tu cuota de videos con IA de este mes' });
+            if (videosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('videos', 'Ya usaste tus videos con IA de este mes. Puedes cargar más.'));
             let imagenUrl = null;
             const base = process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null;
             if (base) {
@@ -2225,10 +2456,12 @@ const server = http.createServer(async (req, res) => {
       const autorizadoPorToken = tokenFoto && auth.verificarTokenFoto(tokenFoto, negocioId, categoria, archivo);
       if (sesionActual(req) !== negocioId && !autorizadoPorToken) return notFound(res);
       const esGenerada = categoria === '_ia';
-      const filePath = esGenerada
-        ? store.fotoIAAbsolutePath(path.basename(negocioId), path.basename(archivo, '.png'))
-        : store.fotoAbsolutePath(path.basename(negocioId), path.basename(categoria), path.basename(archivo));
-      const dirPermitido = esGenerada ? store.FOTOS_IA_DIR : store.FOTOS_DIR;
+      const esMarca = categoria === '_marca'; // logo y diseños (server/marca.js)
+      const filePath = esMarca ? marca.ruta(negocioId, archivo)
+        : esGenerada
+          ? store.fotoIAAbsolutePath(path.basename(negocioId), path.basename(archivo, '.png'))
+          : store.fotoAbsolutePath(path.basename(negocioId), path.basename(categoria), path.basename(archivo));
+      const dirPermitido = esMarca ? marca.MARCA_DIR : esGenerada ? store.FOTOS_IA_DIR : store.FOTOS_DIR;
       if (!filePath.startsWith(dirPermitido)) return notFound(res);
       return fs.readFile(filePath, (err, content) => {
         if (err) return notFound(res);
