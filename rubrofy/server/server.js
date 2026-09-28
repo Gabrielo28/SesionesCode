@@ -169,7 +169,9 @@ function slugify(str) {
 function idUnico(base) {
   let id = base;
   let n = 2;
-  while (store.getNegocio(id)) {
+  // Tampoco un id de una cuenta eliminada: sus sesiones y enlaces firmados
+  // (que llevan el id) seguirían valiendo para la cuenta nueva.
+  while (store.getNegocio(id) || store.idUsado(id)) {
     id = `${base}-${n}`;
     n += 1;
   }
@@ -181,8 +183,10 @@ function sendJSON(res, status, data, extraHeaders) {
   res.writeHead(status, Object.assign({
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
-    'X-Content-Type-Options': 'nosniff',
-  }, extraHeaders));
+    // Las respuestas de la API traen datos de la cuenta: ni el navegador ni
+    // Cloudflare las guardan.
+    'Cache-Control': 'no-store',
+  }, CABECERAS_SEGURIDAD, extraHeaders));
   res.end(body);
 }
 
@@ -259,6 +263,16 @@ function buscarNegocioPorEmail(email) {
   return store.listNegocios().find((n) => n.email === buscado) || null;
 }
 
+// Nadie puede meter Rubrofy en un iframe (clickjacking), se usa siempre
+// https y no se filtra la ruta completa a otros sitios.
+const CABECERAS_SEGURIDAD = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000',
+};
+
 function notFound(res) {
   sendJSON(res, 404, { error: 'No encontrado' });
 }
@@ -266,12 +280,17 @@ function notFound(res) {
 function readBody(req, maxBytes) {
   const limit = maxBytes || 1e6;
   return new Promise((resolve, reject) => {
-    let raw = '';
+    const trozos = [];
+    let largo = 0;
     req.on('data', (chunk) => {
-      raw += chunk;
-      if (raw.length > limit) req.destroy();
+      largo += chunk.length;
+      if (largo > limit) { req.destroy(); return reject(new Error('Cuerpo demasiado grande')); }
+      trozos.push(chunk);
     });
     req.on('end', () => {
+      // Se une en bytes y recién ahí se decodifica: un carácter UTF-8
+      // partido entre dos trozos se corrompía.
+      const raw = Buffer.concat(trozos).toString('utf8');
       if (!raw) return resolve({});
       try {
         resolve(JSON.parse(raw));
@@ -313,8 +332,8 @@ function serveStatic(res, baseDir, rel) {
     const cache = ['.html', '.js', '.css', '.json', '.txt', '.xml', '.webmanifest'].includes(ext) ? 'no-cache' : 'public, max-age=86400';
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
-      'X-Content-Type-Options': 'nosniff',
       'Cache-Control': cache,
+      ...CABECERAS_SEGURIDAD,
     });
     res.end(content);
   });
@@ -815,7 +834,15 @@ function maxISO(a, b) {
 }
 
 const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, `http://${req.headers.host}`);
+  // Una ruta o un Host malformado respondía con una excepción fuera del try
+  // que tumbaba el proceso entero: se contesta 400 y listo.
+  let url;
+  try {
+    url = new URL(req.url, 'http://localhost');
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Solicitud inválida');
+  }
   const parts = url.pathname.split('/').filter(Boolean);
 
   // El webhook de Stripe es una mutación legítima que no viene del panel
@@ -850,9 +877,11 @@ const server = http.createServer(async (req, res) => {
       // parsea a JSON).
       if (esWebhookStripe && req.method === 'POST') {
         const raw = await new Promise((resolve, reject) => {
-          let data = '';
-          req.on('data', (chunk) => { data += chunk; if (data.length > 1e6) req.destroy(); });
-          req.on('end', () => resolve(data));
+          const trozos = [];
+          let largo = 0;
+          req.on('data', (chunk) => { largo += chunk.length; if (largo > 1e6) { req.destroy(); return reject(new Error('Cuerpo demasiado grande')); } trozos.push(chunk); });
+          // En bytes: la firma de Stripe falla si un acento queda partido entre trozos.
+          req.on('end', () => resolve(Buffer.concat(trozos).toString('utf8')));
           req.on('error', reject);
         });
         const firmaOk = stripe.verificarFirmaWebhook(raw, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET);
@@ -2516,6 +2545,10 @@ function apagar(senal) {
 }
 process.on('SIGTERM', () => apagar('SIGTERM'));
 process.on('SIGINT', () => apagar('SIGINT'));
+
+// Última red: un error que se escape de una promesa se registra en vez de
+// tumbar el servidor (y con él las ediciones de reels en curso).
+process.on('unhandledRejection', (err) => console.error('Promesa rechazada sin manejar:', err));
 
 server.listen(PORT, () => {
   console.log(`Rubrofy corriendo en http://localhost:${PORT} · datos en ${require('./datos').DATA_DIR}`);

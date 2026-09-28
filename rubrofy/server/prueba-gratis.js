@@ -29,18 +29,42 @@ db.exec(`
 `);
 // Al eliminar la cuenta se borran sus datos, pero el número queda marcado
 // (sin nada más) para que no se repita la prueba con una cuenta nueva.
+// Se guarda 24 meses (RETENCION_NUMERO_DIAS) y después se borra solo; privacidad.html
+// y eliminar-datos.html lo dicen, si cambia hay que cambiarlas.
 db.exec(`CREATE TABLE IF NOT EXISTS pruebas_usadas (telefono TEXT PRIMARY KEY, usado_el TEXT NOT NULL)`);
+const RETENCION_NUMERO_DIAS = 730;
 store.registrarLimpieza((negocioId) => db.prepare('DELETE FROM prospectos WHERE negocio_id = ?').run(negocioId));
+
+// Los números guardados antes de normalizarlos (p. ej. 912345678) pasan al
+// formato actual (56912345678), para que sigan bloqueando la repetición.
+{
+  const norm = (d) => (d.startsWith('00') ? d.slice(2) : d).replace(/^(9\d{8})$/, '56$1').replace(/^(\d{8})$/, '569$1');
+  for (const tabla of ['pruebas_usadas', 'prospectos']) {
+    for (const f of db.prepare(`SELECT telefono FROM ${tabla}`).all()) {
+      const n = norm(f.telefono);
+      if (n !== f.telefono) db.prepare(`UPDATE OR IGNORE ${tabla} SET telefono = ? WHERE telefono = ?`).run(n, f.telefono);
+    }
+  }
+}
 
 const sql = {
   guardar: db.prepare('INSERT INTO prospectos (negocio_id, telefono, datos, creado_el) VALUES (?, ?, ?, ?)'),
   usado: db.prepare('INSERT OR IGNORE INTO pruebas_usadas (telefono, usado_el) VALUES (?, ?)'),
   telefonoUsado: db.prepare('SELECT 1 FROM pruebas_usadas WHERE telefono = ?'),
   listar: db.prepare('SELECT * FROM prospectos ORDER BY creado_el DESC'),
+  purgar: db.prepare('DELETE FROM pruebas_usadas WHERE usado_el < ? AND telefono NOT IN (SELECT telefono FROM prospectos)'),
 };
 
 const txt = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
-const digitos = (v) => String(v || '').replace(/\D/g, '');
+// El mismo número escrito de varias formas (+56 9…, 9…, 0056 9…) cuenta
+// como uno solo: se lleva a 56XXXXXXXXX cuando es un celular chileno.
+function digitos(v) {
+  let d = String(v || '').replace(/\D/g, '');
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.length === 9 && d.startsWith('9')) d = '56' + d;
+  if (d.length === 8) d = '569' + d;
+  return d;
+}
 
 function suscrito(negocio) {
   return !!(negocio.stripe && negocio.stripe.subscriptionId && ['active', 'trialing', 'past_due'].includes(negocio.stripe.estado));
@@ -59,6 +83,8 @@ function validar(body, emailCuenta) {
     nombre: txt(b.nombre, 100),
     email: txt(b.email || emailCuenta, 200).toLowerCase(),
     telefono: txt(b.telefono, 30).replace(/[^\d+ ]/g, ''),
+    // Autorización aparte y opcional para que Rubrofy le escriba.
+    contacto: b.contacto === true,
   };
   if (datos.nombre.length < 2) return { error: 'Escribe tu nombre', campo: 'nombre' };
   if (!EMAIL_RE.test(datos.email)) return { error: 'Escribe un correo válido', campo: 'email' };
@@ -94,6 +120,7 @@ function vigente(negocio, ahora = Date.now()) {
 
 // Termina las pruebas vencidas; avisa 2 días antes. Devuelve los avisos a enviar.
 function revisar(ahora = Date.now()) {
+  sql.purgar.run(new Date(ahora - RETENCION_NUMERO_DIAS * DIA).toISOString());
   const avisos = [];
   for (const n of store.listNegocios()) {
     const p = n.prueba;
@@ -132,7 +159,7 @@ function listar() {
     if (n) estado = suscrito(n) ? 'pagando' : vigente(n) ? 'en prueba' : 'terminó sin pagar';
     return {
       fecha: f.creado_el, negocio: n ? n.nombre : '(cuenta eliminada)', estado,
-      nombre: d.nombre, email: d.email || (n ? n.email : ''), telefono: d.telefono,
+      nombre: d.nombre, email: d.email || (n ? n.email : ''), telefono: d.telefono, contacto: d.contacto === true,
     };
   });
 }

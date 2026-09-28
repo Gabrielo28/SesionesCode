@@ -341,7 +341,7 @@ function encolar({ negocioId, itemId, entrada, opciones, capas }) {
     const b64 = capas && capas[c] ? String(capas[c]).replace(/^data:[^,]+,/, '') : '';
     if (!b64) continue;
     const buf = Buffer.from(b64, 'base64');
-    if (buf.length > 4 * 1024 * 1024 || buf.readUInt32BE(0) !== 0x89504e47) {
+    if (buf.length < 8 || buf.length > 4 * 1024 * 1024 || buf.readUInt32BE(0) !== 0x89504e47) {
       fs.rmSync(dir, { recursive: true, force: true });
       return { error: 'Una de las capas no es una imagen PNG válida' };
     }

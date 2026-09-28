@@ -87,7 +87,7 @@
     'campanas': { t: 'Campañas', d: 'Cada campaña con su inversión, resultados y costo por resultado.',
       p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos (en Meta o Google).'] },
     'admin-pruebas': { t: 'Pruebas gratis', d: 'Cada negocio puede pedir 7 días gratis del plan Pro dejando su nombre, correo y teléfono. Aquí ves esos datos y si terminó pagando.',
-      p: ['Escríbeles por WhatsApp durante la prueba: es cuando más ayuda un contacto.', 'Una prueba por negocio y por teléfono.', '"Descargar CSV" sirve para tu CRM o planilla.'] },
+      p: ['Escríbeles por WhatsApp durante la prueba solo si en «Acepta contacto» dice Sí: es cuando más ayuda un contacto.', 'Una prueba por negocio y por teléfono.', '"Descargar CSV" sirve para tu CRM o planilla.'] },
     'editar-reel': { t: 'Editar con Rubrofy', d: 'Rubrofy toma el video que subiste y arma el reel: corta silencios, lo deja en 9:16, agrega el gancho al inicio, subtítulos, el llamado a la acción al final y tu logo. También puedes silenciarlo, acelerarlo o cambiarle el color.',
       p: ['Tarda 1 o 2 minutos; te avisamos cuando esté.', 'Tu video original se guarda: puedes volver a él o editarlo de nuevo.', 'Cada edición usa 1 de tus reels editados del mes (10 en Pro, 30 en Estudio).'] },
     'kit-marca': { t: 'Kit de marca', d: 'Tu logo, tus colores, tu tipografía y tu llamado a la acción. Rubrofy los usa al diseñar tus publicaciones ("Diseñar con mi marca" en cada tarjeta) y al editar tus reels.',

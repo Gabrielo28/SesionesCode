@@ -113,6 +113,8 @@ async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contexto
     const parsed = texto && extraerJSON(texto);
     if (!esEstrategiaValida(parsed)) return respaldo();
     if (cats && JSON.stringify(parsed.categoriasFoto) !== JSON.stringify(cats)) return respaldo();
+    // Las categorías terminan como carpetas: nada de / ni .. aunque la IA lo devuelva.
+    if (!parsed.categoriasFoto.every(require('./store').categoriaSegura)) return respaldo();
     return {
       rubro,
       resumen: typeof parsed.resumen === 'string' && parsed.resumen.trim() ? parsed.resumen.trim().slice(0, 500) : resumenGenerico(plan),

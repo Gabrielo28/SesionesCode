@@ -272,10 +272,12 @@
     sec.className = 'adm-bloque';
     sec.id = 'adm-pruebas';
     const conv = d.pagando + d.sinPagar ? pct(d.pagando / (d.pagando + d.sinPagar)) : '—';
-    const COLS = [['fecha', 'Fecha'], ['nombre', 'Nombre'], ['email', 'Correo'], ['telefono', 'Teléfono'], ['negocio', 'Negocio'], ['estado', 'Estado']];
+    const COLS = [['fecha', 'Fecha'], ['nombre', 'Nombre'], ['email', 'Correo'], ['telefono', 'Teléfono'], ['contacto', 'Acepta contacto'], ['negocio', 'Negocio'], ['estado', 'Estado']];
     const celda = (p, k) => {
       if (k === 'fecha') return esc(fecha(p.fecha));
-      if (k === 'telefono') { const t = String(p.telefono).replace(/\D/g, ''); return `<a href="https://wa.me/${t}" target="_blank" rel="noopener">${esc(p.telefono)}</a>`; }
+      if (k === 'contacto') return p.contacto ? 'Sí' : 'No';
+      // Solo se ofrece escribir por WhatsApp a quien lo autorizó.
+      if (k === 'telefono') { const t = String(p.telefono).replace(/\D/g, ''); return p.contacto ? `<a href="https://wa.me/${t}" target="_blank" rel="noopener">${esc(p.telefono)}</a>` : esc(p.telefono); }
       if (k === 'email') return p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '—';
       if (k === 'estado') return `<span class="adm-est adm-est-${esc(p.estado.replace(/\s+/g, '-'))}">${esc(p.estado)}</span>`;
       return esc(p[k] || '—');
@@ -292,12 +294,12 @@
         <thead><tr>${COLS.map((c) => `<th>${c[1]}</th>`).join('')}</tr></thead>
         <tbody>${d.prospectos.length ? d.prospectos.map((p) => `<tr>${COLS.map((c) => `<td>${celda(p, c[0])}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${COLS.length}">Todavía nadie ha pedido su prueba gratis.</td></tr>`}</tbody>
       </table></div>
-      <p class="adm-nota">Son los datos que cada persona dejó para activar su prueba y aceptó que la contactes. No incluyen nada del contenido de su negocio.</p></div>`;
+      <p class="adm-nota">Son los datos que cada persona dejó para activar su prueba. Escríbele solo si en «Acepta contacto» dice Sí. No incluyen nada del contenido de su negocio.</p></div>`;
     const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
     if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
     sec.querySelector('[data-csv]').addEventListener('click', () => {
       const q = (v) => '"' + String(v == null ? '' : v).replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""') + '"';
-      const filas = d.prospectos.map((p) => COLS.map((c) => q(p[c[0]])).join(','));
+      const filas = d.prospectos.map((p) => COLS.map((c) => q(c[0] === 'contacto' ? (p.contacto ? 'Sí' : 'No') : p[c[0]])).join(','));
       const blob = new Blob(['\ufeff' + [COLS.map((c) => q(c[1])).join(',')].concat(filas).join('\n')], { type: 'text/csv;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);

@@ -20,13 +20,15 @@
       ${campo('nombre', 'Nombre', `<input data-pg="nombre" autocomplete="name" maxlength="100" value="${esc(v.nombre)}" required>`)}
       ${o.sinCorreo ? '' : campo('email', 'Correo', `<input data-pg="email" type="email" autocomplete="email" maxlength="200" value="${esc(v.email)}" required>`)}
       ${campo('telefono', 'Número de teléfono', `<input data-pg="telefono" type="tel" autocomplete="tel" maxlength="30" placeholder="+56 9 1234 5678" value="${esc(v.telefono)}" required>`)}
-      <p class="pg-nota">Al activar la prueba aceptas que te contactemos por WhatsApp o correo para ayudarte con ella.</p>
+      <label class="pg-acepta"><input type="checkbox" data-pg="contacto"${v.contacto ? ' checked' : ''}> <span>Acepto que Rubrofy me escriba por WhatsApp o correo para ayudarme con la prueba (opcional).</span></label>
+      <p class="pg-nota">Tu teléfono sirve para que la prueba se use una vez por número. Si no marcas la casilla, no te escribiremos por él.</p>
     </div>`;
   }
 
   function leer(raiz) {
     const val = (k) => { const el = raiz.querySelector(`[data-pg="${k}"]`); return el ? el.value : undefined; };
-    return { nombre: val('nombre'), email: val('email'), telefono: val('telefono') };
+    const c = raiz.querySelector('[data-pg="contacto"]');
+    return { nombre: val('nombre'), email: val('email'), telefono: val('telefono'), contacto: !!(c && c.checked) };
   }
 
   function limpiarErrores(raiz) {

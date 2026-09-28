@@ -43,6 +43,8 @@ db.exec(`
     doc TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS negocios_email ON negocios (email);
+  -- Ids de cuentas eliminadas: no se vuelven a usar (solo el id, nada más).
+  CREATE TABLE IF NOT EXISTS ids_eliminados (id TEXT PRIMARY KEY, eliminado_el TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS contenido (
     negocio_id TEXT PRIMARY KEY,
     items TEXT NOT NULL
@@ -55,6 +57,8 @@ const sql = {
   saveNegocio: db.prepare(`INSERT INTO negocios (id, nombre, email, doc) VALUES (?, ?, ?, ?)
     ON CONFLICT (id) DO UPDATE SET nombre = excluded.nombre, email = excluded.email, doc = excluded.doc`),
   deleteNegocio: db.prepare('DELETE FROM negocios WHERE id = ?'),
+  marcarIdUsado: db.prepare('INSERT OR IGNORE INTO ids_eliminados (id, eliminado_el) VALUES (?, ?)'),
+  idUsado: db.prepare('SELECT 1 FROM ids_eliminados WHERE id = ?'),
   getContenido: db.prepare('SELECT items FROM contenido WHERE negocio_id = ?'),
   saveContenido: db.prepare(`INSERT INTO contenido (negocio_id, items) VALUES (?, ?)
     ON CONFLICT (negocio_id) DO UPDATE SET items = excluded.items`),
@@ -130,6 +134,7 @@ function deleteNegocio(negocioId) {
     for (const borrar of alBorrarNegocio) borrar(negocioId);
     sql.deleteContenido.run(negocioId);
     sql.deleteNegocio.run(negocioId);
+    sql.marcarIdUsado.run(negocioId, new Date().toISOString());
   });
   fs.rmSync(path.join(FOTOS_DIR, negocioId), { recursive: true, force: true });
   fs.rmSync(path.join(FOTOS_IA_DIR, negocioId), { recursive: true, force: true });
@@ -137,6 +142,11 @@ function deleteNegocio(negocioId) {
 }
 
 // --- fotos: data/fotos/<negocioId>/<categoria>/<archivo> ---
+
+// La categoría es un nombre de carpeta: letras, números, espacios y guiones.
+function categoriaSegura(c) {
+  return typeof c === 'string' && /^[\p{L}\p{N}][\p{L}\p{N} _-]{0,39}$/u.test(c);
+}
 
 function negocioFotosDir(negocioId) {
   return path.join(FOTOS_DIR, negocioId);
@@ -155,6 +165,7 @@ function listFotos(negocioId) {
 }
 
 function addFoto(negocioId, categoria, filename, buffer) {
+  if (!categoriaSegura(categoria)) throw new Error('Categoría inválida');
   const dir = path.join(negocioFotosDir(negocioId), categoria);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, filename), buffer);
@@ -220,6 +231,8 @@ module.exports = {
   getContenido,
   saveContenido,
   deleteNegocio,
+  idUsado: (id) => !!sql.idUsado.get(id),
+  categoriaSegura,
   listFotos,
   addFoto,
   deleteFoto,
