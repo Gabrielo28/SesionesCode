@@ -37,6 +37,15 @@ img { display: block; max-width: 100%; height: auto; }
 /* --- aviso superior --- */
 .aviso { display: block; text-align: center; background: var(--rosa); color: var(--negro); font-weight: 700; font-size: 14px; padding: 11px 16px; }
 .aviso:hover { text-decoration: underline; }
+.aviso-prueba { font-weight: 500; }
+.aviso-prueba b { font-weight: 800; }
+.aviso-cta { display: inline-block; margin-left: 8px; background: var(--negro); color: #fff; border-radius: 999px; padding: 3px 12px; font-weight: 700; font-size: 13px; }
+.banner-prueba { display: flex; align-items: center; gap: 18px 24px; flex-wrap: wrap; margin: 28px 0 0; padding: 22px 26px; border-radius: 20px; background: var(--negro); color: #fff; text-align: left; }
+.banner-prueba:hover .btn { background: #ff6aa7; }
+.banner-prueba-tag { background: var(--rosa); color: var(--negro); font-weight: 800; font-size: 15px; border-radius: 999px; padding: 8px 16px; white-space: nowrap; }
+.banner-prueba-texto { flex: 1 1 320px; font-size: 16px; line-height: 1.5; color: #cfcad3; }
+.banner-prueba-texto b { color: #fff; }
+@media (max-width: 600px) { .aviso-cta { display: block; width: max-content; margin: 6px auto 0; } .banner-prueba .btn { width: 100%; } }
 
 /* --- cabecera --- */
 header.top { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--linea); }

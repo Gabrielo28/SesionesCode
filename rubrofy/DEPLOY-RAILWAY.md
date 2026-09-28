@@ -65,7 +65,7 @@ queda apagada y el resto funciona igual)
 | IA de textos y estilo | `ANTHROPIC_API_KEY` (opcional `ANTHROPIC_MODEL`) |
 | Imágenes y videos con IA | `HIGGSFIELD_API_KEY` (`id:secreto`, de cloud.higgsfield.ai; preferido) u `OPENAI_API_KEY`. Opcionales: `HIGGSFIELD_MODELO_IMAGEN`, `HIGGSFIELD_MODELO_VIDEO`, `OPENAI_IMAGE_MODEL`, `OPENAI_VIDEO_MODEL`, `VIDEO_IA_SEGUNDOS`, `VIDEO_IA_AUDIO` |
 | Notificaciones push | Nada: las claves VAPID se generan solas. Opcional fijarlas con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` |
-| Cobro (**obligatorio**: el servicio es solo de pago) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Sin ellas nadie puede pagar ni crear contenido; las cuentas de `ADMIN_EMAILS` sin plan usan Estudio de cortesía. |
+| Cobro (**obligatorio**: el servicio es solo de pago) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Sin ellas nadie puede pagar ni crear contenido; las cuentas de `ADMIN_EMAILS` sin plan usan Estudio de cortesía. La prueba gratis de 7 días (con formulario) no necesita Stripe. |
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |
 | Google Ads | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |

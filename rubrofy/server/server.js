@@ -32,6 +32,7 @@ const reelsPrueba = require('./reels-prueba');
 const push = require('./push');
 const costos = require('./costos');
 const perfil = require('./perfil');
+const pruebaGratis = require('./prueba-gratis');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -209,6 +210,7 @@ function negocioPublico(negocio) {
   resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
   resto.perfilCompleto = perfil.completo(negocio);
+  resto.prueba = pruebaGratis.publico(negocio);
   resto.sinPlan = (negocio.plan || 'gratis') === 'gratis';
   resto.usaIA = !!getPlan(negocio.plan).usaIA;
   return resto;
@@ -623,10 +625,10 @@ function planDeCortesia(negocio) {
   return false;
 }
 // Al arrancar: cortesías al día y fin de las pruebas con código que quedaron
-// de antes (el servicio ya no las tiene).
+// de una versión anterior (las de 7 días del formulario no se tocan).
 for (const n of store.listNegocios()) {
   let cambio = false;
-  if (n.prueba) {
+  if (n.prueba && n.prueba.codigo) {
     const suscrito = n.stripe && n.stripe.subscriptionId && ['active', 'trialing', 'past_due'].includes(n.stripe.estado);
     if (!suscrito) n.plan = 'gratis';
     delete n.prueba;
@@ -636,7 +638,16 @@ for (const n of store.listNegocios()) {
   if (cambio) store.saveNegocio(n);
 }
 store.db.exec('DROP TABLE IF EXISTS canjes; DROP TABLE IF EXISTS codigos;');
-const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); }, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
+// Prueba gratis (server/prueba-gratis.js): aviso 2 días antes y al terminar.
+function revisarPruebas(ahora = Date.now()) {
+  for (const a of pruebaGratis.revisar(ahora)) {
+    notificar(a.negocioId, a.tipo === 'termino'
+      ? { titulo: 'Terminó tu prueba gratis de Rubrofy', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'prueba' }
+      : { titulo: 'Tu prueba gratis termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#config', tag: 'prueba' });
+  }
+}
+revisarPruebas();
+const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); revisarPruebas(); }, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
 timerRecordatorios.unref();
 
 // Videos con IA: cuando uno termina, queda como el video de la pieza.
@@ -824,7 +835,11 @@ const server = http.createServer(async (req, res) => {
               subscriptionId: sub.id,
               estado: sub.status,
             };
-            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : 'gratis';
+            // Con la prueba gratis vigente: si paga, la prueba termina; si una
+            // suscripción se cae, conserva la prueba hasta su fecha.
+            const enPrueba = pruebaGratis.vigente(negocio);
+            if (activa && enPrueba) negocio.prueba.terminada = 'suscripcion';
+            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : (enPrueba ? negocio.prueba.plan : 'gratis');
             planDeCortesia(negocio);
             store.saveNegocio(negocio);
           }
@@ -839,6 +854,11 @@ const server = http.createServer(async (req, res) => {
       }
 
       // GET /api/planes — pública: la necesita el sitio y el panel para mostrar precios.
+      // GET /api/prueba-gratis — plan, días y opciones del formulario.
+      if (parts[1] === 'prueba-gratis' && parts.length === 2 && req.method === 'GET') {
+        return sendJSON(res, 200, pruebaGratis.catalogo());
+      }
+
       if (parts[1] === 'planes' && parts.length === 2 && req.method === 'GET') {
         return sendJSON(res, 200, listPlanesPublico());
       }
@@ -867,6 +887,12 @@ const server = http.createServer(async (req, res) => {
         // sin cuenta no puede crearse aquí (si no, quien lo conozca se haría
         // administrador). La cuenta administradora se crea antes de listarla.
         if (admin.adminEmails().includes(email)) return sendJSON(res, 409, { error: 'Ese email no está disponible' });
+        // Prueba gratis pedida al registrarse: el formulario se valida antes de crear la cuenta.
+        const pidePrueba = body.prueba && typeof body.prueba === 'object';
+        if (pidePrueba) {
+          const v = pruebaGratis.validar(body.prueba);
+          if (v.error) return sendJSON(res, 400, { error: v.error, campo: 'prueba.' + v.campo });
+        }
 
         const id = idUnico(slugify(nombre));
         const estrategia = await generarEstrategia({ nombre, rubro, negocioId: id });
@@ -890,6 +916,10 @@ const server = http.createServer(async (req, res) => {
           },
         };
         store.saveNegocio(negocio);
+        if (pidePrueba) {
+          const r = pruebaGratis.activar(negocio, body.prueba);
+          if (r.negocio) store.saveNegocio(r.negocio);
+        }
         if (correo.configurado()) {
           correo.enviar(avisos.correoBienvenida({ negocio, urlPanel: urlPublica(req) + '/app' }))
             .then((r) => { if (!r.ok) console.log(`Bienvenida de ${id} no enviada: ${r.error}`); });
@@ -998,6 +1028,12 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, admin.negocios({ calcularRuta }));
         }
         // GET /api/admin/costos?dias=30 — gasto en IA (solo cifras de uso)
+        // GET /api/admin/pruebas — quién pidió la prueba gratis (datos del formulario) y en qué quedó.
+        if (parts[2] === 'pruebas' && parts.length === 3) {
+          const lista = pruebaGratis.listar();
+          const cuenta = (e) => lista.filter((x) => x.estado === e).length;
+          return sendJSON(res, 200, { catalogo: pruebaGratis.catalogo(), total: lista.length, enPrueba: cuenta('en prueba'), pagando: cuenta('pagando'), sinPagar: cuenta('terminó sin pagar'), prospectos: lista });
+        }
         if (parts[2] === 'costos' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           return sendJSON(res, 200, costos.resumen({
@@ -1376,7 +1412,7 @@ const server = http.createServer(async (req, res) => {
 
         // POST /api/negocios/:id/generar  { cantidad }
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
-          if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan para crear contenido.', sinPlan: true });
+          if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan (o activa tu prueba gratis) para crear contenido.', sinPlan: true });
           const body = await readBody(req);
           // segunPlan: una semana del plan de contenido del negocio.
           const porPlan = body.segunPlan && negocio.planContenido ? planContenido.totalSemanal(negocio.planContenido) : 0;
@@ -1567,6 +1603,17 @@ const server = http.createServer(async (req, res) => {
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
           })));
+        }
+
+        // POST /api/negocios/:id/prueba — activa los días gratis con el formulario.
+        if (parts[3] === 'prueba' && parts.length === 4 && req.method === 'POST') {
+          const espera = limiteEstrategia.esperaSegundos('prueba:' + negocioId);
+          if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+          limiteEstrategia.registrar('prueba:' + negocioId);
+          const r = pruebaGratis.activar(store.getNegocio(negocioId), await readBody(req));
+          if (r.error) return sendJSON(res, 400, { error: r.error, campo: r.campo });
+          store.saveNegocio(r.negocio);
+          return sendJSON(res, 200, negocioPublico(r.negocio));
         }
 
         // Perfil del negocio (server/perfil.js): la introducción que usa toda la IA.
@@ -2034,7 +2081,7 @@ const server = http.createServer(async (req, res) => {
               guardian.aplicar(it, negocio);
             };
           } else if (accion === 'regenerar' && req.method === 'POST' && (negocio.plan || 'gratis') === 'gratis') {
-            return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan para crear contenido.', sinPlan: true });
+            return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan (o activa tu prueba gratis) para crear contenido.', sinPlan: true });
           } else if (accion === 'regenerar' && req.method === 'POST') {
             // indicacion: "más corto", "menciona el despacho gratis"… pide
             // siempre un texto nuevo a la IA en vez de rotar versiones.

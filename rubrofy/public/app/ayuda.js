@@ -86,6 +86,8 @@
     'ads-numeros': { t: 'Los números de publicidad', d: 'Inversión: lo que gastaste. Resultados: el objetivo de la campaña (mensajes, compras, clics…). Costo por resultado: inversión ÷ resultados, mientras más bajo mejor. CTR: porcentaje de gente que hizo clic. CPC: costo por clic. ROAS: ventas atribuidas ÷ inversión.' },
     'campanas': { t: 'Campañas', d: 'Cada campaña con su inversión, resultados y costo por resultado.',
       p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos (en Meta o Google).'] },
+    'admin-pruebas': { t: 'Pruebas gratis', d: 'Cada negocio puede pedir 7 días gratis del plan Pro completando un formulario con sus datos. Aquí ves esas respuestas y si terminó pagando.',
+      p: ['Escríbeles por WhatsApp durante la prueba: es cuando más ayuda un contacto.', 'Una prueba por negocio y por teléfono.', '"Descargar CSV" sirve para tu CRM o planilla.'] },
     'admin-costos': { t: 'Costo de IA', d: 'Lo que pagas a los proveedores de IA (Claude, Higgsfield u OpenAI) por lo que usan tus clientes, comparado con lo que pagan sus planes.',
       p: ['Mira el margen: bajo 60 % conviene revisar cupos o precios.', 'En "Por negocio" ves quién gasta más y si su plan lo cubre.', 'La proyección estima el gasto del mes completo al ritmo actual.'], n: 'Los textos usan los tokens reales; imágenes y videos, una tarifa estimada por unidad.' },
     'admin-ia': { t: 'IA de la plataforma', d: 'Qué proveedores de IA están activos y las reglas de calidad que se aplican a todos los negocios, por sección.',

@@ -27,8 +27,10 @@ crea su propia cuenta en `rubrofy.com/registro.html` (nombre, una
 descripción libre de su rubro, email y clave) y solo ve su propio
 contenido — no hay una clave maestra que vea todos los negocios juntos.
 
-**Modelo de negocio:** solo de pago, por negocio: sin plan gratis ni
-pruebas gratuitas (ver "Solo de pago" más abajo). Pro genera con Claude
+**Modelo de negocio:** solo de pago, por negocio: sin plan gratis. La
+puerta de entrada es una **prueba gratis de 7 días del plan Pro** que se
+activa completando un formulario con los datos de contacto (ver "Solo de
+pago y prueba gratis" más abajo). Pro genera con Claude
 (piezas completas: gancho, texto con llamado a la acción y hashtags) y
 Estudio agrega fotos y videos con IA — ver `server/planes.js` y la sección
 de Stripe más abajo.
@@ -658,9 +660,9 @@ Dos proveedores; si están los dos, se usa Higgsfield:
 - **Cupos por plan** (`server/planes.js`): Estudio, 20 imágenes y 6 videos
   al mes. Cada video de 5 s cuesta del orden de USD 0,5 a 1 en el proveedor.
 
-## Solo de pago
+## Solo de pago y prueba gratis
 
-Rubrofy no tiene plan gratis ni códigos de prueba: una cuenta nueva queda
+Rubrofy no tiene plan gratis: una cuenta nueva queda
 **sin plan** (id interno `gratis`, nombre "Sin plan", no aparece en
 `/api/planes`). Puede registrarse, contar de su negocio y armar su
 estrategia, pero no crear contenido: `/generar` y "Otra versión"
@@ -675,6 +677,29 @@ responden 402 `sinPlan`.
   Estudio de cortesía (`cortesia: true`), que en `/admin` no cuenta como
   ingreso. Si pagan un plan, manda el pagado. Es acceso al plan, no al
   contenido de otros negocios.
+- **Prueba gratis** (`server/prueba-gratis.js`, formulario en
+  `public/app/prueba-form.js`): 7 días del plan Pro a cambio de un
+  formulario con nombre, teléfono/WhatsApp, rol, tamaño del equipo, ciudad,
+  Instagram (opcional), objetivo, cómo nos conoció, si invierte en
+  publicidad (opcional), un comentario y la aceptación de ser contactado.
+  - Dónde se pide: en el registro (casilla marcada por defecto; el
+    formulario se valida antes de crear la cuenta), en el último paso de la
+    bienvenida ("Empieza gratis o elige tu plan", que además crea la
+    primera semana), en el aviso de arriba del panel y en Configuración →
+    Plan. El sitio lo anuncia con una franja arriba, el botón principal y
+    un banner en Precios.
+  - Una por negocio y por teléfono: los números usados quedan en
+    `pruebas_usadas` aunque se elimine la cuenta (lo dice la política de
+    privacidad). Los datos del formulario completan el perfil (ciudad,
+    Instagram, WhatsApp) si estaba vacío.
+  - Al terminar (se revisa cada `RECORDATORIOS_INTERVALO_SEG`, 1800 s) la
+    cuenta vuelve a sin plan salvo que pague; con push, se avisa 2 días
+    antes y el día que termina. Si paga durante la prueba, la prueba se
+    cierra y manda la suscripción.
+  - `/admin` → Pruebas gratis: las respuestas de cada formulario, el
+    estado (en prueba, pagando, terminó sin pagar), la conversión y
+    "Descargar CSV". Son datos de contacto que la persona aceptó dar, no
+    contenido de su negocio.
 - Cuentas que tenían una prueba con código (versión anterior): al arrancar
   el servidor quedan sin plan, salvo que paguen o sean administradoras.
 
@@ -724,9 +749,9 @@ Para activarlo:
    ```
 
 Sin `STRIPE_SECRET_KEY` y los precios, los botones de pago muestran
-"pronto" y **nadie puede crear contenido** (salvo las cuentas
-administradoras): como el servicio es solo de pago, Stripe es obligatorio
-para tener clientes.
+"pronto": solo se puede usar Rubrofy con la prueba gratis de 7 días (y las
+cuentas administradoras). Para cobrar al terminar las pruebas, Stripe es
+obligatorio.
 
 ## Estructura
 

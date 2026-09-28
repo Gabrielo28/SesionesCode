@@ -35,13 +35,16 @@
       // El servidor explica el motivo en { error } (cuota agotada, demasiados
       // intentos, etc.); se guarda aparte para mostrárselo al usuario.
       let mensaje = null;
+      let campo = null;
       try {
         const data = await res.json();
         mensaje = data && typeof data.error === 'string' ? data.error : null;
+        campo = data && data.campo;
       } catch (e) { /* respuesta sin JSON */ }
       const err = new Error(mensaje || ('Error de API (' + res.status + ') en ' + path));
       err.status = res.status;
       err.mensaje = mensaje;
+      err.campo = campo;
       throw err;
     }
     return res.json();
@@ -672,21 +675,90 @@
       : `<button type="button" class="btn-ghost" disabled title="Los pagos todavía no están habilitados">${escapeHtml(p.nombre)} · pronto</button>`)).join('');
   }
 
-  // Aviso bajo la barra cuando la cuenta no tiene plan: Rubrofy es solo de pago.
+  function fechaLarga(iso) {
+    return new Date(iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+  }
+  const nombrePlan = (id) => (planesInfo.find((p) => p.id === id) || {}).nombre || id;
+
+  // Aviso bajo la barra: prueba gratis disponible, prueba en curso o sin plan.
   function renderAvisoPlan() {
     const cont = $('#aviso-plan');
     if (!cont || !negocioActual) return;
-    if (!negocioActual.sinPlan) {
+    const pr = negocioActual.prueba || {};
+    if (negocioActual.sinPlan && pr.disponible) {
+      cont.className = 'aviso-plan aviso-sinplan aviso-regalo';
+      cont.innerHTML = `<div class="aviso-texto"><b>🎁 ${pr.dias} días gratis del plan ${escapeHtml(nombrePlan(pr.plan))}</b>
+          <span>Completa un formulario corto con tus datos y empieza hoy, sin tarjeta: estrategia y publicaciones completas con gancho, texto y hashtags.</span></div>
+        <div class="aviso-botones"><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button><button type="button" class="btn-text" data-ir-plan>o elige un plan</button></div>`;
+      cont.hidden = false;
+    } else if (negocioActual.sinPlan) {
+      cont.className = 'aviso-plan aviso-sinplan';
+      cont.innerHTML = `<div class="aviso-texto"><b>${pr.hasta ? 'Terminó tu prueba gratis: elige tu plan para seguir' : 'Elige tu plan para crear contenido'}</b>
+          <span>${pr.hasta ? 'Todo lo que armaste sigue aquí. ' : ''}Estrategia, publicaciones completas con gancho, texto y hashtags, y publicación en Instagram con tu aprobación. Sin permanencia: cancelas cuando quieras.</span></div>
+        <div class="aviso-botones">${botonesPago()}<button type="button" class="btn-text" data-ir-plan>Comparar planes</button></div>
+        <p class="config-error" data-pago-error hidden></p>`;
+      cont.hidden = false;
+    } else if (pr.vigente && !negocioActual.tieneSuscripcionStripe) {
+      cont.className = 'aviso-plan aviso-prueba' + (pr.diasRestantes <= 2 ? ' termina' : '');
+      cont.innerHTML = `<div class="aviso-texto"><b>Prueba gratis del plan ${escapeHtml(nombrePlan(pr.plan))}</b>
+          <span>${pr.diasRestantes === 1 ? 'Queda 1 día' : `Quedan ${pr.diasRestantes} días`} (hasta el ${fechaLarga(pr.hasta)}). Elige tu plan antes y no se corta nada.</span></div>
+        <div class="aviso-botones"><button type="button" class="btn-ghost" data-ir-plan>Elegir plan</button></div>`;
+      cont.hidden = false;
+    } else {
       cont.hidden = true;
       cont.innerHTML = '';
-      return;
     }
-    cont.className = 'aviso-plan aviso-sinplan';
-    cont.innerHTML = `<div class="aviso-texto"><b>Elige tu plan para crear contenido</b>
-        <span>Estrategia, publicaciones completas con gancho, texto y hashtags, y publicación en Instagram con tu aprobación. Sin permanencia: cancelas cuando quieras.</span></div>
-      <div class="aviso-botones">${botonesPago()}<button type="button" class="btn-text" data-ir-plan>Comparar planes</button></div>
-      <p class="config-error" data-pago-error hidden></p>`;
-    cont.hidden = false;
+  }
+
+  // Formulario de la prueba gratis (public/app/prueba-form.js) en un diálogo.
+  async function abrirPrueba() {
+    let dlg = $('#dlg-prueba');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-prueba';
+      dlg.className = 'dlg dlg-prueba';
+      document.body.appendChild(dlg);
+      dlg.addEventListener('click', (e) => { if (e.target.closest('[data-cerrar]')) dlg.close(); });
+      dlg.addEventListener('submit', (e) => { e.preventDefault(); activarPrueba(dlg); });
+    }
+    const cat = await window.RubrofyPrueba.cargar();
+    const perfil = negocioActual.perfil || {};
+    dlg.innerHTML = `<form method="dialog" class="dlg-caja">
+        <h2>🎁 ${cat.dias} días gratis del plan ${escapeHtml(nombrePlan(cat.plan))}</h2>
+        <p class="sub">Cuéntanos quién eres y la prueba se activa al instante, sin tarjeta. Al terminar, tu contenido queda guardado y eliges si seguir.</p>
+        ${window.RubrofyPrueba.campos(cat, { ciudad: perfil.ciudad, instagram: perfil.instagram, telefono: perfil.whatsapp })}
+        <p class="config-error" data-prueba-error hidden></p>
+        <div class="dlg-acciones"><button type="button" class="btn-ghost" data-cerrar>Ahora no</button><button class="btn-approve">Activar mi prueba</button></div>
+      </form>`;
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+
+  async function activarPrueba(dlg) {
+    const form = dlg.querySelector('form');
+    const btn = form.querySelector('.btn-approve');
+    const errorEl = form.querySelector('[data-prueba-error]');
+    window.RubrofyPrueba.limpiarErrores(form);
+    errorEl.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Activando…';
+    try {
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/prueba`, { method: 'POST', body: JSON.stringify(window.RubrofyPrueba.leer(form)) });
+      dlg.close();
+      render();
+      const pr = negocioActual.prueba;
+      if (negocioActual.bienvenidaCompletada && !contenido.length) {
+        try { await generarSemana(); irAVista('cola'); } catch (err) { /* se genera con el botón */ }
+      }
+      alert(`¡Listo! Tienes el plan ${nombrePlan(pr.plan)} gratis hasta el ${fechaLarga(pr.hasta)}.`);
+    } catch (err) {
+      const msg = err.mensaje || 'No se pudo activar la prueba. Intenta de nuevo.';
+      if (!window.RubrofyPrueba.marcarError(form, err.campo, msg)) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+      }
+      btn.disabled = false;
+      btn.textContent = 'Activar mi prueba';
+    }
   }
 
   // Abre Stripe Checkout (o cambia el plan de una suscripción activa).
@@ -757,8 +829,13 @@
       ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
       : '';
 
-    const estadoPlan = negocioActual.sinPlan
-      ? '<p class="plan-estado">Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta en Stripe y cancelas cuando quieras.</p>'
+    const pr = negocioActual.prueba || {};
+    const estadoPlan = negocioActual.sinPlan && pr.disponible
+      ? `<div class="plan-prueba"><p class="plan-estado">Tu cuenta no tiene un plan activo. Prueba el plan ${escapeHtml(nombrePlan(pr.plan))} ${pr.dias} días gratis completando tus datos, o elige un plan.</p><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button></div>`
+      : negocioActual.sinPlan
+      ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta en Stripe y cancelas cuando quieras.</p>`
+      : pr.vigente && !negocioActual.tieneSuscripcionStripe
+        ? `<p class="plan-estado">Estás en tu prueba gratis hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Elige tu plan antes y no se corta nada.</p>`
       : negocioActual.cortesia
         ? '<p class="plan-estado">Plan de cortesía para la cuenta administradora: no se cobra.</p>'
         : '';
@@ -1244,6 +1321,7 @@
 
     // plan: subir de plan (Stripe Checkout) o gestionar la suscripción (Billing Portal)
     $('#plan-card').addEventListener('click', async (e) => {
+      if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
       const btnCheckout = e.target.closest('[data-checkout-plan]');
       if (btnCheckout) return pagarPlan(btnCheckout, $('#plan-error'));
       const btnPortal = e.target.closest('[data-action="portal"]');
@@ -1292,6 +1370,7 @@
     $('#btn-generar').addEventListener('click', abrirGenerar);
     $('#aviso-plan').addEventListener('click', (e) => {
       if (e.target.closest('[data-ir-plan]')) return irAVista('config', null, 'cfg-plan');
+      if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
       const btn = e.target.closest('[data-checkout-plan]');
       if (btn) pagarPlan(btn, $('#aviso-plan [data-pago-error]'));
     });

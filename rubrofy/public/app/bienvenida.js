@@ -30,6 +30,8 @@
     // Rubrofy es solo de pago: sin plan, el último paso es elegirlo y pagar.
     // La primera semana se crea al volver de Stripe (ver app.js).
     const sinPlan = !!ctx.negocio().sinPlan;
+    const pr0 = ctx.negocio().prueba || {};
+    const catPrueba = sinPlan && pr0.disponible && window.RubrofyPrueba ? await window.RubrofyPrueba.cargar().catch(() => null) : null;
     const PASOS = opciones.soloPerfil ? TODOS.slice(0, 2)
       : sinPlan ? TODOS.concat({ id: 'plan', t: 'Tu plan' }) : TODOS;
     let paso = 0;
@@ -83,8 +85,16 @@
           pro: ['Estrategia y publicaciones completas: gancho, texto y hashtags', 'La IA escribe con tu voz y aprende de tus correcciones', 'Resultados de Instagram e informe mensual'],
           estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', 'Meta Ads, Google Ads y competencia'],
         };
-        return `<h2>Elige tu plan${AY('precios-comparar')}</h2>
-          <p class="bv-lead">Tu estrategia está lista. Elige tu plan para crear tu primera semana: pagas con tarjeta en Stripe (Rubrofy no ve ni guarda tu tarjeta) y cancelas cuando quieras.</p>
+        const nombre = (id) => ((ctx.planes || []).find((x) => x.id === id) || {}).nombre || id;
+        const prueba = catPrueba ? `<div class="bv-prueba" data-bv-prueba>
+            <h3>🎁 Prueba ${catPrueba.dias} días gratis el plan ${esc(nombre(catPrueba.plan))}</h3>
+            <p>Sin tarjeta. Completa tus datos y creamos tu primera semana ahora mismo.</p>
+            ${window.RubrofyPrueba.campos(catPrueba, { ciudad: perfil.ciudad, instagram: perfil.instagram, telefono: perfil.whatsapp })}
+            <button type="button" class="btn-approve" data-bv="activar-prueba">Activar mis ${catPrueba.dias} días y crear mi semana</button>
+          </div><p class="bv-o">o elige un plan pagado</p>` : '';
+        return `<h2>${catPrueba ? 'Empieza gratis o elige tu plan' : 'Elige tu plan'}${AY('precios-comparar')}</h2>
+          <p class="bv-lead">Tu estrategia está lista. ${catPrueba ? 'Activa tu prueba gratis o elige un plan' : 'Elige tu plan'} para crear tu primera semana. Los planes se pagan con tarjeta en Stripe (Rubrofy no ve ni guarda tu tarjeta) y se cancelan cuando quieras.</p>
+          ${prueba}
           <div class="bv-planes">${(ctx.planes || []).map((p) => `
             <div class="bv-plan${p.id === 'pro' ? ' destacado' : ''}">
               <div class="bv-plan-cab"><b>${esc(p.nombre)}</b><span>${fmt(p.precioClp)}<small>/mes</small></span></div>
@@ -210,6 +220,29 @@
         } catch (err) { /* igual se cierra */ }
         cerrar();
         return ctx.alTerminar(false);
+      }
+      if (accion === 'activar-prueba') {
+        const caja = capa.querySelector('[data-bv-prueba]');
+        window.RubrofyPrueba.limpiarErrores(caja);
+        ocupado(b, 'Activando…');
+        try {
+          ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/prueba`, { method: 'POST', body: JSON.stringify(window.RubrofyPrueba.leer(caja)) }));
+        } catch (err) {
+          b.disabled = false;
+          b.textContent = `Activar mis ${catPrueba.dias} días y crear mi semana`;
+          if (!window.RubrofyPrueba.marcarError(caja, err.campo, err.mensaje || 'No se pudo activar la prueba.')) {
+            const e = capa.querySelector('.bv-error');
+            e.textContent = err.mensaje || 'No se pudo activar la prueba.';
+            e.hidden = false;
+          }
+          return;
+        }
+        ocupado(b, 'Creando tu primera semana…');
+        try {
+          await ctx.generarSemana();
+        } catch (err) { /* se genera después con el botón */ }
+        cerrar();
+        return ctx.alTerminar(true);
       }
       if (accion === 'pagar') {
         ocupado(b, 'Abriendo el pago…');

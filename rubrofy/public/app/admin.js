@@ -263,12 +263,59 @@
     sec.querySelector('[data-g="costo-plan"]').appendChild(planes.length ? G.barras(planes, { formato: usd, todasEnAcento: true }) : Object.assign(document.createElement('p'), { className: 'adm-nota', textContent: 'Sin datos.' }));
   }
 
+  // Pruebas gratis: los datos que dejó cada negocio en el formulario para
+  // activar sus días gratis, y si terminó pagando. Solo datos de contacto.
+  async function pintarPruebas() {
+    let d;
+    try { d = await api('/api/admin/pruebas'); } catch (err) { return; }
+    const sec = document.createElement('section');
+    sec.className = 'adm-bloque';
+    sec.id = 'adm-pruebas';
+    const conv = d.pagando + d.sinPagar ? pct(d.pagando / (d.pagando + d.sinPagar)) : '—';
+    const COLS = [['fecha', 'Fecha'], ['negocio', 'Negocio'], ['nombre', 'Contacto'], ['telefono', 'Teléfono'], ['email', 'Email'], ['ciudad', 'Ciudad'], ['instagram', 'Instagram'],
+      ['cargo', 'Rol'], ['tamano', 'Equipo'], ['objetivo', 'Objetivo'], ['fuente', 'Cómo nos conoció'], ['publicidad', 'Publicidad'], ['comentario', 'Comentario'], ['estado', 'Estado']];
+    const celda = (p, k) => {
+      if (k === 'fecha') return esc(fecha(p.fecha));
+      if (k === 'telefono') { const t = String(p.telefono).replace(/\D/g, ''); return `<a href="https://wa.me/${t}" target="_blank" rel="noopener">${esc(p.telefono)}</a>`; }
+      if (k === 'email') return p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '—';
+      if (k === 'instagram') return p.instagram ? `<a href="https://instagram.com/${esc(p.instagram)}" target="_blank" rel="noopener">@${esc(p.instagram)}</a>` : '—';
+      if (k === 'estado') return `<span class="adm-est adm-est-${esc(p.estado.replace(/\s+/g, '-'))}">${esc(p.estado)}</span>`;
+      return esc(p[k] || '—');
+    };
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Pruebas gratis${AY('admin-pruebas')}</h2><button type="button" class="btn-ghost" data-csv ${d.total ? '' : 'disabled'}>Descargar CSV</button></div>
+      <section class="adm-kpis">
+        ${tile('Formularios', num(d.total), `${d.catalogo.dias} días del plan ${esc(PLANES[d.catalogo.plan] || d.catalogo.plan)}`)}
+        ${tile('En prueba ahora', num(d.enPrueba), '')}
+        ${tile('Pasaron a pagar', num(d.pagando), '')}
+        ${tile('Conversión', conv, `de las pruebas terminadas (${num(d.sinPagar)} sin pagar)`)}
+      </section>
+      <div class="ig-card"><div class="adm-tabla-scroll"><table class="adm-tabla adm-tabla-pruebas">
+        <thead><tr>${COLS.map((c) => `<th>${c[1]}</th>`).join('')}</tr></thead>
+        <tbody>${d.prospectos.length ? d.prospectos.map((p) => `<tr>${COLS.map((c) => `<td>${celda(p, c[0])}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${COLS.length}">Todavía nadie ha pedido su prueba gratis.</td></tr>`}</tbody>
+      </table></div>
+      <p class="adm-nota">Son los datos que cada persona dejó para activar su prueba y aceptó que la contactes. No incluyen nada del contenido de su negocio.</p></div>`;
+    const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
+    if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+    sec.querySelector('[data-csv]').addEventListener('click', () => {
+      const q = (v) => '"' + String(v == null ? '' : v).replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""') + '"';
+      const filas = d.prospectos.map((p) => COLS.map((c) => q(p[c[0]])).join(','));
+      const blob = new Blob(['\ufeff' + [COLS.map((c) => q(c[1])).join(',')].concat(filas).join('\n')], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `rubrofy-pruebas-gratis-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
       negocios = n;
       pintar(r);
       await pintarCostos();
+      await pintarPruebas();
       pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401
