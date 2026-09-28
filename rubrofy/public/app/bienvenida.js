@@ -27,10 +27,11 @@
   // opciones.soloPerfil: completar solo "Tu negocio" y "Lo que vendes".
   async function abrir(ctx, opciones = {}) {
     const cat = await P().catalogo(ctx.api);
-    // Sin plan (no hay plan gratis): antes de crear la primera semana se
-    // canjea un código de prueba o se elige un plan.
+    // Rubrofy es solo de pago: sin plan, el último paso es elegirlo y pagar.
+    // La primera semana se crea al volver de Stripe (ver app.js).
+    const sinPlan = !!ctx.negocio().sinPlan;
     const PASOS = opciones.soloPerfil ? TODOS.slice(0, 2)
-      : ctx.negocio().sinPlan ? TODOS.slice(0, -1).concat({ id: 'acceso', t: 'Activa tu prueba' }, TODOS.slice(-1)) : TODOS;
+      : sinPlan ? TODOS.concat({ id: 'plan', t: 'Tu plan' }) : TODOS;
     let paso = 0;
     let plan = Object.assign({}, ctx.negocio().planContenido || {});
     let datos = Object.assign({}, ctx.negocio().datos || {});
@@ -76,13 +77,23 @@
           <div data-bv-est>${P().estrategiaEditable(ctx.estrategia())}</div>
           <button type="button" class="btn-ghost bv-proponer" data-bv="proponer">Proponer otra con IA</button>`;
       }
-      if (id === 'acceso') {
-        return `<h2>Activa tu prueba${AY('plan-codigo')}</h2>
-          <p class="bv-lead">Para crear tus publicaciones completas (gancho, texto con llamado a la acción y hashtags) necesitas un plan. Si tienes un código de prueba, escríbelo aquí: te da el plan completo por los días que indique, sin tarjeta.</p>
-          <label class="bv-codigo">Código de prueba
-            <input type="text" data-bv-codigo autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Ej: RUBRO-7K2P-XM4Q">
-          </label>
-          <p class="bv-nota">¿No tienes código? <button type="button" class="btn-link" data-bv="ver-planes">Elige un plan</button>. Lo que armaste queda guardado.</p>`;
+      if (id === 'plan') {
+        const fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
+        const DETALLE = {
+          pro: ['Estrategia y publicaciones completas: gancho, texto y hashtags', 'La IA escribe con tu voz y aprende de tus correcciones', 'Resultados de Instagram e informe mensual'],
+          estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', 'Meta Ads, Google Ads y competencia'],
+        };
+        return `<h2>Elige tu plan${AY('precios-comparar')}</h2>
+          <p class="bv-lead">Tu estrategia está lista. Elige tu plan para crear tu primera semana: pagas con tarjeta en Stripe (Rubrofy no ve ni guarda tu tarjeta) y cancelas cuando quieras.</p>
+          <div class="bv-planes">${(ctx.planes || []).map((p) => `
+            <div class="bv-plan${p.id === 'pro' ? ' destacado' : ''}">
+              <div class="bv-plan-cab"><b>${esc(p.nombre)}</b><span>${fmt(p.precioClp)}<small>/mes</small></span></div>
+              <ul>${(DETALLE[p.id] || []).map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
+              ${p.disponible
+                ? `<button type="button" class="${p.id === 'pro' ? 'btn-approve' : 'btn-ghost'}" data-bv="pagar" data-plan="${p.id}">Elegir ${esc(p.nombre)}</button>`
+                : '<button type="button" class="btn-ghost" disabled>Pagos habilitados pronto</button>'}
+            </div>`).join('')}</div>
+          <p class="bv-nota">Al pagar vuelves a Rubrofy y tu primera semana se crea sola. Lo que armaste queda guardado.</p>`;
       }
       const neg = ctx.negocio();
       const estado = (ok, txtOk, txtNo) => `<span class="bv-estado ${ok ? 'ok' : ''}">${ok ? txtOk : txtNo}</span>`;
@@ -96,7 +107,7 @@
           <div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>
         </div>
         <div class="bv-final">
-          <b>Último paso: tu primera semana</b>
+          <b>${sinPlan ? 'Después: elige tu plan y creamos tu primera semana' : 'Último paso: tu primera semana'}</b>
           <p>${P().textoTotal(plan.semanal || {})}. Llegan a <b>Por aprobar</b>; nada se publica hasta que tú lo apruebes.</p>
         </div>`;
     }
@@ -104,7 +115,6 @@
     function textoBoton() {
       const id = actual();
       if (paso === PASOS.length - 1) return opciones.soloPerfil ? 'Guardar' : 'Generar mi primera semana';
-      if (id === 'acceso') return 'Activar y continuar';
       return id === 'ritmo' ? 'Crear mi estrategia' : 'Continuar';
     }
 
@@ -120,7 +130,7 @@
           <p class="config-error bv-error" ${error ? '' : 'hidden'}>${esc(error || '')}</p>
           <footer class="bv-pie">
             ${paso > 0 ? '<button type="button" class="btn-ghost" data-bv="atras">Atrás</button>' : '<span></span>'}
-            <button type="button" class="btn-approve" data-bv="siguiente">${textoBoton()}</button>
+            ${actual() === 'plan' ? '<button type="button" class="btn-ghost" data-bv="despues">Elegir después</button>' : `<button type="button" class="btn-approve" data-bv="siguiente">${textoBoton()}</button>`}
           </footer>
         </div>`;
       const cuerpo = capa.querySelector('[data-bv-cuerpo]');
@@ -173,11 +183,9 @@
         }
       } else if (id === 'estrategia') {
         ctx.setEstrategia(await ctx.api(`/api/negocios/${ctx.negocio().id}/estrategia`, { method: 'PUT', body: JSON.stringify(P().leerEstrategia(cuerpo)) }));
-      } else if (id === 'acceso') {
-        const codigo = (cuerpo.querySelector('[data-bv-codigo]').value || '').trim();
-        if (!codigo) throw new Error('Escribe tu código de prueba, o elige un plan.');
-        ocupado(btn, 'Activando…');
-        ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/codigo`, { method: 'POST', body: JSON.stringify({ codigo }) }));
+      } else if (id === 'conexiones' && sinPlan) {
+        // Sin plan todavía: la bienvenida queda hecha y sigue "Elige tu plan".
+        ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
       } else if (id === 'conexiones') {
         ocupado(btn, 'Creando tu primera semana…');
         ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
@@ -190,6 +198,7 @@
       if (!b) return;
       const accion = b.dataset.bv;
       if (accion === 'atras') { paso -= 1; return pintar(); }
+      if (accion === 'despues') { cerrar(); return ctx.alTerminar(false); }
       if (accion === 'saltar') {
         if (opciones.soloPerfil) {
           cerrar();
@@ -202,13 +211,17 @@
         cerrar();
         return ctx.alTerminar(false);
       }
-      if (accion === 'ver-planes') {
-        // Termina la bienvenida sin generar y lleva a los planes.
+      if (accion === 'pagar') {
+        ocupado(b, 'Abriendo el pago…');
         try {
-          ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
-        } catch (err) { /* igual se cierra */ }
-        cerrar();
-        return ctx.irA('config', null, 'cfg-plan');
+          const r = await ctx.api(`/api/negocios/${ctx.negocio().id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: b.dataset.plan }) });
+          if (r.url) { window.location.href = r.url; return; }
+          if (r.negocio) ctx.setNegocio(r.negocio);
+          cerrar();
+          return ctx.alTerminar(false);
+        } catch (err) {
+          return pintar(err.mensaje || 'No se pudo abrir el pago. Intenta de nuevo.');
+        }
       }
       if (accion === 'conectar-ig') {
         // Termina la bienvenida (y crea la primera semana) antes de ir a Instagram.

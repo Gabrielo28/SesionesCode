@@ -47,7 +47,7 @@
         <h1>Tu Instagram al día sin que se te vaya la semana en eso</h1>
         <p class="lead">Rubrofy escribe tus posts, carruseles, reels e historias con tus precios y tus fotos, los publica cuando tú los apruebas y te dice qué está funcionando.</p>
         <a class="btn btn-negro btn-xl" href="/registro.html">Crea tu cuenta</a>
-        <p class="hero-nota">¿Tienes un código de prueba? Úsalo al registrarte, sin tarjeta · Conecta Instagram, Meta Ads y Google Ads</p>
+        <p class="hero-nota">Desde $19.990 al mes · Sin permanencia · Conecta Instagram, Meta Ads y Google Ads</p>
       </div>
       <div class="wrap hero-captura">
         <figure class="captura">
@@ -259,7 +259,7 @@
           <details><summary>¿Qué formatos crea?</summary><p>Posts, carruseles, reels e historias. Eliges cuántos de cada uno quieres por semana. Para reels e historias con video, subes tu video y Rubrofy se encarga de publicarlo.</p></details>
           <details><summary>¿Cómo aprende mi estilo?</summary><p>Desde "Mi estilo" subes o importas desde Instagram lo que ya publicaste. Rubrofy arma una guía con tu tono, temas y mezcla de formatos, y también aprende de lo que corriges, rechazas y de lo que mejor te funciona.</p></details>
           <details><summary>¿Necesito hacer publicidad para usar Rubrofy?</summary><p>No. Meta Ads y Google Ads son opcionales y están en el plan Estudio. Sin publicidad igual tienes contenido, calendario, publicación automática y resultados.</p></details>
-          <details><summary>¿Hay un plan gratis?</summary><p>No: preferimos que pruebes Rubrofy completo. Con un código de prueba tienes el plan Pro o Estudio por los días que indique, sin tarjeta. Al terminar, tu contenido queda guardado y eliges si seguir con un plan.</p></details>
+          <details><summary>¿Hay un plan gratis?</summary><p>No. Un plan gratis no te daría lo que hace valer a Rubrofy: la estrategia, los textos completos con gancho y hashtags que escribe la IA con tu voz, y lo que aprende de tus resultados. Por eso todos los planes lo incluyen. No hay permanencia: si no te sirve, cancelas cuando quieras.</p></details>
           <details><summary>¿Puedo cancelar cuando quiera?</summary><p>Sí. No hay permanencia: cambias de plan o cancelas desde tu panel. También puedes eliminar tu negocio y todos sus datos cuando quieras.</p></details>
         </div>
       </div>
@@ -270,7 +270,7 @@
       <div class="wrap">
         <div class="cta-caja">
           <h2>Prueba Rubrofy con tu propio negocio</h2>
-          <p>Cuéntanos de tu negocio y tu objetivo, y ve tu primera semana de contenido. Si tienes un código de prueba, tienes el plan completo por los días que indique, sin tarjeta.</p>
+          <p>Cuéntanos de tu negocio y tu objetivo, elige tu plan y recibe tu primera semana de contenido lista para aprobar.</p>
           <a class="btn btn-negro btn-xl" href="/registro.html">Crea tu cuenta</a>
         </div>
       </div>
@@ -331,11 +331,7 @@
             '<ul>' + items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>' +
             '<a class="btn ' + (p.id === 'pro' ? 'btn-rosa' : 'btn-borde') + '" href="/registro.html">' + 'Empezar con ' + esc(p.nombre) + '</a>' +
             '</div>';
-        }).join('') +
-          '<div class="plan plan-codigo"><h3>¿Tienes un código de prueba?</h3>' +
-          '<p>Te da el plan completo por los días que indique, sin tarjeta. Lo escribes al crear tu cuenta o después, en tu panel.</p>' +
-          '<ul><li>Sin plan gratis limitado: pruebas todo</li><li>Tu contenido queda guardado al terminar</li><li>Te avisamos 2 días antes</li></ul>' +
-          '<a class="btn btn-borde" href="/registro.html">Crear cuenta con código</a></div>';
+        }).join('');
         document.getElementById('tabla-planes').innerHTML =
           '<thead><tr><th></th>' + planes.map(function (p) { return '<th>' + esc(p.nombre) + '</th>'; }).join('') + '</tr></thead>' +
           '<tbody>' + FILAS.map(function (f) {
@@ -347,6 +343,6 @@
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=8"></script>
+  <script src="/app/ayuda.js?v=9"></script>
 </body>
 </html>

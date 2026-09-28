@@ -97,7 +97,7 @@ function fila(n, contenido, rutaNegocio) {
     nombre: n.nombre,
     email: n.email || null,
     plan: plan.id,
-    precioClp: plan.precioClp || 0,
+    precioClp: n.cortesia ? 0 : plan.precioClp || 0, // la cuenta de cortesía del administrador no es ingreso
     suscripcion: (n.stripe && n.stripe.estado) || null,
     creadoEl: creadoEl(n, contenido),
     ultimoAcceso: n.ultimoAcceso || null,

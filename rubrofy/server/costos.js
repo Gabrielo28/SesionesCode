@@ -94,7 +94,8 @@ const sql = {
   mes: db.prepare('SELECT COALESCE(SUM(costo_usd), 0) AS c FROM uso_ia WHERE fecha >= ?'),
 };
 
-// negocios: [{ id, nombre, plan }]; precioPlan(planId) → CLP al mes.
+// negocios: [{ id, nombre, plan, cortesia? }]; precioPlan(planId) → CLP al mes.
+// Las cuentas de cortesía (administradores) no suman ingresos.
 function resumen({ dias, negocios, precioPlan, ahora = new Date() }) {
   const desde = new Date(ahora.getTime() - dias * 24 * 3600 * 1000).toISOString();
   const inicioMes = new Date(Date.UTC(ahora.getUTCFullYear(), ahora.getUTCMonth(), 1)).toISOString();
@@ -105,7 +106,7 @@ function resumen({ dias, negocios, precioPlan, ahora = new Date() }) {
   const dolar = DOLAR_CLP();
   const filas = negocios.map((n) => {
     const f = porNeg.get(n.id) || { costo: 0, llamadas: 0 };
-    const ingresoPeriodoUsd = (precioPlan(n.plan) / dolar) * (dias / 30);
+    const ingresoPeriodoUsd = n.cortesia ? 0 : (precioPlan(n.plan) / dolar) * (dias / 30);
     return {
       id: n.id, nombre: n.nombre, plan: n.plan || 'gratis', costoUsd: f.costo, llamadas: f.llamadas,
       ingresoUsd: ingresoPeriodoUsd, margen: ingresoPeriodoUsd ? (ingresoPeriodoUsd - f.costo) / ingresoPeriodoUsd : null,

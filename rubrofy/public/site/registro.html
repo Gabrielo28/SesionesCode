@@ -45,7 +45,7 @@
     <div class="registro-card">
       <div>
         <h1>Crea tu cuenta</h1>
-        <p class="sub">Un negocio, una cuenta. Si tienes un código de prueba, úsalo aquí: te da el plan completo por los días que indique. Después, en el panel te preguntamos por tu negocio.</p>
+        <p class="sub">Un negocio, una cuenta. Después te preguntamos por tu negocio, armamos tu estrategia y eliges tu plan (desde $19.990 al mes, sin permanencia).</p>
       </div>
       <form id="form-registro">
         <label>Nombre del negocio
@@ -60,10 +60,6 @@
         <label>Clave (mínimo 8 caracteres)
           <input type="password" id="reg-password" required minlength="8" autocomplete="new-password">
         </label>
-        <label><span>Código de prueba (opcional) <button type="button" class="ay" data-ayuda="reg-codigo" aria-label="Ayuda: Código de prueba" aria-expanded="false">?</button></span>
-          <input type="text" id="reg-codigo" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ej: RUBRO-7K2P-XM4Q">
-          <span class="registro-error" id="codigo-error" hidden></span>
-        </label>
         <label class="acepto"><input type="checkbox" id="reg-acepto" required> <span>Acepto los <a href="/terminos.html" target="_blank" rel="noopener">términos del servicio</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
         <p class="registro-error" id="registro-error" hidden></p>
         <button type="submit" class="btn btn-primary" id="btn-registro" style="margin-top:6px;">Crear negocio</button>
@@ -75,16 +71,12 @@
   <script>
     (function () {
       var $ = function (sel) { return document.querySelector(sel); };
-      // Un enlace como /registro.html?codigo=RUBRO-XXXX deja el código escrito.
-      var codigoUrl = new URLSearchParams(location.search).get('codigo');
-      if (codigoUrl) $('#reg-codigo').value = codigoUrl.slice(0, 40).toUpperCase();
 
       $('#form-registro').addEventListener('submit', function (e) {
         e.preventDefault();
         var btn = $('#btn-registro');
         var errorEl = $('#registro-error');
         errorEl.hidden = true;
-        $('#codigo-error').hidden = true;
         btn.disabled = true;
         var textoOriginal = btn.textContent;
         btn.textContent = 'Creando tu cuenta...';
@@ -97,29 +89,19 @@
             email: $('#reg-email').value,
             password: $('#reg-password').value,
             acepto: $('#reg-acepto').checked,
-            codigo: $('#reg-codigo').value.trim(),
           }),
         }).then(function (res) {
-          if (!res.ok) return res.json().then(function (d) {
-            if (d.campo === 'codigo') {
-              $('#codigo-error').textContent = d.error;
-              $('#codigo-error').hidden = false;
-              $('#reg-codigo').focus();
-            }
-            var e = new Error(d.error || 'No se pudo crear la cuenta');
-            e.enCodigo = d.campo === 'codigo';
-            throw e;
-          });
+          if (!res.ok) return res.json().then(function (d) { throw new Error(d.error || 'No se pudo crear la cuenta'); });
           window.location.href = '/app';
         }).catch(function (err) {
           errorEl.textContent = err.message;
-          errorEl.hidden = !!err.enCodigo;
+          errorEl.hidden = false;
           btn.disabled = false;
           btn.textContent = textoOriginal;
         });
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=8"></script>
+  <script src="/app/ayuda.js?v=9"></script>
 </body>
 </html>

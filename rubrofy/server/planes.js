@@ -14,9 +14,9 @@
 // un negocio normal debiera tocar: ~150 piezas son varias veces lo que
 // publica una pyme en un mes.
 const PLANES = {
-  // "Sin plan": ya no se ofrece un plan gratis. Es el estado de una cuenta
-  // sin suscripción ni prueba vigente: puede configurar su negocio, pero no
-  // generar contenido. Se prueba Rubrofy con un código (server/codigos.js).
+  // "Sin plan": Rubrofy es solo de pago. Es el estado de una cuenta sin
+  // suscripción: puede configurar su negocio y elegir un plan, pero no
+  // generar contenido.
   gratis: {
     id: 'gratis',
     nombre: 'Sin plan',
@@ -76,7 +76,7 @@ function listPlanesPublico() {
     analitica: p.analitica,
     ads: p.ads,
     competencia: p.competencia,
-    disponible: !!(p.stripePriceEnv && process.env[p.stripePriceEnv]),
+    disponible: !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));
 }
 

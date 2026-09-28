@@ -665,68 +665,53 @@
     return monto ? '$' + monto.toLocaleString('es-CL') + '/mes' : 'Gratis';
   }
 
-  // Código de prueba: el mismo formulario en el aviso de arriba y en Plan.
-  function formCodigo(id) {
-    return `<form class="codigo-form" data-codigo-form>
-        <input type="text" id="${id}" data-codigo-input autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Código de prueba" aria-label="Código de prueba">
-        <button type="submit" class="btn-approve">Canjear</button>
-      </form>
-      <p class="config-error" data-codigo-error hidden></p>`;
+  // Botones para pagar un plan (aviso de arriba y bienvenida).
+  function botonesPago() {
+    return planesInfo.map((p) => (p.disponible
+      ? `<button type="button" class="${p.id === 'pro' ? 'btn-approve' : 'btn-ghost'}" data-checkout-plan="${p.id}">${escapeHtml(p.nombre)} · ${formatoCLP(p.precioClp)}</button>`
+      : `<button type="button" class="btn-ghost" disabled title="Los pagos todavía no están habilitados">${escapeHtml(p.nombre)} · pronto</button>`)).join('');
   }
 
-  function fechaLarga(iso) {
-    return new Date(iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
-  }
-
-  // Aviso bajo la barra: sin plan (canjear o elegir) o cuánto queda de prueba.
+  // Aviso bajo la barra cuando la cuenta no tiene plan: Rubrofy es solo de pago.
   function renderAvisoPlan() {
     const cont = $('#aviso-plan');
     if (!cont || !negocioActual) return;
-    const pr = negocioActual.prueba;
-    if (negocioActual.sinPlan) {
-      const termino = pr && !pr.vigente;
-      cont.className = 'aviso-plan aviso-sinplan';
-      cont.innerHTML = `<div class="aviso-texto"><b>${termino ? 'Tu prueba terminó' : 'Tu cuenta no tiene un plan activo'}</b>
-          <span>${termino ? 'Tu contenido sigue aquí. Para crear piezas nuevas, ' : 'Para crear publicaciones con gancho, texto y hashtags, '}canjea un código de prueba o elige un plan.</span></div>
-        ${formCodigo('aviso-codigo')}
-        <button type="button" class="btn-ghost" data-ir-plan>Ver planes</button>`;
-      cont.hidden = false;
-    } else if (pr && pr.vigente && !negocioActual.tieneSuscripcionStripe) {
-      const plan = planesInfo.find((p) => p.id === pr.plan) || {};
-      cont.className = 'aviso-plan aviso-prueba' + (pr.diasRestantes <= 2 ? ' termina' : '');
-      cont.innerHTML = `<div class="aviso-texto"><b>Prueba del plan ${escapeHtml(plan.nombre || pr.plan)}</b>
-          <span>${pr.diasRestantes === 1 ? 'Queda 1 día' : `Quedan ${pr.diasRestantes} días`} (hasta el ${fechaLarga(pr.hasta)}).</span></div>
-        <button type="button" class="btn-ghost" data-ir-plan>Elegir plan</button>`;
-      cont.hidden = false;
-    } else {
+    if (!negocioActual.sinPlan) {
       cont.hidden = true;
       cont.innerHTML = '';
+      return;
     }
+    cont.className = 'aviso-plan aviso-sinplan';
+    cont.innerHTML = `<div class="aviso-texto"><b>Elige tu plan para crear contenido</b>
+        <span>Estrategia, publicaciones completas con gancho, texto y hashtags, y publicación en Instagram con tu aprobación. Sin permanencia: cancelas cuando quieras.</span></div>
+      <div class="aviso-botones">${botonesPago()}<button type="button" class="btn-text" data-ir-plan>Comparar planes</button></div>
+      <p class="config-error" data-pago-error hidden></p>`;
+    cont.hidden = false;
   }
 
-  async function canjearCodigo(form) {
-    const input = form.querySelector('[data-codigo-input]');
-    const errorEl = form.parentElement.querySelector('[data-codigo-error]');
-    const btn = form.querySelector('button');
-    const codigo = input.value.trim();
-    errorEl.hidden = true;
-    if (!codigo) {
-      errorEl.textContent = 'Escribe el código.';
-      errorEl.hidden = false;
-      return input.focus();
+  // Abre Stripe Checkout (o cambia el plan de una suscripción activa).
+  async function pagarPlan(btn, errorEl) {
+    const planId = btn.dataset.checkoutPlan;
+    if (negocioActual.tieneSuscripcionStripe && !negocioActual.sinPlan) {
+      const destino = planesInfo.find((p) => p.id === planId);
+      if (!confirm(`Tu suscripción pasará a ${destino ? destino.nombre : 'el nuevo plan'} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
     }
+    if (errorEl) errorEl.hidden = true;
     btn.disabled = true;
     try {
-      const r = await api(`/api/negocios/${negocioActual.id}/codigo`, { method: 'POST', body: JSON.stringify({ codigo }) });
-      negocioActual = r;
-      const plan = planesInfo.find((p) => p.id === r.canje.plan) || {};
+      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId }) });
+      if (resultado.url) {
+        window.location.href = resultado.url;
+        return;
+      }
+      // Cambio de plan sobre la suscripción existente: no hay página de pago.
+      negocioActual = resultado.negocio;
       render();
-      renderAvisoPlan();
-      if (vistaActual === 'config') renderPlan();
-      alert(`Listo: tienes el plan ${plan.nombre || r.canje.plan} hasta el ${fechaLarga(r.prueba.hasta)}.`);
     } catch (err) {
-      errorEl.textContent = err.mensaje || 'No se pudo canjear el código.';
-      errorEl.hidden = false;
+      if (errorEl) {
+        errorEl.textContent = err.mensaje || 'No se pudo continuar. Intenta de nuevo en un momento.';
+        errorEl.hidden = false;
+      } else alert(err.mensaje || 'No se pudo continuar. Intenta de nuevo en un momento.');
       btn.disabled = false;
     }
   }
@@ -748,7 +733,7 @@
       } else if (!p.disponible) {
         boton = '<button type="button" class="btn-ghost" disabled title="Todavía no configurado">Próximamente</button>';
       } else {
-        boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">Actualizar a ${escapeHtml(p.nombre)}</button>`;
+        boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">${negocioActual.sinPlan ? 'Elegir' : 'Actualizar a'} ${escapeHtml(p.nombre)}</button>`;
       }
       const detalle = p.usaIA
         ? (p.cuotaFotosIA ? `Texto con IA + ${p.cuotaFotosIA} fotos con IA/mes` : 'Texto con IA')
@@ -772,21 +757,16 @@
       ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
       : '';
 
-    const pr = negocioActual.prueba;
-    const estadoPrueba = negocioActual.sinPlan
-      ? `<p class="plan-estado">${pr ? 'Tu prueba terminó.' : 'Tu cuenta no tiene un plan activo.'} Para crear contenido, canjea un código de prueba o elige un plan.</p>`
-      : pr && pr.vigente && !negocioActual.tieneSuscripcionStripe
-        ? `<p class="plan-estado">Estás en prueba hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Si eliges un plan antes, no pierdes nada.</p>`
+    const estadoPlan = negocioActual.sinPlan
+      ? '<p class="plan-estado">Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta en Stripe y cancelas cuando quieras.</p>'
+      : negocioActual.cortesia
+        ? '<p class="plan-estado">Plan de cortesía para la cuenta administradora: no se cobra.</p>'
         : '';
 
     cont.innerHTML = `
       <div class="ig-card-head"><h2>Plan</h2></div>
-      ${estadoPrueba}
+      ${estadoPlan}
       ${filas}
-      <div class="plan-codigo">
-        <span class="sub">¿Tienes un código de prueba?${AY('plan-codigo')}</span>
-        ${formCodigo('plan-codigo-input')}
-      </div>
       ${usoTextos}
       ${usoFotos}
       <p class="config-error" id="plan-error" hidden></p>
@@ -885,6 +865,7 @@
       estrategia: nichoActual,
       planActual: negocioActual.planContenido || null,
       planIncluye: (clave) => !!plan[clave],
+      planes: planesInfo,
       fechaCorta,
       irA: irAVista,
       abrirBienvenida,
@@ -913,13 +894,13 @@
   // "Generar semana": muestra qué se va a crear según el plan y lo genera.
   function abrirGenerar() {
     if (negocioActual.sinPlan) {
-      // Sin plan no se genera: se muestra el aviso con el código a mano.
+      // Sin plan no se genera: se destaca el aviso para elegir uno.
       renderAvisoPlan();
-      const input = $('#aviso-codigo');
-      $('#aviso-plan').classList.remove('destello');
-      void $('#aviso-plan').offsetWidth;
-      $('#aviso-plan').classList.add('destello');
-      if (input) input.focus();
+      const aviso = $('#aviso-plan');
+      aviso.classList.remove('destello');
+      void aviso.offsetWidth;
+      aviso.classList.add('destello');
+      aviso.scrollIntoView({ block: 'nearest' });
       return;
     }
     const dlg = $('#dlg-generar');
@@ -1121,11 +1102,29 @@
     const resultado = params.get('checkout');
     if (!resultado) return;
     history.replaceState(null, '', window.location.pathname);
-    if (resultado === 'exito') {
+    if (resultado !== 'exito') return;
+    // El webhook de Stripe puede tardar unos segundos en activar el plan.
+    for (let i = 0; i < 10; i++) {
       negocioActual = await api('/api/me');
-      render();
-      alert('¡Listo! Tu plan es ' + (negocioActual.plan || 'gratis') + '.');
+      if (!negocioActual.sinPlan) break;
+      await new Promise((r) => setTimeout(r, 1500));
     }
+    render();
+    if (negocioActual.sinPlan) {
+      alert('Recibimos tu pago. Tu plan se activará en unos segundos: recarga la página si no lo ves.');
+      return;
+    }
+    const plan = planesInfo.find((p) => p.id === negocioActual.plan) || {};
+    // Recién suscrito después de la bienvenida: se crea la primera semana.
+    if (negocioActual.bienvenidaCompletada && !contenido.length) {
+      try {
+        await generarSemana();
+        irAVista('cola');
+        alert(`¡Listo! Tu plan ${plan.nombre || ''} está activo y tu primera semana está en Por aprobar.`);
+        return;
+      } catch (err) { /* se genera después con el botón */ }
+    }
+    alert(`¡Listo! Tu plan ${plan.nombre || ''} está activo.`);
   }
 
   async function iniciarSesion(email, password) {
@@ -1246,36 +1245,19 @@
     // plan: subir de plan (Stripe Checkout) o gestionar la suscripción (Billing Portal)
     $('#plan-card').addEventListener('click', async (e) => {
       const btnCheckout = e.target.closest('[data-checkout-plan]');
+      if (btnCheckout) return pagarPlan(btnCheckout, $('#plan-error'));
       const btnPortal = e.target.closest('[data-action="portal"]');
-      if (!btnCheckout && !btnPortal) return;
-      const btn = btnCheckout || btnPortal;
+      if (!btnPortal) return;
       const errorEl = $('#plan-error');
-
-      // Con una suscripción activa, subir de plan cambia esa misma
-      // suscripción (no abre un pago nuevo): se avisa antes del cobro.
-      if (btnCheckout && negocioActual.tieneSuscripcionStripe) {
-        const destino = planesInfo.find((p) => p.id === btnCheckout.dataset.checkoutPlan);
-        const seguir = confirm(`Tu suscripción pasará a ${destino ? destino.nombre : 'el nuevo plan'} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`);
-        if (!seguir) return;
-      }
-
       errorEl.hidden = true;
-      btn.disabled = true;
+      btnPortal.disabled = true;
       try {
-        const resultado = btnCheckout
-          ? await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: btnCheckout.dataset.checkoutPlan }) })
-          : await api(`/api/negocios/${negocioActual.id}/portal`, { method: 'POST' });
-        if (resultado.url) {
-          window.location.href = resultado.url;
-          return;
-        }
-        // Cambio de plan sobre la suscripción existente: no hay página de pago.
-        negocioActual = resultado.negocio;
-        renderPlan();
+        const resultado = await api(`/api/negocios/${negocioActual.id}/portal`, { method: 'POST' });
+        if (resultado.url) window.location.href = resultado.url;
       } catch (err) {
         errorEl.textContent = err.mensaje || 'No se pudo continuar. Intenta de nuevo en un momento.';
         errorEl.hidden = false;
-        btn.disabled = false;
+        btnPortal.disabled = false;
       }
     });
 
@@ -1308,15 +1290,10 @@
     });
 
     $('#btn-generar').addEventListener('click', abrirGenerar);
-    // Código de prueba (aviso de arriba y tarjeta de Plan).
-    document.addEventListener('submit', (e) => {
-      const form = e.target.closest('[data-codigo-form]');
-      if (!form) return;
-      e.preventDefault();
-      canjearCodigo(form);
-    });
     $('#aviso-plan').addEventListener('click', (e) => {
-      if (e.target.closest('[data-ir-plan]')) irAVista('config', null, 'cfg-plan');
+      if (e.target.closest('[data-ir-plan]')) return irAVista('config', null, 'cfg-plan');
+      const btn = e.target.closest('[data-checkout-plan]');
+      if (btn) pagarPlan(btn, $('#aviso-plan [data-pago-error]'));
     });
     $('#dlg-generar-ok').addEventListener('click', generarMas);
     $('#dlg-generar-cancelar').addEventListener('click', () => $('#dlg-generar').close());
