@@ -18,7 +18,7 @@
 | [mensajes-lote3-frio.md](mensajes-lote3-frio.md) | Tercer y último lote (13 empresas) — completa la revisión de las 43 filas del CSV, con mensaje y solución sugerida |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 de las 43 empresas — confirma o corrige las notas de cautela de los 3 lotes |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
-| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 49 empresas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal — se suma semanalmente por búsqueda automática |
+| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 54 empresas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal — se suma semanalmente por búsqueda automática |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
 
@@ -117,7 +117,7 @@ Dos fuentes, ver [07-icp-automatizacion.md](07-icp-automatizacion.md) para el cr
 1. **Cross-sell inmediato:** filtra `leads-chile-132-empresas.csv` por rubro `Centro médico /
    Clínica`, `Odontología` o `Farmacia / Salud retail` — 39 empresas ya calificadas para redes
    que también encajan en automatización.
-2. **`leads-automatizacion-chile.csv`** — 21 empresas nuevas en inmobiliaria/corretaje y
+2. **`leads-automatizacion-chile.csv`** — empresas nuevas en inmobiliaria/corretaje y
    servicios profesionales B2B (legal, contable, RR.HH.), encontradas por búsqueda web. A
    diferencia del CSV de redes, **no trae facturación ni cantidad de empleados** porque esos
    datos no salían de fuentes públicas verificables — cada fila trae la señal encontrada, la
