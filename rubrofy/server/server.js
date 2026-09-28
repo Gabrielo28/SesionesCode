@@ -890,7 +890,7 @@ const server = http.createServer(async (req, res) => {
         // Prueba gratis pedida al registrarse: el formulario se valida antes de crear la cuenta.
         const pidePrueba = body.prueba && typeof body.prueba === 'object';
         if (pidePrueba) {
-          const v = pruebaGratis.validar(body.prueba);
+          const v = pruebaGratis.validar(body.prueba, email);
           if (v.error) return sendJSON(res, 400, { error: v.error, campo: 'prueba.' + v.campo });
         }
 

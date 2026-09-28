@@ -1,5 +1,5 @@
-// Prueba gratis: 7 días del plan Pro a cambio de completar un formulario con
-// los datos de quien la pide (contacto, cargo, tamaño, cómo nos conoció…).
+// Prueba gratis: 7 días del plan Pro a cambio de un formulario corto con los
+// datos de contacto de quien la pide: nombre, correo y teléfono.
 // Rubrofy sigue siendo de pago: es una sola prueba por negocio y por número
 // de teléfono, y al terminar la cuenta vuelve a "sin plan" salvo que pague.
 //
@@ -15,13 +15,7 @@ const DIA = 24 * 3600 * 1000;
 const PLAN = 'pro';
 const DIAS = 7;
 
-const OPCIONES = {
-  cargo: { dueno: 'Dueño o dueña', marketing: 'Encargado/a de marketing o redes', agencia: 'Agencia o freelance', otro: 'Otro' },
-  tamano: { solo: 'Solo yo', '2-5': '2 a 5 personas', '6-20': '6 a 20 personas', '20+': 'Más de 20' },
-  objetivo: { vender: 'Vender más', seguidores: 'Más seguidores', tiempo: 'Ahorrar tiempo', ordenar: 'Publicar con constancia', publicidad: 'Mejorar mi publicidad', otro: 'Otro' },
-  fuente: { instagram: 'Instagram', google: 'Google', tiktok: 'TikTok', recomendacion: 'Me lo recomendaron', evento: 'Un evento o feria', otro: 'Otro' },
-  publicidad: { si: 'Sí, ya invierto', pronto: 'Pienso hacerlo', no: 'No' },
-};
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const db = store.db;
 db.exec(`
@@ -57,32 +51,19 @@ function disponible(negocio) {
   return !negocio.prueba && (negocio.plan || 'gratis') === 'gratis' && !suscrito(negocio);
 }
 
-// Valida el formulario. Devuelve { datos } o { error, campo }.
-function validar(body) {
+// Valida el formulario. emailCuenta: el de la cuenta, si no viene otro.
+// Devuelve { datos, telefono } o { error, campo }.
+function validar(body, emailCuenta) {
   const b = body || {};
   const datos = {
     nombre: txt(b.nombre, 100),
+    email: txt(b.email || emailCuenta, 200).toLowerCase(),
     telefono: txt(b.telefono, 30).replace(/[^\d+ ]/g, ''),
-    cargo: b.cargo,
-    tamano: b.tamano,
-    ciudad: txt(b.ciudad, 120),
-    instagram: txt(b.instagram, 60).replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, ''),
-    objetivo: b.objetivo,
-    fuente: b.fuente,
-    publicidad: b.publicidad || '',
-    comentario: txt(b.comentario, 500),
-    aceptoContacto: b.aceptoContacto === true,
   };
-  if (datos.nombre.length < 3) return { error: 'Escribe tu nombre y apellido', campo: 'nombre' };
+  if (datos.nombre.length < 2) return { error: 'Escribe tu nombre', campo: 'nombre' };
+  if (!EMAIL_RE.test(datos.email)) return { error: 'Escribe un correo válido', campo: 'email' };
   const d = digitos(datos.telefono);
-  if (d.length < 8 || d.length > 15) return { error: 'Escribe un teléfono o WhatsApp válido', campo: 'telefono' };
-  for (const k of ['cargo', 'tamano', 'objetivo', 'fuente']) {
-    if (!OPCIONES[k][datos[k]]) return { error: 'Completa todas las preguntas del formulario', campo: k };
-  }
-  if (datos.publicidad && !OPCIONES.publicidad[datos.publicidad]) datos.publicidad = '';
-  if (datos.ciudad.length < 2) return { error: 'Escribe tu ciudad o comuna', campo: 'ciudad' };
-  if (datos.instagram && !/^[A-Za-z0-9._]{1,30}$/.test(datos.instagram)) return { error: 'Tu usuario de Instagram no parece válido', campo: 'instagram' };
-  if (!datos.aceptoContacto) return { error: 'Para activar la prueba tienes que aceptar que te contactemos', campo: 'aceptoContacto' };
+  if (d.length < 8 || d.length > 15) return { error: 'Escribe un número de teléfono válido', campo: 'telefono' };
   if (sql.telefonoUsado.get(d)) return { error: 'Ese número ya usó su prueba gratis. Elige un plan para seguir.', campo: 'telefono' };
   return { datos, telefono: d };
 }
@@ -90,7 +71,7 @@ function validar(body) {
 // Activa la prueba en el negocio (ya leído). Devuelve { negocio } o { error, campo }.
 function activar(negocio, body, ahora = Date.now()) {
   if (!disponible(negocio)) return { error: negocio.prueba ? 'Ya usaste tu prueba gratis' : 'Tu cuenta ya tiene un plan' };
-  const v = validar(body);
+  const v = validar(body, negocio.email);
   if (v.error) return v;
   const ok = store.transaccion(() => {
     if (sql.telefonoUsado.get(v.telefono)) return false;
@@ -101,12 +82,8 @@ function activar(negocio, body, ahora = Date.now()) {
   if (!ok) return { error: 'Ese número ya usó su prueba gratis. Elige un plan para seguir.', campo: 'telefono' };
   negocio.plan = PLAN;
   negocio.prueba = { plan: PLAN, desde: new Date(ahora).toISOString(), hasta: new Date(ahora + DIAS * DIA).toISOString() };
-  // Lo que ya sabemos del formulario completa el perfil si estaba vacío.
-  const perfil = Object.assign({}, negocio.perfil || {});
-  if (!perfil.ciudad) perfil.ciudad = v.datos.ciudad;
-  if (!perfil.instagram && v.datos.instagram) perfil.instagram = v.datos.instagram;
-  if (!perfil.whatsapp) perfil.whatsapp = v.datos.telefono;
-  negocio.perfil = perfil;
+  // El teléfono completa el WhatsApp del perfil si estaba vacío.
+  if (!(negocio.perfil && negocio.perfil.whatsapp)) negocio.perfil = Object.assign({}, negocio.perfil || {}, { whatsapp: v.datos.telefono });
   return { negocio };
 }
 
@@ -154,16 +131,14 @@ function listar() {
     let estado = 'eliminada';
     if (n) estado = suscrito(n) ? 'pagando' : vigente(n) ? 'en prueba' : 'terminó sin pagar';
     return {
-      fecha: f.creado_el, negocio: n ? n.nombre : '(cuenta eliminada)', email: n ? n.email : '', estado,
-      nombre: d.nombre, telefono: d.telefono, ciudad: d.ciudad, instagram: d.instagram,
-      cargo: OPCIONES.cargo[d.cargo] || '', tamano: OPCIONES.tamano[d.tamano] || '', objetivo: OPCIONES.objetivo[d.objetivo] || '',
-      fuente: OPCIONES.fuente[d.fuente] || '', publicidad: OPCIONES.publicidad[d.publicidad] || '', comentario: d.comentario || '',
+      fecha: f.creado_el, negocio: n ? n.nombre : '(cuenta eliminada)', estado,
+      nombre: d.nombre, email: d.email || (n ? n.email : ''), telefono: d.telefono,
     };
   });
 }
 
 function catalogo() {
-  return { plan: PLAN, dias: DIAS, opciones: OPCIONES };
+  return { plan: PLAN, dias: DIAS };
 }
 
 module.exports = { activar, validar, disponible, vigente, revisar, publico, listar, catalogo, suscrito, PLAN, DIAS };

@@ -688,7 +688,7 @@
     if (negocioActual.sinPlan && pr.disponible) {
       cont.className = 'aviso-plan aviso-sinplan aviso-regalo';
       cont.innerHTML = `<div class="aviso-texto"><b>🎁 ${pr.dias} días gratis del plan ${escapeHtml(nombrePlan(pr.plan))}</b>
-          <span>Completa un formulario corto con tus datos y empieza hoy, sin tarjeta: estrategia y publicaciones completas con gancho, texto y hashtags.</span></div>
+          <span>Déjanos tu nombre, correo y teléfono, y empieza hoy, sin tarjeta: estrategia y publicaciones completas con gancho, texto y hashtags.</span></div>
         <div class="aviso-botones"><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button><button type="button" class="btn-text" data-ir-plan>o elige un plan</button></div>`;
       cont.hidden = false;
     } else if (negocioActual.sinPlan) {
@@ -725,8 +725,8 @@
     const perfil = negocioActual.perfil || {};
     dlg.innerHTML = `<form method="dialog" class="dlg-caja">
         <h2>🎁 ${cat.dias} días gratis del plan ${escapeHtml(nombrePlan(cat.plan))}</h2>
-        <p class="sub">Cuéntanos quién eres y la prueba se activa al instante, sin tarjeta. Al terminar, tu contenido queda guardado y eliges si seguir.</p>
-        ${window.RubrofyPrueba.campos(cat, { ciudad: perfil.ciudad, instagram: perfil.instagram, telefono: perfil.whatsapp })}
+        <p class="sub">Déjanos tu nombre, correo y teléfono, y la prueba se activa al instante, sin tarjeta. Al terminar, tu contenido queda guardado y eliges si seguir.</p>
+        ${window.RubrofyPrueba.campos(cat, { email: negocioActual.email, telefono: perfil.whatsapp })}
         <p class="config-error" data-prueba-error hidden></p>
         <div class="dlg-acciones"><button type="button" class="btn-ghost" data-cerrar>Ahora no</button><button class="btn-approve">Activar mi prueba</button></div>
       </form>`;
@@ -831,7 +831,7 @@
 
     const pr = negocioActual.prueba || {};
     const estadoPlan = negocioActual.sinPlan && pr.disponible
-      ? `<div class="plan-prueba"><p class="plan-estado">Tu cuenta no tiene un plan activo. Prueba el plan ${escapeHtml(nombrePlan(pr.plan))} ${pr.dias} días gratis completando tus datos, o elige un plan.</p><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button></div>`
+      ? `<div class="plan-prueba"><p class="plan-estado">Tu cuenta no tiene un plan activo. Prueba el plan ${escapeHtml(nombrePlan(pr.plan))} ${pr.dias} días gratis dejando tu nombre, correo y teléfono, o elige un plan.</p><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button></div>`
       : negocioActual.sinPlan
       ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta en Stripe y cancelas cuando quieras.</p>`
       : pr.vigente && !negocioActual.tieneSuscripcionStripe

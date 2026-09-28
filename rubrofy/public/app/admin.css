@@ -63,7 +63,6 @@ body.adm { height: auto; min-height: 100%; }
 
 /* pruebas gratis */
 .adm-tabla-pruebas td { white-space: nowrap; }
-.adm-tabla-pruebas td:nth-child(13) { white-space: normal; min-width: 180px; }
 .adm-est { font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 8px; background: var(--bg); }
 .adm-est-pagando { color: var(--green); }
 .adm-est-en-prueba { color: var(--amber); }

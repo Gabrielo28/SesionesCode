@@ -28,10 +28,6 @@
     .registro-error { color: var(--coral); font-size: 12.5px; margin: 0; }
     .registro-nota { font-size: 12px; color: var(--ink-faint); margin: 0; }
     .registro-nota a { color: var(--amber); }
-    .registro-card select {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink);
-      font-family: inherit; font-size: 14px; padding: 10px 12px;
-    }
     .prueba-caja { border: 1.5px solid var(--rosa, #ff4d94); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; background: var(--rosa-palido, #fff4f8); }
     .prueba-caja .prueba-si { flex-direction: row; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--ink); }
     .prueba-caja .prueba-si input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--rosa, #ff4d94); }
@@ -43,9 +39,7 @@
     .pg-fila { display: flex; gap: 12px; }
     .pg-fila > label { flex: 1; min-width: 0; }
     .pg-campo { display: flex; flex-direction: column; gap: 5px; }
-    .pg-acepto { flex-direction: row !important; align-items: flex-start; gap: 8px !important; font-size: 12.5px !important; flex-wrap: wrap; }
-    .pg-acepto input { margin-top: 2px; }
-    .pg-acepto span:not(.pg-error) { flex: 1; }
+    .pg-nota { margin: 0; font-size: 12px; color: var(--ink-faint); }
     .pg-error { color: var(--coral); font-size: 12px; flex-basis: 100%; }
     @media (max-width: 480px) { .pg-fila { flex-direction: column; } }
   </style>
@@ -74,7 +68,7 @@
         <label><span>Rubro <button type="button" class="ay" data-ayuda="reg-rubro" aria-label="Ayuda: Rubro" aria-expanded="false">?</button></span>
           <textarea id="reg-rubro" required rows="2" maxlength="300" placeholder="Ej: panadería artesanal de barrio, hacemos pan y pasteles"></textarea>
         </label>
-        <label>Email
+        <label>Correo
           <input type="email" id="reg-email" required autocomplete="username">
         </label>
         <label>Clave (mínimo 8 caracteres)
@@ -82,7 +76,7 @@
         </label>
         <div class="prueba-caja" id="prueba-caja">
           <label class="prueba-si"><input type="checkbox" id="prueba-si" checked>
-            <span><b id="prueba-titulo">Quiero mis 7 días gratis del plan Pro</b><small>Sin tarjeta. Completa tus datos y empiezas hoy con todo: estrategia y publicaciones con gancho, texto y hashtags.</small></span></label>
+            <span><b id="prueba-titulo">Quiero mis 7 días gratis del plan Pro</b><small>Sin tarjeta. Déjanos tu nombre y teléfono (el correo es el de arriba) y empiezas hoy con todo: estrategia y publicaciones con gancho, texto y hashtags.</small></span></label>
           <div id="prueba-campos"><p class="registro-nota">Cargando…</p></div>
         </div>
         <label class="acepto"><input type="checkbox" id="reg-acepto" required> <span>Acepto los <a href="/terminos.html" target="_blank" rel="noopener">términos del servicio</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
@@ -93,7 +87,7 @@
     </div>
   </div>
 
-  <script src="/app/prueba-form.js?v=9"></script>
+  <script src="/app/prueba-form.js?v=10"></script>
   <script>
     (function () {
       var $ = function (sel) { return document.querySelector(sel); };
@@ -102,7 +96,7 @@
       // Formulario de la prueba gratis: las preguntas vienen del servidor.
       window.RubrofyPrueba.cargar().then(function (cat) {
         $('#prueba-titulo').textContent = 'Quiero mis ' + cat.dias + ' días gratis del plan ' + (cat.plan === 'estudio' ? 'Estudio' : 'Pro');
-        $('#prueba-campos').innerHTML = window.RubrofyPrueba.campos(cat);
+        $('#prueba-campos').innerHTML = window.RubrofyPrueba.campos(cat, {}, { sinCorreo: true });
         $('#prueba-campos').querySelectorAll('[required]').forEach(function (el) { el.dataset.req = '1'; });
         actualizarPrueba();
       }).catch(function () { $('#prueba-caja').hidden = true; });
@@ -153,6 +147,6 @@
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=9"></script>
+  <script src="/app/ayuda.js?v=10"></script>
 </body>
 </html>

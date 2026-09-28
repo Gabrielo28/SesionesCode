@@ -29,7 +29,7 @@ contenido — no hay una clave maestra que vea todos los negocios juntos.
 
 **Modelo de negocio:** solo de pago, por negocio: sin plan gratis. La
 puerta de entrada es una **prueba gratis de 7 días del plan Pro** que se
-activa completando un formulario con los datos de contacto (ver "Solo de
+activa dejando nombre, correo y teléfono (ver "Solo de
 pago y prueba gratis" más abajo). Pro genera con Claude
 (piezas completas: gancho, texto con llamado a la acción y hashtags) y
 Estudio agrega fotos y videos con IA — ver `server/planes.js` y la sección
@@ -679,9 +679,9 @@ responden 402 `sinPlan`.
   contenido de otros negocios.
 - **Prueba gratis** (`server/prueba-gratis.js`, formulario en
   `public/app/prueba-form.js`): 7 días del plan Pro a cambio de un
-  formulario con nombre, teléfono/WhatsApp, rol, tamaño del equipo, ciudad,
-  Instagram (opcional), objetivo, cómo nos conoció, si invierte en
-  publicidad (opcional), un comentario y la aceptación de ser contactado.
+  formulario con **nombre, correo y número de teléfono** (en el registro el
+  correo es el de la cuenta). Al activarla, la persona acepta que la
+  contacten por WhatsApp o correo (el aviso está junto al botón).
   - Dónde se pide: en el registro (casilla marcada por defecto; el
     formulario se valida antes de crear la cuenta), en el último paso de la
     bienvenida ("Empieza gratis o elige tu plan", que además crea la
@@ -690,13 +690,13 @@ responden 402 `sinPlan`.
     un banner en Precios.
   - Una por negocio y por teléfono: los números usados quedan en
     `pruebas_usadas` aunque se elimine la cuenta (lo dice la política de
-    privacidad). Los datos del formulario completan el perfil (ciudad,
-    Instagram, WhatsApp) si estaba vacío.
+    privacidad). El teléfono completa el WhatsApp del perfil si estaba
+    vacío.
   - Al terminar (se revisa cada `RECORDATORIOS_INTERVALO_SEG`, 1800 s) la
     cuenta vuelve a sin plan salvo que pague; con push, se avisa 2 días
     antes y el día que termina. Si paga durante la prueba, la prueba se
     cierra y manda la suscripción.
-  - `/admin` → Pruebas gratis: las respuestas de cada formulario, el
+  - `/admin` → Pruebas gratis: nombre, correo y teléfono de cada uno, el
     estado (en prueba, pagando, terminó sin pagar), la conversión y
     "Descargar CSV". Son datos de contacto que la persona aceptó dar, no
     contenido de su negocio.

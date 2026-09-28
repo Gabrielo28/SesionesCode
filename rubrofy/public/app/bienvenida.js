@@ -88,8 +88,8 @@
         const nombre = (id) => ((ctx.planes || []).find((x) => x.id === id) || {}).nombre || id;
         const prueba = catPrueba ? `<div class="bv-prueba" data-bv-prueba>
             <h3>🎁 Prueba ${catPrueba.dias} días gratis el plan ${esc(nombre(catPrueba.plan))}</h3>
-            <p>Sin tarjeta. Completa tus datos y creamos tu primera semana ahora mismo.</p>
-            ${window.RubrofyPrueba.campos(catPrueba, { ciudad: perfil.ciudad, instagram: perfil.instagram, telefono: perfil.whatsapp })}
+            <p>Sin tarjeta. Déjanos tu nombre, correo y teléfono, y creamos tu primera semana ahora mismo.</p>
+            ${window.RubrofyPrueba.campos(catPrueba, { email: ctx.negocio().email, telefono: perfil.whatsapp })}
             <button type="button" class="btn-approve" data-bv="activar-prueba">Activar mis ${catPrueba.dias} días y crear mi semana</button>
           </div><p class="bv-o">o elige un plan pagado</p>` : '';
         return `<h2>${catPrueba ? 'Empieza gratis o elige tu plan' : 'Elige tu plan'}${AY('precios-comparar')}</h2>

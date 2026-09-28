@@ -272,13 +272,11 @@
     sec.className = 'adm-bloque';
     sec.id = 'adm-pruebas';
     const conv = d.pagando + d.sinPagar ? pct(d.pagando / (d.pagando + d.sinPagar)) : '—';
-    const COLS = [['fecha', 'Fecha'], ['negocio', 'Negocio'], ['nombre', 'Contacto'], ['telefono', 'Teléfono'], ['email', 'Email'], ['ciudad', 'Ciudad'], ['instagram', 'Instagram'],
-      ['cargo', 'Rol'], ['tamano', 'Equipo'], ['objetivo', 'Objetivo'], ['fuente', 'Cómo nos conoció'], ['publicidad', 'Publicidad'], ['comentario', 'Comentario'], ['estado', 'Estado']];
+    const COLS = [['fecha', 'Fecha'], ['nombre', 'Nombre'], ['email', 'Correo'], ['telefono', 'Teléfono'], ['negocio', 'Negocio'], ['estado', 'Estado']];
     const celda = (p, k) => {
       if (k === 'fecha') return esc(fecha(p.fecha));
       if (k === 'telefono') { const t = String(p.telefono).replace(/\D/g, ''); return `<a href="https://wa.me/${t}" target="_blank" rel="noopener">${esc(p.telefono)}</a>`; }
       if (k === 'email') return p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '—';
-      if (k === 'instagram') return p.instagram ? `<a href="https://instagram.com/${esc(p.instagram)}" target="_blank" rel="noopener">@${esc(p.instagram)}</a>` : '—';
       if (k === 'estado') return `<span class="adm-est adm-est-${esc(p.estado.replace(/\s+/g, '-'))}">${esc(p.estado)}</span>`;
       return esc(p[k] || '—');
     };
