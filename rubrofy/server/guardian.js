@@ -6,7 +6,7 @@
 //   - precios, descuentos o fechas que no están en los datos del negocio
 //     (la IA pudo inventarlos),
 //   - frases de plantilla que delatan un texto genérico de IA.
-// Sin dependencias ni IA: corre en todos los planes, también en el Gratis.
+// Sin dependencias ni IA: corre en todos los planes.
 
 const PROMESAS = [
   /\bcura(r|mos|n)?\b/i, /\bsana(r)?\b/i, /garantiza(do|da|dos|das|mos)?\b/i, /\b100\s?%\s*(efectiv|segur|garantiz|natural)/i,

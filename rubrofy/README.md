@@ -27,11 +27,12 @@ crea su propia cuenta en `rubrofy.com/registro.html` (nombre, una
 descripción libre de su rubro, email y clave) y solo ve su propio
 contenido — no hay una clave maestra que vea todos los negocios juntos.
 
-**Modelo de negocio:** freemium por niveles, por negocio. El plan Gratis usa
-solo plantillas (sin IA, sin costo) y sirve de puerta de entrada; los planes
-Pro y Estudio agregan generación con Claude y, en Estudio, una cuota de
-fotos generadas por IA — ver `server/planes.js` y la sección de Stripe más
-abajo.
+**Modelo de negocio:** suscripción por niveles, por negocio, sin plan
+gratis. La puerta de entrada son los **códigos de prueba** (ver más abajo):
+dan el plan Pro o Estudio completo por unos días. Pro genera con Claude
+(piezas completas: gancho, texto con llamado a la acción y hashtags) y
+Estudio agrega fotos y videos con IA — ver `server/planes.js` y la sección
+de Stripe más abajo.
 
 ## Cómo correrlo
 
@@ -52,7 +53,7 @@ Stripe:
 
 - `demo-turismo@rubrofy.com` — plan Estudio (texto + fotos con IA)
 - `demo-panaderia@rubrofy.com` — plan Pro (solo texto con IA)
-- `demo-clinica@rubrofy.com` — plan Gratis (plantillas, sin IA)
+- `demo-clinica@rubrofy.com` — sin plan (muestra el aviso para canjear un código)
 
 Para un servidor real (sin negocios de ejemplo falsos) usar `npm start`,
 que no siembra nada — cada negocio se crea desde `/registro.html`.
@@ -147,9 +148,9 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   marketing — nunca reemplaza una foto real ya subida.
 - **Plan y cobro** — en Configuración, cada negocio ve su plan actual, sube
   a Pro o Estudio (Stripe Checkout) o gestiona su suscripción (Billing
-  Portal). El plan Gratis usa solo plantillas; Pro y Estudio habilitan la
-  IA de texto (con un techo mensual de piezas, contra el abuso), y Estudio
-  agrega una cuota mensual de fotos con IA.
+  Portal), o canjea un código de prueba. Sin plan no se crea contenido
+  nuevo; Pro y Estudio habilitan la IA de texto (con un techo mensual de
+  piezas, contra el abuso), y Estudio agrega fotos y videos con IA.
 - **Publicación sin duplicados** — cada pieza se publica una sola vez: un
   doble clic mientras se publica se ignora, y una pieza ya publicada que se
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
@@ -597,8 +598,24 @@ diseñe su estrategia de contenido (tono, 4 enfoques con su intención, y
 las categorías de foto que tiene sentido que ese negocio suba) — así se
 adapta a cualquier rubro, no solo a una lista fija de nichos.
 
-Con esa estrategia, `server/generator.js` le pide a Claude que escriba los
-titulares y captions reales del banco inicial (una sola llamada por lote).
+Con esa estrategia, `server/generator.js` le pide a Claude que escriba las
+piezas del lote (una sola llamada por lote). Cada pieza trae:
+
+- **gancho**: la frase que detiene el scroll (máx. 90 caracteres). En posts
+  y carruseles es la primera línea; en reels, lo que se dice o se ve en los
+  primeros 2 segundos.
+- **caption**: el texto completo (250 a 600 caracteres; 150 en historias),
+  empezando por el gancho y terminando con un llamado a la acción, sin
+  hashtags.
+- **hashtags**: 5 a 10, mezclando nicho, zona y producto. Se limpian
+  (`limpiarHashtags`: minúsculas, sin repetidos ni espacios) y se agregan
+  al final del texto al publicar si el texto no los trae. El dueño los
+  edita en la tarjeta, junto al texto.
+- **idea**: qué mostrar en la foto, las láminas o las tomas.
+
+El panel muestra el gancho destacado, el texto completo (se expande al
+tocarlo), los hashtags y "Copiar texto y hashtags" con el texto final tal
+como se publica.
 El botón "Otra versión" también le pide a Claude una variante nueva una vez
 que se agotan las precalculadas.
 
@@ -642,10 +659,36 @@ Dos proveedores; si están los dos, se usa Higgsfield:
 - **Cupos por plan** (`server/planes.js`): Estudio, 20 imágenes y 6 videos
   al mes. Cada video de 5 s cuesta del orden de USD 0,5 a 1 en el proveedor.
 
+## Códigos de prueba (server/codigos.js)
+
+No hay plan gratis: una cuenta nueva queda **sin plan** (id interno
+`gratis`, nombre "Sin plan", no aparece en `/api/planes`) y no puede crear
+contenido (`/generar` y "Otra versión" responden 402 `sinPlan`). Para
+probar Rubrofy se usa un código:
+
+- **Crear**: en `/admin` → Códigos de prueba. Cada código dice qué plan da
+  (Pro o Estudio), por cuántos días (1 a 365), cuántos usos (vacío =
+  ilimitados), hasta cuándo se puede canjear y una nota. Si no se escribe
+  el código se genera uno (`RUBRO-XXXX-XXXX`). Se pueden desactivar.
+  "Copiar enlace" da `/registro.html?codigo=...`, que deja el código
+  escrito en el registro.
+- **Canjear**: al registrarse (se valida antes de crear la cuenta), en la
+  bienvenida (paso "Activa tu prueba", antes de generar la primera semana),
+  en el aviso de arriba del panel o en Configuración → Plan.
+- **Reglas**: un negocio usa cada código una vez; si canjea otro con la
+  prueba vigente, los días se suman desde el final y queda el mejor plan
+  de los dos. Con una suscripción pagada activa no se canjea. El último
+  uso de un código se descuenta dentro de una transacción.
+- **Al terminar**: cada `PRUEBAS_INTERVALO_SEG` (1800) el servidor revisa
+  las pruebas vencidas; la cuenta vuelve a sin plan (salvo que se haya
+  suscrito en Stripe) y su contenido queda intacto. Con push activado, se
+  avisa 2 días antes y el día que termina. El webhook de Stripe no baja a
+  "sin plan" una cuenta con prueba vigente.
+
 ## Planes y cobro (Stripe)
 
-Todo negocio nace en el plan **Gratis** (sin tarjeta, como dice el
-formulario de registro). Para subir a **Pro** o **Estudio** desde
+Todo negocio nace **sin plan** (o con el plan de su código de prueba).
+Para pasar a **Pro** o **Estudio** desde
 Configuración, el panel abre una sesión de Stripe Checkout; Stripe cobra la
 suscripción y avisa al servidor por webhook cuándo se activó, canceló o
 falló el pago — el servidor nunca ve ni guarda el número de tarjeta.
@@ -688,9 +731,9 @@ Para activarlo:
    npm start
    ```
 
-Sin `STRIPE_SECRET_KEY`, todos los negocios quedan en el plan Gratis y los
-botones de "Actualizar" muestran "Próximamente" — no rompe nada, solo no
-se puede cobrar todavía.
+Sin `STRIPE_SECRET_KEY`, los botones de "Actualizar" muestran
+"Próximamente" — no rompe nada, solo no se puede cobrar todavía: mientras
+tanto se entra con códigos de prueba.
 
 ## Estructura
 

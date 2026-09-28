@@ -12,8 +12,8 @@
 //
 // Cada uno queda en un plan distinto a propósito, para poder ver los tres
 // niveles en un solo `npm run dev`: Domo Bosque Sur = Estudio (texto + fotos
-// IA), Panadería Migas = Pro (solo texto IA), Clínica Sonrisa Sur = Gratis
-// (plantillas, sin IA) — ver server/planes.js.
+// IA), Panadería Migas = Pro (solo texto IA), Clínica Sonrisa Sur = sin plan
+// (no puede generar hasta canjear un código) — ver server/planes.js.
 
 const store = require('./store');
 const auth = require('./auth');
@@ -77,7 +77,7 @@ const NEGOCIOS_EJEMPLO = [
     nombre: 'Clínica Sonrisa Sur',
     email: 'demo-clinica@rubrofy.com',
     marca: { color: '#7d93a8' },
-    plan: 'gratis',
+    plan: 'pro', // demo: con plan (ya no existe el plan gratis)
     estiloImagen: 'limpia',
     estrategia: {
       rubro: 'clínica dental',

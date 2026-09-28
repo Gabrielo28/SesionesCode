@@ -16,7 +16,7 @@ const correo = require('./correo');
 const avisos = require('./avisos');
 const admin = require('./admin');
 const INICIO = Date.now();
-const { generarBanco, generarVarianteConClaude, ideaGenerica } = require('./generator');
+const { generarBanco, generarVarianteConClaude, ideaGenerica, limpiarHashtags } = require('./generator');
 const estilo = require('./estilo');
 const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
@@ -32,6 +32,7 @@ const reelsPrueba = require('./reels-prueba');
 const push = require('./push');
 const costos = require('./costos');
 const perfil = require('./perfil');
+const codigos = require('./codigos');
 const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
@@ -209,6 +210,8 @@ function negocioPublico(negocio) {
   resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
   resto.perfilCompleto = perfil.completo(negocio);
+  resto.prueba = codigos.publico(negocio);
+  resto.sinPlan = (negocio.plan || 'gratis') === 'gratis';
   resto.usaIA = !!getPlan(negocio.plan).usaIA;
   return resto;
 }
@@ -391,7 +394,10 @@ async function prepararPublicacion(negocio, item) {
   const enlaceVideo = (archivo) =>
     `${base}/videos/${negocio.id}/${archivo}?t=${auth.crearTokenFoto(negocio.id, '_video', archivo, 60)}`;
   const formato = formatoDe(item);
-  const caption = item.variants[item.variantIndex];
+  // Texto final: el de la versión elegida más sus hashtags (si no los trae ya).
+  const textoBase = item.variants[item.variantIndex] || '';
+  const tags = (item.hashtags || []).filter((h) => !textoBase.toLowerCase().includes(h));
+  const caption = tags.length ? `${textoBase}\n\n${tags.join(' ')}` : textoBase;
   const video = item.video && item.video.archivo;
 
   if (formato === 'reel') {
@@ -599,7 +605,25 @@ async function recordatoriosSemanales(ahora = new Date()) {
   }
   return n;
 }
-const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); }, 30 * 60 * 1000);
+// Pruebas: aviso 2 días antes de terminar y al terminar (push y, si hay, correo del panel).
+function revisarPruebas(ahora = Date.now()) {
+  for (const n of codigos.revisarVencidas(ahora)) {
+    if (n.plan === 'gratis') notificar(n.id, { titulo: 'Terminó tu prueba de Rubrofy', cuerpo: 'Elige un plan para seguir creando y publicando tu contenido. Lo que ya tienes se mantiene.', url: '/app#config', tag: 'prueba' });
+  }
+  for (const n of store.listNegocios()) {
+    const p = n.prueba;
+    if (!p || p.terminada || p.avisoFin) continue;
+    const quedan = Date.parse(p.hasta) - ahora;
+    if (quedan > 0 && quedan <= 2 * 24 * 3600 * 1000) {
+      const fresco = store.getNegocio(n.id);
+      fresco.prueba = Object.assign({}, fresco.prueba, { avisoFin: new Date(ahora).toISOString() });
+      store.saveNegocio(fresco);
+      notificar(n.id, { titulo: 'Tu prueba termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#config', tag: 'prueba' });
+    }
+  }
+}
+revisarPruebas();
+const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); revisarPruebas(); }, (Number(process.env.PRUEBAS_INTERVALO_SEG) || 30 * 60) * 1000);
 timerRecordatorios.unref();
 
 // Videos con IA: cuando uno termina, queda como el video de la pieza.
@@ -787,7 +811,9 @@ const server = http.createServer(async (req, res) => {
               subscriptionId: sub.id,
               estado: sub.status,
             };
-            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : 'gratis';
+            const pruebaVigente = negocio.prueba && !negocio.prueba.terminada && Date.parse(negocio.prueba.hasta) > Date.now();
+            if (activa && pruebaVigente) negocio.prueba.terminada = 'suscripcion'; // ya paga: la prueba no lo baja de plan
+            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : (pruebaVigente ? negocio.prueba.plan : 'gratis');
             store.saveNegocio(negocio);
           }
         }
@@ -829,6 +855,11 @@ const server = http.createServer(async (req, res) => {
         // sin cuenta no puede crearse aquí (si no, quien lo conozca se haría
         // administrador). La cuenta administradora se crea antes de listarla.
         if (admin.adminEmails().includes(email)) return sendJSON(res, 409, { error: 'Ese email no está disponible' });
+        const codigoPrueba = String(body.codigo || '').trim();
+        if (codigoPrueba) {
+          const problema = codigos.validar(codigoPrueba);
+          if (problema) return sendJSON(res, 400, { error: problema, campo: 'codigo' });
+        }
 
         const id = idUnico(slugify(nombre));
         const estrategia = await generarEstrategia({ nombre, rubro, negocioId: id });
@@ -852,6 +883,10 @@ const server = http.createServer(async (req, res) => {
           },
         };
         store.saveNegocio(negocio);
+        if (codigoPrueba) {
+          const r = codigos.canjear(negocio, codigoPrueba);
+          if (r.negocio) store.saveNegocio(r.negocio);
+        }
         if (correo.configurado()) {
           correo.enviar(avisos.correoBienvenida({ negocio, urlPanel: urlPublica(req) + '/app' }))
             .then((r) => { if (!r.ok) console.log(`Bienvenida de ${id} no enviada: ${r.error}`); });
@@ -939,7 +974,7 @@ const server = http.createServer(async (req, res) => {
       // Para cualquier otro, no existe (404).
       //   GET /api/admin/resumen?dias=30 · GET /api/admin/negocios
       //   GET/PUT /api/admin/contexto-ia — reglas de la plataforma para la IA
-      if (parts[1] === 'admin' && (req.method === 'GET' || req.method === 'PUT')) {
+      if (parts[1] === 'admin' && ['GET', 'PUT', 'POST'].includes(req.method)) {
         const quien = store.getNegocio(sesionActual(req) || '');
         if (!admin.activo() || !admin.esAdmin(quien)) return sendJSON(res, 404, { error: 'No encontrado' });
         if (parts[2] === 'contexto-ia' && parts.length === 3) {
@@ -949,6 +984,21 @@ const server = http.createServer(async (req, res) => {
           });
           if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
           return sendJSON(res, 200, vista());
+        }
+        // Códigos de prueba: GET lista · POST crea { codigo?, plan, dias, usosMax, venceEl, nota } · PUT /:codigo { activo }
+        if (parts[2] === 'codigos') {
+          const nombreDe = (id) => { const n = store.getNegocio(id); return n ? n.nombre : '(eliminado)'; };
+          if (parts.length === 3 && req.method === 'POST') {
+            const r = codigos.crear(await readBody(req));
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 201, { creado: r.codigo, codigos: codigos.listar(nombreDe) });
+          }
+          if (parts.length === 4 && req.method === 'PUT') {
+            if (!codigos.activar(decodeURIComponent(parts[3]), (await readBody(req)).activo !== false)) return sendJSON(res, 404, { error: 'No encontrado' });
+            return sendJSON(res, 200, { codigos: codigos.listar(nombreDe) });
+          }
+          if (parts.length === 3 && req.method === 'GET') return sendJSON(res, 200, { codigos: codigos.listar(nombreDe) });
+          return sendJSON(res, 404, { error: 'No encontrado' });
         }
         if (req.method !== 'GET') return sendJSON(res, 404, { error: 'No encontrado' });
         if (parts[2] === 'resumen' && parts.length === 3) {
@@ -1337,6 +1387,7 @@ const server = http.createServer(async (req, res) => {
 
         // POST /api/negocios/:id/generar  { cantidad }
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
+          if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Ingresa un código de prueba o elige un plan para crear contenido.', sinPlan: true });
           const body = await readBody(req);
           // segunPlan: una semana del plan de contenido del negocio.
           const porPlan = body.segunPlan && negocio.planContenido ? planContenido.totalSemanal(negocio.planContenido) : 0;
@@ -1527,6 +1578,17 @@ const server = http.createServer(async (req, res) => {
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
           })));
+        }
+
+        // POST /api/negocios/:id/codigo { codigo } — canjea un código de prueba.
+        if (parts[3] === 'codigo' && parts.length === 4 && req.method === 'POST') {
+          const espera = limiteEstrategia.esperaSegundos('codigo:' + negocioId);
+          if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+          limiteEstrategia.registrar('codigo:' + negocioId);
+          const r = codigos.canjear(store.getNegocio(negocioId), (await readBody(req)).codigo);
+          if (r.error) return sendJSON(res, 400, { error: r.error });
+          store.saveNegocio(r.negocio);
+          return sendJSON(res, 200, Object.assign(negocioPublico(r.negocio), { canje: { dias: r.dias, plan: r.plan } }));
         }
 
         // Perfil del negocio (server/perfil.js): la introducción que usa toda la IA.
@@ -1981,7 +2043,9 @@ const server = http.createServer(async (req, res) => {
           } else if (accion === 'editar' && req.method === 'PUT') {
             const body = await readBody(req);
             if (typeof body.caption !== 'string') return sendJSON(res, 400, { error: 'Falta el texto' });
+            const hashtagsNuevos = body.hashtags === undefined ? null : limpiarHashtags(body.hashtags);
             aplicar = (it) => {
+              if (hashtagsNuevos) { if (hashtagsNuevos.length) it.hashtags = hashtagsNuevos; else delete it.hashtags; }
               const anterior = it.variants[it.variantIndex];
               if (body.caption === anterior) return;
               // Se guarda lo que escribió la IA la primera vez que el dueño lo
@@ -1991,6 +2055,8 @@ const server = http.createServer(async (req, res) => {
               it.variants[it.variantIndex] = body.caption;
               guardian.aplicar(it, negocio);
             };
+          } else if (accion === 'regenerar' && req.method === 'POST' && (negocio.plan || 'gratis') === 'gratis') {
+            return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Ingresa un código de prueba o elige un plan.', sinPlan: true });
           } else if (accion === 'regenerar' && req.method === 'POST') {
             // indicacion: "más corto", "menciona el despacho gratis"… pide
             // siempre un texto nuevo a la IA en vez de rotar versiones.
@@ -2005,7 +2071,12 @@ const server = http.createServer(async (req, res) => {
               const nueva = usaIA ? await generarVarianteConClaude(negocio, item.enfoqueId, item.variants, formatoDe(item), indicacion) : null;
               if (nueva) {
                 registrarUsoIA(negocioId, 'usoTextosIA', 1);
-                aplicar = (it) => { it.variants.push(nueva); it.variantIndex = it.variants.length - 1; };
+                aplicar = (it) => {
+                  it.variants.push(nueva.caption);
+                  it.variantIndex = it.variants.length - 1;
+                  if (nueva.gancho) it.gancho = nueva.gancho;
+                  if (nueva.hashtags.length) it.hashtags = nueva.hashtags;
+                };
               } else {
                 aplicar = (it) => { it.variantIndex = 0; }; // sin IA: vuelve a rotar desde la primera
               }

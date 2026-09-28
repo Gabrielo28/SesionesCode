@@ -71,6 +71,7 @@ queda apagada y el resto funciona igual)
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
+| Códigos de prueba | Nada que configurar: se crean en `/admin` → Códigos de prueba. Opcional `PRUEBAS_INTERVALO_SEG` (cada cuánto se revisan las pruebas vencidas, por defecto 1800). Las cuentas que estaban en el plan Gratis quedan "sin plan" hasta canjear un código o suscribirse. |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
 | Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
 

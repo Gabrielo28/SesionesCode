@@ -261,9 +261,13 @@
               ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
               ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
             </div>` : ''}
+          ${item.gancho && !isEditing ? `<p class="card-gancho"><span>${formato === 'reel' ? 'Gancho · primeros 2 segundos' : formato === 'historia' ? 'Gancho' : 'Gancho · primera línea'}</span>${escapeHtml(item.gancho)}</p>` : ''}
           ${isEditing
-            ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>`
-            : `<p class="card-caption">${escapeHtml(caption)}</p>`}
+            ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>
+               <label class="card-hashtags-edit">Hashtags<input data-hashtags-id="${item.id}" value="${escapeHtml((item.hashtags || []).join(' '))}" placeholder="#tunegocio #tuciudad"></label>`
+            : `<p class="card-caption" data-action="expandir" title="Toca para ver el texto completo">${escapeHtml(caption)}</p>`}
+          ${!isEditing && item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
+          ${!isEditing ? `<button class="btn-text card-copiar" data-action="copiar" data-id="${item.id}" title="Copia el texto y los hashtags tal como se publican">Copiar texto${item.hashtags && item.hashtags.length ? ' y hashtags' : ''}</button>` : ''}
           ${item.prueba ? `<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen${item.prueba.origen && item.prueba.origen.permalink ? ` · <a href="${escapeHtml(item.prueba.origen.permalink)}" target="_blank" rel="noopener">ver el original</a>` : ''} ${AY('reels-prueba')}</p>` : ''}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
           ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span>${AY('voz-puntaje')}</div>` : ''}
@@ -354,7 +358,9 @@
       <div class="row"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${meta.color}"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;">${meta.label}</span></div>
       <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);">${p.day} ${MESES[p.monthIndex]} &middot; ${p.hora}</span>
       <span class="tagpill">${escapeHtml(item.tag)}</span>
+      ${item.gancho ? `<p class="card-gancho"><span>Gancho</span>${escapeHtml(item.gancho)}</p>` : ''}
       <p class="detail-text">${escapeHtml(item.variants[item.variantIndex])}</p>
+      ${item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
     `;
   }
 
@@ -659,6 +665,72 @@
     return monto ? '$' + monto.toLocaleString('es-CL') + '/mes' : 'Gratis';
   }
 
+  // Código de prueba: el mismo formulario en el aviso de arriba y en Plan.
+  function formCodigo(id) {
+    return `<form class="codigo-form" data-codigo-form>
+        <input type="text" id="${id}" data-codigo-input autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Código de prueba" aria-label="Código de prueba">
+        <button type="submit" class="btn-approve">Canjear</button>
+      </form>
+      <p class="config-error" data-codigo-error hidden></p>`;
+  }
+
+  function fechaLarga(iso) {
+    return new Date(iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+  }
+
+  // Aviso bajo la barra: sin plan (canjear o elegir) o cuánto queda de prueba.
+  function renderAvisoPlan() {
+    const cont = $('#aviso-plan');
+    if (!cont || !negocioActual) return;
+    const pr = negocioActual.prueba;
+    if (negocioActual.sinPlan) {
+      const termino = pr && !pr.vigente;
+      cont.className = 'aviso-plan aviso-sinplan';
+      cont.innerHTML = `<div class="aviso-texto"><b>${termino ? 'Tu prueba terminó' : 'Tu cuenta no tiene un plan activo'}</b>
+          <span>${termino ? 'Tu contenido sigue aquí. Para crear piezas nuevas, ' : 'Para crear publicaciones con gancho, texto y hashtags, '}canjea un código de prueba o elige un plan.</span></div>
+        ${formCodigo('aviso-codigo')}
+        <button type="button" class="btn-ghost" data-ir-plan>Ver planes</button>`;
+      cont.hidden = false;
+    } else if (pr && pr.vigente && !negocioActual.tieneSuscripcionStripe) {
+      const plan = planesInfo.find((p) => p.id === pr.plan) || {};
+      cont.className = 'aviso-plan aviso-prueba' + (pr.diasRestantes <= 2 ? ' termina' : '');
+      cont.innerHTML = `<div class="aviso-texto"><b>Prueba del plan ${escapeHtml(plan.nombre || pr.plan)}</b>
+          <span>${pr.diasRestantes === 1 ? 'Queda 1 día' : `Quedan ${pr.diasRestantes} días`} (hasta el ${fechaLarga(pr.hasta)}).</span></div>
+        <button type="button" class="btn-ghost" data-ir-plan>Elegir plan</button>`;
+      cont.hidden = false;
+    } else {
+      cont.hidden = true;
+      cont.innerHTML = '';
+    }
+  }
+
+  async function canjearCodigo(form) {
+    const input = form.querySelector('[data-codigo-input]');
+    const errorEl = form.parentElement.querySelector('[data-codigo-error]');
+    const btn = form.querySelector('button');
+    const codigo = input.value.trim();
+    errorEl.hidden = true;
+    if (!codigo) {
+      errorEl.textContent = 'Escribe el código.';
+      errorEl.hidden = false;
+      return input.focus();
+    }
+    btn.disabled = true;
+    try {
+      const r = await api(`/api/negocios/${negocioActual.id}/codigo`, { method: 'POST', body: JSON.stringify({ codigo }) });
+      negocioActual = r;
+      const plan = planesInfo.find((p) => p.id === r.canje.plan) || {};
+      render();
+      renderAvisoPlan();
+      if (vistaActual === 'config') renderPlan();
+      alert(`Listo: tienes el plan ${plan.nombre || r.canje.plan} hasta el ${fechaLarga(r.prueba.hasta)}.`);
+    } catch (err) {
+      errorEl.textContent = err.mensaje || 'No se pudo canjear el código.';
+      errorEl.hidden = false;
+      btn.disabled = false;
+    }
+  }
+
   function renderPlan() {
     const cont = $('#plan-card');
     if (!cont || !negocioActual) return;
@@ -700,9 +772,21 @@
       ? `<p class="sub">Fotos con IA disponibles este mes: ${negocioActual.fotosIADisponibles} de ${cuota.cuotaFotosIA}.</p>`
       : '';
 
+    const pr = negocioActual.prueba;
+    const estadoPrueba = negocioActual.sinPlan
+      ? `<p class="plan-estado">${pr ? 'Tu prueba terminó.' : 'Tu cuenta no tiene un plan activo.'} Para crear contenido, canjea un código de prueba o elige un plan.</p>`
+      : pr && pr.vigente && !negocioActual.tieneSuscripcionStripe
+        ? `<p class="plan-estado">Estás en prueba hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Si eliges un plan antes, no pierdes nada.</p>`
+        : '';
+
     cont.innerHTML = `
       <div class="ig-card-head"><h2>Plan</h2></div>
+      ${estadoPrueba}
       ${filas}
+      <div class="plan-codigo">
+        <span class="sub">¿Tienes un código de prueba?${AY('plan-codigo')}</span>
+        ${formCodigo('plan-codigo-input')}
+      </div>
       ${usoTextos}
       ${usoFotos}
       <p class="config-error" id="plan-error" hidden></p>
@@ -772,6 +856,7 @@
   function render() {
     renderStats();
     renderMenu();
+    renderAvisoPlan();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
@@ -827,6 +912,16 @@
 
   // "Generar semana": muestra qué se va a crear según el plan y lo genera.
   function abrirGenerar() {
+    if (negocioActual.sinPlan) {
+      // Sin plan no se genera: se muestra el aviso con el código a mano.
+      renderAvisoPlan();
+      const input = $('#aviso-codigo');
+      $('#aviso-plan').classList.remove('destello');
+      void $('#aviso-plan').offsetWidth;
+      $('#aviso-plan').classList.add('destello');
+      if (input) input.focus();
+      return;
+    }
     const dlg = $('#dlg-generar');
     const pc = negocioActual.planContenido;
     const total = pc ? Object.values(pc.semanal).reduce((a, b) => a + b, 0) : 6;
@@ -925,10 +1020,10 @@
     }
   }
 
-  async function guardarEdicion(id, caption) {
+  async function guardarEdicion(id, caption, hashtags) {
     await api(`/api/negocios/${negocioActual.id}/contenido/${id}/editar`, {
       method: 'PUT',
-      body: JSON.stringify({ caption: caption }),
+      body: JSON.stringify(hashtags === undefined ? { caption } : { caption, hashtags }),
     });
     editingIds.delete(id);
     await refreshContenido();
@@ -944,6 +1039,11 @@
       $('#dlg-generar').close();
       irAVista('cola');
     } catch (err) {
+      if (err.status === 402) {
+        $('#dlg-generar').close();
+        negocioActual.sinPlan = true;
+        return abrirGenerar();
+      }
       $('#dlg-generar-error').textContent = err.mensaje || 'No se pudo generar contenido. Intenta de nuevo.';
       $('#dlg-generar-error').hidden = false;
     } finally {
@@ -1208,6 +1308,16 @@
     });
 
     $('#btn-generar').addEventListener('click', abrirGenerar);
+    // Código de prueba (aviso de arriba y tarjeta de Plan).
+    document.addEventListener('submit', (e) => {
+      const form = e.target.closest('[data-codigo-form]');
+      if (!form) return;
+      e.preventDefault();
+      canjearCodigo(form);
+    });
+    $('#aviso-plan').addEventListener('click', (e) => {
+      if (e.target.closest('[data-ir-plan]')) irAVista('config', null, 'cfg-plan');
+    });
     $('#dlg-generar-ok').addEventListener('click', generarMas);
     $('#dlg-generar-cancelar').addEventListener('click', () => $('#dlg-generar').close());
     $('#dlg-generar-plan').addEventListener('click', () => { $('#dlg-generar').close(); irAVista('estrategia'); });
@@ -1222,10 +1332,27 @@
       if (accion === 'toggle-edit') {
         if (editingIds.has(id)) {
           const textarea = document.querySelector(`textarea[data-id="${id}"]`);
-          await guardarEdicion(id, textarea ? textarea.value : '');
+          const tags = document.querySelector(`input[data-hashtags-id="${id}"]`);
+          await guardarEdicion(id, textarea ? textarea.value : '', tags ? tags.value : undefined);
         } else {
           editingIds.add(id);
           renderCola();
+        }
+        return;
+      }
+      if (accion === 'expandir') return btn.classList.toggle('abierta');
+      if (accion === 'copiar') {
+        // El mismo texto que se publica: la versión elegida más sus hashtags.
+        const it = contenido.find((x) => x.id === id);
+        if (!it) return;
+        const base = it.variants[it.variantIndex] || '';
+        const tags = (it.hashtags || []).filter((h) => !base.toLowerCase().includes(h.toLowerCase()));
+        const texto = tags.length ? base + '\n\n' + tags.join(' ') : base;
+        try {
+          await navigator.clipboard.writeText(texto);
+          btn.textContent = 'Copiado ✓';
+        } catch (err) {
+          prompt('Copia el texto:', texto);
         }
         return;
       }

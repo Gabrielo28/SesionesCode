@@ -45,7 +45,7 @@
     <div class="registro-card">
       <div>
         <h1>Crea tu cuenta</h1>
-        <p class="sub">Un negocio, una cuenta. Sin tarjeta para empezar.</p>
+        <p class="sub">Un negocio, una cuenta. Si tienes un código de prueba, úsalo aquí: te da el plan completo por los días que indique. Después, en el panel te preguntamos por tu negocio.</p>
       </div>
       <form id="form-registro">
         <label>Nombre del negocio
@@ -60,19 +60,9 @@
         <label>Clave (mínimo 8 caracteres)
           <input type="password" id="reg-password" required minlength="8" autocomplete="new-password">
         </label>
-        <div class="form-row">
-          <label><span>Precio desde <button type="button" class="ay" data-ayuda="reg-datos" aria-label="Ayuda: Precio, promoción y producto" aria-expanded="false">?</button></span>
-            <input type="text" id="reg-precio" placeholder="$XX.XXX">
-          </label>
-          <label>Unidad
-            <input type="text" id="reg-unidad" placeholder="noche, combo, sesión...">
-          </label>
-        </div>
-        <label>Promoción vigente
-          <input type="text" id="reg-promo" placeholder="Ej: 15% de descuento en temporada baja">
-        </label>
-        <label>Producto o servicio destacado
-          <input type="text" id="reg-producto" placeholder="Ej: domo con tina caliente">
+        <label><span>Código de prueba (opcional) <button type="button" class="ay" data-ayuda="reg-codigo" aria-label="Ayuda: Código de prueba" aria-expanded="false">?</button></span>
+          <input type="text" id="reg-codigo" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ej: RUBRO-7K2P-XM4Q">
+          <span class="registro-error" id="codigo-error" hidden></span>
         </label>
         <label class="acepto"><input type="checkbox" id="reg-acepto" required> <span>Acepto los <a href="/terminos.html" target="_blank" rel="noopener">términos del servicio</a> y la <a href="/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
         <p class="registro-error" id="registro-error" hidden></p>
@@ -85,15 +75,19 @@
   <script>
     (function () {
       var $ = function (sel) { return document.querySelector(sel); };
+      // Un enlace como /registro.html?codigo=RUBRO-XXXX deja el código escrito.
+      var codigoUrl = new URLSearchParams(location.search).get('codigo');
+      if (codigoUrl) $('#reg-codigo').value = codigoUrl.slice(0, 40).toUpperCase();
 
       $('#form-registro').addEventListener('submit', function (e) {
         e.preventDefault();
         var btn = $('#btn-registro');
         var errorEl = $('#registro-error');
         errorEl.hidden = true;
+        $('#codigo-error').hidden = true;
         btn.disabled = true;
         var textoOriginal = btn.textContent;
-        btn.textContent = 'Creando tu estrategia de contenido...';
+        btn.textContent = 'Creando tu cuenta...';
         fetch('/api/auth/registro', {
           method: 'POST',
           headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' },
@@ -103,25 +97,29 @@
             email: $('#reg-email').value,
             password: $('#reg-password').value,
             acepto: $('#reg-acepto').checked,
-            datos: {
-              precioDesde: $('#reg-precio').value,
-              unidad: $('#reg-unidad').value,
-              promo: $('#reg-promo').value,
-              productoDestacado: $('#reg-producto').value,
-            },
+            codigo: $('#reg-codigo').value.trim(),
           }),
         }).then(function (res) {
-          if (!res.ok) return res.json().then(function (d) { throw new Error(d.error || 'No se pudo crear la cuenta'); });
+          if (!res.ok) return res.json().then(function (d) {
+            if (d.campo === 'codigo') {
+              $('#codigo-error').textContent = d.error;
+              $('#codigo-error').hidden = false;
+              $('#reg-codigo').focus();
+            }
+            var e = new Error(d.error || 'No se pudo crear la cuenta');
+            e.enCodigo = d.campo === 'codigo';
+            throw e;
+          });
           window.location.href = '/app';
         }).catch(function (err) {
           errorEl.textContent = err.message;
-          errorEl.hidden = false;
+          errorEl.hidden = !!err.enCodigo;
           btn.disabled = false;
           btn.textContent = textoOriginal;
         });
       });
     })();
   </script>
-  <script src="/app/ayuda.js"></script>
+  <script src="/app/ayuda.js?v=8"></script>
 </body>
 </html>

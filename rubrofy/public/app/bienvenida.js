@@ -27,7 +27,10 @@
   // opciones.soloPerfil: completar solo "Tu negocio" y "Lo que vendes".
   async function abrir(ctx, opciones = {}) {
     const cat = await P().catalogo(ctx.api);
-    const PASOS = opciones.soloPerfil ? TODOS.slice(0, 2) : TODOS;
+    // Sin plan (no hay plan gratis): antes de crear la primera semana se
+    // canjea un código de prueba o se elige un plan.
+    const PASOS = opciones.soloPerfil ? TODOS.slice(0, 2)
+      : ctx.negocio().sinPlan ? TODOS.slice(0, -1).concat({ id: 'acceso', t: 'Activa tu prueba' }, TODOS.slice(-1)) : TODOS;
     let paso = 0;
     let plan = Object.assign({}, ctx.negocio().planContenido || {});
     let datos = Object.assign({}, ctx.negocio().datos || {});
@@ -73,6 +76,14 @@
           <div data-bv-est>${P().estrategiaEditable(ctx.estrategia())}</div>
           <button type="button" class="btn-ghost bv-proponer" data-bv="proponer">Proponer otra con IA</button>`;
       }
+      if (id === 'acceso') {
+        return `<h2>Activa tu prueba${AY('plan-codigo')}</h2>
+          <p class="bv-lead">Para crear tus publicaciones completas (gancho, texto con llamado a la acción y hashtags) necesitas un plan. Si tienes un código de prueba, escríbelo aquí: te da el plan completo por los días que indique, sin tarjeta.</p>
+          <label class="bv-codigo">Código de prueba
+            <input type="text" data-bv-codigo autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Ej: RUBRO-7K2P-XM4Q">
+          </label>
+          <p class="bv-nota">¿No tienes código? <button type="button" class="btn-link" data-bv="ver-planes">Elige un plan</button>. Lo que armaste queda guardado.</p>`;
+      }
       const neg = ctx.negocio();
       const estado = (ok, txtOk, txtNo) => `<span class="bv-estado ${ok ? 'ok' : ''}">${ok ? txtOk : txtNo}</span>`;
       return `<h2>Conecta tus cuentas${AY('bv-conexiones')}</h2>
@@ -93,6 +104,7 @@
     function textoBoton() {
       const id = actual();
       if (paso === PASOS.length - 1) return opciones.soloPerfil ? 'Guardar' : 'Generar mi primera semana';
+      if (id === 'acceso') return 'Activar y continuar';
       return id === 'ritmo' ? 'Crear mi estrategia' : 'Continuar';
     }
 
@@ -161,6 +173,11 @@
         }
       } else if (id === 'estrategia') {
         ctx.setEstrategia(await ctx.api(`/api/negocios/${ctx.negocio().id}/estrategia`, { method: 'PUT', body: JSON.stringify(P().leerEstrategia(cuerpo)) }));
+      } else if (id === 'acceso') {
+        const codigo = (cuerpo.querySelector('[data-bv-codigo]').value || '').trim();
+        if (!codigo) throw new Error('Escribe tu código de prueba, o elige un plan.');
+        ocupado(btn, 'Activando…');
+        ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/codigo`, { method: 'POST', body: JSON.stringify({ codigo }) }));
       } else if (id === 'conexiones') {
         ocupado(btn, 'Creando tu primera semana…');
         ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
@@ -184,6 +201,14 @@
         } catch (err) { /* igual se cierra */ }
         cerrar();
         return ctx.alTerminar(false);
+      }
+      if (accion === 'ver-planes') {
+        // Termina la bienvenida sin generar y lleva a los planes.
+        try {
+          ctx.setNegocio(await ctx.api(`/api/negocios/${ctx.negocio().id}/bienvenida`, { method: 'POST', body: JSON.stringify({ reemplazar: true }) }));
+        } catch (err) { /* igual se cierra */ }
+        cerrar();
+        return ctx.irA('config', null, 'cfg-plan');
       }
       if (accion === 'conectar-ig') {
         // Termina la bienvenida (y crea la primera semana) antes de ir a Instagram.

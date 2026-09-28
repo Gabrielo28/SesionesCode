@@ -59,3 +59,13 @@ body.adm { height: auto; min-height: 100%; }
 .adm-reglas { gap: 12px; }
 .adm-no { color: var(--ink-faint); }
 .adm-tabla td.adm-alerta { color: var(--coral); font-weight: 600; }
+
+/* códigos de prueba */
+.adm-cod-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr)); gap: 12px; align-items: end; margin-bottom: 14px; }
+.adm-cod-form label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-dim); }
+.adm-cod-form input, .adm-cod-form select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13px; padding: 8px 10px; }
+.adm-cod-form .adm-cod-nota { grid-column: span 2; }
+.adm-cod-pie { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.adm-tabla td small { display: block; color: var(--ink-faint); font-size: 11px; }
+.adm-cod-acc { white-space: nowrap; }
+@media (max-width: 520px) { .adm-cod-form .adm-cod-nota { grid-column: auto; } }

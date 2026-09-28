@@ -11,7 +11,7 @@
   const clp = (n) => '$' + Number(n || 0).toLocaleString('es-CL');
   const pct = (x) => (x == null ? '—' : (x * 100).toLocaleString('es-CL', { maximumFractionDigits: 1 }) + '%');
   const ETAPAS = { configura: '1 · Configura', crea: '2 · Crea', mide: '3 · Mide', mejora: '4 · Mejora' };
-  const PLANES = { gratis: 'Gratis', pro: 'Pro', estudio: 'Estudio' };
+  const PLANES = { gratis: 'Sin plan', pro: 'Pro', estudio: 'Estudio' };
 
   let dias = 30;
   let negocios = [];
@@ -263,12 +263,98 @@
     sec.querySelector('[data-g="costo-plan"]').appendChild(planes.length ? G.barras(planes, { formato: usd, todasEnAcento: true }) : Object.assign(document.createElement('p'), { className: 'adm-nota', textContent: 'Sin datos.' }));
   }
 
+  // Códigos de prueba: reemplazan al plan gratis. Cada uno da un plan por
+  // N días; se canjea al registrarse (o con el enlace) o desde el panel.
+  async function pintarCodigos() {
+    let d;
+    try { d = await api('/api/admin/codigos'); } catch (err) { return; }
+    const sec = document.createElement('section');
+    sec.className = 'adm-bloque';
+    sec.id = 'adm-codigos';
+    const enlace = (c) => `${location.origin}/registro.html?codigo=${encodeURIComponent(c)}`;
+    const estado = (c) => {
+      if (!c.activo) return '<span class="adm-no">Desactivado</span>';
+      if (c.venceEl && Date.parse(c.venceEl) < Date.now()) return '<span class="adm-no">Vencido</span>';
+      if (c.usosMax != null && c.usos >= c.usosMax) return '<span class="adm-no">Agotado</span>';
+      return '<b class="adm-ok">Activo</b>';
+    };
+    const filas = (lista) => (lista.length ? lista.map((c) => `<tr>
+        <td><code>${esc(c.codigo)}</code>${c.nota ? `<small>${esc(c.nota)}</small>` : ''}</td>
+        <td>${esc(PLANES[c.plan] || c.plan)}</td><td>${num(c.dias)}</td>
+        <td>${num(c.usos)} / ${c.usosMax == null ? '∞' : num(c.usosMax)}</td>
+        <td>${c.venceEl ? esc(fecha(c.venceEl)) : '—'}</td>
+        <td>${estado(c)}</td>
+        <td>${c.canjes.length ? c.canjes.slice(0, 3).map((k) => `${esc(k.negocio)} <small>${esc(fecha(k.fecha))}</small>`).join('<br>') + (c.canjes.length > 3 ? `<br><small>y ${c.canjes.length - 3} más</small>` : '') : '—'}</td>
+        <td class="adm-cod-acc"><button type="button" class="btn-text" data-copiar="${esc(enlace(c.codigo))}">Copiar enlace</button>
+          <button type="button" class="btn-text" data-activo="${esc(c.codigo)}" data-valor="${c.activo ? '0' : '1'}">${c.activo ? 'Desactivar' : 'Activar'}</button></td>
+      </tr>`).join('') : '<tr><td colspan="8">Todavía no hay códigos. Crea el primero arriba.</td></tr>');
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Códigos de prueba${AY('admin-codigos')}</h2></div>
+      <form class="ig-card adm-cod-form" data-nuevo>
+        <label>Código <input name="codigo" maxlength="40" placeholder="Vacío = se genera uno" autocomplete="off"></label>
+        <label>Plan <select name="plan"><option value="pro">Pro</option><option value="estudio">Estudio</option></select></label>
+        <label>Días <input name="dias" type="number" min="1" max="365" value="14" required></label>
+        <label>Usos <input name="usosMax" type="number" min="1" placeholder="Ilimitados"></label>
+        <label>Se puede canjear hasta <input name="venceEl" type="date"></label>
+        <label class="adm-cod-nota">Nota (para ti) <input name="nota" maxlength="200" placeholder="Ej: feria emprendedores octubre"></label>
+        <div class="adm-cod-pie"><button class="btn-approve">Crear código</button><span class="res-estado" data-msg></span></div>
+      </form>
+      <div class="ig-card">
+        <div class="adm-tabla-scroll"><table class="adm-tabla">
+          <thead><tr><th>Código</th><th>Plan</th><th>Días</th><th>Usos</th><th>Canjeable hasta</th><th>Estado</th><th>Canjes</th><th></th></tr></thead>
+          <tbody data-filas>${filas(d.codigos)}</tbody>
+        </table></div>
+        <p class="adm-nota">El enlace deja el código escrito en el registro. Cada negocio puede usar un código una vez; si canjea otro con la prueba vigente, los días se suman. Al terminar la prueba, la cuenta queda sin plan (salvo que se haya suscrito) y no puede crear contenido nuevo.</p>
+      </div>`;
+    const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
+    if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+    const enviar = async (metodo, ruta, body) => {
+      const res = await fetch(ruta, { method: metodo, headers: { 'content-type': 'application/json', 'x-rubrofy-panel': '1' }, body: JSON.stringify(body) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'No se pudo guardar');
+      return data;
+    };
+    sec.querySelector('[data-nuevo]').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const msg = sec.querySelector('[data-msg]');
+      const body = Object.fromEntries(new FormData(ev.target).entries());
+      if (body.venceEl) body.venceEl += 'T23:59:59-03:00';
+      msg.textContent = 'Creando…';
+      try {
+        const r = await enviar('POST', '/api/admin/codigos', body);
+        sec.querySelector('[data-filas]').innerHTML = filas(r.codigos);
+        ev.target.reset();
+        msg.innerHTML = `Creado: <code>${esc(r.creado)}</code> <button type="button" class="btn-text" data-copiar="${esc(enlace(r.creado))}">Copiar enlace</button>`;
+      } catch (err) {
+        msg.textContent = err.message;
+      }
+    });
+    sec.addEventListener('click', async (ev) => {
+      const copiar = ev.target.closest('[data-copiar]');
+      if (copiar) {
+        try { await navigator.clipboard.writeText(copiar.dataset.copiar); copiar.textContent = 'Copiado ✓'; } catch (err) { prompt('Copia el enlace:', copiar.dataset.copiar); }
+        return;
+      }
+      const b = ev.target.closest('[data-activo]');
+      if (!b) return;
+      b.disabled = true;
+      try {
+        const r = await enviar('PUT', '/api/admin/codigos/' + encodeURIComponent(b.dataset.activo), { activo: b.dataset.valor === '1' });
+        sec.querySelector('[data-filas]').innerHTML = filas(r.codigos);
+      } catch (err) {
+        alert(err.message);
+        b.disabled = false;
+      }
+    });
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
       negocios = n;
       pintar(r);
       await pintarCostos();
+      await pintarCodigos();
       pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401

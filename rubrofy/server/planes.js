@@ -14,9 +14,12 @@
 // un negocio normal debiera tocar: ~150 piezas son varias veces lo que
 // publica una pyme en un mes.
 const PLANES = {
+  // "Sin plan": ya no se ofrece un plan gratis. Es el estado de una cuenta
+  // sin suscripción ni prueba vigente: puede configurar su negocio, pero no
+  // generar contenido. Se prueba Rubrofy con un código (server/codigos.js).
   gratis: {
     id: 'gratis',
-    nombre: 'Gratis',
+    nombre: 'Sin plan',
     precioClp: 0,
     usaIA: false,
     cuotaTextosIA: 0,
@@ -62,7 +65,7 @@ function getPlan(id) {
 // Precios y disponibilidad para mostrar en el sitio/panel — nunca incluye
 // nada de Stripe (IDs de producto, claves) del lado del cliente.
 function listPlanesPublico() {
-  return Object.values(PLANES).map((p) => ({
+  return Object.values(PLANES).filter((p) => p.id !== 'gratis').map((p) => ({
     id: p.id,
     nombre: p.nombre,
     precioClp: p.precioClp,
@@ -73,7 +76,7 @@ function listPlanesPublico() {
     analitica: p.analitica,
     ads: p.ads,
     competencia: p.competencia,
-    disponible: p.id === 'gratis' || !!(p.stripePriceEnv && process.env[p.stripePriceEnv]),
+    disponible: !!(p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));
 }
 

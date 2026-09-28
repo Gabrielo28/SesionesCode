@@ -86,6 +86,8 @@
     'ads-numeros': { t: 'Los números de publicidad', d: 'Inversión: lo que gastaste. Resultados: el objetivo de la campaña (mensajes, compras, clics…). Costo por resultado: inversión ÷ resultados, mientras más bajo mejor. CTR: porcentaje de gente que hizo clic. CPC: costo por clic. ROAS: ventas atribuidas ÷ inversión.' },
     'campanas': { t: 'Campañas', d: 'Cada campaña con su inversión, resultados y costo por resultado.',
       p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos (en Meta o Google).'] },
+    'admin-codigos': { t: 'Códigos de prueba', d: 'No hay plan gratis: quien quiera probar Rubrofy usa un código que le da el plan Pro o Estudio por los días que elijas.',
+      p: ['Crea un código por campaña (feria, influencer, cliente) y usa la nota para recordar de dónde viene.', 'Limita los usos para no regalar más pruebas de las que quieres pagar en IA.', 'Comparte el enlace: deja el código escrito en el registro.'] },
     'admin-costos': { t: 'Costo de IA', d: 'Lo que pagas a los proveedores de IA (Claude, Higgsfield u OpenAI) por lo que usan tus clientes, comparado con lo que pagan sus planes.',
       p: ['Mira el margen: bajo 60 % conviene revisar cupos o precios.', 'En "Por negocio" ves quién gasta más y si su plan lo cubre.', 'La proyección estima el gasto del mes completo al ritmo actual.'], n: 'Los textos usan los tokens reales; imágenes y videos, una tarifa estimada por unidad.' },
     'admin-ia': { t: 'IA de la plataforma', d: 'Qué proveedores de IA están activos y las reglas de calidad que se aplican a todos los negocios, por sección.',
@@ -186,10 +188,12 @@
     // ---------- Sitio ----------
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',
       p: ['Escribe qué haces y qué vendes, en una o dos frases.', 'Ejemplo: "panadería artesanal de barrio, pan de masa madre y pasteles".'] },
-    'reg-datos': { t: 'Precio, promoción y producto', d: 'Opcionales. Se usan tal cual en tus publicaciones y puedes cambiarlos después.',
-      p: ['Pon solo datos reales y vigentes.'] },
-    'precios-comparar': { t: 'Cómo elegir plan', d: 'Gratis: crear, aprobar y publicar con plantillas. Pro: textos con IA que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos con IA, Meta Ads, Google Ads y competencia.',
-      p: ['Empieza gratis.', 'Sube de plan desde tu panel cuando lo necesites; puedes cancelar cuando quieras.'] },
+    'reg-codigo': { t: 'Código de prueba', d: 'Un código que te da el plan completo (textos, ganchos y hashtags con IA) por unos días, sin tarjeta.',
+      p: ['Si no tienes uno, deja el campo vacío: puedes ingresarlo después en Configuración → Plan, o elegir un plan.', 'Cada código se puede usar una vez por negocio.'] },
+    'plan-codigo': { t: 'Código de prueba', d: 'Canjéalo para usar el plan completo por los días que da el código. Si ya tienes una prueba vigente, los días se suman al final.',
+      p: ['Cuando la prueba termina, tu contenido sigue ahí, pero para crear piezas nuevas necesitas un plan.', 'Te avisamos 2 días antes de que termine.'] },
+    'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, textos completos con gancho, llamado a la acción y hashtags, que aprenden de ti, más resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads, Google Ads y competencia.',
+      p: ['Si tienes un código de prueba, úsalo al crear tu cuenta: te da el plan completo por unos días, sin tarjeta.', 'Cambia de plan desde tu panel cuando lo necesites; puedes cancelar cuando quieras.'] },
   };
 
   const CSS = `

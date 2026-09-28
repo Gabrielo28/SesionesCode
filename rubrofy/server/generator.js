@@ -73,6 +73,17 @@ function captionGenerico(enfoque, negocio) {
   return `${enfoque.label}: ${d.productoDestacado ? d.productoDestacado + ', en ' : ''}${negocio.nombre}.`;
 }
 
+// "#Uno", "dos", "#tres cuatro" → ["#uno", "#dos", "#trescuatro"], sin repetidos, máximo 12.
+function limpiarHashtags(v) {
+  const lista = Array.isArray(v) ? v : String(v || '').split(/[\s,]+/);
+  const out = [];
+  for (const h of lista) {
+    const t = '#' + String(h || '').toLowerCase().replace(/^#+/, '').replace(/[^\p{L}\p{N}_]/gu, '');
+    if (t.length > 2 && t.length <= 40 && !out.includes(t)) out.push(t);
+  }
+  return out.slice(0, 12);
+}
+
 function extraerJSONArray(texto) {
   const inicio = texto.indexOf('[');
   const fin = texto.lastIndexOf(']');
@@ -108,11 +119,16 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
     contextoIA.bloque(negocio, ['general', 'voz', 'copys', ...new Set(piezas.map((p) => p.formato))], indicaciones) + '\n\n' +
     `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por línea, con el formato y enfoque indicados, en este orden:\n${lista}\n\n` +
     `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
-    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "caption": "texto real de la publicación", "idea": "qué mostrar"}]\n` +
-    `El "headline" es un titular tipo cartel, máximo 4-5 palabras en total, en dos líneas separadas por \\n, ` +
-    `todo en mayúsculas. El "caption" es el texto real de la publicación, tono natural, sin hashtags excesivos, máximo 220 caracteres ` +
-    `(en historias puede ser una frase corta). La "idea" dice en máximo 200 caracteres qué mostrar: qué foto usar en un post, ` +
-    `qué va en cada lámina de un carrusel, las tomas de un reel o qué mostrar y qué sticker usar en una historia.`;
+    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "gancho": "...", "caption": "...", "hashtags": ["#uno", "#dos"], "idea": "qué mostrar"}]\n` +
+    `- "headline": titular tipo cartel para la imagen, máximo 4-5 palabras, en dos líneas separadas por \\n, en mayúsculas.\n` +
+    `- "gancho": la frase que detiene el scroll (máximo 90 caracteres). En posts y carruseles es la primera línea del texto; ` +
+    `en reels, lo que se dice o aparece en pantalla en los primeros 2 segundos; en historias, la frase del sticker o de la primera pantalla.\n` +
+    `- "caption": el texto completo de la publicación, empezando por el gancho: desarrolla la idea con datos reales del negocio, ` +
+    `en párrafos cortos, y termina con un llamado a la acción concreto (escribir, reservar, pasar al local, guardar, comentar), ` +
+    `usando los canales reales del negocio si los hay. Entre 250 y 600 caracteres en posts, carruseles y reels; máximo 150 en historias. Sin hashtags dentro del caption.\n` +
+    `- "hashtags": entre 5 y 10 hashtags específicos del rubro, del tema y de la ciudad o zona si se conoce, en minúsculas, sin genéricos vacíos como #love o #instagood (en historias, máximo 3).\n` +
+    `- "idea": en máximo 250 caracteres qué mostrar: qué foto usar en un post, qué va en cada lámina de un carrusel, ` +
+    `las tomas de un reel (y qué dice el gancho en pantalla) o qué mostrar y qué sticker usar en una historia.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -124,7 +140,7 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 300 * enfoquesDelLote.length,
+        max_tokens: 700 * enfoquesDelLote.length,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -197,6 +213,8 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     const generado = lote && lote[i];
     const headline = generado ? generado.headline : headlineGenerico(p.enfoque);
     const caption = generado ? generado.caption : captionGenerico(p.enfoque, negocio);
+    const gancho = generado && typeof generado.gancho === 'string' ? generado.gancho.trim().slice(0, 150) : '';
+    const hashtags = generado ? limpiarHashtags(generado.hashtags) : [];
     return {
       id: `${negocio.id}-${Date.now()}-${p.idx}`,
       status: 'pendiente',
@@ -215,6 +233,8 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       hueFrom: p.hue[0],
       hueTo: p.hue[1],
       variants: [caption],
+      gancho: gancho || undefined, // la frase que detiene el scroll (primeros 2 s en un reel)
+      hashtags: hashtags.length ? hashtags : undefined,
       alertas: guardian.revisar(caption, negocio), // qué verificar antes de aprobar
       voz: voz.puntuar(caption, negocio) || undefined, // fidelidad a la voz de marca
       generadoConIA: !!generado, // para descontar de la cuota mensual de textos con IA
@@ -264,7 +284,9 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
     `${JSON.stringify(negocio.datos || {})}.` + (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + voz.textoParaPrompt(negocio) +
     contextoIA.bloque(negocio, ['general', 'voz', 'copys', formato], indicacion) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
-    `Responde solo con el texto de la publicación, sin comillas ni explicaciones, máximo 220 caracteres.`;
+    `Responde SOLO con un JSON: {"gancho": "frase que detiene el scroll, máximo 90 caracteres", ` +
+    `"caption": "texto completo que empieza por el gancho y termina con un llamado a la acción, entre 250 y 600 caracteres (150 en historias), sin hashtags", ` +
+    `"hashtags": ["5 a 10 hashtags específicos del rubro, el tema y la zona"]}`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -276,7 +298,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 200,
+        max_tokens: 900,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -284,7 +306,18 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     const data = await res.json();
     costos.claude(negocio.id, 'contenido', MODEL, data && data.usage);
     const text = data && data.content && data.content[0] && data.content[0].text;
-    return text ? text.trim() : null;
+    if (!text) return null;
+    const inicio = text.indexOf('{');
+    const fin = text.lastIndexOf('}');
+    if (inicio !== -1 && fin > inicio) {
+      try {
+        const j = JSON.parse(text.slice(inicio, fin + 1));
+        if (j && typeof j.caption === 'string' && j.caption.trim()) {
+          return { caption: j.caption.trim(), gancho: typeof j.gancho === 'string' ? j.gancho.trim().slice(0, 150) : '', hashtags: limpiarHashtags(j.hashtags) };
+        }
+      } catch (err) { /* texto plano */ }
+    }
+    return { caption: text.trim(), gancho: '', hashtags: [] };
   } catch (err) {
     return null;
   }
@@ -298,4 +331,4 @@ function aprendizajeSeguro(negocio) {
   }
 }
 
-module.exports = { generarBanco, generarVarianteConClaude, ideaGenerica };
+module.exports = { generarBanco, generarVarianteConClaude, ideaGenerica, limpiarHashtags };
