@@ -731,7 +731,7 @@
           <span>Se renuevan el día 1. Si necesitas más antes, carga un paquete: no vence a fin de mes.</span></div>
         <div class="aviso-botones"><button type="button" class="btn-approve" data-recargar>Cargar más</button><button type="button" class="btn-text" data-ocultar-pocas>Ahora no</button></div>`;
       cont.hidden = false;
-    } else if (pr.vigente && !negocioActual.tieneSuscripcionStripe) {
+    } else if (pr.vigente && !negocioActual.tieneSuscripcion) {
       cont.className = 'aviso-plan aviso-prueba' + (pr.diasRestantes <= 2 ? ' termina' : '');
       cont.innerHTML = `<div class="aviso-texto"><b>Prueba gratis del plan ${escapeHtml(nombrePlan(pr.plan))}</b>
           <span>${pr.diasRestantes === 1 ? 'Queda 1 día' : `Quedan ${pr.diasRestantes} días`} (hasta el ${fechaLarga(pr.hasta)}). Elige tu plan antes y no se corta nada.</span></div>
@@ -803,12 +803,18 @@
     }
   }
 
-  // Abre Stripe Checkout (o cambia el plan de una suscripción activa).
+  const conFlow = () => !!(negocioActual.pagos && negocioActual.pagos.proveedor === 'flow');
+
+  // Abre la página de pago (Stripe Checkout o la inscripción de tarjeta en
+  // Flow) o cambia el plan de una suscripción activa.
   async function pagarPlan(btn, errorEl) {
     const planId = btn.dataset.checkoutPlan;
-    if (negocioActual.tieneSuscripcionStripe && !negocioActual.sinPlan) {
+    if (negocioActual.tieneSuscripcion && !negocioActual.sinPlan) {
       const destino = planesInfo.find((p) => p.id === planId);
-      if (!confirm(`Tu suscripción pasará a ${destino ? destino.nombre : 'el nuevo plan'} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
+      const nombre = destino ? destino.nombre : 'el nuevo plan';
+      if (!confirm(conFlow()
+        ? `Tu suscripción pasará a ${nombre} desde hoy. Flow ajusta el cobro según los días que quedan del mes.`
+        : `Tu suscripción pasará a ${nombre} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
     }
     if (errorEl) errorEl.hidden = true;
     btn.disabled = true;
@@ -830,6 +836,27 @@
     }
   }
 
+  // Estado de la suscripción y lo que se puede hacer con ella.
+  function gestionSuscripcion() {
+    const pg = negocioActual.pagos || {};
+    if (!negocioActual.tieneSuscripcion) return '';
+    if (pg.proveedor !== 'flow') return '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>';
+    const t = pg.tarjeta;
+    const tarjeta = t && t.ultimos4 ? `${escapeHtml(t.tipo || 'Tarjeta')} terminada en ${escapeHtml(t.ultimos4)}` : 'tu tarjeta';
+    const fin = pg.periodoFin ? fechaLarga(pg.periodoFin) : '';
+    let linea = '';
+    if (pg.estado === 'past_due') linea = `No pudimos cobrar con ${tarjeta}. Cambia la tarjeta para seguir con tu plan.`;
+    else if (pg.estado === 'canceled') linea = 'Tu suscripción está cancelada. Elige un plan para volver.';
+    else if (pg.cancelaAlFinal) linea = `Cancelaste tu suscripción: tu plan sigue ${fin ? `hasta el ${fin}` : 'hasta el fin del período pagado'} y no se vuelve a cobrar.`;
+    else if (pg.suscripcion) linea = `Se cobra cada mes con ${tarjeta}${fin ? `. Próximo cobro: ${fin}` : ''}.`;
+    const vigente = pg.suscripcion && !['canceled', 'incomplete'].includes(pg.estado) && !pg.cancelaAlFinal;
+    return `${linea ? `<p class="plan-estado">${linea}</p>` : ''}
+      <div class="plan-acciones">
+        <button type="button" class="btn-ghost" data-action="flow-tarjeta">Cambiar tarjeta</button>
+        ${vigente ? '<button type="button" class="btn-ghost" data-action="flow-cancelar">Cancelar suscripción</button>' : ''}
+      </div>`;
+  }
+
   function renderPlan() {
     const cont = $('#plan-card');
     if (!cont || !negocioActual) return;
@@ -841,9 +868,11 @@
       let boton = '';
       if (esActual) {
         boton = '<span class="ig-estado conectado">Plan actual</span>';
-      } else if (i < indiceActual) {
-        // Bajar de plan se hace desde "Gestionar suscripción" (Billing Portal), no con un checkout nuevo.
+      } else if (i < indiceActual && !(conFlow() && negocioActual.tieneSuscripcion && !negocioActual.sinPlan)) {
+        // Con Stripe, bajar de plan se hace desde "Gestionar suscripción" (Billing Portal).
         boton = '';
+      } else if (i < indiceActual) {
+        boton = `<button type="button" class="btn-ghost" data-checkout-plan="${p.id}">Cambiar a ${escapeHtml(p.nombre)}</button>`;
       } else if (!p.disponible) {
         boton = '<button type="button" class="btn-ghost" disabled title="Todavía no configurado">Próximamente</button>';
       } else {
@@ -870,8 +899,8 @@
     const estadoPlan = negocioActual.sinPlan && pr.disponible
       ? `<div class="plan-prueba"><p class="plan-estado">Tu cuenta no tiene un plan activo. Prueba el plan ${escapeHtml(nombrePlan(pr.plan))} ${pr.dias} días gratis dejando tu nombre, correo y teléfono, o elige un plan.</p><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button></div>`
       : negocioActual.sinPlan
-      ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta en Stripe y cancelas cuando quieras.</p>`
-      : pr.vigente && !negocioActual.tieneSuscripcionStripe
+      ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta${negocioActual.pagos && negocioActual.pagos.nombre ? ` en ${escapeHtml(negocioActual.pagos.nombre)}` : ''} y cancelas cuando quieras.</p>`
+      : pr.vigente && !negocioActual.tieneSuscripcion
         ? `<p class="plan-estado">Estás en tu prueba gratis hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Elige tu plan antes y no se corta nada.</p>`
       : negocioActual.cortesia
         ? '<p class="plan-estado">Plan de cortesía para la cuenta administradora: no se cobra.</p>'
@@ -883,7 +912,7 @@
       ${filas}
       <div class="rc-uso-caja" id="plan-uso"></div>
       <p class="config-error" id="plan-error" hidden></p>
-      ${negocioActual.tieneSuscripcionStripe ? '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>' : ''}
+      ${gestionSuscripcion()}
     `;
     if (window.RubrofyRecargas) window.RubrofyRecargas.renderUso($('#plan-uso'));
   }
@@ -1265,8 +1294,11 @@
     const resultado = params.get('checkout');
     if (!resultado) return;
     history.replaceState(null, '', window.location.pathname);
+    if (resultado === 'tarjeta') { alert('No se pudo inscribir la tarjeta. Intenta de nuevo o usa otra tarjeta.'); return; }
+    if (resultado === 'error') { alert('No pudimos confirmar tu suscripción. Recarga la página en unos minutos; si no se activa tu plan, escríbenos.'); return; }
+    if (resultado === 'tarjeta-ok') { negocioActual = await api('/api/me'); render(); alert('Listo, tu tarjeta quedó registrada.'); return; }
     if (resultado !== 'exito') return;
-    // El webhook de Stripe puede tardar unos segundos en activar el plan.
+    // El aviso del pago puede tardar unos segundos en activar el plan.
     for (let i = 0; i < 10; i++) {
       negocioActual = await api('/api/me');
       if (!negocioActual.sinPlan) break;
@@ -1410,6 +1442,25 @@
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
       const btnCheckout = e.target.closest('[data-checkout-plan]');
       if (btnCheckout) return pagarPlan(btnCheckout, $('#plan-error'));
+      const btnFlow = e.target.closest('[data-action="flow-tarjeta"], [data-action="flow-cancelar"]');
+      if (btnFlow) {
+        const cancelar = btnFlow.dataset.action === 'flow-cancelar';
+        if (cancelar && !confirm('¿Cancelar tu suscripción? Tu plan sigue hasta el fin del período que ya pagaste y después no se vuelve a cobrar.')) return;
+        const errorEl = $('#plan-error');
+        errorEl.hidden = true;
+        btnFlow.disabled = true;
+        try {
+          const r = await api(`/api/negocios/${negocioActual.id}/suscripcion/${cancelar ? 'cancelar' : 'tarjeta'}`, { method: 'POST' });
+          if (r.url) { window.location.href = r.url; return; }
+          negocioActual = r.negocio;
+          render();
+        } catch (err) {
+          errorEl.textContent = err.mensaje || 'No se pudo continuar. Intenta de nuevo en un momento.';
+          errorEl.hidden = false;
+          btnFlow.disabled = false;
+        }
+        return;
+      }
       const btnPortal = e.target.closest('[data-action="portal"]');
       if (!btnPortal) return;
       const errorEl = $('#plan-error');

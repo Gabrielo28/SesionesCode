@@ -93,7 +93,7 @@
     'kit-marca': { t: 'Kit de marca', d: 'Tu logo, tus colores, tu tipografía y tu llamado a la acción. Rubrofy los usa al diseñar tus publicaciones ("Diseñar con mi marca" en cada tarjeta) y al editar tus reels.',
       p: ['Sube el logo en PNG con fondo transparente.', 'El color principal va en etiquetas, botones y detalles; el de apoyo, en fondos.', 'Diseñar no usa IA: no descuenta de tus piezas.'] },
     'admin-recargas': { t: 'Recargas', d: 'Cuando a un negocio se le acaba el cupo del mes (piezas, fotos, videos o reels editados), puede comprar un paquete con un pago único. Aquí ves las ventas y tu ganancia estimada.',
-      p: ['La ganancia descuenta IVA, la comisión de Stripe (~4%) y el costo de IA en el peor caso.', 'Las compras simuladas (solo cuentas administradoras) no cuentan como ingreso.'] },
+      p: ['La ganancia descuenta IVA, la comisión del medio de pago (~4%) y el costo de IA en el peor caso.', 'Las compras simuladas (solo cuentas administradoras) no cuentan como ingreso.'] },
     'admin-costos': { t: 'Costo de IA', d: 'Lo que pagas a los proveedores de IA (Claude, Higgsfield u OpenAI) por lo que usan tus clientes, comparado con lo que pagan sus planes.',
       p: ['Mira el margen: bajo 60 % conviene revisar cupos o precios.', 'En "Por negocio" ves quién gasta más y si su plan lo cubre.', 'La proyección estima el gasto del mes completo al ritmo actual.'], n: 'Los textos usan los tokens reales; imágenes y videos, una tarifa estimada por unidad.' },
     'admin-ia': { t: 'IA de la plataforma', d: 'Qué proveedores de IA están activos y las reglas de calidad que se aplican a todos los negocios, por sección.',
@@ -195,7 +195,7 @@
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',
       p: ['Escribe qué haces y qué vendes, en una o dos frases.', 'Ejemplo: "panadería artesanal de barrio, pan de masa madre y pasteles".'] },
     'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads, Google Ads y competencia.',
-      p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta en Stripe; cambias de plan o cancelas desde tu panel cuando quieras.'] },
+      p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta en una página segura de pago; cambias de plan, de tarjeta o cancelas desde tu panel cuando quieras.'] },
   };
 
   const CSS = `

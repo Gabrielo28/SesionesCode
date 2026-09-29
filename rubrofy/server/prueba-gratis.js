@@ -67,7 +67,7 @@ function digitos(v) {
 }
 
 function suscrito(negocio) {
-  return !!(negocio.stripe && negocio.stripe.subscriptionId && ['active', 'trialing', 'past_due'].includes(negocio.stripe.estado));
+  return require('./pagos').suscrito(negocio);
 }
 
 // La prueba se puede pedir si nunca la tuvo y no tiene plan.

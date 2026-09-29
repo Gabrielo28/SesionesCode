@@ -40,6 +40,8 @@ const guardian = require('./guardian');
 const medios = require('./medios');
 const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = require('./planes');
 const stripe = require('./stripe');
+const pagos = require('./pagos');
+const cobroFlow = require('./cobro-flow');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -193,7 +195,7 @@ function sendJSON(res, status, data, extraHeaders) {
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
 // los IDs internos de Stripe).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
+  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
   resto.googleConexion = google.publico(googleInfo);
   resto.googleConfigurado = google.configurado();
@@ -210,7 +212,12 @@ function negocioPublico(negocio) {
   resto.esAdmin = admin.esAdmin(negocio); // solo muestra el enlace; /api/admin valida por su cuenta
   resto.zonaHoraria = programacion.ZONA;
   resto.plan = negocio.plan || 'gratis';
-  resto.tieneSuscripcionStripe = !!(stripeInfo && stripeInfo.customerId);
+  // Cómo paga: con qué (Flow o Stripe) y, si ya se suscribió, cómo va.
+  const sus = pagos.suscripcion(negocio);
+  const prov = sus ? sus.proveedor : pagos.proveedor();
+  resto.pagos = Object.assign({ proveedor: prov, nombre: pagos.nombre(prov), suscripcion: !!sus, estado: sus ? sus.estado : null },
+    sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : {});
+  resto.tieneSuscripcion = !!sus || !!(stripeInfo && stripeInfo.customerId);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
   resto.videosIADisponibles = videosIADisponibles(negocio);
@@ -275,6 +282,21 @@ const CABECERAS_SEGURIDAD = {
 
 function notFound(res) {
   sendJSON(res, 404, { error: 'No encontrado' });
+}
+
+// Cuerpo application/x-www-form-urlencoded (los avisos de Flow).
+function leerFormulario(req) {
+  return new Promise((resolve, reject) => {
+    const trozos = [];
+    let largo = 0;
+    req.on('data', (chunk) => {
+      largo += chunk.length;
+      if (largo > 1e4) { req.destroy(); return reject(new Error('Cuerpo demasiado grande')); }
+      trozos.push(chunk);
+    });
+    req.on('end', () => resolve(new URLSearchParams(Buffer.concat(trozos).toString('utf8'))));
+    req.on('error', reject);
+  });
 }
 
 function readBody(req, maxBytes) {
@@ -678,7 +700,7 @@ function planDeCortesia(negocio) {
     negocio.cortesia = true;
     return true;
   }
-  if (negocio.cortesia && (!esAdmin || negocio.plan !== 'estudio' || (negocio.stripe && negocio.stripe.estado === 'active'))) {
+  if (negocio.cortesia && (!esAdmin || negocio.plan !== 'estudio' || pagos.activa(negocio))) {
     // Dejó de ser administrador (vuelve a sin plan) o ya paga (manda su plan).
     if (!esAdmin && negocio.plan === 'estudio') negocio.plan = 'gratis';
     delete negocio.cortesia;
@@ -691,7 +713,7 @@ function planDeCortesia(negocio) {
 for (const n of store.listNegocios()) {
   let cambio = false;
   if (n.prueba && n.prueba.codigo) {
-    const suscrito = n.stripe && n.stripe.subscriptionId && ['active', 'trialing', 'past_due'].includes(n.stripe.estado);
+    const suscrito = pagos.suscrito(n);
     if (!suscrito) n.plan = 'gratis';
     delete n.prueba;
     cambio = true;
@@ -738,6 +760,13 @@ function revisarPruebas(ahora = Date.now()) {
   }
 }
 revisarPruebas();
+// Flow: se revisan las suscripciones cada 6 horas (FLOW_REVISION_SEG) por si
+// un aviso de cobro no llegó, y un minuto después de arrancar.
+cobroFlow.configurar({ planDeCortesia, notificar });
+let ultimaRevisionFlow = 0;
+const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
+setTimeout(revisarFlow, 60 * 1000).unref();
+setInterval(revisarFlow, (Number(process.env.FLOW_REVISION_SEG) || 6 * 3600) * 1000).unref();
 const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); revisarPruebas(); }, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
 timerRecordatorios.unref();
 
@@ -849,6 +878,9 @@ const server = http.createServer(async (req, res) => {
   // (no puede llevar la cabecera custom): se autentica con su propia firma
   // HMAC en vez del esquema anti-CSRF de /api.
   const esWebhookStripe = parts[0] === 'api' && parts[1] === 'stripe' && parts[2] === 'webhook';
+  // Lo mismo para los avisos y retornos de Flow: llegan del navegador del
+  // cliente o de Flow con un token, y el resultado se consulta a Flow.
+  const esAvisoFlow = parts[0] === 'api' && parts[1] === 'flow' && parts.length === 3;
 
   // GET /api/salud — para el healthcheck de Railway: responde 200 si el
   // servidor atiende y la base de datos contesta.
@@ -864,7 +896,7 @@ const server = http.createServer(async (req, res) => {
   const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && parts[3] === 'contenido'
     && parts[5] === 'video' && parts.length === 6 && req.method === 'POST';
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
-  if (parts[0] === 'api' && mutando && !esWebhookStripe && !peticionLegitima(req, esSubidaVideo)) {
+  if (parts[0] === 'api' && mutando && !esWebhookStripe && !esAvisoFlow && !peticionLegitima(req, esSubidaVideo)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
   }
 
@@ -958,6 +990,41 @@ const server = http.createServer(async (req, res) => {
         }
 
         return sendJSON(res, 200, { recibido: true });
+      }
+
+      // Flow (server/cobro-flow.js). Todos reciben un token (POST de
+      // formulario o en la URL) y le preguntan a Flow el resultado.
+      //   /api/flow/confirmacion  aviso de Flow: pago de una recarga
+      //   /api/flow/retorno       vuelve el cliente de pagar una recarga → /app
+      //   /api/flow/tarjeta       vuelve el cliente de inscribir su tarjeta → /app
+      //   /api/flow/plan          aviso de Flow: cobro de una suscripción
+      if (esAvisoFlow && ['POST', 'GET'].includes(req.method)) {
+        if (!pagos.proveedor() || pagos.proveedor() !== 'flow') return notFound(res);
+        const token = req.method === 'POST' ? (await leerFormulario(req)).get('token') : url.searchParams.get('token');
+        const accion = parts[2];
+        const redirigir = (destino) => { res.writeHead(303, { Location: destino, 'Cache-Control': 'no-store' }); res.end(); };
+        if (accion === 'plan') {
+          // No dice de qué suscripción es: se revisan todas, a lo más una vez por minuto.
+          if (Date.now() - ultimaRevisionFlow > (process.env.FLOW_AVISO_PLAN_SEG ? Number(process.env.FLOW_AVISO_PLAN_SEG) : 60) * 1000) {
+            ultimaRevisionFlow = Date.now();
+            cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message));
+          }
+          return sendJSON(res, 200, { recibido: true });
+        }
+        if (!token || String(token).length > 200) return accion === 'confirmacion' ? sendJSON(res, 400, { error: 'Falta el token' }) : redirigir('/app');
+        if (accion === 'confirmacion') {
+          const r = await cobroFlow.confirmarPago(token);
+          return sendJSON(res, r.estado === 'error' ? 500 : 200, { estado: r.estado });
+        }
+        if (accion === 'retorno') {
+          const r = await cobroFlow.confirmarPago(token);
+          return redirigir(`/app?recarga=${r.estado === 'pagado' || r.estado === 'pendiente' ? 'exito' : 'cancelada'}`);
+        }
+        if (accion === 'tarjeta') {
+          const r = await cobroFlow.retornoTarjeta(token, urlBase(req));
+          return redirigir(`/app?checkout=${r.resultado}`);
+        }
+        return notFound(res);
       }
 
       // GET /api/plan-contenido — opciones de la bienvenida (objetivos, tonos, ritmos).
@@ -1295,6 +1362,7 @@ const server = http.createServer(async (req, res) => {
           if (negocio.stripe && negocio.stripe.subscriptionId) {
             await stripe.cancelarSuscripcion(negocio.stripe.subscriptionId);
           }
+          await cobroFlow.cancelarYa(negocio);
           store.deleteNegocio(negocioId);
           return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
         }
@@ -1339,6 +1407,17 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'checkout' && parts.length === 4 && req.method === 'POST') {
           const body = await readBody(req);
           const planId = body.plan;
+          // Con Flow: inscribir la tarjeta en Flow (devuelve { url }) o, si ya
+          // hay suscripción o tarjeta, cambiar/crear la suscripción al tiro.
+          if (pagos.proveedor() === 'flow') {
+            const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+            limiteEstrategia.registrar('cobro:' + negocioId);
+            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req));
+            if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            if (r.url) return sendJSON(res, 200, { url: r.url });
+            return sendJSON(res, 200, { negocio: negocioPublico(r.negocio || store.getNegocio(negocioId)) });
+          }
           const priceId = stripePriceId(planId);
           if (!priceId) return sendJSON(res, 400, { error: 'Ese plan no está disponible todavía' });
 
@@ -1406,12 +1485,17 @@ const server = http.createServer(async (req, res) => {
               recargas.acreditar(r.id, { simulada: true });
               return sendJSON(res, 200, { simulada: true, negocio: negocioPublico(store.getNegocio(negocioId)) });
             }
-            if (!process.env.STRIPE_SECRET_KEY) return sendJSON(res, 503, { error: 'Los pagos todavía no están habilitados. Intenta más tarde.' });
+            if (!pagos.proveedor()) return sendJSON(res, 503, { error: 'Los pagos todavía no están habilitados. Intenta más tarde.' });
             const espera = limiteEstrategia.esperaSegundos('recarga:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('recarga:' + negocioId);
             const r = recargas.crearPendiente(negocioId, p.id);
             const base = urlBase(req);
+            if (pagos.proveedor() === 'flow') {
+              const pf = await cobroFlow.pagarRecarga({ negocio, recarga: r, base });
+              if (pf.error) return sendJSON(res, 502, { error: pf.error });
+              return sendJSON(res, 200, { url: pf.url });
+            }
             const resultado = await stripe.crearCheckoutPago({
               nombre: `Rubrofy · ${p.cantidad} ${recargas.TIPOS[p.tipo].nombre}`, precioClp: p.precioClp, negocioId, recargaId: r.id,
               successUrl: `${base}/app?recarga=exito`, cancelUrl: `${base}/app?recarga=cancelada`,
@@ -1420,6 +1504,29 @@ const server = http.createServer(async (req, res) => {
             if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
             recargas.registrarSesion(r.id, resultado.data.id);
             return sendJSON(res, 200, { url: resultado.data.url });
+          }
+        }
+
+        // Suscripción con Flow (Flow no tiene un portal como Stripe):
+        //   POST /api/negocios/:id/suscripcion/cancelar  se cancela al terminar el período pagado
+        //   POST /api/negocios/:id/suscripcion/tarjeta   → { url } para inscribir otra tarjeta
+        if (parts[3] === 'suscripcion' && parts.length === 5 && req.method === 'POST') {
+          if (!(negocio.flow && negocio.flow.customerId)) return sendJSON(res, 400, { error: 'Todavía no tienes una suscripción para gestionar' });
+          if (parts[4] === 'cancelar') {
+            const r = await cobroFlow.cancelar(negocio);
+            if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
+          }
+          if (parts[4] === 'tarjeta') {
+            const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+            limiteEstrategia.registrar('cobro:' + negocioId);
+            const fresco = store.getNegocio(negocioId);
+            delete fresco.flow.planPendiente;
+            store.saveNegocio(fresco);
+            const r = await cobroFlow.inscribirTarjeta(fresco, urlBase(req));
+            if (r.error) return sendJSON(res, 502, { error: r.error });
+            return sendJSON(res, 200, { url: r.url });
           }
         }
 
@@ -2574,12 +2681,14 @@ server.listen(PORT, () => {
   console.log(correo.configurado()
     ? 'Correo configurado: resumen semanal los lunes.'
     : 'RESEND_API_KEY / EMAIL_FROM no configurados: no se envían resúmenes semanales.');
-  if (process.env.STRIPE_SECRET_KEY) {
+  if (pagos.proveedor() === 'flow') {
+    console.log(`Cobro con Flow (${process.env.FLOW_SANDBOX === '1' ? 'sandbox, pagos de prueba' : 'producción'}): planes y recargas disponibles.`);
+  } else if (process.env.STRIPE_SECRET_KEY) {
     const planesDisponibles = listPlanesPublico().filter((p) => p.disponible && p.id !== 'gratis').map((p) => p.id);
     console.log(planesDisponibles.length
       ? `Stripe configurado — planes de pago disponibles: ${planesDisponibles.join(', ')}.`
       : 'Stripe configurado, pero falta STRIPE_PRICE_PRO / STRIPE_PRICE_ESTUDIO: nadie puede suscribirse todavía.');
   } else {
-    console.log('STRIPE_SECRET_KEY no configurada: todos los negocios operan en el plan gratis.');
+    console.log('Sin cobro configurado (FLOW_API_KEY/FLOW_SECRET_KEY o STRIPE_SECRET_KEY): nadie puede suscribirse todavía.');
   }
 });

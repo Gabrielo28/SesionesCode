@@ -320,12 +320,12 @@
       <section class="adm-kpis">
         ${tile('Ventas del periodo', num(d.ventas), 'sin contar las simuladas')}
         ${tile('Ingresos', clp(d.ingresosClp), 'con IVA')}
-        ${tile('Tu ganancia estimada', clp(d.gananciaClp), 'después de IVA, Stripe e IA')}
+        ${tile('Tu ganancia estimada', clp(d.gananciaClp), 'después de IVA, comisión de pago e IA')}
       </section>
       <section class="adm-grid">
         <div class="ig-card"><div class="ig-card-head"><h2>Paquetes y ganancia por venta</h2></div>
           <div class="adm-tabla-scroll"><table class="adm-tabla">
-            <thead><tr><th>Paquete</th><th>Precio</th><th>IVA</th><th>Stripe ~4%</th><th>IA (peor caso)</th><th>Ganancia</th></tr></thead>
+            <thead><tr><th>Paquete</th><th>Precio</th><th>IVA</th><th>Comisión ~4%</th><th>IA (peor caso)</th><th>Ganancia</th></tr></thead>
             <tbody>${d.paquetes.map((p) => `<tr><td>${esc(p.nombre)}</td><td>${clp(p.precioClp)}</td><td>${clp(p.iva)}</td><td>${clp(p.comision)}</td><td>${clp(p.ia)}</td><td><b>${clp(p.ganancia)}</b></td></tr>`).join('')}</tbody>
           </table></div>
           <p class="adm-nota">Precios en server/recargas.js. Costo de IA en el peor caso con el dólar a $950.</p></div>

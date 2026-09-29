@@ -98,7 +98,7 @@ function fila(n, contenido, rutaNegocio) {
     email: n.email || null,
     plan: plan.id,
     precioClp: n.cortesia ? 0 : plan.precioClp || 0, // la cuenta de cortesía del administrador no es ingreso
-    suscripcion: (n.stripe && n.stripe.estado) || null,
+    suscripcion: require('./pagos').estado(n),
     creadoEl: creadoEl(n, contenido),
     ultimoAcceso: n.ultimoAcceso || null,
     bienvenida: !!n.bienvenidaCompletada,
@@ -180,7 +180,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
   const config = {
     'IA de textos (Anthropic)': !!process.env.ANTHROPIC_API_KEY,
     'Imágenes y videos con IA (Higgsfield u OpenAI)': !!(process.env.HIGGSFIELD_API_KEY || process.env.OPENAI_API_KEY),
-    'Cobro (Stripe)': !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
+    'Cobro (Flow o Stripe)': !!(require('./flow').configurado() || (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET)),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Meta Ads y competencia': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
     'Google Ads': !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),

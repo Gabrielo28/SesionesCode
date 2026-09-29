@@ -76,7 +76,7 @@
           <div class="rc-packs">${paquetes.map((p) => `<button type="button" class="rc-pack" data-paquete="${p.id}" aria-pressed="${p === paqueteSel}">
               <b>${p.cantidad} ${esc(TITULOS[p.tipo])}</b><span class="rc-precio">${clp(p.precioClp)}</span>
               <small>${clp(p.precioClp / p.cantidad)} c/u</small>${p.destacado ? '<span class="rc-tag">Más conveniente</span>' : '<span></span>'}</button>`).join('')}</div>
-          <p class="rc-nota">Pago único con tarjeta en Stripe, IVA incluido. No es una suscripción.</p>
+          <p class="rc-nota">Pago único, IVA incluido. No es una suscripción.</p>
           ${mensaje ? `<p class="rc-ok">${mensaje}</p>` : ''}
           ${acciones}
           ${n.plan === 'pro' ? '<p class="rc-alt">¿Te pasa todos los meses? El plan <b>Estudio</b> trae 300 piezas, fotos y videos con IA y 30 reels editados.</p>' : ''}

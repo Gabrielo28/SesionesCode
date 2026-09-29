@@ -768,6 +768,38 @@ servidor:
   nuevo" parte siempre del original. Push cuando termina o falla.
 - Sin ffmpeg el botón no aparece; `/api/salud` informa `edicionReels`.
 
+## Cobro con Flow (recomendado en Chile)
+
+Si están `FLOW_API_KEY` y `FLOW_SECRET_KEY`, Rubrofy cobra con **Flow**
+(flow.cl) y Stripe queda sin usar. Código: `server/flow.js` (cliente de la
+API) y `server/cobro-flow.js` (planes, recargas, avisos).
+
+- **Planes:** al elegir Pro o Estudio el negocio pasa a ser un cliente de
+  Flow, inscribe su tarjeta en la página de Flow y queda suscrito a un plan
+  de Flow que cobra solo cada mes. Los planes de Flow se crean solos la
+  primera vez (`rubrofy-pro-19990`, `rubrofy-estudio-39990`): si cambia el
+  precio en `server/planes.js`, se crea un plan nuevo y los suscritos
+  antiguos siguen con el anterior.
+- **Cambiar de plan** (subir o bajar) cambia el plan de la misma suscripción
+  desde hoy; Flow ajusta el cobro. **Cancelar** corta al terminar el período
+  pagado. **Cambiar tarjeta** vuelve a la página de Flow. Todo desde Plan.
+- **Recargas:** pago único en Flow (tarjeta, transferencia, etc.).
+- **Avisos:** Flow no firma sus avisos, solo manda un token. Rubrofy nunca
+  cambia un plan ni acredita una recarga por lo que diga un aviso: con el
+  token consulta a Flow el estado real. Una recarga se acredita solo si Flow
+  dice "pagada", una vez, y por el monto exacto del paquete. Además, cada 6
+  horas revisa todas las suscripciones por si un aviso no llegó. Un cobro
+  vencido deja la cuenta sin plan hasta que se pague.
+- Rutas: `/api/flow/tarjeta` (vuelta de inscribir la tarjeta),
+  `/api/flow/retorno` (vuelta de pagar una recarga), `/api/flow/confirmacion`
+  (aviso de pago) y `/api/flow/plan` (aviso de cobro de suscripción). Van
+  fuera del chequeo anti-CSRF porque las llama Flow o el navegador al volver.
+
+Variables: `FLOW_API_KEY`, `FLOW_SECRET_KEY` (Flow → Mis datos → Seguridad)
+y `FLOW_SANDBOX=1` mientras se prueba en sandbox.flow.cl (quitarla para
+cobrar de verdad; las claves de sandbox y producción son distintas).
+`PUBLIC_URL` tiene que estar puesta: Flow avisa a esa dirección.
+
 ## Planes y cobro (Stripe)
 
 Todo negocio nace **sin plan**. Para pasar a **Pro** o **Estudio** desde

@@ -83,7 +83,8 @@ function listPlanesPublico() {
     analitica: p.analitica,
     ads: p.ads,
     competencia: p.competencia,
-    disponible: !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
+    // Con Flow los planes se crean solos en Flow; con Stripe hay que dar el precio.
+    disponible: require('./flow').configurado() || !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));
 }
 

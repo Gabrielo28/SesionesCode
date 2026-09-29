@@ -123,6 +123,10 @@ function acreditar(recargaId, { sesion = null, simulada = false, ahora = new Dat
   return cambios ? sql.get.get(recargaId) : null;
 }
 
+function obtener(recargaId) {
+  return recargaId ? sql.get.get(String(recargaId)) || null : null;
+}
+
 function registrarSesion(recargaId, sesionId) {
   sql.sesion.run(sesionId, recargaId);
 }
@@ -166,6 +170,7 @@ function resumenAdmin({ dias = 30, nombreDe }) {
 }
 
 module.exports = {
+  obtener,
   TIPOS, PAQUETES, paquete, tipoDeCampo, saldo, saldos, consumir, puedeComprar, crearPendiente, acreditar,
   registrarSesion, historial, cuentas, catalogo, resumenAdmin,
 };

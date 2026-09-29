@@ -823,6 +823,7 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 @keyframes destello { 50% { box-shadow: 0 0 0 3px rgba(255, 77, 148, 0.45); } }
 .aviso-plan .config-error { flex-basis: 100%; margin: 0; }
 .plan-estado { margin: 0 0 8px; font-size: 13px; color: var(--ink-dim); }
+.plan-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
 .bv-planes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; margin-top: 6px; }
 .bv-plan { display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--bg); }
 .bv-plan.destacado { border-color: var(--amber); }

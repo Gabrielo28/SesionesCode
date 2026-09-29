@@ -93,7 +93,7 @@
             <button type="button" class="btn-approve" data-bv="activar-prueba">Activar mis ${catPrueba.dias} días y crear mi semana</button>
           </div><p class="bv-o">o elige un plan pagado</p>` : '';
         return `<h2>${catPrueba ? 'Empieza gratis o elige tu plan' : 'Elige tu plan'}${AY('precios-comparar')}</h2>
-          <p class="bv-lead">Tu estrategia está lista. ${catPrueba ? 'Activa tu prueba gratis o elige un plan' : 'Elige tu plan'} para crear tu primera semana. Los planes se pagan con tarjeta en Stripe (Rubrofy no ve ni guarda tu tarjeta) y se cancelan cuando quieras.</p>
+          <p class="bv-lead">Tu estrategia está lista. ${catPrueba ? 'Activa tu prueba gratis o elige un plan' : 'Elige tu plan'} para crear tu primera semana. Los planes se pagan con tarjeta en una página segura de pago (Rubrofy no ve ni guarda tu tarjeta) y se cancelan cuando quieras.</p>
           ${prueba}
           <div class="bv-planes">${(ctx.planes || []).map((p) => `
             <div class="bv-plan${p.id === 'pro' ? ' destacado' : ''}">
