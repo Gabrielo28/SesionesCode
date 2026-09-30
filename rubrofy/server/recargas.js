@@ -20,10 +20,11 @@ const TIPOS = {
   videos: { nombre: 'videos con IA', campo: 'usoVideosIA' },
   reels: { nombre: 'reels editados', campo: 'usoReelsEditados' },
 };
-// costoClp: costo de IA por unidad en el peor caso (dólar a 950).
+// costoClp: costo de IA por unidad en el peor caso (dólar a 950). Piezas: con
+// Claude Sonnet 5.5 y su pensamiento (con Haiku 4.5 eran unos $8).
 const PAQUETES = [
-  { id: 'piezas-50', tipo: 'piezas', cantidad: 50, precioClp: 3990, costoClp: 8 },
-  { id: 'piezas-150', tipo: 'piezas', cantidad: 150, precioClp: 9990, costoClp: 8, destacado: true },
+  { id: 'piezas-50', tipo: 'piezas', cantidad: 50, precioClp: 3990, costoClp: 20 },
+  { id: 'piezas-150', tipo: 'piezas', cantidad: 150, precioClp: 9990, costoClp: 20, destacado: true },
   { id: 'fotos-10', tipo: 'fotos', cantidad: 10, precioClp: 2990, costoClp: 38 },
   { id: 'videos-3', tipo: 'videos', cantidad: 3, precioClp: 5990, costoClp: 713 },
   { id: 'reels-10', tipo: 'reels', cantidad: 10, precioClp: 2990, costoClp: 20 },

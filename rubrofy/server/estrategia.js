@@ -5,7 +5,6 @@
 // para poder adaptarse a cualquier tipo de negocio. Sin ANTHROPIC_API_KEY
 // (o si Claude falla) usa una plantilla genérica razonable como respaldo.
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 const planContenido = require('./plan-contenido');
 
 // Resumen de respaldo (sin IA): qué se va a comunicar y para qué.
@@ -93,23 +92,9 @@ async function generarEstrategia({ nombre, rubro, plan, categoriasFoto, contexto
     `- Responde SOLO con el JSON, nada más.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 900,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-    if (!res.ok) return respaldo();
-    const data = await res.json();
-    require('./costos').claude(negocioId, 'estrategia', MODEL, data && data.usage);
-    const texto = data && data.content && data.content[0] && data.content[0].text;
+    const r = await require('./claude').llamar({ maxTokens: 900, content: prompt, negocioId, uso: 'estrategia' });
+    if (r.error) return respaldo();
+    const texto = r.texto;
     const parsed = texto && extraerJSON(texto);
     if (!esEstrategiaValida(parsed)) return respaldo();
     if (cats && JSON.stringify(parsed.categoriasFoto) !== JSON.stringify(cats)) return respaldo();

@@ -41,7 +41,7 @@ const ETIQUETAS = { post: 'Post', carrusel: 'Carrusel', reel: 'Reel', historia: 
 const MAX_REFERENCIAS = 60;
 const MAX_IMAGEN_BYTES = 5 * 1024 * 1024;
 const TIPOS_IMAGEN = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
+const claude = require('./claude');
 
 const sql = {
   listar: db.prepare('SELECT * FROM referencias WHERE negocio_id = ? ORDER BY creado_el DESC'),
@@ -248,16 +248,10 @@ async function analizar(negocio, apiKey) {
       'si aparecen personas, texto sobre la imagen, colores). Para un formato sin ejemplos escribe "".',
   });
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 1500, messages: [{ role: 'user', content: contenido }] }),
-  });
-  if (!res.ok) return { error: 'No se pudo analizar el estilo en este momento' };
-  const data = await res.json();
-  require('./costos').claude(negocio.id, 'estilo', MODEL, data && data.usage);
-  if (data.stop_reason === 'refusal') return { error: 'No se pudo analizar el estilo con estos ejemplos' };
-  const texto = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
+  const r = await claude.llamar({ maxTokens: 1500, content: contenido, negocioId: negocio.id, uso: 'estilo' });
+  if (r.error === 'rechazo') return { error: 'No se pudo analizar el estilo con estos ejemplos' };
+  if (r.error) return { error: 'No se pudo analizar el estilo en este momento' };
+  const texto = r.texto;
   const guia = extraerJSON(texto);
   if (!guia || typeof guia.general !== 'string') return { error: 'La IA no devolvió una guía válida; intenta de nuevo' };
   const limpio = (v) => (typeof v === 'string' ? v.trim().slice(0, 500) : '');

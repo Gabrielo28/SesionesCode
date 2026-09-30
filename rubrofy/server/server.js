@@ -1198,7 +1198,7 @@ const server = http.createServer(async (req, res) => {
         if (parts[2] === 'contexto-ia' && parts.length === 3) {
           const vista = () => ({
             contexto: contextoIA.dePlataforma(), secciones: contextoIA.catalogo(),
-            proveedores: Object.assign({ textos: process.env.ANTHROPIC_API_KEY ? (process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001') : null }, medios.estado()),
+            proveedores: Object.assign({ textos: process.env.ANTHROPIC_API_KEY ? require('./claude').MODEL : null }, medios.estado()),
           });
           if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
           return sendJSON(res, 200, vista());
@@ -2667,7 +2667,7 @@ server.listen(PORT, () => {
     console.log('PUBLIC_URL no configurada: el publicador usará la URL desde la que se aprobó cada pieza. En producción conviene definirla.');
   }
   if (process.env.ANTHROPIC_API_KEY) {
-    console.log(`Usando modelo ${process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001'} para estrategia y contenido.`);
+    console.log(`Usando modelo ${require('./claude').MODEL} para estrategia y contenido.`);
   } else {
     console.log('ANTHROPIC_API_KEY no configurada: estrategia y contenido usan las plantillas genéricas de respaldo.');
   }

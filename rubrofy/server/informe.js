@@ -21,7 +21,6 @@ db.exec(`
 `);
 store.registrarLimpieza((negocioId) => db.prepare('DELETE FROM informes WHERE negocio_id = ?').run(negocioId));
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 // Secciones extra: { nombre, datos(negocio, desde, hasta) → objeto | null }.
@@ -161,17 +160,8 @@ async function conclusionConClaude(d, apiKey, negocioId) {
     'si falta información dilo en una frase; las acciones del próximo mes deben ser concretas y salir de los datos. ' +
     'Máximo 170 palabras en total. Sin markdown aparte de las viñetas, sin saludo ni despedida.\n\n' +
     JSON.stringify(resumenParaIA);
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }),
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  require('./costos').claude(negocioId, 'informe', MODEL, data && data.usage);
-  if (data.stop_reason === 'refusal') return null;
-  const texto = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
-  return texto || null;
+  const respuesta = await require('./claude').llamar({ maxTokens: 1024, content: prompt, negocioId, uso: 'informe' });
+  return respuesta.texto || null;
 }
 
 // Genera (o regenera) y guarda la conclusión. Con IA solo si el plan la

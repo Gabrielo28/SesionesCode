@@ -625,14 +625,23 @@ costo ni llamadas externas: una estrategia de respaldo razonable (enfoques
 de producto/precio/urgencia/detrás de escena) y captions con plantillas de
 texto que usan los datos reales del negocio.
 
-Por defecto usa Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) — rápido y
-barato, pensado para textos cortos. Se puede cambiar por otro modelo con
-`ANTHROPIC_MODEL` (por ejemplo un Sonnet u Opus, si se prefiere mejor
-calidad de escritura a cambio de más costo por llamada):
+Por defecto usa **Claude Sonnet 5.5** (`claude-sonnet-5-5`): mejor escritura y
+voz de marca que Haiku, a US$2 / US$10 por millón de tokens (el doble de
+Haiku 4.5). Todas las llamadas pasan por `server/claude.js` (`llamar()`),
+que arma la petición según el modelo:
 
-```bash
-ANTHROPIC_API_KEY=sk-ant-... ANTHROPIC_MODEL=claude-sonnet-5 npm start
-```
+- **Pensamiento adaptativo con esfuerzo `low`** (`ANTHROPIC_EFFORT`): para
+  textos cortos piensa poco y solo cuando hace falta. El pensamiento cuenta
+  dentro de `max_tokens`, así que se suma un margen de 4.000 tokens para que
+  la respuesta no salga cortada. `ANTHROPIC_PENSAMIENTO=no` lo apaga del
+  todo (`thinking: between_tools`, más barato y rápido).
+- **Rechazos:** si el modelo rechaza una petición (`stop_reason: refusal`),
+  Anthropic la reintenta en otro modelo (`fallbacks: "default"`); si igual
+  se rechaza, el llamador usa su plan B. El texto se lee solo de los bloques
+  de tipo `text` (la respuesta puede traer bloques de pensamiento antes).
+- El costo se registra con el modelo que respondió de verdad.
+
+Para volver a Haiku 4.5 (más barato): `ANTHROPIC_MODEL=claude-haiku-4-5`.
 
 ## Imágenes y videos con IA (server/medios.js)
 

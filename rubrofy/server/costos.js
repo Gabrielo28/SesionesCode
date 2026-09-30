@@ -12,6 +12,7 @@ const store = require('./store');
 // USD por millón de tokens (entrada / salida), según la tabla de precios de Anthropic.
 const PRECIOS_CLAUDE = {
   'claude-haiku-4-5': [1, 5],
+  'claude-sonnet-5-5': [2, 10],
   'claude-sonnet-5': [2, 10],
   'claude-sonnet-4-6': [3, 15],
   'claude-opus-5-5': [4, 20],

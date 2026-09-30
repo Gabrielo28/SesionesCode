@@ -34,11 +34,15 @@ const ANCHO = 1080, ALTO = 1920;
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const FFPROBE = process.env.FFPROBE_PATH || 'ffprobe';
 let disponibleCache = null;
+// Un "no" se vuelve a revisar al minuto: en un arranque en frío ffmpeg puede
+// tardar más que el límite y no debe quedar apagado hasta el próximo reinicio.
+let revisadoEl = 0;
 function disponible() {
-  if (disponibleCache === null) {
+  if (disponibleCache === null || (disponibleCache === false && Date.now() - revisadoEl > 60 * 1000)) {
+    revisadoEl = Date.now();
     try {
-      const a = spawnSync(FFMPEG, ['-hide_banner', '-version'], { timeout: 5000 });
-      const b = spawnSync(FFPROBE, ['-hide_banner', '-version'], { timeout: 5000 });
+      const a = spawnSync(FFMPEG, ['-hide_banner', '-version'], { timeout: 15000 });
+      const b = spawnSync(FFPROBE, ['-hide_banner', '-version'], { timeout: 15000 });
       disponibleCache = a.status === 0 && b.status === 0;
     } catch (err) {
       disponibleCache = false;

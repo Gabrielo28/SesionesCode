@@ -40,7 +40,7 @@ function bloqueEstilo(negocio, formatos) {
   return partes.length ? '\n\nAsí publica este negocio (imita el estilo, no copies los textos):\n' + partes.join('\n') : '';
 }
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
+const claude = require('./claude');
 
 // Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
 // hay una foto real todavía. Ya no depende del rubro (antes había un set de
@@ -131,23 +131,9 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
     `las tomas de un reel (y qué dice el gancho en pantalla) o qué mostrar y qué sticker usar en una historia.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 700 * enfoquesDelLote.length,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    costos.claude(negocio.id, 'contenido', MODEL, data && data.usage);
-    const texto = data && data.content && data.content[0] && data.content[0].text;
+    const r = await claude.llamar({ maxTokens: 700 * enfoquesDelLote.length, content: prompt, negocioId: negocio.id, uso: 'contenido' });
+    if (r.error) return null;
+    const texto = r.texto;
     const parsed = texto && extraerJSONArray(texto);
     if (!Array.isArray(parsed) || parsed.length !== enfoquesDelLote.length) return null;
     if (!parsed.every((p) => p && typeof p.headline === 'string' && typeof p.caption === 'string')) return null;
@@ -289,23 +275,9 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     `"hashtags": ["5 a 10 hashtags específicos del rubro, el tema y la zona"]}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 900,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    costos.claude(negocio.id, 'contenido', MODEL, data && data.usage);
-    const text = data && data.content && data.content[0] && data.content[0].text;
+    const r = await claude.llamar({ maxTokens: 900, content: prompt, negocioId: negocio.id, uso: 'contenido' });
+    if (r.error) return null;
+    const text = r.texto;
     if (!text) return null;
     const inicio = text.indexOf('{');
     const fin = text.lastIndexOf('}');
