@@ -129,7 +129,7 @@ function revisar(ahora = Date.now()) {
     if (quedan <= 0) {
       const fresco = store.getNegocio(n.id);
       fresco.prueba = Object.assign({}, fresco.prueba, { terminada: new Date(ahora).toISOString() });
-      if (!suscrito(fresco) && !fresco.cortesia) fresco.plan = 'gratis';
+      if (!suscrito(fresco) && !fresco.cortesia) fresco.plan = require('./beneficios').planSinPago(fresco);
       store.saveNegocio(fresco);
       if (fresco.plan === 'gratis') avisos.push({ negocioId: n.id, tipo: 'termino' });
     } else if (quedan <= 2 * DIA && !p.avisoFin) {

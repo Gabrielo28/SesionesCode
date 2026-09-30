@@ -777,6 +777,26 @@ servidor:
   nuevo" parte siempre del original. Push cuando termina o falla.
 - Sin ffmpeg el botón no aparece; `/api/salud` informa `edicionReels`.
 
+## Beneficios: planes de regalo y códigos de descuento (/admin)
+
+`server/beneficios.js`. Solo quien administra (ADMIN_EMAILS) los otorga,
+desde /admin → Beneficios:
+
+- **Plan de regalo:** Pro o Estudio para una cuenta elegida, por 1, 3, 6 o
+  12 meses o sin límite, sin tarjeta, con un motivo (nota interna que el
+  cliente no ve). No cuenta como ingreso. Al vencer (se revisa cada
+  RECORDATORIOS_INTERVALO_SEG) o si se revoca, la cuenta vuelve a sin plan y
+  recibe un aviso. No se puede regalar a una cuenta que ya paga (a esa, un
+  código). Si la cuenta se suscribe pagando, el regalo termina. Historial en
+  la tabla `regalos`.
+- **Códigos de descuento:** porcentaje o monto en pesos, para Pro, Estudio
+  o ambos, por algunos meses o para siempre, con máximo de usos y
+  vencimiento opcionales; se pueden desactivar. El cliente lo escribe en
+  Plan: se revisa (`POST /api/negocios/:id/codigo`, muestra el precio con
+  descuento) y se aplica al elegir el plan, o al tiro si ya tiene una
+  suscripción. Se cobra como **cupón de Flow** (se crea en Flow al primer
+  uso y se reutiliza), así que solo funciona con Flow. Un uso por cuenta.
+
 ## Cobro con Flow (recomendado en Chile)
 
 Si están `FLOW_API_KEY` y `FLOW_SECRET_KEY`, Rubrofy cobra con **Flow**

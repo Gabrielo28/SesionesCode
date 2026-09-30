@@ -9,6 +9,7 @@
   let contenido = [];
   let fotos = {}; // { categoria: [nombresDeArchivo] }
   let planesInfo = []; // catálogo de planes (ver /api/planes) — precios y disponibilidad
+  let codigoDescuento = null; // código revisado y todavía no usado: { codigo, descripcion, planes, precios }
   let vistaActual = 'inicio';
   let calSelectedId = null;
   const editingIds = new Set();
@@ -819,7 +820,9 @@
     if (errorEl) errorEl.hidden = true;
     btn.disabled = true;
     try {
-      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId }) });
+      const codigo = codigoDescuento && codigoDescuento.planes.includes(planId) ? codigoDescuento.codigo : undefined;
+      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId, codigo }) });
+      if (codigo) codigoDescuento = null;
       if (resultado.url) {
         window.location.href = resultado.url;
         return;
@@ -887,7 +890,7 @@
         <div class="plan-row${esActual ? ' plan-row-actual' : ''}">
           <div>
             <strong>${escapeHtml(p.nombre)}</strong>
-            <span class="sub">${detalle} · ${formatoCLP(p.precioClp)}</span>
+            <span class="sub">${detalle} · ${codigoDescuento && codigoDescuento.precios[p.id] ? `<s>${formatoCLP(p.precioClp)}</s> <b class="plan-precio-desc">${formatoCLP(codigoDescuento.precios[p.id].ahora)}</b>` : formatoCLP(p.precioClp)}</span>
           </div>
           ${boton}
         </div>
@@ -902,14 +905,27 @@
       ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta${negocioActual.pagos && negocioActual.pagos.nombre ? ` en ${escapeHtml(negocioActual.pagos.nombre)}` : ''} y cancelas cuando quieras.</p>`
       : pr.vigente && !negocioActual.tieneSuscripcion
         ? `<p class="plan-estado">Estás en tu prueba gratis hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Elige tu plan antes y no se corta nada.</p>`
+      : negocioActual.regalo
+        ? `<p class="plan-estado plan-regalo">🎁 Tienes el plan ${escapeHtml(nombrePlan(negocioActual.regalo.plan))} de regalo${negocioActual.regalo.hasta ? ` hasta el ${fechaLarga(negocioActual.regalo.hasta)}` : ''}. No se cobra${negocioActual.regalo.hasta ? '; después eliges si seguir con un plan' : ''}.</p>`
       : negocioActual.cortesia
         ? '<p class="plan-estado">Plan de cortesía para la cuenta administradora: no se cobra.</p>'
         : '';
+    const pg = negocioActual.pagos || {};
+    const cajaCodigo = pg.proveedor === 'flow' && !negocioActual.regalo && !negocioActual.cortesia
+      ? `<div class="plan-codigo">
+          ${codigoDescuento ? `<p class="plan-codigo-ok">Código <b>${escapeHtml(codigoDescuento.codigo)}</b>: ${escapeHtml(codigoDescuento.descripcion)}. Se aplica al elegir tu plan.</p>` : ''}
+          <form data-codigo-form class="plan-codigo-form">
+            <input name="codigo" placeholder="¿Tienes un código de descuento?" maxlength="24" autocomplete="off" aria-label="Código de descuento">
+            <button type="submit" class="btn-ghost">Aplicar</button>
+          </form>
+        </div>`
+      : '';
 
     cont.innerHTML = `
       <div class="ig-card-head"><h2>Plan</h2></div>
       ${estadoPlan}
       ${filas}
+      ${cajaCodigo}
       <div class="rc-uso-caja" id="plan-uso"></div>
       <p class="config-error" id="plan-error" hidden></p>
       ${gestionSuscripcion()}
@@ -1438,6 +1454,36 @@
     });
 
     // plan: subir de plan (Stripe Checkout) o gestionar la suscripción (Billing Portal)
+    // Código de descuento: con suscripción vigente se aplica al tiro; si no,
+    // se revisa y se usa al elegir el plan.
+    $('#plan-card').addEventListener('submit', async (e) => {
+      const form = e.target.closest('[data-codigo-form]');
+      if (!form) return;
+      e.preventDefault();
+      const errorEl = $('#plan-error');
+      errorEl.hidden = true;
+      const codigo = form.codigo.value.trim();
+      if (!codigo) return;
+      const btn = form.querySelector('button');
+      btn.disabled = true;
+      try {
+        const r = await api(`/api/negocios/${negocioActual.id}/codigo`, { method: 'POST', body: JSON.stringify({ codigo }) });
+        if (r.aplicado) {
+          negocioActual = r.negocio;
+          codigoDescuento = null;
+          render();
+          alert('Listo, el descuento quedó aplicado a tu suscripción.');
+          return;
+        }
+        codigoDescuento = r;
+        renderPlan();
+      } catch (err) {
+        errorEl.textContent = err.mensaje || 'No se pudo revisar el código.';
+        errorEl.hidden = false;
+        btn.disabled = false;
+      }
+    });
+
     $('#plan-card').addEventListener('click', async (e) => {
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
       const btnCheckout = e.target.closest('[data-checkout-plan]');

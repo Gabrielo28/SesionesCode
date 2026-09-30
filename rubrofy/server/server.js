@@ -42,6 +42,7 @@ const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = requir
 const stripe = require('./stripe');
 const pagos = require('./pagos');
 const cobroFlow = require('./cobro-flow');
+const beneficios = require('./beneficios');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -219,6 +220,8 @@ function negocioPublico(negocio) {
   resto.pagos = Object.assign({ proveedor: prov, nombre: pagos.nombre(prov), suscripcion: !!sus, estado: sus ? sus.estado : null },
     sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : {});
   resto.tieneSuscripcion = !!sus || !!(stripeInfo && stripeInfo.customerId);
+  delete resto.planRegalado;
+  resto.regalo = beneficios.regaloVigente(negocio) ? { plan: negocio.planRegalado.plan, hasta: negocio.planRegalado.hasta } : null;
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
   resto.videosIADisponibles = videosIADisponibles(negocio);
@@ -759,6 +762,10 @@ function revisarPruebas(ahora = Date.now()) {
       ? { titulo: 'Terminó tu prueba gratis de Rubrofy', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'prueba' }
       : { titulo: 'Tu prueba gratis termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#config', tag: 'prueba' });
   }
+  // Planes de regalo vencidos (/admin → Beneficios).
+  for (const id of beneficios.revisarRegalos(pagos.suscrito, ahora)) {
+    notificar(id, { titulo: 'Terminó tu plan de regalo', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'regalo' });
+  }
 }
 revisarPruebas();
 // Flow: se revisan las suscripciones cada 6 horas (FLOW_REVISION_SEG) por si
@@ -984,7 +991,8 @@ const server = http.createServer(async (req, res) => {
             // suscripción se cae, conserva la prueba hasta su fecha.
             const enPrueba = pruebaGratis.vigente(negocio);
             if (activa && enPrueba) negocio.prueba.terminada = 'suscripcion';
-            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : (enPrueba ? negocio.prueba.plan : 'gratis');
+            if (activa) beneficios.terminarRegalo(negocio, 'suscripcion', { suscrito: true });
+            negocio.plan = activa ? (planIdDesdePriceId(priceId) || negocio.plan || 'gratis') : (enPrueba ? negocio.prueba.plan : beneficios.planSinPago(negocio));
             planDeCortesia(negocio);
             store.saveNegocio(negocio);
           }
@@ -1204,6 +1212,49 @@ const server = http.createServer(async (req, res) => {
           if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
           return sendJSON(res, 200, vista());
         }
+        // Beneficios (server/beneficios.js):
+        //   GET  /api/admin/beneficios                  regalos, códigos y cuentas para elegir
+        //   POST /api/admin/beneficios/regalo           { negocioId, plan, meses, motivo }
+        //   POST /api/admin/beneficios/regalo/revocar   { negocioId }
+        //   POST /api/admin/beneficios/codigo           { codigo, tipo, valor, planes, meses, maxUsos, venceEl, nota }
+        //   POST /api/admin/beneficios/codigo/estado    { codigo, activo }
+        if (parts[2] === 'beneficios') {
+          const vista = () => ({
+            regalos: beneficios.listarRegalos(), codigos: beneficios.listarCodigos(),
+            codigosConFlow: pagos.proveedor() === 'flow',
+            cuentas: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, email: n.email || '', plan: n.plan || 'gratis', paga: pagos.activa(n), regalo: beneficios.regaloVigente(n) })),
+          });
+          if (req.method === 'GET' && parts.length === 3) return sendJSON(res, 200, vista());
+          if (req.method !== 'POST') return sendJSON(res, 404, { error: 'No encontrado' });
+          const body = await readBody(req);
+          if (parts[3] === 'regalo' && parts.length === 4) {
+            const n = store.getNegocio(String(body.negocioId || ''));
+            if (!n) return sendJSON(res, 404, { error: 'No encontramos esa cuenta' });
+            const r = beneficios.regalar(n, body, { suscrito: pagos.suscrito(n) });
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            store.saveNegocio(r.negocio);
+            const pl = getPlan(r.negocio.planRegalado.plan);
+            notificar(n.id, { titulo: `Te regalamos el plan ${pl.nombre}`, cuerpo: r.negocio.planRegalado.hasta ? 'Úsalo sin costo hasta la fecha que ves en tu panel.' : 'Ya puedes usarlo sin costo.', url: '/app#config', tag: 'regalo' });
+            return sendJSON(res, 200, vista());
+          }
+          if (parts[3] === 'regalo' && parts[4] === 'revocar' && parts.length === 5) {
+            const n = store.getNegocio(String(body.negocioId || ''));
+            if (!n || !n.planRegalado) return sendJSON(res, 404, { error: 'Esa cuenta no tiene un plan de regalo' });
+            beneficios.terminarRegalo(n, 'revocado', { suscrito: pagos.suscrito(n) });
+            store.saveNegocio(n);
+            return sendJSON(res, 200, vista());
+          }
+          if (parts[3] === 'codigo' && parts.length === 4) {
+            const r = beneficios.crearCodigo(body);
+            if (r.error) return sendJSON(res, 400, { error: r.error, campo: r.campo });
+            return sendJSON(res, 200, vista());
+          }
+          if (parts[3] === 'codigo' && parts[4] === 'estado' && parts.length === 5) {
+            if (!beneficios.activarCodigo(body.codigo, !!body.activo)) return sendJSON(res, 404, { error: 'Ese código no existe' });
+            return sendJSON(res, 200, vista());
+          }
+          return sendJSON(res, 404, { error: 'No encontrado' });
+        }
         if (req.method !== 'GET') return sendJSON(res, 404, { error: 'No encontrado' });
         if (parts[2] === 'resumen' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
@@ -1230,7 +1281,7 @@ const server = http.createServer(async (req, res) => {
         if (parts[2] === 'costos' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           return sendJSON(res, 200, costos.resumen({
-            dias, negocios: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, plan: n.plan, cortesia: !!n.cortesia })),
+            dias, negocios: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, plan: n.plan, cortesia: !!n.cortesia || beneficios.regaloVigente(n) })),
             precioPlan: (p) => getPlan(p).precioClp || 0,
           }));
         }
@@ -1410,11 +1461,12 @@ const server = http.createServer(async (req, res) => {
           const planId = body.plan;
           // Con Flow: inscribir la tarjeta en Flow (devuelve { url }) o, si ya
           // hay suscripción o tarjeta, cambiar/crear la suscripción al tiro.
+          if (body.codigo && pagos.proveedor() !== 'flow') return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
           if (pagos.proveedor() === 'flow') {
             const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('cobro:' + negocioId);
-            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req));
+            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req), body.codigo ? String(body.codigo) : null);
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
             if (r.url) return sendJSON(res, 200, { url: r.url });
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio || store.getNegocio(negocioId)) });
@@ -1506,6 +1558,27 @@ const server = http.createServer(async (req, res) => {
             recargas.registrarSesion(r.id, resultado.data.id);
             return sendJSON(res, 200, { url: resultado.data.url });
           }
+        }
+
+        // POST /api/negocios/:id/codigo  { codigo, plan? }
+        // Con una suscripción de Flow vigente, aplica el descuento a esa
+        // suscripción. Si no, solo revisa el código y dice qué descuento da
+        // (se aplica al elegir el plan).
+        if (parts[3] === 'codigo' && parts.length === 4 && req.method === 'POST') {
+          if (pagos.proveedor() !== 'flow') return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
+          const espera = limiteEstrategia.esperaSegundos('codigo:' + negocioId);
+          if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
+          limiteEstrategia.registrar('codigo:' + negocioId);
+          const body = await readBody(req);
+          if (cobroFlow.suscripcionVigente(negocio)) {
+            const r = await cobroFlow.aplicarCodigo(negocio, String(body.codigo || ''));
+            if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            return sendJSON(res, 200, { aplicado: true, negocio: negocioPublico(r.negocio) });
+          }
+          const v = beneficios.validarCodigo(String(body.codigo || ''), negocioId, body.plan || null);
+          if (v.error) return sendJSON(res, 400, { error: v.error });
+          const precios = Object.fromEntries(v.codigo.planes.map((p) => [p, { antes: getPlan(p).precioClp, ahora: beneficios.precioConDescuento(getPlan(p).precioClp, v.codigo) }]));
+          return sendJSON(res, 200, { codigo: v.codigo.codigo, descripcion: v.codigo.descripcion, planes: v.codigo.planes, precios });
         }
 
         // Suscripción con Flow (Flow no tiene un portal como Stripe):

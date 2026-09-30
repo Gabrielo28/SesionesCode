@@ -94,8 +94,20 @@ function estadoRegistro(token) {
 }
 
 // --- Suscripciones ---
-function crearSuscripcion({ planId, customerId }) {
-  return llamar('POST', '/subscription/create', { planId, customerId });
+function crearSuscripcion({ planId, customerId, couponId }) {
+  return llamar('POST', '/subscription/create', { planId, customerId, couponId });
+}
+function agregarCupon({ subscriptionId, couponId }) {
+  return llamar('POST', '/subscription/addCoupon', { subscriptionId, couponId });
+}
+
+// --- Cupones de descuento (los códigos de /admin → Beneficios) ---
+// porcentaje (1-100) o monto en pesos; meses: 0 = mientras dure la suscripción.
+function crearCupon({ nombre, porcentaje, monto, meses }) {
+  const datos = { name: nombre, duration: meses > 0 ? 1 : 0, times: meses > 0 ? meses : undefined };
+  if (porcentaje) datos.percent_off = porcentaje;
+  else Object.assign(datos, { amount: monto, currency: 'CLP' });
+  return llamar('POST', '/coupon/create', datos);
 }
 function obtenerSuscripcion(subscriptionId) {
   return llamar('GET', '/subscription/get', { subscriptionId });
@@ -136,6 +148,6 @@ function estadoPago(token) {
 module.exports = {
   configurado, firmar, idPlan, asegurarPlan,
   crearCliente, registrarTarjeta, estadoRegistro,
-  crearSuscripcion, obtenerSuscripcion, cancelarSuscripcion, cambiarPlan, estadoSuscripcion,
+  crearSuscripcion, agregarCupon, crearCupon, obtenerSuscripcion, cancelarSuscripcion, cambiarPlan, estadoSuscripcion,
   crearPago, estadoPago,
 };

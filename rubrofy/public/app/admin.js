@@ -310,6 +310,106 @@
   }
 
   // Recargas: paquetes que los negocios compran cuando se les acaba el cupo.
+  async function enviar(ruta, cuerpo) {
+    const res = await fetch(ruta, { method: 'POST', headers: { 'x-rubrofy-panel': '1', 'content-type': 'application/json' }, body: JSON.stringify(cuerpo) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { const e = new Error(d.error || 'No se pudo guardar'); e.campo = d.campo; throw e; }
+    return d;
+  }
+
+  // Beneficios: planes de regalo y códigos de descuento que tú otorgas.
+  async function pintarBeneficios(datos) {
+    let d = datos;
+    if (!d) { try { d = await api('/api/admin/beneficios'); } catch (err) { return; } }
+    let sec = $('#adm-beneficios');
+    if (!sec) {
+      sec = document.createElement('section');
+      sec.className = 'adm-bloque';
+      sec.id = 'adm-beneficios';
+      const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
+      if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+    }
+    const cuentas = d.cuentas.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    const opcionCuenta = (c) => `<option value="${esc(c.id)}"${c.paga ? ' disabled' : ''}>${esc(c.nombre)} · ${esc(c.email)} · ${esc(PLANES[c.plan] || c.plan)}${c.paga ? ' (ya paga)' : c.regalo ? ' (con regalo)' : ''}</option>`;
+    const ESTADOS = { vigente: 'Vigente', vencio: 'Venció', revocado: 'Revocado', suscripcion: 'Pasó a pagar', reemplazado: 'Reemplazado', eliminada: 'Cuenta eliminada' };
+    const descuento = (c) => (c.tipo === 'porcentaje' ? `${String(c.valor).replace('.', ',')}%` : `${clp(c.valor)} al mes`);
+    const duracion = (m) => (m === 0 ? 'Siempre' : m === 1 ? '1 mes' : `${m} meses`);
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Beneficios${AY('admin-beneficios')}</h2></div>
+      <section class="adm-grid">
+        <div class="ig-card"><div class="ig-card-head"><h2>Regalar un plan</h2></div>
+          <form id="f-regalo" class="adm-form">
+            <label class="ancho">Cuenta<select name="negocioId" required><option value="">Elige una cuenta…</option>${cuentas.map(opcionCuenta).join('')}</select></label>
+            <label>Plan<select name="plan"><option value="pro">Pro</option><option value="estudio">Estudio</option></select></label>
+            <label>Duración<select name="meses"><option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option><option value="0">Sin límite</option></select></label>
+            <label class="ancho">Motivo <small>(solo lo ves tú)</small><input name="motivo" maxlength="200" placeholder="Ej: cliente fundador, alianza, compensación"></label>
+            <div class="ancho adm-form-pie"><button type="submit" class="btn-approve">Regalar plan</button><p class="config-error" hidden></p></div>
+          </form>
+          <p class="adm-nota">Sin costo ni tarjeta. No cuenta como ingreso. Al terminar, la cuenta queda sin plan y elige si pagar. A una cuenta que ya paga, dale mejor un código.</p>
+          <div class="adm-tabla-scroll"><table class="adm-tabla adm-tabla-chica">
+            <thead><tr><th>Negocio</th><th>Plan</th><th>Desde</th><th>Hasta</th><th>Motivo</th><th>Estado</th><th></th></tr></thead>
+            <tbody>${d.regalos.length ? d.regalos.map((r) => `<tr><td>${esc(r.negocio)}<small>${esc(r.email)}</small></td><td>${esc(PLANES[r.plan] || r.plan)}</td><td>${esc(fecha(r.desde))}</td><td>${r.hasta ? esc(fecha(r.hasta)) : 'Sin límite'}</td><td>${esc(r.motivo || '—')}</td><td>${esc(ESTADOS[r.estado] || r.estado)}</td><td>${r.estado === 'vigente' ? `<button type="button" class="btn-ghost" data-revocar="${esc(r.negocioId)}">Revocar</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="7">Todavía no regalas planes.</td></tr>'}</tbody>
+          </table></div>
+        </div>
+        <div class="ig-card"><div class="ig-card-head"><h2>Códigos de descuento</h2></div>
+          ${d.codigosConFlow ? '' : '<p class="adm-nota adm-aviso">Los códigos se cobran como cupones de Flow: funcionan cuando Flow esté configurado. Puedes crearlos desde ya.</p>'}
+          <form id="f-codigo" class="adm-form">
+            <label>Código<input name="codigo" maxlength="24" placeholder="AMIGO20" required class="adm-mayus"></label>
+            <label>Tipo<select name="tipo"><option value="porcentaje">Porcentaje</option><option value="monto">Monto en pesos</option></select></label>
+            <label>Descuento<input name="valor" inputmode="decimal" placeholder="20" required></label>
+            <label>Planes<select name="planes"><option value="pro,estudio">Pro y Estudio</option><option value="pro">Solo Pro</option><option value="estudio">Solo Estudio</option></select></label>
+            <label>Duración<select name="meses"><option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option><option value="0">Siempre</option></select></label>
+            <label>Máximo de usos <small>(opcional)</small><input name="maxUsos" inputmode="numeric" placeholder="Sin límite"></label>
+            <label>Vence <small>(opcional)</small><input name="venceEl" type="date"></label>
+            <label>Nota <small>(solo la ves tú)</small><input name="nota" maxlength="200" placeholder="Ej: campaña de octubre"></label>
+            <div class="ancho adm-form-pie"><button type="submit" class="btn-approve">Crear código</button><p class="config-error" hidden></p></div>
+          </form>
+          <div class="adm-tabla-scroll"><table class="adm-tabla adm-tabla-chica">
+            <thead><tr><th>Código</th><th>Descuento</th><th>Planes</th><th>Duración</th><th>Usos</th><th>Vence</th><th>Estado</th><th></th></tr></thead>
+            <tbody>${d.codigos.length ? d.codigos.map((c) => `<tr><td><b>${esc(c.codigo)}</b>${c.nota ? `<small>${esc(c.nota)}</small>` : ''}</td><td>${esc(descuento(c))}</td><td>${c.planes.map((p) => esc(PLANES[p] || p)).join(' y ')}</td><td>${esc(duracion(c.meses))}</td><td>${num(c.usos)}${c.maxUsos ? ' / ' + num(c.maxUsos) : ''}</td><td>${c.venceEl ? esc(fecha(c.venceEl)) : '—'}</td><td>${c.activo ? 'Activo' : 'Desactivado'}</td><td><button type="button" class="btn-ghost" data-codigo-estado="${esc(c.codigo)}" data-activo="${c.activo ? 0 : 1}">${c.activo ? 'Desactivar' : 'Activar'}</button></td></tr>`).join('') : '<tr><td colspan="8">Todavía no creas códigos.</td></tr>'}</tbody>
+          </table></div>
+          <p class="adm-nota">El cliente lo escribe en Plan al elegir su plan (o ya suscrito, para su suscripción). Cada cuenta puede usar un código una vez.</p>
+        </div>
+      </section>`;
+    const formulario = (id, ruta, preparar, confirmar) => {
+      const f = sec.querySelector(id);
+      f.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = f.querySelector('.config-error');
+        err.hidden = true;
+        const datosForm = Object.fromEntries(new FormData(f));
+        if (confirmar && !confirm(confirmar(datosForm))) return;
+        f.querySelector('button[type="submit"]').disabled = true;
+        try {
+          pintarBeneficios(await enviar(ruta, preparar(datosForm)));
+        } catch (e2) {
+          err.textContent = e2.message;
+          err.hidden = false;
+          f.querySelector('button[type="submit"]').disabled = false;
+          if (e2.campo && f[e2.campo]) f[e2.campo].focus();
+        }
+      });
+    };
+    formulario('#f-regalo', '/api/admin/beneficios/regalo', (x) => ({ negocioId: x.negocioId, plan: x.plan, meses: Number(x.meses), motivo: x.motivo }),
+      (x) => {
+        const c = cuentas.find((k) => k.id === x.negocioId);
+        return `¿Regalar el plan ${PLANES[x.plan]} ${Number(x.meses) ? `por ${duracion(Number(x.meses))}` : 'sin límite'} a ${c ? c.nombre : 'esta cuenta'}?`;
+      });
+    formulario('#f-codigo', '/api/admin/beneficios/codigo', (x) => ({
+      codigo: x.codigo, tipo: x.tipo, valor: Number(String(x.valor).replace(',', '.')), planes: x.planes.split(','), meses: Number(x.meses),
+      maxUsos: x.maxUsos ? Number(x.maxUsos) : null, venceEl: x.venceEl || null, nota: x.nota,
+    }));
+    sec.querySelectorAll('[data-revocar]').forEach((b) => b.addEventListener('click', async () => {
+      if (!confirm('¿Revocar este plan de regalo? La cuenta queda sin plan desde ahora.')) return;
+      b.disabled = true;
+      try { pintarBeneficios(await enviar('/api/admin/beneficios/regalo/revocar', { negocioId: b.dataset.revocar })); } catch (e) { alert(e.message); b.disabled = false; }
+    }));
+    sec.querySelectorAll('[data-codigo-estado]').forEach((b) => b.addEventListener('click', async () => {
+      b.disabled = true;
+      try { pintarBeneficios(await enviar('/api/admin/beneficios/codigo/estado', { codigo: b.dataset.codigoEstado, activo: b.dataset.activo === '1' })); } catch (e) { alert(e.message); b.disabled = false; }
+    }));
+  }
+
   async function pintarRecargas() {
     let d;
     try { d = await api('/api/admin/recargas?dias=' + dias); } catch (err) { return; }
@@ -347,6 +447,7 @@
       await pintarCostos();
       await pintarPruebas();
       await pintarRecargas();
+      await pintarBeneficios();
       pintarIA();
     } catch (err) {
       $('#adm').innerHTML = err.status === 404 || err.status === 401

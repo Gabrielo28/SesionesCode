@@ -67,3 +67,16 @@ body.adm { height: auto; min-height: 100%; }
 .adm-est-pagando { color: var(--green); }
 .adm-est-en-prueba { color: var(--amber); }
 .adm-est-terminó-sin-pagar { color: var(--ink-faint); }
+
+/* Beneficios: formularios de regalo y códigos */
+.adm-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-bottom: 8px; }
+.adm-form label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-dim); }
+.adm-form label small { color: var(--ink-faint); font-size: 11px; }
+.adm-form .ancho { grid-column: 1 / -1; }
+.adm-form input, .adm-form select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13.5px; padding: 8px 10px; min-width: 0; }
+.adm-form-pie { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.adm-form-pie .config-error { margin: 0; }
+.adm-tabla-chica { min-width: 640px; }
+.adm-aviso { color: var(--amber, #e0a33b); margin-bottom: 8px; }
+@media (max-width: 640px) { .adm-form { grid-template-columns: 1fr; } }
+.adm-form .adm-mayus:not(:placeholder-shown) { text-transform: uppercase; }

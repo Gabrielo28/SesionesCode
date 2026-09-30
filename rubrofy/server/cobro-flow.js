@@ -16,6 +16,7 @@ const store = require('./store');
 const recargas = require('./recargas');
 const pruebaGratis = require('./prueba-gratis');
 const { PLANES, getPlan } = require('./planes');
+const beneficios = require('./beneficios');
 
 let deps = { planDeCortesia: () => false, notificar: () => {} };
 function configurar(d) { deps = Object.assign(deps, d); }
@@ -49,15 +50,18 @@ function aplicarSuscripcion(negocioId, sub) {
     periodoFin: sub.period_end || null,
   });
   delete negocio.flow.planPendiente;
+  delete negocio.flow.codigoPendiente;
   const enPrueba = pruebaGratis.vigente(negocio);
   if (ACTIVAS.has(estado)) {
     // Si paga durante la prueba gratis, la prueba termina y manda el plan pagado.
     if (enPrueba) negocio.prueba.terminada = 'suscripcion';
+    // Lo mismo con un plan de regalo: ahora manda el que paga.
+    beneficios.terminarRegalo(negocio, 'suscripcion', { suscrito: true });
     negocio.plan = planDesdeFlow(sub.planId) || negocio.plan || 'gratis';
   } else {
     // Cancelada, sin iniciar o con un cobro vencido: vuelve a sin plan
-    // (o conserva la prueba gratis hasta su fecha).
-    negocio.plan = enPrueba ? negocio.prueba.plan : 'gratis';
+    // (o conserva la prueba gratis o el plan de regalo hasta su fecha).
+    negocio.plan = enPrueba ? negocio.prueba.plan : beneficios.planSinPago(negocio);
   }
   deps.planDeCortesia(negocio);
   store.saveNegocio(negocio);
@@ -101,13 +105,38 @@ async function asegurarCliente(negocio) {
   return { data: r.data.customerId };
 }
 
-async function suscribir(negocioId, planId, base) {
+// El cupón de Flow de un código de descuento (se crea la primera vez que se usa).
+async function cuponDe(fila) {
+  if (fila.flow_cupon) return { data: fila.flow_cupon };
+  const r = await flow.crearCupon({
+    nombre: `Rubrofy ${fila.codigo}`, meses: fila.meses,
+    porcentaje: fila.tipo === 'porcentaje' ? fila.valor : null, monto: fila.tipo === 'monto' ? fila.valor : null,
+  });
+  if (r.error) return r;
+  beneficios.guardarCuponFlow(fila.codigo, r.data.id);
+  return { data: String(r.data.id) };
+}
+
+// Valida el código para ese plan y devuelve { cupon, codigo } (o nada si no hay código).
+async function prepararCodigo(negocioId, planId, codigo) {
+  if (!codigo) return {};
+  const v = beneficios.validarCodigo(codigo, negocioId, planId);
+  if (v.error) return { error: v.error, status: 400 };
+  const c = await cuponDe(v.fila);
+  if (c.error) return c;
+  return { cupon: c.data, codigo: v.fila.codigo };
+}
+
+async function suscribir(negocioId, planId, base, codigo) {
   const plan = getPlan(planId);
   const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`);
   if (listo.error) return listo;
+  const d = await prepararCodigo(negocioId, planId, codigo);
+  if (d.error) return d;
   const negocio = store.getNegocio(negocioId);
-  const r = await flow.crearSuscripcion({ planId: flow.idPlan(plan), customerId: negocio.flow.customerId });
+  const r = await flow.crearSuscripcion({ planId: flow.idPlan(plan), customerId: negocio.flow.customerId, couponId: d.cupon });
   if (r.error) return r;
+  if (d.codigo) beneficios.registrarCanje(d.codigo, negocioId, planId);
   // La suscripción nueva pasa a ser la que se sigue.
   const fresco = store.getNegocio(negocioId);
   fresco.flow = Object.assign({}, fresco.flow, { subscriptionId: r.data.subscriptionId });
@@ -121,15 +150,24 @@ function suscripcionVigente(negocio) {
 
 // Elegir o cambiar de plan. Devuelve { url } (hay que inscribir la tarjeta
 // en Flow), { negocio } (listo) o { error, status }.
-async function elegirPlan(negocio, planId, base) {
+// codigo: código de descuento opcional (se valida para ese plan).
+async function elegirPlan(negocio, planId, base, codigo) {
   const plan = PLANES[planId];
   if (!plan || planId === 'gratis') return { error: 'Ese plan no está disponible', status: 400 };
+  if (codigo) {
+    const v = beneficios.validarCodigo(codigo, negocio.id, planId);
+    if (v.error) return { error: v.error, status: 400 };
+  }
   if (suscripcionVigente(negocio)) {
     if (planDesdeFlow(negocio.flow.planFlow) === planId && !negocio.flow.cancelaAlFinal) return { error: 'Ya tienes ese plan', status: 409 };
     const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`);
     if (listo.error) return listo;
     const r = await flow.cambiarPlan({ subscriptionId: negocio.flow.subscriptionId, planId: flow.idPlan(plan) });
     if (r.error) return r;
+    if (codigo) {
+      const a = await aplicarCodigo(store.getNegocio(negocio.id), codigo, planId);
+      if (a.error) return a;
+    }
     return sincronizar(negocio.id);
   }
   // El plan se deja listo en Flow antes de mandar a inscribir la tarjeta:
@@ -139,8 +177,10 @@ async function elegirPlan(negocio, planId, base) {
   const cliente = await asegurarCliente(negocio);
   if (cliente.error) return cliente;
   const fresco = store.getNegocio(negocio.id);
-  if (fresco.flow.tarjeta) return suscribir(negocio.id, planId, base);
+  if (fresco.flow.tarjeta) return suscribir(negocio.id, planId, base, codigo);
   fresco.flow.planPendiente = planId;
+  if (codigo) fresco.flow.codigoPendiente = beneficios.normalizarCodigo(codigo);
+  else delete fresco.flow.codigoPendiente;
   store.saveNegocio(fresco);
   return inscribirTarjeta(fresco, base);
 }
@@ -163,11 +203,26 @@ async function retornoTarjeta(token, base) {
   if (String(r.data.status) !== '1') return { resultado: 'tarjeta' };
   negocio.flow.tarjeta = { tipo: r.data.creditCardType || '', ultimos4: r.data.last4CardDigits || '' };
   const pendiente = negocio.flow.planPendiente;
+  const codigo = negocio.flow.codigoPendiente;
   store.saveNegocio(negocio);
   // Solo cambió la tarjeta, o ya tiene una suscripción vigente: no se crea otra.
   if (!pendiente || suscripcionVigente(negocio)) return { resultado: pendiente ? 'exito' : 'tarjeta-ok', negocioId: negocio.id };
-  const s = await suscribir(negocio.id, pendiente, base);
+  let s = await suscribir(negocio.id, pendiente, base, codigo);
+  // Si el código dejó de valer entre medio (se agotó), se suscribe igual sin él.
+  if (s.error && codigo && s.status === 400) s = await suscribir(negocio.id, pendiente, base);
   return { resultado: s.error ? 'error' : 'exito', negocioId: negocio.id };
+}
+
+// Aplica un código a la suscripción vigente (planId: el plan actual).
+async function aplicarCodigo(negocio, codigo, planId) {
+  if (!suscripcionVigente(negocio)) return { error: 'No tienes una suscripción activa', status: 400 };
+  const plan = planId || planDesdeFlow(negocio.flow.planFlow);
+  const d = await prepararCodigo(negocio.id, plan, codigo);
+  if (d.error) return d;
+  const r = await flow.agregarCupon({ subscriptionId: negocio.flow.subscriptionId, couponId: d.cupon });
+  if (r.error) return r;
+  beneficios.registrarCanje(d.codigo, negocio.id, plan);
+  return { negocio: aplicarSuscripcion(negocio.id, r.data) };
 }
 
 async function cancelar(negocio) {
@@ -228,6 +283,6 @@ function publico(negocio) {
 
 module.exports = {
   configurar, planDesdeFlow, aplicarSuscripcion, sincronizar, sincronizarTodas,
-  elegirPlan, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente,
+  elegirPlan, aplicarCodigo, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente,
   pagarRecarga, confirmarPago, publico,
 };
