@@ -241,7 +241,7 @@ function negocioPublico(negocio) {
   };
   resto.saldos = recargas.saldos(negocio.id);
   const puede = recargas.puedeComprar(negocio, admin.esAdmin(negocio));
-  resto.recargas = { pago: !!process.env.STRIPE_SECRET_KEY, simular: admin.esAdmin(negocio), puede: puede.ok, motivo: puede.motivo || null };
+  resto.recargas = { pago: !!pagos.proveedor(), simular: admin.esAdmin(negocio), puede: puede.ok, motivo: puede.motivo || null };
   resto.sinPlan = (negocio.plan || 'gratis') === 'gratis';
   resto.usaIA = !!getPlan(negocio.plan).usaIA;
   return resto;
