@@ -16,13 +16,14 @@
     --ink: #1E293B; --muted: #64748B; --card: #F1F5F9; --line: #E2E8F0; --amber-bg: #FFF7E8; --amber: #F5A623;
   }
   html, body { font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .page { width: 210mm; height: 297mm; padding: 20mm 18mm 22mm; page-break-after: always; position: relative; overflow: hidden; background: #fff; }
+
+  .page { width: 210mm; height: 297mm; padding: 16mm 18mm 20mm; page-break-after: always; position: relative; overflow: hidden; }
   .page:last-child { page-break-after: auto; }
-  .footer { position: absolute; left: 18mm; right: 18mm; bottom: 10mm; display: flex; justify-content: space-between; font-size: 8pt; color: var(--muted); }
+  .footer { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: var(--muted); }
   .footer b { color: var(--teal-dark); }
 
   /* Cover */
-  .cover { padding: 0; display: flex; background: var(--navy); color: #fff; }
+  .cover { width: 210mm; height: 297mm; display: flex; background: var(--navy); color: #fff; page-break-after: always; overflow: hidden; }
   .cover .left { width: 64%; padding: 28mm 20mm 22mm; display: flex; flex-direction: column; }
   .cover .right { width: 36%; background: var(--teal); position: relative; }
   .cover .brand { font-weight: 700; letter-spacing: .3em; font-size: 10pt; }
@@ -39,96 +40,95 @@
   .cover .stat .big { font-size: 28pt; font-weight: 800; line-height: 1; }
   .cover .stat .lbl { font-size: 9pt; line-height: 1.35; margin-top: 2mm; max-width: 44mm; color: #0B3B40; }
 
-  /* Sections */
-  .sec { font-size: 7.5pt; letter-spacing: .3em; color: var(--teal-dark); font-weight: 600; text-transform: uppercase; }
-  h2 { font-size: 22pt; font-weight: 800; line-height: 1.15; margin: 3mm 0 2.5mm; color: var(--navy); }
-  h2 + .bar { width: 16mm; height: 3px; background: var(--teal); border-radius: 2px; margin-bottom: 6mm; }
-  h3 { font-size: 12.5pt; font-weight: 700; margin: 6mm 0 2.5mm; color: var(--navy); }
-  p { font-size: 10pt; line-height: 1.6; color: #334155; }
-  p.lead { font-size: 10.5pt; margin-bottom: 5mm; }
+  /* Flowing body */
+  .block { margin-top: 8mm; }
+  .block:first-child { margin-top: 0; }
+  .sec { font-size: 7.5pt; letter-spacing: .3em; color: var(--teal-dark); font-weight: 600; text-transform: uppercase; break-after: avoid; }
+  h2 { font-size: 20pt; font-weight: 800; line-height: 1.15; margin: 2.5mm 0 2mm; color: var(--navy); break-after: avoid; }
+  h2 + .bar { width: 16mm; height: 3px; background: var(--teal); border-radius: 2px; margin-bottom: 4.5mm; break-after: avoid; }
+  h3 { font-size: 12pt; font-weight: 700; margin: 5mm 0 2mm; color: var(--navy); break-after: avoid; }
+  p { font-size: 9.6pt; line-height: 1.55; color: #334155; }
+  p.lead { font-size: 10pt; margin-bottom: 4mm; }
   b, strong { color: var(--navy); }
 
-  .tiles { display: flex; gap: 4mm; margin: 5mm 0 2mm; }
-  .tile { flex: 1; background: var(--card); border-radius: 4mm; padding: 5mm 5mm 4mm; }
-  .tile .big { font-size: 22pt; font-weight: 800; color: var(--teal); line-height: 1; }
-  .tile .lbl { font-size: 8.5pt; color: var(--muted); margin-top: 2mm; line-height: 1.4; }
+  .tiles { display: flex; gap: 4mm; margin: 4mm 0 2mm; break-inside: avoid; }
+  .tile { flex: 1; background: var(--card); border-radius: 4mm; padding: 4.5mm 5mm 4mm; }
+  .tile .big { font-size: 21pt; font-weight: 800; color: var(--teal); line-height: 1; }
+  .tile .lbl { font-size: 8.3pt; color: var(--muted); margin-top: 2mm; line-height: 1.4; }
 
   ul.dots { list-style: none; }
-  ul.dots li { position: relative; padding-left: 7mm; font-size: 9.8pt; line-height: 1.55; margin-bottom: 2.4mm; color: #334155; }
-  ul.dots li::before { content: ''; position: absolute; left: 0; top: 1.9mm; width: 3mm; height: 3mm; border-radius: 50%; background: var(--teal); }
+  ul.dots li { position: relative; padding-left: 7mm; font-size: 9.4pt; line-height: 1.5; margin-bottom: 1.8mm; color: #334155; break-inside: avoid; }
+  ul.dots li::before { content: ''; position: absolute; left: 0; top: 1.8mm; width: 3mm; height: 3mm; border-radius: 50%; background: var(--teal); }
   ul.dots.grey li::before { background: #CBD5E1; }
-  ul.dots.small li { font-size: 9pt; margin-bottom: 1.8mm; }
+  ul.dots.small li { font-size: 8.8pt; margin-bottom: 1.5mm; }
 
-  .callout { background: var(--card); border-left: 3px solid var(--teal); border-radius: 0 3mm 3mm 0; padding: 4.5mm 5.5mm; font-size: 9.8pt; line-height: 1.6; margin-top: 6mm; color: #334155; }
+  .callout { background: var(--card); border-left: 3px solid var(--teal); border-radius: 0 3mm 3mm 0; padding: 4mm 5.5mm; font-size: 9.4pt; line-height: 1.55; margin-top: 4.5mm; color: #334155; break-inside: avoid; }
   .callout.amber { background: var(--amber-bg); border-left-color: var(--amber); }
 
-  .pill { display: inline-block; font-size: 7pt; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; padding: 1.4mm 3.2mm; border-radius: 10mm; background: var(--navy); color: #fff; }
+  .pill { display: inline-block; font-size: 7pt; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; padding: 1.3mm 3.2mm; border-radius: 10mm; background: var(--navy); color: #fff; }
   .pill.teal { background: var(--teal); color: var(--navy); }
   .pill.soft { background: #E2E8F0; color: #475569; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 9.3pt; }
-  th { background: var(--navy); color: #fff; text-align: left; font-weight: 600; padding: 3.2mm 3.5mm; font-size: 8.8pt; }
-  td { padding: 3.2mm 3.5mm; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; color: #334155; }
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 3mm; }
+  tr { break-inside: avoid; }
+  th { background: var(--navy); color: #fff; text-align: left; font-weight: 600; padding: 2.8mm 3.5mm; font-size: 8.6pt; }
+  td { padding: 2.6mm 3.5mm; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.45; color: #334155; }
   tr:nth-child(even) td { background: #F8FAFC; }
   td.c, th.c { text-align: center; }
   td.strong { font-weight: 600; color: var(--navy); }
   .tealtxt { color: var(--teal-dark); font-weight: 700; }
 
-  /* Findings */
-  .find { display: flex; gap: 4mm; margin-bottom: 3.6mm; page-break-inside: avoid; }
+  .find { display: flex; gap: 4mm; margin-bottom: 3.2mm; break-inside: avoid; }
   .find .num { flex: 0 0 8mm; height: 8mm; border-radius: 50%; background: var(--teal); color: var(--navy); font-weight: 700; font-size: 10pt; display: flex; align-items: center; justify-content: center; margin-top: .5mm; }
-  .find .body { flex: 1; background: var(--card); border-radius: 3mm; padding: 3.4mm 5mm; }
-  .find h4 { font-size: 10.5pt; font-weight: 700; color: var(--navy); margin-bottom: 1.2mm; }
-  .find p { font-size: 9.2pt; line-height: 1.5; }
-  .find .cs { display: flex; gap: 4mm; margin-top: 2.4mm; }
-  .find .cs div { flex: 1; font-size: 8.8pt; line-height: 1.45; }
-  .find .cs .k { font-size: 7pt; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: .6mm; }
+  .find .body { flex: 1; background: var(--card); border-radius: 3mm; padding: 2.8mm 5mm; }
+  .find h4 { font-size: 10.2pt; font-weight: 700; color: var(--navy); margin-bottom: 1mm; }
+  .find p { font-size: 8.7pt; line-height: 1.42; }
+  .find .cs { display: flex; gap: 4mm; margin-top: 2.2mm; }
+  .find .cs div { flex: 1; font-size: 8.4pt; line-height: 1.4; }
+  .find .cs .k { font-size: 7pt; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: .5mm; }
   .find .cs .cost .k { color: #B45309; }
   .find .cs .sol .k { color: var(--teal-dark); }
 
-  /* Steps */
-  .step { display: flex; gap: 5mm; margin-bottom: 5mm; }
+  .step { display: flex; gap: 5mm; margin-bottom: 4mm; break-inside: avoid; }
   .step .n { flex: 0 0 9mm; height: 9mm; border-radius: 50%; background: var(--teal); color: var(--navy); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 10.5pt; }
-  .step h4 { font-size: 10.5pt; font-weight: 700; color: var(--navy); }
-  .step p { font-size: 9.5pt; line-height: 1.5; }
+  .step h4 { font-size: 10.2pt; font-weight: 700; color: var(--navy); }
+  .step p { font-size: 9.2pt; line-height: 1.45; }
 
-  /* Plans */
-  .plans { display: flex; gap: 4mm; margin-top: 4mm; }
-  .plan { flex: 1; border: 1.5px solid var(--line); border-radius: 4mm; padding: 5mm; background: #fff; display: flex; flex-direction: column; }
+  .plans { display: flex; gap: 4mm; margin-top: 3mm; break-inside: avoid; }
+  .plan { flex: 1; border: 1.5px solid var(--line); border-radius: 4mm; padding: 5.5mm; background: #fff; display: flex; flex-direction: column; }
   .plan.rec { border: 2px solid var(--teal); background: var(--teal-light); }
-  .plan .name { font-size: 12.5pt; font-weight: 700; color: var(--navy); margin-top: 3mm; }
-  .plan .price { font-size: 17pt; font-weight: 800; color: var(--navy); line-height: 1.1; margin-top: 1mm; white-space: nowrap; }
+  .plan .name { font-size: 12pt; font-weight: 700; color: var(--navy); margin-top: 2.5mm; }
+  .plan .price { font-size: 16.5pt; font-weight: 800; color: var(--navy); line-height: 1.1; margin-top: 1mm; white-space: nowrap; }
   .plan .price small { font-size: 8pt; font-weight: 500; color: var(--muted); }
-  .plan .for { font-size: 8.5pt; color: var(--muted); margin: 1.5mm 0 3mm; line-height: 1.4; border-bottom: 1px dashed #CBD5E1; padding-bottom: 3mm; }
-  .plan ul.dots li { font-size: 8.4pt; line-height: 1.45; margin-bottom: 1.6mm; padding-left: 5.5mm; }
-  .plan ul.dots li::before { width: 2.4mm; height: 2.4mm; top: 1.7mm; }
+  .plan .for { font-size: 8.3pt; color: var(--muted); margin: 1.5mm 0 2.5mm; line-height: 1.4; border-bottom: 1px dashed #CBD5E1; padding-bottom: 2.5mm; }
+  .plan ul.dots li { font-size: 8.4pt; line-height: 1.45; margin-bottom: 2mm; padding-left: 5.5mm; }
+  .plan ul.dots li::before { width: 2.4mm; height: 2.4mm; top: 1.6mm; }
 
-  /* Flow */
-  .flow { display: flex; align-items: center; gap: 2.5mm; margin: 4mm 0 5mm; }
-  .flow .box { flex: 1; border-radius: 3mm; padding: 3.5mm 3mm; text-align: center; font-size: 8.6pt; line-height: 1.35; background: var(--navy); color: #fff; }
-  .flow .box b { color: #fff; display: block; font-size: 9.2pt; }
+  .flow { display: flex; align-items: center; gap: 2.5mm; margin: 3mm 0 4mm; break-inside: avoid; }
+  .flow .box { flex: 1; border-radius: 3mm; padding: 3.2mm 3mm; text-align: center; font-size: 8.4pt; line-height: 1.35; background: var(--navy); color: #fff; }
+  .flow .box b { color: #fff; display: block; font-size: 9pt; }
   .flow .box.teal { background: var(--teal); color: var(--navy); }
   .flow .box.teal b { color: var(--navy); }
   .flow .box.light { background: var(--card); color: #334155; border: 1px solid var(--line); }
   .flow .box.light b { color: var(--navy); }
   .flow .arr { color: var(--teal); font-size: 14pt; font-weight: 700; }
 
-  .cards2 { display: flex; gap: 4mm; margin-top: 4mm; }
-  .cards2 > div { flex: 1; background: var(--card); border-radius: 4mm; padding: 4.5mm 5mm; }
+  .cards2 { display: flex; gap: 4mm; margin-top: 3mm; break-inside: avoid; }
+  .cards2 > div { flex: 1; background: var(--card); border-radius: 4mm; padding: 4mm 5mm; }
   .cards2 > div.tl { background: var(--teal-light); border: 1.5px solid var(--teal); }
-  .cards2 h4 { font-size: 10.5pt; font-weight: 700; color: var(--navy); margin-bottom: 2.5mm; }
+  .cards2 h4 { font-size: 10.2pt; font-weight: 700; color: var(--navy); margin-bottom: 2mm; }
 
-  .budget { display: flex; gap: 4mm; margin-top: 4mm; }
-  .budget > div { flex: 1; border: 1.5px solid var(--line); border-radius: 4mm; padding: 4.5mm 5mm; }
+  .budget { display: flex; gap: 4mm; margin-top: 3mm; break-inside: avoid; }
+  .budget > div { flex: 1; border: 1.5px solid var(--line); border-radius: 4mm; padding: 4mm 5mm; }
   .budget > div.rec { border: 2px solid var(--teal); background: var(--teal-light); }
-  .budget .amt { font-size: 18pt; font-weight: 800; color: var(--navy); margin-top: 2.5mm; line-height: 1.1; }
-  .budget .sub { font-size: 8.3pt; color: var(--muted); border-bottom: 1px dashed #CBD5E1; padding-bottom: 3mm; margin-bottom: 3mm; }
-  .budget p { font-size: 9pt; line-height: 1.5; }
+  .budget .amt { font-size: 17pt; font-weight: 800; color: var(--navy); margin-top: 2.5mm; line-height: 1.1; }
+  .budget .sub { font-size: 8.2pt; color: var(--muted); border-bottom: 1px dashed #CBD5E1; padding-bottom: 2.5mm; margin-bottom: 2.5mm; }
+  .budget p { font-size: 8.8pt; line-height: 1.45; }
 
-  .note { font-size: 8.5pt; color: var(--muted); margin-top: 2.5mm; line-height: 1.5; }
+  .note { font-size: 8.4pt; color: var(--muted); margin-top: 2.5mm; line-height: 1.5; }
 
   /* Closing */
-  .close { background: var(--navy); color: #fff; padding: 36mm 20mm 0; display: flex; flex-direction: column; }
+  .close { background: var(--navy); color: #fff; padding: 36mm 20mm 0; }
   .close .sec { color: var(--teal); }
   .close h2 { color: #fff; font-size: 26pt; }
   .close p { color: #CBD5E1; font-size: 10.5pt; max-width: 150mm; }
@@ -145,8 +145,8 @@
 </head>
 <body>
 
-<!-- PORTADA -->
-<section class="page cover">
+<!-- PORTADA (render full-bleed) -->
+<section class="page cover" style="padding:0">
   <div class="left">
     <div class="brand">INFLUENCE <span>CHILE</span></div>
     <div class="kicker">PROPUESTA COMERCIAL</div>
@@ -167,8 +167,9 @@
   </div>
 </section>
 
-<!-- 01 PUNTO DE PARTIDA -->
+
 <section class="page">
+<div class="block">
   <div class="sec">01 · Punto de partida</div>
   <h2>Lo que vimos en su Instagram</h2>
   <div class="bar"></div>
@@ -180,29 +181,18 @@
   </div>
   <h3>Fortalezas que vamos a aprovechar</h3>
   <ul class="dots">
-    <li><b>Prueba social genuina.</b> Reseñas que describen procesos concretos: observaciones de fondo resueltas, registros en tres clases, defensa ante uso indebido. Es el testimonio que un cliente nuevo sí cree.</li>
+    <li><b>Prueba social genuina.</b> Reseñas que describen procesos concretos: observaciones de fondo resueltas, registros en tres clases, defensa ante uso indebido.</li>
     <li><b>Casos ganados documentados.</b> Resoluciones del Tribunal de Propiedad Industrial publicadas en el feed. Pocos estudios pueden mostrar sentencias favorables.</li>
     <li><b>Cartera diversa y visible.</b> Gastronomía, inmobiliaria, cerveza artesanal, moda, tecnología, música: justo el público de pymes y emprendedores que más busca en Instagram.</li>
     <li><b>Posicionamiento de boutique.</b> El sitio declara que el estudio limita los casos mensuales para asegurar atención directa. Es un mensaje diferenciador que hoy casi no se usa.</li>
-    <li><b>Imagen profesional del abogado.</b> La foto de perfil transmite confianza y se entiende en miniatura: la base correcta para una marca personal.</li>
   </ul>
-  <h3>Oportunidades de mejora</h3>
-  <ul class="dots grey">
-    <li>El perfil muestra que el estudio hace bien su trabajo, pero <b>no le dice al visitante qué hacer</b>: sin WhatsApp en la bio ni llamados a la acción en las publicaciones.</li>
-    <li>El feed alterna logos de clientes, capturas de reseñas y resoluciones en texto pequeño; <b>no hay contenido que explique el servicio</b> ni video.</li>
-    <li>El sitio web no muestra contacto en el inicio ni en servicios, y <b>el tráfico que llega desde redes rebota</b>.</li>
-  </ul>
-  <div class="callout"><b>Nuestro enfoque:</b> ordenar primero lo que convierte, después producir contenido que explique el servicio con los casos reales del estudio y, recién entonces, invertir en alcance con Meta Ads. Así cada peso de pauta llega a un perfil preparado para recibir consultas.</div>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>2</b></div>
-</section>
+</div>
 
-<!-- 02 AUDITORÍA -->
-<section class="page">
+<div class="block">
   <div class="sec">02 · Auditoría con puntajes</div>
   <h2>La cuenta obtiene 44 de 100</h2>
   <div class="bar"></div>
-  <p class="lead">Las dimensiones que generan confianza están bien; las que convierten esa confianza en consultas son las más débiles. Es una buena noticia: el trabajo difícil, tener resultados y clientes contentos, ya está hecho.</p>
-  <svg viewBox="-36 0 676 352" width="100%" style="margin: 2mm 0 1mm" font-family="Poppins, sans-serif" font-size="11.5">
+  <svg viewBox="-36 0 676 352" width="80%" style="margin: 1mm 0 0; break-inside: avoid; display: block" font-family="Poppins, sans-serif" font-size="11.5">
     <text x="-36" y="14" font-size="9.5" fill="#64748B">Cada dimensión de 0 a 10 · peso en la captación entre paréntesis · en turquesa, las tres bajo 4 puntos</text>
     <line x1="460" y1="30" x2="460" y2="340" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 4"/>
     <text x="466" y="34" font-size="9.5" fill="#64748B">meta a 90 días: 7</text>
@@ -228,116 +218,96 @@
       <rect x="236" y="319" width="64" height="18" rx="4" fill="#33C7D0"/><text x="308" y="332" font-weight="700">2</text>
     </g>
   </svg>
-  <p class="note">Puntaje total ponderado: 44 de 100. Revisión externa de @campos.ip y camposip.cl, 1 de octubre de 2026, sin acceso a estadísticas internas.</p>
-  <h3>Cómo leer el puntaje</h3>
-  <p>Cada dimensión se calificó según lo que ve un cliente potencial al llegar a la cuenta. El peso refleja cuánto influye cada una en que ese visitante termine escribiendo al estudio; por eso perfil y contenido de valor pesan más. Las tres dimensiones en turquesa concentran el plan de mejora.</p>
-  <div class="callout"><b>Qué significa para el estudio:</b> cada semana llegan personas que ya confían en Campos IP por sus reseñas y sus casos ganados, y se van sin escribir porque no encuentran el camino. Las mejoras de esta propuesta son, en su mayoría, de bajo costo y alto efecto.</div>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>3</b></div>
-</section>
+  <p class="note">Puntaje total ponderado: 44 de 100. Cada dimensión se calificó según lo que ve un cliente potencial al llegar a la cuenta; el peso refleja cuánto influye en que ese visitante termine escribiendo al estudio. Revisión externa, sin acceso a estadísticas internas.</p>
+</div>
 
-<!-- 03 HALLAZGOS (1-4) -->
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>2</b></div>
+</section>
 <section class="page">
+<div class="block">
   <div class="sec">03 · Puntos débiles y oportunidades</div>
   <h2>Siete hallazgos y cómo se resuelven</h2>
   <div class="bar"></div>
-  <p class="lead">Cada punto se presenta con lo que observamos, lo que le cuesta al estudio y cómo lo resolvemos.</p>
 
   <div class="find"><div class="num">1</div><div class="body">
     <h4>No hay un camino claro para consultar</h4>
     <p>La bio enlaza al inicio del sitio, que no muestra teléfono ni WhatsApp; para escribir hay que llegar a la página de contacto. Ninguna publicación cierra con una invitación a cotizar o agendar.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>El interés que generan las reseñas y los casos ganados se pierde antes de convertirse en consulta.</div><div class="sol"><span class="k">Solución</span>Botón de WhatsApp en la bio, enlace a una página “Evalúa tu marca gratis” y una línea de cierre en cada publicación.</div></div>
   </div></div>
-
   <div class="find"><div class="num">2</div><div class="body">
     <h4>Falta contenido que explique el servicio</h4>
     <p>El feed alterna logos de marcas registradas sin contexto, capturas de reseñas con un mismo diseño y resoluciones judiciales en texto pequeño que no se leen desde el celular. No hay publicaciones que respondan lo que un emprendedor se pregunta antes de contratar: cuánto demora, qué pasa si rechazan la marca, por qué registrar en varias clases.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>El visitante no entiende qué gana con el estudio y sigue de largo; el algoritmo tampoco tiene motivos para mostrar la cuenta a gente nueva.</div><div class="sol"><span class="k">Solución</span>Pilares de contenido educativo en carrusel y video corto, con los casos reales del estudio como ejemplo.</div></div>
   </div></div>
-
   <div class="find"><div class="num">3</div><div class="body">
     <h4>Sin video ni reels</h4>
     <p>En la revisión no encontramos video. Reels es hoy el formato con mayor alcance en Instagram y el que mejor construye una marca personal en servicios profesionales.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>La cuenta solo llega a quienes ya la siguen.</div><div class="sol"><span class="k">Solución</span>El abogado explicando un tema en 30 a 45 segundos, grabado en lotes en una sesión mensual.</div></div>
   </div></div>
-
   <div class="find"><div class="num">4</div><div class="body">
     <h4>Identidad visual inconsistente</h4>
     <p>Cada logo de cliente trae sus propios colores y tipografías, por lo que el perfil parece un catálogo de marcas ajenas y no la marca Campos IP. Las plantillas de reseñas tienen el texto cortado en los bordes.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>Se pierde el reconocimiento de marca y la sensación de estudio boutique.</div><div class="sol"><span class="k">Solución</span>Un sistema de plantillas propio donde el logo del cliente aparezca enmarcado por la identidad del estudio, con un titular que diga qué se logró.</div></div>
   </div></div>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>4</b></div>
-</section>
-
-<!-- 03 HALLAZGOS (5-7) -->
-<section class="page">
-  <div class="sec">03 · Puntos débiles y oportunidades (continuación)</div>
-  <h2>Perfil, comunidad y sitio web</h2>
-  <div class="bar"></div>
-
   <div class="find"><div class="num">5</div><div class="body">
     <h4>Biografía y destacadas poco aprovechadas</h4>
     <p>La bio dice qué es el estudio, pero no a quién ayuda ni por qué elegirlo. Hay una sola historia destacada, con portada genérica y nombre “Destacada”.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>Los primeros tres segundos de la visita no dan una razón para quedarse.</div><div class="sol"><span class="k">Solución</span>Bio con propuesta de valor y llamado a la acción; cuatro destacadas con portadas de marca: Servicios, Casos, Opiniones y Preguntas frecuentes.</div></div>
   </div></div>
-
+</div>
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>3</b></div>
+</section>
+<section class="page">
+<div class="block">
   <div class="find"><div class="num">6</div><div class="body">
     <h4>Proporción de seguidos sobre seguidores</h4>
     <p>La cuenta sigue a 2.288 perfiles y la siguen 1.086. Es el rastro de una estrategia de seguir para que te sigan, que funciona poco y transmite menos autoridad que la que el estudio tiene.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>Un visitante atento lee la cifra como una cuenta que todavía busca validación.</div><div class="sol"><span class="k">Solución</span>Limpieza gradual de seguidos y crecimiento por contenido y pauta dirigida, en vez de por reciprocidad.</div></div>
   </div></div>
-
   <div class="find"><div class="num">7</div><div class="body">
     <h4>El sitio web no cierra la venta</h4>
     <p>La página de inicio y la de servicios no muestran ningún medio de contacto ni botón de acción; el blog está en el menú pero sin artículos visibles; no hay perfil del equipo ni testimonios, que sí existen en Instagram. El posicionamiento de boutique, el mejor argumento del estudio, aparece una sola vez.</p>
     <div class="cs"><div class="cost"><span class="k">Costo</span>El tráfico que llega desde redes no encuentra un próximo paso y rebota.</div><div class="sol"><span class="k">Solución</span>WhatsApp flotante, bloque de testimonios y casos en el inicio, página del abogado y formulario corto de evaluación de marca.</div></div>
   </div></div>
+</div>
 
-  <div class="callout"><b>Comunicación responsable:</b> todo el contenido será informativo y sobrio, en línea con las normas de ética profesional de la abogacía. No se prometen resultados de casos y el abogado aprueba cada pieza antes de publicarla.</div>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>5</b></div>
-</section>
-
-<!-- 04 PLAN 90 DÍAS -->
-<section class="page">
+<div class="block">
   <div class="sec">04 · Plan de trabajo</div>
   <h2>Los primeros 90 días</h2>
   <div class="bar"></div>
-  <p class="lead">Cada fase termina en un hito verificable antes de pasar a la siguiente. En 90 días la cuenta pasa de mostrar resultados a generar consultas.</p>
-
+  <p class="lead">Primero lo que convierte, después contenido que explica el servicio y, recién entonces, alcance con pauta. Cada fase termina en un hito verificable.</p>
   <div class="step"><div class="n">1</div><div>
     <h4>Semanas 1 y 2 · Cimientos</h4>
-    <p>Bio con propuesta de valor y botón de WhatsApp, cuatro destacadas con portadas de marca, sistema de plantillas propio y primera sesión de foto y video con el abogado. <b>Hito:</b> perfil listo para recibir visitas.</p>
+    <p>Bio con propuesta de valor y botón de WhatsApp, cuatro destacadas con portadas de marca, plantillas propias y primera sesión de foto y video. <b>Hito:</b> perfil listo para recibir visitas.</p>
   </div></div>
   <div class="step"><div class="n">2</div><div>
     <h4>Mes 1 · Contenido que explica</h4>
-    <p>8 reels y 8 publicaciones: carruseles educativos, casos del estudio con titular y reseñas en plantilla propia. Cada pieza cierra con un llamado a la acción. <b>Hito:</b> ritmo de 4 piezas por semana.</p>
+    <p>8 reels y 8 publicaciones sobre cuatro pilares: antes de registrar (qué es una clase, cuánto demora INAPI), casos del estudio con titular, reseñas en plantilla propia y la serie “El abogado responde”. Cada pieza cierra con un llamado a la acción. <b>Hito:</b> 4 piezas por semana.</p>
   </div></div>
   <div class="step"><div class="n">3</div><div>
     <h4>Mes 2 · Alcance con video y pauta</h4>
-    <p>Serie de reels “El abogado responde”, primera campaña de Meta Ads con creatividades propias y ajustes del sitio web: WhatsApp flotante, testimonios y casos en el inicio. Reporte y ajuste de la estrategia. <b>Hito:</b> primeras consultas atribuibles a pauta.</p>
+    <p>Primera campaña de Meta Ads con los reels del abogado y ajustes del sitio web: WhatsApp flotante, testimonios y casos en el inicio. <b>Hito:</b> primeras consultas atribuibles a pauta.</p>
   </div></div>
   <div class="step"><div class="n">4</div><div>
     <h4>Mes 3 · Automatizar y escalar</h4>
     <p>Flujo de WhatsApp con respuesta inmediata, registro de interesados en CRM, optimización de la pauta por costo por consulta y reporte trimestral con proyección.</p>
   </div></div>
-
-  <h3>Pilares de contenido sugeridos</h3>
+  <h3>Qué necesitamos del estudio</h3>
   <ul class="dots">
-    <li><b>Antes de registrar:</b> errores comunes al elegir un nombre, qué es una clase, cuánto demora el proceso en INAPI.</li>
-    <li><b>Casos del estudio:</b> cada resolución ganada contada en tres líneas, con el logo del cliente enmarcado por la identidad de Campos IP.</li>
-    <li><b>Lo que dicen los clientes:</b> las reseñas actuales, en plantilla propia y con el rubro del cliente como titular.</li>
-    <li><b>El abogado responde:</b> reels de 30 a 45 segundos con una pregunta frecuente por video.</li>
-    <li><b>Defensa de marca:</b> qué hacer si alguien usa un nombre parecido, oposiciones y renovaciones.</li>
+    <li>Dos horas al mes para grabar con el abogado y 20 minutos a la semana para revisar el calendario; el resto lo produce la agencia.</li>
+    <li>Aprobación de cada pieza antes de publicar: contenido informativo y sobrio, en línea con la ética profesional de la abogacía.</li>
+    <li>Acceso de administrador a Instagram, Facebook y cuenta publicitaria, y un WhatsApp Business activo.</li>
   </ul>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>6</b></div>
-</section>
+</div>
 
-<!-- 05 SERVICIOS: PLANES -->
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>4</b></div>
+</section>
 <section class="page">
+<div class="block">
   <div class="sec">05 · Servicio base</div>
   <h2>Gestión de redes sociales</h2>
   <div class="bar"></div>
   <p class="lead">Todo en un solo lugar: estrategia, contenido, conversación y campañas. Los tres planes incluyen informe mensual y gestión de Meta Ads con creatividades propias, sin costo aparte. Valores mensuales, sin IVA.</p>
-
   <div class="plans">
     <div class="plan">
       <span class="pill soft">Plan</span>
@@ -387,26 +357,24 @@
       </ul>
     </div>
   </div>
-
   <div class="callout"><b>Por qué Crecimiento:</b> Presencia ordena la cuenta, pero no incluye el monitoreo y respuesta de comentarios ni la estrategia mensual que la auditoría señala como prioritarios. Autoridad tiene una capacidad de producción que un estudio boutique no necesita todavía. Crecimiento entrega los 8 reels y 8 publicaciones con que se construye la ruta de 90 días, y suma la campaña con influencers sin costo, que proponemos usar con creadores de contenido de emprendimiento y negocios.</div>
-  <p class="note">Extra opcional: paquete Contenido Estratégico por $69.990, con 3 reels, 12 posts y 12 ideas de historias para alimentar un mes completo.</p>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>7</b></div>
-</section>
+</div>
 
-<!-- 05 CAMPAÑAS Y AUTOMATIZACIONES -->
+  <p class="note">Extra opcional: paquete Contenido Estratégico por $69.990, con 3 reels, 12 posts y 12 ideas de historias para alimentar un mes completo. La campaña con influencers va incluida en el plan Crecimiento.</p>
+</div>
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>5</b></div>
+</section>
 <section class="page">
+<div class="block">
   <div class="sec">05 · Campañas y automatizaciones</div>
   <h2>De la pauta a la consulta</h2>
   <div class="bar"></div>
-  <p class="lead">La pauta rinde más cuando los anuncios y el contenido salen del mismo equipo: el anuncio no se ve como un anuncio. Y cada interesado llega a un flujo que responde de inmediato, a cualquier hora.</p>
-
   <div class="flow">
     <div class="box"><b>Anuncio</b>Facebook / Instagram con reels del abogado</div><div class="arr">→</div>
     <div class="box"><b>Clic en “Enviar mensaje”</b>con texto pre-escrito</div><div class="arr">→</div>
     <div class="box teal"><b>Flujo de WhatsApp</b>pregunta marca y rubro, responde 24/7</div><div class="arr">→</div>
     <div class="box light"><b>El abogado recibe</b>el resumen y los datos quedan en el CRM</div>
   </div>
-
   <div class="cards2">
     <div>
       <h4>Gestión de Meta Ads, incluida en el plan</h4>
@@ -430,7 +398,6 @@
       </ul>
     </div>
   </div>
-
   <h3>Presupuesto de pauta</h3>
   <div class="budget">
     <div>
@@ -446,17 +413,16 @@
       <p>El mínimo con que la campaña sale de la fase de aprendizaje de Meta y se puede optimizar con datos.</p>
     </div>
   </div>
-  <p class="note">El presupuesto es flexible: se puede partir con el mínimo y subirlo a medida que lleguen consultas. El estudio decide el monto y puede ajustarlo cuando quiera.</p>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>8</b></div>
-</section>
+  <div class="callout amber"><b>La gestión de Meta Ads no incluye la inversión en anuncios.</b> El presupuesto publicitario se paga directo a Meta con el medio de pago que el estudio registre en su cuenta publicitaria. Influence Chile no recibe ni administra ese dinero, así el estudio mantiene control total de su cuenta y de su gasto.</div>
+</div>
 
-<!-- 06 INVERSIÓN -->
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>6</b></div>
+</section>
 <section class="page">
+<div class="block">
   <div class="sec">06 · Valores</div>
   <h2>Inversión en nuestros servicios</h2>
   <div class="bar"></div>
-  <p class="lead">Resumen de la modalidad recomendada y de los complementos. Las automatizaciones y los ajustes web se cotizan según el alcance acordado en la reunión: una implementación inicial más una mantención mensual.</p>
-
   <table>
     <tr><th>Servicio</th><th>Modalidad</th><th class="c">Valor</th></tr>
     <tr><td class="strong">Plan Crecimiento<br><span style="font-weight:400;color:#64748B">Gestión de redes, contenido, conversación y Meta Ads</span></td><td>Mensual</td><td class="c strong">$450.000 / mes</td></tr>
@@ -465,40 +431,28 @@
     <tr><td class="strong">Automatizaciones y ajustes web<br><span style="font-weight:400;color:#64748B">WhatsApp, formulario, CRM, recordatorios, sitio</span></td><td>Implementación inicial + mantención mensual</td><td class="c">según alcance</td></tr>
     <tr><td class="strong">Contenido Estratégico (opcional)</td><td>3 reels + 12 posts + 12 ideas de historias</td><td class="c">$69.990</td></tr>
   </table>
-  <p class="note">* Valores netos en pesos chilenos. Si requiere factura, se agrega IVA. La campaña con influencers va incluida en el plan Crecimiento.</p>
+  <p class="note">* Valores netos en pesos chilenos; si requiere factura, se agrega IVA. La mensualidad se paga por mes adelantado y recomendamos un período mínimo de 3 meses, el tiempo que toma completar la ruta y medir resultados. Los costos de mensajería de la API de WhatsApp que cobra Meta, si corresponden, son aparte.</p>
+</div>
 
-  <div class="callout amber"><b>La gestión de Meta Ads no incluye la inversión en anuncios.</b> El presupuesto publicitario se paga directo a Meta con el medio de pago que el estudio registre en su cuenta publicitaria. Influence Chile no recibe ni administra ese dinero, así el estudio mantiene control total de su cuenta y de su gasto.</div>
-  <div class="callout"><b>Condiciones:</b> la mensualidad se paga por mes adelantado. Recomendamos un período mínimo de 3 meses, el tiempo que toma completar la ruta propuesta y medir resultados con datos reales. Los costos de mensajería de la API de WhatsApp que cobra Meta según uso, si corresponden, son aparte.</div>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>9</b></div>
-</section>
-
-<!-- 07 SEGUIMIENTO -->
-<section class="page">
+<div class="block">
   <div class="sec">07 · Seguimiento</div>
   <h2>Cómo medimos el avance</h2>
   <div class="bar"></div>
-  <p class="lead">En servicios legales el indicador que importa no es la cantidad de seguidores sino la cantidad de consultas calificadas. Por eso medimos desde el primer mes de dónde viene cada persona que escribe, y reportamos esa cifra junto con las métricas de la cuenta.</p>
+  <p class="lead">En servicios legales el indicador que importa es la cantidad de consultas calificadas, no la de seguidores. Medimos desde el primer mes de dónde viene cada persona que escribe.</p>
   <table>
     <tr><th>Indicador</th><th>Hoy</th><th>Meta a 90 días</th></tr>
     <tr><td>Puntaje de auditoría</td><td>44 de 100</td><td class="tealtxt">70 o más</td></tr>
     <tr><td>Publicaciones con llamado a la acción</td><td>Ninguna observada</td><td class="tealtxt">Todas</td></tr>
     <tr><td>Reels publicados al mes</td><td>0</td><td class="tealtxt">8</td></tr>
-    <tr><td>Historias destacadas</td><td>1, con portada genérica</td><td class="tealtxt">4, con portadas de marca</td></tr>
     <tr><td>Seguidos por cada seguidor</td><td>2,1</td><td class="tealtxt">Menos de 1</td></tr>
-    <tr><td>Consultas atribuibles a redes</td><td>Sin medición</td><td class="tealtxt">Medidas cada semana, con origen identificado</td></tr>
+    <tr><td>Consultas atribuibles a redes</td><td>Sin medición</td><td class="tealtxt">Medidas cada semana, con origen</td></tr>
   </table>
-  <p class="note">No prometemos una cifra de seguidores ni de clientes: depende del presupuesto de pauta, de la estacionalidad y de la respuesta del estudio a cada consulta. Sí comprometemos el cumplimiento del calendario, los hitos de cada fase y un informe mensual claro, con una reunión para decidir qué se ajusta.</p>
+  <p class="note">No prometemos una cifra de seguidores ni de clientes: depende de la pauta, la estacionalidad y la respuesta del estudio a cada consulta. Sí comprometemos el calendario, los hitos de cada fase y un informe mensual claro.</p>
+</div>
 
-  <h3>Qué necesitamos del estudio</h3>
-  <ul class="dots">
-    <li>Una sesión de grabación de dos horas al mes con el abogado; el resto lo produce la agencia.</li>
-    <li>Una revisión semanal de 20 minutos del calendario de contenido y aprobación de cada pieza antes de publicar.</li>
-    <li>Acceso de administrador a Instagram, Facebook y cuenta publicitaria, y un WhatsApp Business activo.</li>
-    <li>Los casos y explicaciones del abogado como materia prima del contenido legal.</li>
-  </ul>
-  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>10</b></div>
+
+  <div class="footer"><span>Influence Chile SpA · Propuesta para Campos IP</span><b>7</b></div>
 </section>
-
 <!-- CIERRE -->
 <section class="page close">
   <div class="sec">Próximo paso</div>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Auditoría express · Campos IP · Influence Chile</title>
+<style>
+  @font-face { font-family: 'Poppins'; font-weight: 400; src: url('fonts/poppins-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Poppins'; font-weight: 500; src: url('fonts/poppins-500.woff2') format('woff2'); }
+  @font-face { font-family: 'Poppins'; font-weight: 600; src: url('fonts/poppins-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Poppins'; font-weight: 700; src: url('fonts/poppins-700.woff2') format('woff2'); }
+  @font-face { font-family: 'Poppins'; font-weight: 800; src: url('fonts/poppins-800.woff2') format('woff2'); }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy: #0F1B2D; --navy2: #182841; --teal: #33C7D0; --teal-dark: #1FA9B2; --teal-light: #E6F8F9; --ink: #1E293B; --muted: #64748B; --card: #F1F5F9; --line: #E2E8F0; }
+  html, body { font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; padding: 0 16mm 16mm; page-break-after: always; position: relative; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+
+  .head { background: var(--navy); color: #fff; margin: 0 -16mm 7mm; padding: 12mm 16mm 10mm; display: flex; justify-content: space-between; align-items: flex-end; }
+  .head .brand { font-weight: 700; letter-spacing: .3em; font-size: 8.5pt; }
+  .head .brand span { color: var(--teal); }
+  .head .k { font-size: 7.5pt; letter-spacing: .3em; color: var(--teal); font-weight: 600; margin-top: 7mm; }
+  .head h1 { font-size: 23pt; font-weight: 800; line-height: 1.1; margin-top: 1.5mm; }
+  .head .sub { font-size: 9.5pt; color: #CBD5E1; margin-top: 2mm; }
+  .head .score { text-align: right; color: #fff; }
+  .head .score .big { font-size: 30pt; font-weight: 800; line-height: 1; color: var(--teal); }
+  .head .score .lbl { font-size: 8pt; color: #CBD5E1; margin-top: 1.5mm; max-width: 42mm; line-height: 1.35; }
+
+  .sec { font-size: 7.5pt; letter-spacing: .3em; color: var(--teal-dark); font-weight: 600; text-transform: uppercase; }
+  h2 { font-size: 15pt; font-weight: 800; color: var(--navy); margin: 1.5mm 0 3mm; line-height: 1.15; }
+  h3 { font-size: 11pt; font-weight: 700; color: var(--navy); margin: 5mm 0 2mm; }
+  p { font-size: 9.4pt; line-height: 1.55; color: #334155; }
+  b { color: var(--navy); }
+
+  .tiles { display: flex; gap: 3.5mm; margin: 3mm 0 1mm; }
+  .tile { flex: 1; background: var(--card); border-radius: 3.5mm; padding: 4mm 4.5mm 3.5mm; }
+  .tile .big { font-size: 19pt; font-weight: 800; color: var(--teal); line-height: 1; }
+  .tile .lbl { font-size: 8pt; color: var(--muted); margin-top: 1.5mm; line-height: 1.4; }
+
+  ul.dots { list-style: none; }
+  ul.dots li { position: relative; padding-left: 6.5mm; font-size: 9.2pt; line-height: 1.5; margin-bottom: 1.6mm; color: #334155; }
+  ul.dots li::before { content: ''; position: absolute; left: 0; top: 1.7mm; width: 2.8mm; height: 2.8mm; border-radius: 50%; background: var(--teal); }
+
+  .leak { display: flex; gap: 3.5mm; margin-bottom: 3mm; }
+  .leak .num { flex: 0 0 7.5mm; height: 7.5mm; border-radius: 50%; background: var(--teal); color: var(--navy); font-weight: 700; font-size: 9.5pt; display: flex; align-items: center; justify-content: center; margin-top: .5mm; }
+  .leak .body { flex: 1; background: var(--card); border-radius: 3mm; padding: 3mm 4.5mm; }
+  .leak h4 { font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: .8mm; }
+  .leak p { font-size: 8.8pt; line-height: 1.45; }
+  .leak .cs { display: flex; gap: 4mm; margin-top: 2mm; }
+  .leak .cs div { flex: 1; font-size: 8.5pt; line-height: 1.42; }
+  .leak .cs .k { font-size: 6.8pt; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: .4mm; }
+  .leak .cs .cost .k { color: #B45309; }
+  .leak .cs .sol .k { color: var(--teal-dark); }
+
+  .callout { background: var(--card); border-left: 3px solid var(--teal); border-radius: 0 3mm 3mm 0; padding: 3.5mm 5mm; font-size: 9pt; line-height: 1.55; margin-top: 4mm; color: #334155; }
+
+  .cols { display: flex; gap: 5mm; }
+  .cols > div { flex: 1; }
+  .step { display: flex; gap: 4mm; margin-bottom: 3.2mm; }
+  .step .n { flex: 0 0 8mm; height: 8mm; border-radius: 50%; background: var(--teal); color: var(--navy); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 9.5pt; }
+  .step h4 { font-size: 9.6pt; font-weight: 700; color: var(--navy); }
+  .step p { font-size: 8.8pt; line-height: 1.45; }
+
+  .cta { background: var(--navy); color: #fff; border-radius: 4mm; padding: 6mm 7mm; margin-top: 6mm; display: flex; justify-content: space-between; align-items: center; gap: 6mm; }
+  .cta h3 { color: #fff; margin: 0 0 1.5mm; font-size: 13pt; }
+  .cta p { color: #CBD5E1; font-size: 9pt; }
+  .cta .box { background: var(--navy2); border-radius: 3mm; padding: 4mm 5mm; min-width: 62mm; font-size: 8.8pt; line-height: 1.7; }
+  .cta .box span { color: #94A3B8; display: inline-block; width: 20mm; }
+  .cta .box b { color: #fff; }
+  .foot { position: absolute; left: 16mm; right: 16mm; bottom: 8mm; display: flex; justify-content: space-between; font-size: 7.8pt; color: var(--muted); }
+  .foot b { color: var(--teal-dark); }
+  .band { position: absolute; left: 0; right: 0; bottom: 0; height: 4mm; background: var(--teal); }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <div class="head">
+    <div>
+      <div class="brand">INFLUENCE <span>CHILE</span></div>
+      <div class="k">AUDITORÍA EXPRESS DE REDES</div>
+      <h1>Campos IP en Instagram</h1>
+      <div class="sub">Lo que ve un cliente potencial al llegar a @campos.ip · Octubre 2026</div>
+    </div>
+    <div class="score"><div class="big">44<span style="font-size:14pt;color:#94A3B8">/100</span></div><div class="lbl">puntaje de la cuenta en 9 dimensiones de captación</div></div>
+  </div>
+
+  <p>Revisamos la cuenta y el sitio web como lo haría un emprendedor que busca registrar su marca. La conclusión en una línea: <b>Campos IP tiene los resultados y las reseñas que la mayoría de los estudios quisiera mostrar, pero el perfil todavía no las convierte en consultas.</b></p>
+
+  <div class="tiles">
+    <div class="tile"><div class="big">128</div><div class="lbl">publicaciones: cuenta activa, con contenido reciente</div></div>
+    <div class="tile"><div class="big">1.086</div><div class="lbl">seguidores frente a 2.288 seguidos</div></div>
+    <div class="tile"><div class="big">0</div><div class="lbl">reels y llamados a la acción encontrados</div></div>
+  </div>
+
+  <h3>Lo que están haciendo bien</h3>
+  <ul class="dots">
+    <li><b>Prueba social real.</b> Reseñas de Google con nombre y apellido que describen casos concretos: observaciones resueltas, registros en tres clases, defensa ante uso indebido.</li>
+    <li><b>Casos ganados a la vista.</b> Resoluciones del Tribunal de Propiedad Industrial en el feed. Pocos estudios pueden mostrar sentencias favorables.</li>
+    <li><b>Cartera diversa y constancia.</b> Clientes de gastronomía, inmobiliaria, moda, tecnología y música, y una cuenta que publica con regularidad.</li>
+  </ul>
+
+  <h3>Las tres fugas</h3>
+  <div class="leak"><div class="num">1</div><div class="body">
+    <h4>No hay un camino para consultar</h4>
+    <p>La bio enlaza al inicio del sitio, que no muestra WhatsApp ni teléfono, y ninguna publicación cierra con una invitación a escribir.</p>
+    <div class="cs"><div class="cost"><span class="k">Qué cuesta</span>El interés que generan las reseñas y los casos se pierde antes de convertirse en consulta.</div><div class="sol"><span class="k">Cómo se arregla</span>Botón de WhatsApp en la bio y una línea de cierre en cada publicación. Se hace en un día.</div></div>
+  </div></div>
+  <div class="leak"><div class="num">2</div><div class="body">
+    <h4>El feed muestra, pero no explica</h4>
+    <p>Logos de marcas registradas sin contexto, capturas de reseñas repetidas y resoluciones en texto pequeño que no se leen en el celular. Nada responde las dudas de quien aún no contrata: cuánto demora, qué pasa si rechazan la marca, por qué varias clases.</p>
+    <div class="cs"><div class="cost"><span class="k">Qué cuesta</span>El visitante no entiende qué gana con el estudio y sigue de largo; el algoritmo no muestra la cuenta a gente nueva.</div><div class="sol"><span class="k">Cómo se arregla</span>Carruseles educativos y reels cortos del abogado, usando los casos reales como ejemplo.</div></div>
+  </div></div>
+  <div class="leak"><div class="num">3</div><div class="body">
+    <h4>El sitio web no cierra</h4>
+    <p>Inicio y servicios sin ningún medio de contacto ni botón de acción; blog vacío; sin testimonios ni perfil del abogado, aunque todo eso ya existe en Instagram.</p>
+    <div class="cs"><div class="cost"><span class="k">Qué cuesta</span>El tráfico que llega desde redes no encuentra un próximo paso y rebota.</div><div class="sol"><span class="k">Cómo se arregla</span>WhatsApp flotante, reseñas y casos en el inicio, y un formulario corto de evaluación de marca.</div></div>
+  </div></div>
+  <div class="foot"><span>Influence Chile SpA · Auditoría express para Campos IP</span><b>1 / 2</b></div>
+  <div class="band"></div>
+</section>
+
+<section class="page">
+  <div class="head" style="padding-top:10mm;padding-bottom:8mm">
+    <div>
+      <div class="brand">INFLUENCE <span>CHILE</span></div>
+      <div class="k" style="margin-top:4mm">QUÉ HARÍAMOS</div>
+      <h1 style="font-size:19pt">Los primeros 60 días</h1>
+    </div>
+  </div>
+
+  <p>Primero lo que convierte, después contenido que explica el servicio y, recién entonces, alcance con pauta. Así cada peso llega a un perfil preparado para recibir consultas.</p>
+
+  <div class="cols" style="margin-top:5mm">
+    <div>
+      <div class="sec">Mes 1 · Cimientos y contenido</div>
+      <div style="height:2.5mm"></div>
+      <div class="step"><div class="n">1</div><div><h4>Perfil listo para recibir visitas</h4><p>Bio con propuesta de valor y WhatsApp, cuatro destacadas con portadas de marca y plantillas propias para casos y reseñas.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h4>Una sesión de grabación</h4><p>Dos horas con el abogado para producir el mes completo de reels y carruseles.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h4>Contenido que explica</h4><p>Reels “El abogado responde”, carruseles educativos y casos del estudio con titular, cada pieza con llamado a la acción.</p></div></div>
+    </div>
+    <div>
+      <div class="sec">Mes 2 · Alcance y medición</div>
+      <div style="height:2.5mm"></div>
+      <div class="step"><div class="n">4</div><div><h4>Primera campaña en Meta</h4><p>Anuncios con los reels del abogado, dirigidos a emprendedores y pymes de Chile, con derivación directa a WhatsApp.</p></div></div>
+      <div class="step"><div class="n">5</div><div><h4>Sitio web que cierra</h4><p>WhatsApp flotante, reseñas y casos en el inicio, formulario de evaluación de marca.</p></div></div>
+      <div class="step"><div class="n">6</div><div><h4>Reporte y ajuste</h4><p>Cuántas consultas llegaron, de dónde vinieron y qué contenido las trajo. Con eso se decide el mes 3.</p></div></div>
+    </div>
+  </div>
+
+  <h3>Lo que el estudio necesita poner</h3>
+  <ul class="dots">
+    <li>Dos horas al mes para grabar y 20 minutos a la semana para revisar el calendario. Todo lo demás lo produce la agencia.</li>
+    <li>Aprobación de cada pieza antes de publicarla: contenido informativo y sobrio, en línea con la ética profesional de la abogacía.</li>
+  </ul>
+
+  <div class="callout"><b>Cómo trabajamos:</b> somos Influence Chile, agencia de marketing y community management con 9 años de experiencia, más de 2 millones de seguidores gestionados y más de 15 marcas activas. Producimos el contenido y gestionamos la pauta en el mismo equipo, para que los anuncios hablen igual que el feed.</div>
+
+  <div class="cta">
+    <div>
+      <h3>¿Lo conversamos? 15 minutos, sin compromiso.</h3>
+      <p>Le mostramos cómo quedaría el perfil y el detalle de los planes. Si no tiene sentido para el estudio, se queda con esta auditoría de regalo.</p>
+    </div>
+    <div class="box">
+      <div><span>WhatsApp</span><b>+56 9 6545 0723</b></div>
+      <div><span>Correo</span><b>contacto@influencechile.com</b></div>
+      <div><span>Web</span><b>influencechile.cl</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Gabriel Meza · Influence Chile SpA · @influence.chile</span><b>2 / 2</b></div>
+  <div class="band"></div>
+</section>
+
+</body>
+</html>
