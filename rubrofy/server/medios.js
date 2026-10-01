@@ -165,10 +165,31 @@ async function esperar(consultar, id, maxSegundos) {
 
 // Imagen para una pieza: Buffer, o lanza un Error con un mensaje para el dueño.
 async function generarImagen({ negocio, item, incluirTexto }) {
+  return imagenDesdePrompt(promptImagen(negocio, item, incluirTexto), VERTICAL.has(item.formato));
+}
+
+// Estilos que el negocio elige en "Generar con IA" (Galería y tarjetas).
+const ESTILOS_IMAGEN = {
+  realista: 'Fotografía realista con luz natural, como la de un buen fotógrafo profesional.',
+  producto: 'Foto de producto en estudio: fondo limpio, iluminación suave y pareja, el producto como protagonista.',
+  personas: 'Escena con personas reales y naturales, ambiente cálido y cercano, sin poses forzadas.',
+  minimalista: 'Composición minimalista: mucho espacio libre, pocos elementos, colores suaves.',
+};
+
+// Prompt a partir de lo que el negocio describe con sus palabras.
+function promptLibre(negocio, texto, estilo) {
+  const e = negocio.estrategia || {};
+  let p = `Imagen para el Instagram de "${negocio.nombre}", un negocio de ${e.rubro || 'rubro no indicado'}. Lo que debe mostrar: ${String(texto).trim()}.`
+    + ` ${ESTILOS_IMAGEN[estilo] || ESTILOS_IMAGEN.realista}`
+    + ' Composición atractiva para redes sociales, sin marcas de agua ni logos inventados. No incluyas texto, letras ni palabras en la imagen.';
+  const ctx = contextoIA.plano(negocio, ['imagen']);
+  if (ctx) p += ` Indicaciones visuales: ${ctx}`;
+  return p.slice(0, 3000);
+}
+
+async function imagenDesdePrompt(prompt, vertical) {
   const proveedor = proveedorImagen();
   if (!proveedor) throw new Error('La generación de imágenes con IA no está configurada');
-  const prompt = promptImagen(negocio, item, incluirTexto);
-  const vertical = VERTICAL.has(item.formato);
   if (proveedor === 'openai') return oaImagen(prompt, vertical);
   const id = await hfEnviar(HF_IMAGEN(), {
     prompt, aspect_ratio: vertical ? '9:16' : '1:1', resolution: '1080p', batch_size: 1, enhance_prompt: true,
@@ -275,4 +296,4 @@ function crearSondeo(alTerminar, log = console.log) {
   return { detener: () => clearInterval(timer), vuelta };
 }
 
-module.exports = { proveedorImagen, proveedorVideo, estado, generarImagen, iniciarVideo, crearSondeo, promptImagen, promptVideo };
+module.exports = { proveedorImagen, proveedorVideo, estado, generarImagen, imagenDesdePrompt, promptLibre, ESTILOS_IMAGEN, iniciarVideo, crearSondeo, promptImagen, promptVideo };

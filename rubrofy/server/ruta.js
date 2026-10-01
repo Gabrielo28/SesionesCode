@@ -43,6 +43,7 @@ function faltaMaterial(item, fotos, hayFotosIA) {
   if (f === 'reel') return item.video ? null : 'reel';
   if (f === 'carrusel') return enCategoria.length >= 2 ? null : 'carrusel';
   if (f === 'historia' && item.video) return null;
+  if (item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo)) return null;
   return enCategoria.length || hayFotosIA ? null : 'foto';
 }
 

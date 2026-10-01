@@ -383,6 +383,22 @@ function elegirFoto(negocioId, categoria, itemId) {
   return disponibles[hashString(itemId) % disponibles.length];
 }
 
+// La foto de una pieza: la que el negocio eligió de su galería (si sigue
+// existiendo) o una de la categoría de la pieza. { categoria, archivo } o null.
+function fotoDeItem(negocioId, item) {
+  const fe = item.fotoElegida;
+  if (fe && ((store.listFotos(negocioId)[fe.categoria]) || []).includes(fe.archivo)) return { categoria: fe.categoria, archivo: fe.archivo };
+  const archivo = item.categoriaFoto ? elegirFoto(negocioId, item.categoriaFoto, item.id) : null;
+  return archivo ? { categoria: item.categoriaFoto, archivo } : null;
+}
+
+// Extensión según los primeros bytes (las imágenes de IA llegan como PNG, JPG o WebP).
+function extensionImagen(buf) {
+  if (buf[0] === 0x89 && buf[1] === 0x50) return '.png';
+  if (buf.slice(0, 4).toString() === 'RIFF' && buf.slice(8, 12).toString() === 'WEBP') return '.webp';
+  return '.jpg';
+}
+
 // Cuotas mensuales de IA (fotos y textos, las trae el plan del negocio, ver
 // server/planes.js). Se resetean solas cada mes calendario — no hay cron ni
 // tarea de fondo, solo se compara contra el mes guardado la próxima vez que
@@ -509,8 +525,9 @@ async function prepararPublicacion(negocio, item) {
 
   // Post o historia con una foto: la real de su categoría o, si no hay, una
   // generada por IA como respaldo.
-  let categoria = item.categoriaFoto;
-  let archivo = categoria ? elegirFoto(negocio.id, categoria, item.id) : null;
+  const propia = fotoDeItem(negocio.id, item);
+  let categoria = propia ? propia.categoria : item.categoriaFoto;
+  let archivo = propia ? propia.archivo : null;
   let generadaPorIA = false;
 
   if (!archivo && medios.proveedorImagen()) {
@@ -1744,6 +1761,41 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 201, store.listFotos(negocioId));
         }
 
+        // POST /api/negocios/:id/galeria/ia  { texto, estilo, formato: 'cuadrado'|'vertical', categoria?, itemId? }
+        // Genera una imagen con IA a partir de lo que el negocio describe y la
+        // guarda en su galería (en la categoría pedida, la de la pieza o la
+        // primera). Con itemId, además queda como la foto de esa pieza.
+        if (parts[3] === 'galeria' && parts[4] === 'ia' && parts.length === 5 && req.method === 'POST') {
+          if (!getPlan(negocio.plan).cuotaFotosIA && recargas.saldo(negocioId, 'fotos') <= 0) {
+            return sendJSON(res, 403, sinCupo('fotos', 'Las fotos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
+          }
+          if (!medios.proveedorImagen()) return sendJSON(res, 400, { error: 'La generación de imágenes con IA todavía no está activa.' });
+          if (fotosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('fotos', 'Ya usaste tus fotos con IA de este mes. Puedes cargar más.'));
+          const body = await readBody(req);
+          const texto = String(body.texto || '').replace(/\s+/g, ' ').trim().slice(0, 800);
+          if (texto.length < 5) return sendJSON(res, 400, { error: 'Describe qué quieres que muestre la foto' });
+          const cats = negocio.estrategia.categoriasFoto;
+          const itemDe = body.itemId ? encontrarItem(store.getContenido(negocioId), String(body.itemId)) : null;
+          if (body.itemId && !itemDe) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+          const categoria = cats.includes(body.categoria) ? body.categoria : (itemDe && cats.includes(itemDe.categoriaFoto) ? itemDe.categoriaFoto : cats[0]);
+          let buffer;
+          try {
+            buffer = await medios.imagenDesdePrompt(medios.promptLibre(negocio, texto, body.estilo), body.formato === 'vertical');
+          } catch (err) {
+            return sendJSON(res, 502, { error: `No se pudo generar la imagen: ${err.message}` });
+          }
+          const archivo = `ia-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extensionImagen(buffer)}`;
+          store.addFoto(negocioId, categoria, archivo, buffer);
+          registrarUsoIA(negocioId, 'usoFotosIA', 1);
+          costos.imagen(negocioId, medios.proveedorImagen(), medios.estado().modeloImagen);
+          if (itemDe) {
+            const cont = store.getContenido(negocioId);
+            const it = encontrarItem(cont, itemDe.id);
+            if (it) { it.fotoElegida = { categoria, archivo }; delete it.diseno; store.saveContenido(negocioId, cont); }
+          }
+          return sendJSON(res, 201, { fotos: store.listFotos(negocioId), categoria, archivo, negocio: negocioPublico(store.getNegocio(negocioId)) });
+        }
+
         // DELETE /api/negocios/:id/fotos/:categoria/:archivo
         if (parts[3] === 'fotos' && parts.length === 6 && req.method === 'DELETE') {
           const categoria = path.basename(parts[4]);
@@ -2436,7 +2488,20 @@ const server = http.createServer(async (req, res) => {
           let publicarYa = false;
 
           let aplicar;
-          if (accion === 'aprobar' && req.method === 'POST') {
+          // PUT /api/negocios/:id/contenido/:item/foto  { categoria, archivo } | { quitar: true }
+          // La pieza usa esa foto de la galería (el diseño anterior se descarta).
+          if (accion === 'foto' && req.method === 'PUT') {
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada' });
+            const b = await readBody(req);
+            if (b.quitar) {
+              aplicar = (it) => { delete it.fotoElegida; delete it.diseno; };
+            } else {
+              const categoria = String(b.categoria || '');
+              const archivo = path.basename(String(b.archivo || ''));
+              if (!((store.listFotos(negocioId)[categoria]) || []).includes(archivo)) return sendJSON(res, 404, { error: 'No encontramos esa foto en tu galería' });
+              aplicar = (it) => { it.fotoElegida = { categoria, archivo }; delete it.diseno; };
+            }
+          } else if (accion === 'aprobar' && req.method === 'POST') {
             if (publicada) {
               // Ya está en Instagram (se aprobó, se deshizo y se vuelve a
               // aprobar): se marca aprobada sin publicarla por segunda vez.
@@ -2589,8 +2654,9 @@ const server = http.createServer(async (req, res) => {
             let imagenUrl = null;
             const base = process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null;
             if (base) {
-              const cat = item.categoriaFoto;
-              const real = cat ? elegirFoto(negocioId, cat, item.id) : null;
+              const propia = fotoDeItem(negocioId, item);
+              const cat = propia && propia.categoria;
+              const real = propia && propia.archivo;
               if (real) imagenUrl = `${base}/fotos/${negocioId}/${cat}/${real}?t=${auth.crearTokenFoto(negocioId, cat, real, 60)}`;
               else if (store.tieneFotoIA(negocioId, item.id)) {
                 const a = item.id + '.png';

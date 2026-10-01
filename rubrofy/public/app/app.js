@@ -242,13 +242,19 @@
     const conVideo = formato === 'reel' || formato === 'historia';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
-    const fotoNombre = item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null;
+    // La foto que el negocio eligió (Galería) o una de la categoría de la pieza.
+    const fe = item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo) ? item.fotoElegida : null;
+    const fotoCat = fe ? fe.categoria : item.categoriaFoto;
+    const fotoNombre = fe ? fe.archivo : (item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null);
     const fotoUrl = fotoNombre
-      ? `/fotos/${negocioActual.id}/${item.categoriaFoto}/${fotoNombre}`
+      ? `/fotos/${negocioActual.id}/${encodeURIComponent(fotoCat)}/${encodeURIComponent(fotoNombre)}`
       : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null);
     // Diseño con la marca: la tarjeta muestra la imagen diseñada.
     const disenoUrl = item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
     const puedeDisenar = !!fotoUrl && !publicada && (formato === 'post' || formato === 'carrusel' || (formato === 'historia' && !item.video));
+    // Lo que le falta para publicarse, a la vista en la imagen de la tarjeta.
+    const faltaVideo = !publicada && formato === 'reel' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando');
+    const faltaFoto = !publicada && !disenoUrl && !fotoUrl && !item.video && formato !== 'reel';
     const mediosIA = negocioActual.mediosIA || {};
     const videoIA = item.videoIA || null;
     const canvasW = 480;
@@ -259,9 +265,14 @@
         <div class="card-media ${isPost ? 'post' : 'historia'}" ${fotoUrl ? '' : `style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
           ${disenoUrl
             ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
+            : faltaVideo
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><label class="btn-approve card-vacia-btn">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" data-video-editar="1" hidden></label>${mediosIA.video && negocioActual.videosIADisponibles > 0 ? `<button class="btn-ghost card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear video con IA</button>` : ''}</div>`
             : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
+            : faltaFoto
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🖼</div><b>Elige la foto de esta publicación</b><div class="card-vacia-acc"><button class="btn-ghost card-vacia-btn" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">▦ De mi galería</button><button class="btn-ia card-vacia-btn" data-action="elegir-foto" data-pest="ia" data-id="${item.id}">✨ Crear con IA</button><label class="btn-ghost card-vacia-btn">⬆ Subir foto<input type="file" accept="image/png,image/jpeg,image/webp" data-foto-item="${item.id}" hidden></label></div>${item.idea ? `<p class="card-vacia-idea">Idea: ${escapeHtml(item.idea)}</p>` : ''}</div>`
             : `<div class="card-texture"></div><div class="card-logo">${inicial}</div><div class="card-headline">${escapeHtml(item.headline)}</div>`}
+          ${conVideo && item.video && !item.video.editado && !publicada && (negocioActual.edicionReels || {}).disponible && !(item.edicion && item.edicion.estado === 'editando') ? `<button class="card-editar-reel" data-action="editar-reel" data-id="${item.id}">✂ Editar video con Rubrofy</button>` : ''}
           <div class="card-network"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f3ede1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#f3ede1" stroke="none"/></svg></div>
           <div class="card-status"><span class="dot" style="background:${meta.color}"></span><span class="label" style="color:#f3ede1">${meta.label}</span></div>
         </div>
@@ -306,9 +317,9 @@
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
               <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
               <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
-              ${!fotoUrl && mediosIA.imagen && !(formato === 'reel' && item.video) ? `<button class="btn-ghost" data-action="imagen" data-id="${item.id}">Generar foto con IA</button>` : ''}
               ${!fotoNombre && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
-              ${puedeDisenar ? `<button class="btn-ghost" data-action="disenar" data-id="${item.id}" data-foto="${escapeHtml(fotoUrl)}">${item.diseno ? 'Cambiar diseño' : 'Diseñar con mi marca'}</button>` : ''}
+              ${puedeDisenar ? `<button class="btn-ghost" data-action="disenar" data-id="${item.id}" data-foto="${escapeHtml(fotoUrl)}">${item.diseno ? 'Cambiar diseño' : '✦ Diseñar con mi marca'}</button>` : ''}
+              ${fotoUrl && !publicada && formato !== 'reel' ? `<button class="btn-ghost" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">⇄ Cambiar foto</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
               <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
               ${AY('pieza-acciones')}
@@ -432,35 +443,64 @@
   }
 
   // ---------- render: fotos ----------
-  function fotoCategoriaHTML(categoria) {
-    const archivos = fotos[categoria] || [];
-    const thumbs = archivos.map((archivo) => `
-      <div class="foto-thumb">
-        <img src="/fotos/${negocioActual.id}/${categoria}/${archivo}" alt="">
-        <button data-borrar-categoria="${categoria}" data-borrar-archivo="${archivo}" title="Eliminar">&times;</button>
-      </div>
-    `).join('');
-
-    return `
-      <div class="foto-cat">
-        <h2>${escapeHtml(categoria)}</h2>
-        <p class="foto-cat-sub">${archivos.length} foto${archivos.length === 1 ? '' : 's'}</p>
-        <div class="foto-strip">
-          ${thumbs}
-          <label class="foto-add">
-            <span>+ Subir</span>
-            <input type="file" accept="image/png,image/jpeg,image/webp" data-subir-categoria="${categoria}">
-          </label>
-        </div>
-      </div>
-    `;
-  }
-
   function renderFotos() {
     window.RubrofyContexto.editor($('#ctx-fotos'), ctxPanel(), ['imagen', 'video'], 'imágenes y videos con IA');
     const cont = $('#fotos-categorias');
     if (!nichoActual) { cont.innerHTML = ''; return; }
-    cont.innerHTML = nichoActual.categoriasFoto.map(fotoCategoriaHTML).join('');
+    window.RubrofyGaleria.renderVista(cont);
+  }
+
+  // Estudio de reels: los reels de la semana, con su video y su edición.
+  function renderEstudioReels() {
+    const cont = $('#reels-estudio');
+    vigilarVideos();
+    const er = negocioActual.edicionReels || {};
+    const reels = contenido
+      .filter((i) => formatoDe(i) === 'reel' && i.status !== 'rechazado' && !(i.instagram && i.instagram.ok))
+      .sort((a, b) => String(a.publicarEl || '').localeCompare(String(b.publicarEl || '')));
+    const fila = (it) => {
+      const ed = it.edicion || {};
+      const v = it.video;
+      const src = v ? `/videos/${negocioActual.id}/${encodeURIComponent(v.archivo)}` : null;
+      let estado, botones;
+      if (!v) {
+        estado = '<span class="rs-estado rs-falta">Falta el video</span>';
+        botones = `<label class="btn-approve">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${it.id}" data-video-editar="1" hidden></label>`;
+      } else if (ed.estado === 'editando') {
+        estado = '<span class="rs-estado rs-editando">Editando… suele tardar 1 o 2 minutos</span>';
+        botones = '';
+      } else if (v.editado) {
+        estado = `<span class="rs-estado rs-listo">✓ Editado${ed.duracion ? ` · ${String(ed.duracion).replace('.', ',')} s` : ''}</span>`;
+        botones = `<a class="btn-ghost" href="${escapeHtml(src)}" target="_blank" rel="noopener">▶ Ver</a>${er.disponible ? `<button class="btn-ghost" data-rs="editar" data-id="${it.id}">✂ Editar de nuevo</button>` : ''}${it.videoOriginal ? `<button class="btn-text" data-rs="original" data-id="${it.id}">Volver al original</button>` : ''}`;
+      } else {
+        estado = '<span class="rs-estado">Video subido, sin editar</span>';
+        botones = `${er.disponible ? `<button class="btn-approve" data-rs="editar" data-id="${it.id}">✂ Editar con Rubrofy</button>` : ''}<a class="btn-ghost" href="${escapeHtml(src)}" target="_blank" rel="noopener">▶ Ver</a><label class="btn-text">Cambiar video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${it.id}" data-video-editar="1" hidden></label>`;
+      }
+      if (ed.estado === 'error') estado += `<span class="rs-estado rs-falta">La edición falló: ${escapeHtml(ed.error || '')}</span>`;
+      return `<article class="rs-item">
+        <div class="rs-thumb">${src ? `<video src="${escapeHtml(src)}#t=0.5" muted playsinline preload="metadata"></video>` : '<span>🎬</span>'}</div>
+        <div class="rs-info"><b>${escapeHtml(it.gancho || String(it.headline || '').replace(/\n/g, ' '))}</b><span class="rs-fecha">${escapeHtml(it.date || '')}</span>${estado}${it.idea && !v ? `<span class="rs-idea">Qué grabar: ${escapeHtml(it.idea)}</span>` : ''}</div>
+        <div class="rs-acc">${botones}</div>
+      </article>`;
+    };
+    cont.innerHTML = `${er.disponible ? '' : '<p class="rs-nota">La edición automática se está activando en el servidor. Mientras tanto puedes subir tus videos.</p>'}
+      <div class="rs-pasos"><span><b>1</b> Sube el video de un reel</span><span><b>2</b> Elige qué hace Rubrofy: cortes, subtítulos, gancho, logo</span><span><b>3</b> Revisa la vista previa y aprueba</span></div>
+      ${reels.length ? `<div class="rs-lista">${reels.map(fila).join('')}</div>`
+        : `<div class="gl-vacia"><b>No tienes reels pendientes</b><p>En <b>Por aprobar</b>, cambia el formato de una publicación a <b>Reel</b>, o pide más reels en <b>Estrategia → Cuánto publicar</b>.</p><button type="button" class="btn-approve" data-rs="cola">Ir a Por aprobar</button></div>`}`;
+    cont.onclick = async (e) => {
+      const b = e.target.closest('[data-rs]');
+      if (!b) return;
+      if (b.dataset.rs === 'cola') return irAVista('cola');
+      const it = contenido.find((x) => x.id === b.dataset.id);
+      if (!it) return;
+      if (b.dataset.rs === 'editar') return window.RubrofyReels.abrir(it);
+      if (b.dataset.rs === 'original') {
+        b.disabled = true;
+        try { await api(`/api/negocios/${negocioActual.id}/contenido/${it.id}/video-original`, { method: 'POST' }); await refreshContenido(); }
+        catch (err) { alert(err.mensaje || 'No se pudo volver al original.'); b.disabled = false; }
+      }
+    };
+    cont.onchange = (e) => { subirVideoDesde(e.target); };
   }
 
   // "Tu negocio" en Conexiones y ajustes: el mismo perfil de la bienvenida.
@@ -953,7 +993,7 @@
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
+  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -999,6 +1039,7 @@
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
+    else if (vistaActual === 'reels') renderEstudioReels();
     else if (vistaActual === 'config') renderConfig();
     else if (vistaActual === 'estilo') {
       window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
@@ -1097,12 +1138,34 @@
       method: 'POST',
       body: JSON.stringify({ categoria, filename: file.name, dataBase64 }),
     });
-    renderFotos();
+  }
+
+  // Sube el video elegido en un input[data-video-id] (tarjeta o Estudio de
+  // reels). Con data-video-editar, al terminar abre el editor de Rubrofy.
+  async function subirVideoDesde(el) {
+    const inputVideo = el.closest && el.closest('input[data-video-id]');
+    if (!inputVideo || !inputVideo.files[0]) return false;
+    const id = inputVideo.dataset.videoId;
+    const etiqueta = inputVideo.closest('label');
+    if (etiqueta) etiqueta.firstChild.textContent = 'Subiendo video…';
+    let ok = false;
+    try {
+      await subirVideo(id, inputVideo.files[0]);
+      ok = true;
+    } catch (err) {
+      alert(err.message);
+    }
+    await refreshContenido().catch(() => {});
+    const er = negocioActual.edicionReels || {};
+    if (ok && inputVideo.dataset.videoEditar && er.disponible) {
+      const it = contenido.find((x) => x.id === id);
+      if (it && it.video) window.RubrofyReels.abrir(it);
+    }
+    return true;
   }
 
   async function borrarFoto(categoria, archivo) {
-    fotos = await api(`/api/negocios/${negocioActual.id}/fotos/${categoria}/${archivo}`, { method: 'DELETE' });
-    renderFotos();
+    fotos = await api(`/api/negocios/${negocioActual.id}/fotos/${encodeURIComponent(categoria)}/${encodeURIComponent(archivo)}`, { method: 'DELETE' });
   }
 
   function actualizarSwitcher() {
@@ -1129,7 +1192,7 @@
     const hay = contenido.some((i) => (i.videoIA && i.videoIA.estado === 'generando') || (i.edicion && i.edicion.estado === 'editando'));
     if (hay && !vigilancia) {
       vigilancia = setInterval(() => {
-        if (vistaActual !== 'cola' || document.hidden) return;
+        if ((vistaActual !== 'cola' && vistaActual !== 'reels') || document.hidden) return;
         refreshContenido().catch(() => {});
       }, 10000);
     } else if (!hay && vigilancia) {
@@ -1225,6 +1288,22 @@
         api,
         negocio: () => negocioActual,
         recargar: async () => {
+          negocioActual = await api('/api/me');
+          contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
+          render();
+        },
+      });
+    }
+    if (window.RubrofyGaleria) {
+      window.RubrofyGaleria.iniciar({
+        api,
+        negocio: () => negocioActual,
+        setNegocio: (n) => { negocioActual = n; },
+        fotos: () => fotos,
+        setFotos: (f) => { fotos = f; },
+        subirFoto,
+        borrarFoto,
+        refrescar: async () => {
           negocioActual = await api('/api/me');
           contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
           render();
@@ -1389,17 +1468,6 @@
     });
 
     // fotos: subir y borrar (delegación)
-    $('#fotos-categorias').addEventListener('change', (e) => {
-      const input = e.target.closest('input[data-subir-categoria]');
-      if (!input || !input.files[0]) return;
-      const categoria = input.dataset.subirCategoria;
-      subirFoto(categoria, input.files[0]).catch((err) => alert('No se pudo subir la foto: ' + err.message));
-    });
-    $('#fotos-categorias').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-borrar-categoria]');
-      if (!btn) return;
-      borrarFoto(btn.dataset.borrarCategoria, btn.dataset.borrarArchivo).catch((err) => alert('No se pudo borrar: ' + err.message));
-    });
 
     // conexión con Instagram
     $('#form-instagram').addEventListener('submit', async (e) => {
@@ -1591,6 +1659,11 @@
         if (it) window.RubrofyReels.abrir(it);
         return;
       }
+      if (accion === 'elegir-foto') {
+        const it = contenido.find((x) => x.id === id);
+        if (it) window.RubrofyGaleria.abrirSelector(it, btn.dataset.pest);
+        return;
+      }
       if (accion === 'video-original') {
         btn.disabled = true;
         try { await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video-original`, { method: 'POST' }); await refreshContenido(); }
@@ -1741,18 +1814,16 @@
         await refreshContenido().catch(() => {});
         return;
       }
-      const inputVideo = e.target.closest('input[data-video-id]');
-      if (inputVideo && inputVideo.files[0]) {
-        const etiqueta = inputVideo.closest('label');
-        if (etiqueta) etiqueta.firstChild.textContent = 'Subiendo video…';
-        try {
-          await subirVideo(inputVideo.dataset.videoId, inputVideo.files[0]);
-        } catch (err) {
-          alert(err.message);
-        }
+      const inputFoto = e.target.closest('input[data-foto-item]');
+      if (inputFoto && inputFoto.files[0]) {
+        const it = contenido.find((x) => x.id === inputFoto.dataset.fotoItem);
+        const etiqueta = inputFoto.closest('label');
+        if (etiqueta) etiqueta.firstChild.textContent = 'Subiendo foto…';
+        try { if (it) await window.RubrofyGaleria.subirParaPieza(it, inputFoto.files[0]); } catch (err) { alert('No se pudo subir la foto: ' + (err.mensaje || err.message)); }
         await refreshContenido().catch(() => {});
         return;
       }
+      if (await subirVideoDesde(e.target)) return;
       const input = e.target.closest('input[data-fecha-id]');
       if (!input || !input.value) return;
       const id = input.dataset.fechaId;

@@ -52,8 +52,8 @@
     // ---------- Calendario y fotos ----------
     'calendario': { t: 'Calendario', d: 'Tus publicaciones del mes ubicadas en su día y hora.',
       p: ['Pulsa una publicación para ver su detalle a la derecha.', 'Colores: verde aprobada, rosado pendiente, rojo rechazada.', 'Para mover una fecha, hazlo desde la tarjeta en Por aprobar.'] },
-    'fotos': { t: 'Fotos del negocio', d: 'Tus fotos reales, ordenadas por categoría. Cada publicación usa una foto de su categoría.',
-      p: ['Busca la categoría (por ejemplo "producto" o "local").', 'Pulsa "+ Subir" y elige la imagen (JPG, PNG o WEBP).', 'Sube varias por categoría: Rubrofy las va alternando.', 'Para quitar una, usa la × sobre la foto.'], n: 'Los carruseles necesitan al menos 2 fotos en su categoría.' },
+    'fotos': { t: 'Galería', d: 'Todas tus fotos en un solo lugar. Rubrofy elige de aquí la foto de cada publicación, o la eliges tú desde la tarjeta con "Cambiar foto".',
+      p: ['Pulsa "Subir fotos" o arrástralas al recuadro. Elige en qué categoría guardarlas (por ejemplo "producto" o "local").', '"Crear con IA": describe la foto con tus palabras, elige el estilo y el formato (plan Estudio o con una recarga).', 'Sube varias por categoría: Rubrofy las va alternando entre tus publicaciones.', 'Para quitar una, pasa el mouse sobre la foto y pulsa la ×.'], n: 'Los carruseles necesitan al menos 2 fotos en su categoría.' },
 
     // ---------- Mi estilo ----------
     'estilo': { t: 'Mi estilo', d: 'Muéstrale a Rubrofy lo que ya publicas para que escriba como tú y use tu mezcla de formatos.',
@@ -90,8 +90,8 @@
       p: ['Plan de regalo: Pro o Estudio por un tiempo o sin límite, sin tarjeta. No cuenta como ingreso. Puedes revocarlo cuando quieras.', 'Códigos: un porcentaje o un monto en pesos, por algunos meses o para siempre, con máximo de usos y vencimiento opcionales. Se cobran como cupones de Flow.', 'A una cuenta que ya paga no se le puede regalar un plan: dale un código.'] },
     'admin-pruebas': { t: 'Pruebas gratis', d: 'Cada negocio puede pedir 7 días gratis del plan Pro dejando su nombre, correo y teléfono. Aquí ves esos datos y si terminó pagando.',
       p: ['Escríbeles por WhatsApp durante la prueba solo si en «Acepta contacto» dice Sí: es cuando más ayuda un contacto.', 'Una prueba por negocio y por teléfono.', '"Descargar CSV" sirve para tu CRM o planilla.'] },
-    'editar-reel': { t: 'Editar con Rubrofy', d: 'Rubrofy toma el video que subiste y arma el reel: corta silencios, lo deja en 9:16, agrega el gancho al inicio, subtítulos, el llamado a la acción al final y tu logo. También puedes silenciarlo, acelerarlo o cambiarle el color.',
-      p: ['Tarda 1 o 2 minutos; te avisamos cuando esté.', 'Tu video original se guarda: puedes volver a él o editarlo de nuevo.', 'Cada edición usa 1 de tus reels editados del mes (10 en Pro, 30 en Estudio).'] },
+    'editar-reel': { t: 'Estudio de reels', d: 'Rubrofy toma el video que subiste y arma el reel: corta silencios, lo deja en 9:16, agrega el gancho al inicio, subtítulos, el llamado a la acción al final y tu logo. También puedes silenciarlo, acelerarlo o cambiarle el color.',
+      p: ['Sube el video desde el Estudio de reels o desde la tarjeta del reel en Por aprobar; el editor se abre solo.', 'Tarda 1 o 2 minutos; te avisamos cuando esté.', 'Tu video original se guarda: puedes volver a él o editarlo de nuevo.', 'Cada edición usa 1 de tus reels editados del mes (10 en Pro, 30 en Estudio).'] },
     'kit-marca': { t: 'Kit de marca', d: 'Tu logo, tus colores, tu tipografía y tu llamado a la acción. Rubrofy los usa al diseñar tus publicaciones ("Diseñar con mi marca" en cada tarjeta) y al editar tus reels.',
       p: ['Sube el logo en PNG con fondo transparente.', 'El color principal va en etiquetas, botones y detalles; el de apoyo, en fondos.', 'Diseñar no usa IA: no descuenta de tus piezas.'] },
     'admin-recargas': { t: 'Recargas', d: 'Cuando a un negocio se le acaba el cupo del mes (piezas, fotos, videos o reels editados), puede comprar un paquete con un pago único. Aquí ves las ventas y tu ganancia estimada.',
