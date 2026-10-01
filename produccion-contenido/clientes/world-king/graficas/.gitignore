@@ -1,0 +1,3 @@
+# HTML intermedios: los genera build.js embebiendo fuente e imágenes en base64
+# (hasta 10 MB cada uno). Se regeneran con `node build.js`; los PNG sí se versionan.
+*.html
