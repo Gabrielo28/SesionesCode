@@ -13,7 +13,7 @@
 
   const TODOS = [
     { id: 'negocio', t: 'Tu negocio' },
-    { id: 'venta', t: 'Lo que vendes' },
+    { id: 'venta', t: 'Lo que ofreces' },
     { id: 'objetivo', t: 'Objetivo' },
     { id: 'ritmo', t: 'Cuánto publicar' },
     { id: 'estrategia', t: 'Tu estrategia' },
@@ -64,8 +64,8 @@
           ${P().camposPerfil(n, { leerWeb: n.usaIA && n.iaConfigurada })}`;
       }
       if (id === 'venta') {
-        return `<h2>Lo que vendes${AY('bv-venta')}</h2>
-          <p class="bv-lead">Qué ofreces y a quién. La IA solo usa los datos que escribas aquí: nunca inventa precios ni promociones.</p>
+        return `<h2>Lo que ofreces${AY('bv-venta')}</h2>
+          <p class="bv-lead">Tus productos o servicios y a quién se los ofreces. La IA solo usa los datos que escribas aquí: no inventa precios ni promociones.</p>
           ${P().camposVenta(n, sugerido)}`;
       }
       if (id === 'objetivo') return `<h2>Tu objetivo${AY('bv-objetivo')}</h2>` + P().camposObjetivo(plan, cat);

@@ -50,6 +50,8 @@ function normalizar(body, actual) {
     ciudad: tomar('ciudad', (v) => txt(v, 120)) || '',
     canales: tomar('canales', (v) => (Array.isArray(v) ? v.filter((c) => CANALES[c]) : [])) || [],
     productos: tomar('productos', (v) => txt(v, 800)) || '',
+    // productos | servicios | ambos (el paso "Lo que ofreces" de la bienvenida)
+    tipoOferta: tomar('tipoOferta', (v) => (['productos', 'servicios', 'ambos'].includes(v) ? v : '')) || '',
     instagram: tomar('instagram', usuarioRed) || '',
     facebook: tomar('facebook', usuarioRed) || '',
     tiktok: tomar('tiktok', usuarioRed) || '',
@@ -71,7 +73,9 @@ function textoParaPrompt(negocio) {
   if (p.descripcion) l.push(`Qué es: ${p.descripcion}`);
   if (p.ciudad) l.push(`Dónde está: ${p.ciudad}`);
   if (p.canales && p.canales.length) l.push(`Cómo vende: ${p.canales.map((c) => CANALES[c]).join(', ')}`);
-  if (p.productos) l.push(`Productos o servicios: ${p.productos}`);
+  const OFERTA = { productos: 'Vende productos', servicios: 'Ofrece servicios (no productos): habla de lo que hace por sus clientes, no de stock ni despachos', ambos: 'Ofrece servicios y vende productos' };
+  if (p.tipoOferta) l.push(OFERTA[p.tipoOferta]);
+  if (p.productos) l.push(`${p.tipoOferta === 'servicios' ? 'Servicios' : p.tipoOferta === 'productos' ? 'Productos' : 'Productos o servicios'}: ${p.productos}`);
   const redes = [p.instagram && `Instagram @${p.instagram}`, p.facebook && `Facebook ${p.facebook}`, p.tiktok && `TikTok @${p.tiktok}`, p.web && `web ${p.web}`, p.whatsapp && `WhatsApp ${p.whatsapp}`].filter(Boolean);
   if (redes.length) l.push(`Dónde encontrarlo: ${redes.join(' · ')} (menciona solo estos canales, no inventes otros)`);
   return l.length ? 'Perfil del negocio:\n- ' + l.join('\n- ') : '';

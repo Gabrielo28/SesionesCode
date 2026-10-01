@@ -473,7 +473,7 @@
     cont.innerHTML = `<div class="ig-card-head"><h2>Perfil del negocio${window.Ayuda ? window.Ayuda.boton('perfil') : ''}</h2><span class="ig-estado ${n.perfilCompleto ? 'conectado' : ''}">${n.perfilCompleto ? 'Completo' : 'Falta completar'}</span></div>
       <p class="sub">Toda la IA usa esto: estrategia, publicaciones, voz y anuncios.</p>
       <div data-perfil>${P.camposPerfil(n, { leerWeb: n.usaIA && n.iaConfigurada })}
-        <label class="pf-productos">¿Qué vendes?<textarea data-pf="productos" rows="2" maxlength="800" placeholder="Tus productos o servicios principales">${escapeHtml((n.perfil && n.perfil.productos) || '')}</textarea></label></div>
+        <label class="pf-productos">¿Qué ofreces? <span class="opc">productos o servicios</span><textarea data-pf="productos" rows="2" maxlength="800" placeholder="Tus productos o servicios principales">${escapeHtml((n.perfil && n.perfil.productos) || '')}</textarea></label></div>
       <p class="config-ok" data-perfil-ok hidden></p>
       <div class="config-actions"><button type="button" class="btn-approve" data-perfil-guardar>Guardar perfil</button></div>`;
     const cuerpo = cont.querySelector('[data-perfil]');

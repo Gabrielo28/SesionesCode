@@ -80,25 +80,70 @@
   }
 
   // Lo que vende: productos, precio de referencia y promoción.
+  // Textos de "Lo que ofreces" según si vende productos, servicios o ambos.
+  const OFERTA = {
+    productos: {
+      que: '¿Qué productos vendes?', queAyuda: 'Tus productos principales', quePh: 'Ej: pan de masa madre, marraquetas, pasteles, tortas por encargo, café',
+      estrella: 'Producto estrella', estrellaPh: 'Ej: pan de masa madre',
+      quien: '¿A quién le vendes?', quienPh: 'Ej: familias del barrio y oficinistas que pasan camino al trabajo',
+      por: 'Ej: fermentación de 24 horas y horno a leña', unidad: 'kilo, unidad, caja…',
+    },
+    servicios: {
+      que: '¿Qué servicios ofreces?', queAyuda: 'Lo que haces por tus clientes', quePh: 'Ej: entrenamiento personalizado, planes online, clases grupales, evaluación física',
+      estrella: 'Servicio estrella', estrellaPh: 'Ej: plan de entrenamiento personalizado de 12 semanas',
+      quien: '¿A quién atiendes?', quienPh: 'Ej: mujeres de 25 a 45 años que quieren volver a entrenar sin lesionarse',
+      por: 'Ej: planes hechos a tu medida y seguimiento por WhatsApp todas las semanas', unidad: 'sesión, clase, mes, plan…',
+    },
+    ambos: {
+      que: '¿Qué ofreces?', queAyuda: 'Tus servicios y productos principales', quePh: 'Ej: clases de yoga y pilates, y venta de mats y ropa deportiva',
+      estrella: 'Servicio o producto estrella', estrellaPh: 'Ej: clase de pilates reformer',
+      quien: '¿A quién le vendes?', quienPh: 'Ej: personas del barrio que buscan moverse y sentirse mejor',
+      por: 'Ej: grupos pequeños de máximo 6 personas', unidad: 'clase, mes, unidad…',
+    },
+  };
+  const TIPOS_OFERTA = [['servicios', 'Servicios', 'Ej: entrenador, peluquería, dentista, agencia'], ['productos', 'Productos', 'Ej: panadería, tienda, florería'], ['ambos', 'Ambos', 'Ej: gimnasio que vende suplementos']];
+
+  // Cambia etiquetas y ejemplos al elegir productos, servicios o ambos.
+  function actualizarOferta(root) {
+    const on = root.querySelector('[data-pc-grupo="tipoOferta"] .pc-op.on');
+    const t = OFERTA[on ? on.dataset.valor : 'ambos'];
+    const set = (sel, prop, v) => { const el = root.querySelector(sel); if (el) el[prop] = v; };
+    set('[data-of="que"]', 'textContent', t.que);
+    set('[data-of="queAyuda"]', 'textContent', t.queAyuda);
+    set('[data-pf="productos"]', 'placeholder', t.quePh);
+    set('[data-of="estrella"]', 'textContent', t.estrella);
+    set('[data-pc="productoDestacado"]', 'placeholder', t.estrellaPh);
+    set('[data-of="quien"]', 'textContent', t.quien);
+    set('[data-pc="publico"]', 'placeholder', t.quienPh);
+    set('[data-pc="diferenciador"]', 'placeholder', t.por);
+    set('[data-pc="unidad"]', 'placeholder', t.unidad);
+  }
+
   function camposVenta(negocio, sugerido) {
     const d = negocio.datos || {};
     const p = negocio.perfil || {};
     const pc = negocio.planContenido || {};
     const s = sugerido || {};
+    const tipo = OFERTA[p.tipoOferta] ? p.tipoOferta : '';
+    const t = OFERTA[tipo || 'ambos'];
     return `
       <div class="pc-campos">
-        <label>¿Qué vendes? <span class="opc">Tus productos o servicios principales</span>
-          <textarea data-pf="productos" rows="3" maxlength="800" placeholder="Ej: pan de masa madre, marraquetas, pasteles, tortas por encargo, café">${esc(p.productos || s.productos)}</textarea></label>
-        <label>Producto o servicio estrella<input type="text" data-pc="productoDestacado" value="${esc(d.productoDestacado)}" placeholder="Ej: pan de masa madre"></label>
-        <label>¿A quién le vendes? <span class="opc">Tu cliente ideal</span>
-          <textarea data-pc="publico" rows="2" maxlength="300" placeholder="Ej: familias del barrio y oficinistas que pasan camino al trabajo">${esc(pc.publico || s.publico)}</textarea></label>
+        <h3 class="pc-sub">¿Qué ofreces?</h3>
+        <div class="pc-opciones compactas" data-pc-grupo="tipoOferta" data-max="1">
+          ${TIPOS_OFERTA.map(([id, l, ej]) => `<button type="button" class="pc-op${tipo === id ? ' on' : ''}" data-valor="${id}"><b>${esc(l)}</b><span>${esc(ej)}</span></button>`).join('')}
+        </div>
+        <label><span data-of="que">${esc(t.que)}</span> <span class="opc" data-of="queAyuda">${esc(t.queAyuda)}</span>
+          <textarea data-pf="productos" rows="3" maxlength="800" placeholder="${esc(t.quePh)}">${esc(p.productos || s.productos)}</textarea></label>
+        <label><span data-of="estrella">${esc(t.estrella)}</span><input type="text" data-pc="productoDestacado" value="${esc(d.productoDestacado)}" placeholder="${esc(t.estrellaPh)}"></label>
+        <label><span data-of="quien">${esc(t.quien)}</span> <span class="opc">Tu cliente ideal</span>
+          <textarea data-pc="publico" rows="2" maxlength="300" placeholder="${esc(t.quienPh)}">${esc(pc.publico || s.publico)}</textarea></label>
         <label>¿Por qué te eligen a ti? <span class="opc">Lo que te hace distinto</span>
-          <textarea data-pc="diferenciador" rows="2" maxlength="300" placeholder="Ej: fermentación de 24 horas y horno a leña">${esc(pc.diferenciador || s.diferenciador)}</textarea></label>
+          <textarea data-pc="diferenciador" rows="2" maxlength="300" placeholder="${esc(t.por)}">${esc(pc.diferenciador || s.diferenciador)}</textarea></label>
         <details class="pf-precio"${d.precioDesde || d.promo ? ' open' : ''}>
           <summary>Precios y promoción <span class="opc">(opcional: la IA solo menciona precios que tú escribas aquí)</span></summary>
           <div class="form-row">
             <label>Precio desde<input type="text" data-pc="precioDesde" value="${esc(d.precioDesde)}" placeholder="$2.500"></label>
-            <label>Por<input type="text" data-pc="unidad" value="${esc(d.unidad)}" placeholder="kilo, sesión, noche…"></label>
+            <label>Por<input type="text" data-pc="unidad" value="${esc(d.unidad)}" placeholder="${esc(t.unidad)}"></label>
           </div>
           <label>Promoción vigente<input type="text" data-pc="promo" value="${esc(d.promo)}" placeholder="Ej: 2x1 los miércoles"></label>
         </details>
@@ -113,6 +158,8 @@
     });
     const g = root.querySelector('[data-pc-grupo="canales"]');
     if (g) out.canales = [...g.querySelectorAll('.pc-op.on')].map((b) => b.dataset.valor);
+    const o = root.querySelector('[data-pc-grupo="tipoOferta"]');
+    if (o) { const on = o.querySelector('.pc-op.on'); out.tipoOferta = on ? on.dataset.valor : ''; }
     return out;
   }
 
@@ -214,6 +261,7 @@
           if (on.length >= tope) on[0].classList.remove('on');
           op.classList.add('on');
         }
+        if (grupo.dataset.pcGrupo === 'tipoOferta') actualizarOferta(root);
         return;
       }
       const ritmo = e.target.closest('[data-ritmo]');

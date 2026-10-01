@@ -107,7 +107,7 @@
       p: ['Pulsa "Activar notificaciones" y acepta el permiso.', 'Repite en cada dispositivo donde quieras recibirlas.', 'Para dejar de recibirlas en uno, pulsa "Desactivar en este dispositivo".'], n: 'En iPhone, primero instala Rubrofy en tu pantalla de inicio (iOS 16.4 o superior).' },
     'perfil': { t: 'Perfil del negocio', d: 'Qué es tu negocio, dónde está, cómo te compran, tus redes, tu web y lo que vendes. La IA lo usa en todo lo que crea para ti.',
       p: ['Escribe qué es tu negocio como se lo contarías a un cliente nuevo.', 'Agrega tus redes y tu web: la IA solo menciona los canales que escribas.', 'Si tienes web, pulsa "Leer mi web con IA" para completar lo que falte.', 'Pulsa "Guardar perfil".'] },
-    'bv-venta': { t: 'Lo que vendes', d: 'Tus productos o servicios, tu cliente ideal y por qué te eligen. El precio y la promoción son opcionales: la IA solo menciona los que escribas aquí.' },
+    'bv-venta': { t: 'Lo que ofreces', d: 'Tus productos o servicios, tu cliente ideal y por qué te eligen. El precio y la promoción son opcionales: la IA solo menciona los que escribas aquí.' },
     'voz': { t: 'Voz de marca', d: 'La ficha de cómo habla tu marca. La IA la sigue en todo lo que escribe y cada texto recibe un puntaje de fidelidad.',
       p: ['Pulsa "Completar con IA" para una primera propuesta, o llénala tú.', 'Revisa trato, emojis y las palabras que sí y que no usas.', 'Guarda: las piezas por aprobar se puntúan al tiro.', 'Usa "Escribir con mi voz" para cualquier otro texto del negocio.'] },
     'voz-ficha': { t: 'Quién es tu marca', d: 'Lo esencial: qué son, a quién le hablan y 3 a 5 adjetivos de personalidad. Escríbelo como se lo explicarías a alguien nuevo en tu equipo.' },
