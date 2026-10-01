@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=17">
+  <link rel="stylesheet" href="/app/styles.css?v=18">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -93,6 +93,7 @@
       <button class="rail-btn spacer" data-view="config" title="Conexiones y ajustes">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg><span class="rail-label">Conexiones y ajustes</span>
       </button>
+      <button type="button" class="rail-avance" id="rail-avance" title="Ver tu ruta en Inicio" hidden></button>
       <div class="rail-planactual" id="rail-planactual" hidden></div>
     </nav>
 
@@ -289,6 +290,13 @@
           <div class="config-actions"><button type="button" class="btn-ghost" id="btn-avisos-prueba">Enviarme uno ahora</button></div>
         </div>
 
+        <div class="ig-card" id="guias-card" hidden>
+          <div class="ig-card-head"><h2>Guías y consejos</h2><span class="ig-estado" id="guias-estado"></span></div>
+          <p class="sub">Los carteles que explican cada pantalla, el recorrido “Muéstrame cómo” y tu avance en el menú. Se guardan en este navegador.</p>
+          <label class="switch"><input type="checkbox" id="guias-activas"> <span>Mostrar guías en cada pantalla</span></label>
+          <div class="config-actions"><button type="button" class="btn-ghost" id="btn-guias-reiniciar">Volver a mostrar las que cerré</button></div>
+        </div>
+
         <h2 class="cfg-titulo" id="cfg-datos">Datos del negocio<button type="button" class="ay" data-ayuda="datos" aria-label="Ayuda: Datos del negocio" aria-expanded="false">?</button></h2>
         <p class="sub">Rubrofy usa estos datos tal cual en tus publicaciones y te avisa si un texto menciona algo que no está aquí. El rubro no se cambia aquí: define tu estrategia.</p>
         <form id="form-config" class="config-form">
@@ -329,6 +337,8 @@
     </div>
   </div>
 
+  <button type="button" class="guias-ayuda" id="guias-ayuda" aria-label="¿Cómo se usa esta pantalla?" hidden><span aria-hidden="true">?</span><b>¿Cómo se usa esto?</b></button>
+
   <dialog id="dlg-instalar" class="dlg">
     <form method="dialog" class="dlg-caja">
       <h2>Instalar Rubrofy en tu iPhone</h2>
@@ -360,23 +370,24 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=17"></script>
-  <script src="/app/graficos.js?v=17"></script>
-  <script src="/app/plan.js?v=17"></script>
-  <script src="/app/prueba-form.js?v=17"></script>
-  <script src="/app/recargas.js?v=17"></script>
-  <script src="/app/diseno.js?v=17"></script>
-  <script src="/app/reels.js?v=17"></script>
-  <script src="/app/galeria.js?v=17"></script>
-  <script src="/app/bienvenida.js?v=17"></script>
-  <script src="/app/inicio.js?v=17"></script>
-  <script src="/app/resultados.js?v=17"></script>
-  <script src="/app/estilo.js?v=17"></script>
-  <script src="/app/ads.js?v=17"></script>
-  <script src="/app/competencia.js?v=17"></script>
-  <script src="/app/contexto.js?v=17"></script>
-  <script src="/app/voz.js?v=17"></script>
-  <script src="/app/pwa.js?v=17"></script>
-  <script src="/app/app.js?v=17"></script>
+  <script src="/app/ayuda.js?v=18"></script>
+  <script src="/app/guias.js?v=18"></script>
+  <script src="/app/graficos.js?v=18"></script>
+  <script src="/app/plan.js?v=18"></script>
+  <script src="/app/prueba-form.js?v=18"></script>
+  <script src="/app/recargas.js?v=18"></script>
+  <script src="/app/diseno.js?v=18"></script>
+  <script src="/app/reels.js?v=18"></script>
+  <script src="/app/galeria.js?v=18"></script>
+  <script src="/app/bienvenida.js?v=18"></script>
+  <script src="/app/inicio.js?v=18"></script>
+  <script src="/app/resultados.js?v=18"></script>
+  <script src="/app/estilo.js?v=18"></script>
+  <script src="/app/ads.js?v=18"></script>
+  <script src="/app/competencia.js?v=18"></script>
+  <script src="/app/contexto.js?v=18"></script>
+  <script src="/app/voz.js?v=18"></script>
+  <script src="/app/pwa.js?v=18"></script>
+  <script src="/app/app.js?v=18"></script>
 </body>
 </html>

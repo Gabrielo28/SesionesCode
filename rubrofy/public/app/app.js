@@ -720,6 +720,7 @@
   }
 
   function renderAvisos() {
+    renderGuiasAjustes();
     const activo = !!negocioActual.avisosSemanal;
     const config = !!negocioActual.correoConfigurado;
     $('#avisos-semanal').checked = activo;
@@ -1036,6 +1037,7 @@
     renderStats();
     renderMenu();
     renderAvisoPlan();
+    mostrarGuias();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
@@ -1052,6 +1054,20 @@
     }
     else if (vistaActual === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
     else if (vistaActual === 'contexto') window.RubrofyContexto.render($('#contexto'), ctxPanel());
+  }
+
+  // Guías de cada pantalla (guias.js); se apagan con GUIAS=no en el servidor.
+  function mostrarGuias() {
+    if (window.RubrofyGuias && negocioActual) window.RubrofyGuias.mostrar(vistaActual, tabResultados, ctxPanel());
+  }
+  function renderGuiasAjustes() {
+    if (!window.RubrofyGuias) return;
+    const a = window.RubrofyGuias.ajustes();
+    $('#guias-card').hidden = !a.habilitadas;
+    $('#guias-activas').checked = a.activas;
+    $('#guias-estado').textContent = a.activas ? 'Activas' : 'Apagadas';
+    $('#guias-estado').classList.toggle('conectado', a.activas);
+    $('#btn-guias-reiniciar').hidden = !a.activas || !a.cerradas;
   }
 
   // Lo que necesitan Inicio, Estrategia y la bienvenida del resto del panel.
@@ -1460,6 +1476,7 @@
       tabResultados = b.dataset.tab;
       marcarMenu();
       renderResultados();
+      mostrarGuias();
     }));
 
     // navegación entre vistas
@@ -1488,6 +1505,8 @@
         btn.disabled = false;
       }
     });
+    $('#guias-activas').addEventListener('change', (e) => { window.RubrofyGuias.activar(e.target.checked); renderGuiasAjustes(); });
+    $('#btn-guias-reiniciar').addEventListener('click', () => { window.RubrofyGuias.reiniciar(); renderGuiasAjustes(); });
     $('#avisos-semanal').addEventListener('change', async (e) => {
       try {
         negocioActual = await api(`/api/negocios/${negocioActual.id}/avisos`, { method: 'PUT', body: JSON.stringify({ semanal: e.target.checked }) });

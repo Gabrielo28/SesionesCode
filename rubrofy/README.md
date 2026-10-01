@@ -166,6 +166,23 @@ cierra). Todos los textos están en `AYUDA` dentro de `ayuda.js`; para
 agregar uno: una clave nueva con `t` (título), `d` (qué es), `p` (pasos) y
 `n` (nota), y `Ayuda.boton('clave')` donde se quiera mostrar.
 
+## Guías de cada pantalla (public/app/guias.js)
+
+Para que nadie tenga que aprender a usar el panel por su cuenta: cada
+pantalla (y cada pestaña de Resultados) muestra arriba un banner con qué se
+hace ahí en 3 pasos; "Muéstrame cómo" abre un recorrido que oscurece la
+pantalla e ilumina los botones uno a uno con un cartel. Al cerrar el banner
+queda un consejo corto. El menú muestra el avance de la ruta y el siguiente
+paso, y abajo a la derecha está "¿Cómo se usa esto?" (repite el recorrido).
+Lo cerrado se recuerda por negocio en el navegador (`localStorage`).
+
+- Cada persona puede apagarlas o volver a mostrarlas en **Conexiones y
+  ajustes → Guías y consejos**.
+- `GUIAS=no` en el servidor las apaga para todos (vuelve el panel de antes
+  sin desplegar código).
+- Los textos y los pasos del recorrido están en `GUIAS` dentro de
+  `guias.js`; un paso cuyo elemento no está en pantalla se salta solo.
+
 ## Cuenta: recuperar clave y correos del servicio
 
 - **Olvidé mi clave** (`/app/recuperar.html`): `POST /api/auth/recuperar

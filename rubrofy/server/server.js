@@ -227,6 +227,7 @@ function negocioPublico(negocio) {
   resto.videosIADisponibles = videosIADisponibles(negocio);
   resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
+  resto.guias = process.env.GUIAS !== 'no'; // GUIAS=no apaga las guías del panel para todos
   resto.perfilCompleto = perfil.completo(negocio);
   resto.prueba = pruebaGratis.publico(negocio);
   resto.reelsEditadosDisponibles = reelsEditadosDisponibles(negocio);
