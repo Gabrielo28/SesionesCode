@@ -652,6 +652,10 @@ que arma la petición según el modelo:
   dentro de `max_tokens`, así que se suma un margen de 4.000 tokens para que
   la respuesta no salga cortada. `ANTHROPIC_PENSAMIENTO=no` lo apaga del
   todo (`thinking: between_tools`, más barato y rápido).
+  La estrategia, la guía de estilo y la conclusión del informe usan
+  esfuerzo `medium` (pocas llamadas, más peso); se cambia por tarea con
+  `ANTHROPIC_EFFORT_ESTRATEGIA`, `ANTHROPIC_EFFORT_ESTILO` o
+  `ANTHROPIC_EFFORT_INFORME`.
 - **Rechazos:** si el modelo rechaza una petición (`stop_reason: refusal`),
   Anthropic la reintenta en otro modelo (`fallbacks: "default"`); si igual
   se rechaza, el llamador usa su plan B. El texto se lee solo de los bloques
