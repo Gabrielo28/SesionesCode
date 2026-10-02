@@ -9,6 +9,9 @@
 // piden textos cortos), un margen de tokens para ese pensamiento, y si el
 // modelo rechaza una petición, Anthropic la reintenta en otro modelo
 // ("fallbacks"). ANTHROPIC_PENSAMIENTO=no lo apaga del todo en Sonnet 5.5.
+// Las tareas que se hacen pocas veces y pesan más (la estrategia, la guía de
+// estilo y la conclusión del informe) piensan con esfuerzo "medium"; se
+// cambia por tarea con ANTHROPIC_EFFORT_ESTRATEGIA, _ESTILO o _INFORME.
 
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
 const API = 'https://api.anthropic.com/v1/messages';
@@ -26,17 +29,20 @@ function configurado() {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
-function esfuerzo() {
-  const e = String(process.env.ANTHROPIC_EFFORT || 'low').toLowerCase();
-  return ESFUERZOS.includes(e) ? e : 'low';
+const ESFUERZO_POR_USO = { estrategia: 'medium', estilo: 'medium', informe: 'medium' };
+
+function esfuerzo(uso) {
+  const valido = (v) => (v && ESFUERZOS.includes(String(v).toLowerCase()) ? String(v).toLowerCase() : null);
+  const deUso = uso ? valido(process.env['ANTHROPIC_EFFORT_' + String(uso).toUpperCase()]) || ESFUERZO_POR_USO[uso] : null;
+  return deUso || valido(process.env.ANTHROPIC_EFFORT) || 'low';
 }
 
 // Cuerpo y cabeceras de la petición según el modelo.
-function solicitud({ maxTokens, content }) {
+function solicitud({ maxTokens, content, uso }) {
   const headers = { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' };
   const body = { model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content }] };
   if (CON_ESFUERZO.test(MODEL)) {
-    const e = esfuerzo();
+    const e = esfuerzo(uso);
     body.output_config = { effort: e };
     const sinPensar = process.env.ANTHROPIC_PENSAMIENTO === 'no' && MODEL.startsWith('claude-sonnet-5-5') && ['low', 'medium', 'high'].includes(e);
     if (sinPensar) body.thinking = { type: 'between_tools' };
@@ -54,7 +60,7 @@ function solicitud({ maxTokens, content }) {
 // negocioId / uso: para registrar el costo (server/costos.js).
 async function llamar({ maxTokens = 800, content, negocioId, uso }) {
   if (!configurado()) return { error: 'sin-clave' };
-  const { headers, body } = solicitud({ maxTokens, content });
+  const { headers, body } = solicitud({ maxTokens, content, uso });
   try {
     const res = await fetch(API, { method: 'POST', headers, body: JSON.stringify(body) });
     if (!res.ok) {
@@ -97,4 +103,4 @@ function extraerJSON(texto, tipo = 'objeto') {
   }
 }
 
-module.exports = { llamar, pedir, extraerJSON, configurado, solicitud, MODEL };
+module.exports = { llamar, pedir, extraerJSON, configurado, solicitud, esfuerzo, MODEL };

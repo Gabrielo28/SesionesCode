@@ -578,7 +578,9 @@
     $('#ig-login').hidden = !(login && necesitaConectar);
     $('#btn-ig-login').href = `/api/negocios/${negocioActual.id}/instagram/conectar`;
     $('#btn-ig-login-txt').textContent = reconectar ? 'Reconectar con Instagram' : 'Conectar con Instagram';
-    $('#ig-manual').hidden = !necesitaConectar;
+    // Con "Conectar con Instagram" disponible, pegar el ID y el token es cosa
+    // técnica: solo lo ve quien administra (por si el inicio de sesión falla).
+    $('#ig-manual').hidden = !necesitaConectar || (login && !negocioActual.esAdmin);
     $('#ig-manual').open = !login;
     $('#ig-manual-titulo').hidden = !login;
     $('#ig-cuenta').hidden = !(conectado && negocioActual.instagramUsuario);
