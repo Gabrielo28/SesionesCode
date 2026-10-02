@@ -45,6 +45,7 @@
     .pg-nota { margin: 0; font-size: 12px; color: var(--ink-faint); }
     .pg-error { color: var(--coral); font-size: 12px; flex-basis: 100%; }
     @media (max-width: 480px) { .pg-fila { flex-direction: column; } }
+    .ref-aviso { margin: 0 0 14px; padding: 10px 12px; border-radius: 10px; background: rgba(63, 191, 95, 0.12); border: 1px solid rgba(63, 191, 95, 0.35); font-size: 13.5px; line-height: 1.45; }
   </style>
 </head>
 <body>
@@ -90,7 +91,7 @@
     </div>
   </div>
 
-  <script src="/app/prueba-form.js?v=19"></script>
+  <script src="/app/prueba-form.js?v=20"></script>
   <script>
     (function () {
       var $ = function (sel) { return document.querySelector(sel); };
@@ -114,6 +115,19 @@
       $('#prueba-si').addEventListener('change', actualizarPrueba);
       if (new URLSearchParams(location.search).get('prueba') === '0') { $('#prueba-si').checked = false; }
 
+      // Invitación de otro negocio (?ref=CODIGO): se recuerda aunque recargue.
+      var refCodigo = (new URLSearchParams(location.search).get('ref') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      try {
+        if (refCodigo) localStorage.setItem('rubrofy-ref', refCodigo);
+        else refCodigo = localStorage.getItem('rubrofy-ref') || '';
+      } catch (err) { /* sin almacenamiento: solo vale el enlace */ }
+      if (refCodigo) {
+        var aviso = document.createElement('p');
+        aviso.className = 'ref-aviso';
+        aviso.textContent = '🎁 Llegaste con una invitación: cuando elijas tu plan, tú y quien te invitó reciben créditos para crear fotos y videos con IA.';
+        $('#form-registro').prepend(aviso);
+      }
+
       $('#form-registro').addEventListener('submit', function (e) {
         e.preventDefault();
         var btn = $('#btn-registro');
@@ -133,6 +147,7 @@
             password: $('#reg-password').value,
             acepto: $('#reg-acepto').checked,
             prueba: pideP() ? window.RubrofyPrueba.leer($('#prueba-campos')) : undefined,
+            ref: refCodigo || undefined,
           }),
         }).then(function (res) {
           if (!res.ok) return res.json().then(function (d) {
@@ -150,6 +165,6 @@
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=19"></script>
+  <script src="/app/ayuda.js?v=20"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@
   <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
   <link rel="icon" href="/favicon-32.png?v=2" sizes="32x32">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
-  <link rel="stylesheet" href="/styles.css?v=19">
+  <link rel="stylesheet" href="/styles.css?v=20">
 </head>
 <body>
   <a class="aviso aviso-prueba" href="/registro.html"><span class="aviso-regalo" aria-hidden="true">🎁</span> <b>7 días gratis del plan Pro.</b> Déjanos tu nombre, correo y teléfono, y pruébalo sin tarjeta <span class="aviso-cta">Quiero mis 7 días <span aria-hidden="true">→</span></span></a>
@@ -116,7 +116,7 @@
             <li>La <b>idea de producción</b>: qué foto usar, qué va en cada lámina o qué tomas lleva el reel</li>
             <li><b>Tu foto diseñada con tu marca</b>: logo, colores y el precio o el gancho encima</li>
             <li><b>Tu video editado como reel</b>: sin silencios, en 9:16, con subtítulos, gancho, llamado a la acción y logo</li>
-            <li>La <b>foto o el video hecho con IA</b> si no tienes uno (plan Estudio)</li>
+            <li>La <b>foto o el video hecho con IA</b> si no tienes uno, con tus créditos ⚡</li>
           </ul>
           <p class="recibes-formatos">Para <b>posts, carruseles, reels e historias</b>, en la mezcla que tú elijas cada semana.</p>
         </div>
@@ -213,7 +213,7 @@
         <div class="func-txt">
           <h2>Por aprobar <span>(nada sale sin tu OK)</span></h2>
           <p>Tu semana llega en una cola: cada pieza con su gancho, texto, hashtags, idea y puntaje de voz. Apruebas, editas, pides otra versión o un cambio puntual como "más corto" o "menciona el despacho".</p>
-          <ul class="checks"><li>Alertas si algo no está en tus datos</li><li>Foto o video con IA desde la misma tarjeta (Estudio)</li><li>Aprueba desde el celular, con avisos</li></ul>
+          <ul class="checks"><li>Alertas si algo no está en tus datos</li><li>Foto o video con IA desde la misma tarjeta, con créditos ⚡</li><li>Aprueba desde el celular, con avisos</li></ul>
         </div>
         <figure class="func-img fondo-gris"><img src="/img/panel-cola.jpg" width="1440" height="900" alt="Cola de aprobación con publicaciones aprobadas y pendientes" loading="lazy"></figure>
       </div>
@@ -382,7 +382,7 @@
     (function () {
       var DETALLES = {
         pro: ['Estrategia de contenido para tu negocio', 'Cada pieza completa: gancho, texto con llamado a la acción y hashtags', 'Tus fotos diseñadas con tu logo y tus colores', 'La IA escribe con tu voz y aprende de tus correcciones', 'Publicación programada en Instagram, con tu aprobación', 'Resultados de Instagram, mejor horario e informe mensual'],
-        estudio: ['Todo lo del plan Pro', 'Fotos y videos generados con IA', 'Meta Ads y Google Ads en un solo lugar', 'Seguimiento de hasta 5 competidores', 'Todo en el informe mensual'],
+        estudio: ['Todo lo del plan Pro', 'Cuatro veces más créditos ⚡ para fotos y videos con IA', 'Meta Ads y Google Ads en un solo lugar', 'Seguimiento de hasta 5 competidores', 'Todo en el informe mensual'],
       };
       var FILAS = [
         ['Cola de aprobación y calendario', function () { return true; }],
@@ -395,8 +395,7 @@
         ['Informe mensual', function (p) { return p.analitica; }],
         ['Diseño de fotos con tu marca (logo y colores)', function () { return true; }],
         ['Reels editados: cortes, subtítulos, textos y logo', function (p) { return p.cuotaReelsEditados ? p.cuotaReelsEditados + ' al mes' : false; }],
-        ['Fotos generadas con IA', function (p) { return p.cuotaFotosIA ? p.cuotaFotosIA + ' al mes' : false; }],
-        ['Videos generados con IA', function (p) { return p.cuotaVideosIA ? p.cuotaVideosIA + ' al mes' : false; }],
+        ['Créditos ⚡ para fotos y videos con IA', function (p) { return p.creditosMes ? p.creditosMes + ' al mes' : false; }],
         ['Meta Ads y Google Ads', function (p) { return p.ads; }],
         ['Competencia (hasta 5 cuentas)', function (p) { return p.competencia; }],
       ];
@@ -411,8 +410,7 @@
         document.getElementById('planes').innerHTML = planes.map(function (p) {
           var extra = [];
           if (p.cuotaTextosIA) extra.push(p.cuotaTextosIA + ' piezas con IA al mes');
-          if (p.cuotaFotosIA) extra.push(p.cuotaFotosIA + ' fotos con IA al mes');
-          if (p.cuotaVideosIA) extra.push(p.cuotaVideosIA + ' videos con IA al mes');
+          if (p.creditosMes) extra.push(p.creditosMes + ' créditos ⚡ al mes para fotos y videos con IA');
           if (p.cuotaReelsEditados) extra.push(p.cuotaReelsEditados + ' reels editados al mes');
           var items = (DETALLES[p.id] || []).concat(extra);
           return '<div class="plan' + (p.id === 'pro' ? ' destacado' : '') + '">' +
@@ -433,6 +431,6 @@
       });
     })();
   </script>
-  <script src="/app/ayuda.js?v=19"></script>
+  <script src="/app/ayuda.js?v=20"></script>
 </body>
 </html>

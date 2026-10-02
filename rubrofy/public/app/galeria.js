@@ -48,7 +48,7 @@
   // --- Generar con IA (formulario compartido por la Galería y el selector) ---
   function formIAHTML(texto) {
     const neg = n();
-    const quedan = neg.fotosIADisponibles || 0;
+    const CR = window.RubrofyCreditos;
     const activo = !!(neg.mediosIA && neg.mediosIA.imagen);
     const ideas = ((neg.estrategia && neg.estrategia.enfoques) || []).slice(0, 4);
     if (!activo) {
@@ -63,26 +63,41 @@
         <label class="gl-formato"><input type="radio" name="formato" value="cuadrado" checked><i class="gl-f-cuadrado"></i>Post (cuadrado)</label>
         <label class="gl-formato"><input type="radio" name="formato" value="vertical"><i class="gl-f-vertical"></i>Historia o reel</label>
       </div></div>
-      <div class="gl-ia-pie">${quedan > 0
-        ? `<span class="gl-cupo">Te quedan <b>${quedan}</b> foto${quedan === 1 ? '' : 's'} con IA este mes. Cada foto usa 1.</span>`
-        : `<span class="gl-cupo">${neg.plan === 'estudio' ? 'Ya usaste tus fotos con IA de este mes.' : 'Las fotos con IA vienen en el plan Estudio.'} Puedes cargar un paquete sin cambiar de plan.</span><button type="button" class="btn-ghost" data-gl-recargar>Cargar fotos con IA</button>`}
-        <button type="submit" class="btn-ia"${quedan > 0 ? '' : ' disabled'}>✨ Crear foto</button></div>
+      ${CR ? `<div class="gl-campo"><span>Calidad</span>${CR.opcionesHTML('foto')}</div>` : ''}
+      <div class="gl-ia-pie" data-gl-pie></div>
       <p class="config-error" data-gl-error hidden></p>
       <div class="gl-resultados" data-gl-resultados></div>
     </form>`;
+  }
+
+  // Pie del formulario: cuánto usa la foto elegida y el botón (o comprar créditos).
+  function pintarPie(form, textoBoton) {
+    const CR = window.RubrofyCreditos;
+    const pie = form.querySelector('[data-gl-pie]');
+    if (!pie || !CR) return;
+    if (n().sinPlan) {
+      pie.innerHTML = '<span class="gl-cupo">Elige un plan para crear fotos con IA.</span>';
+      return;
+    }
+    const costo = CR.costoDe(form, 'foto');
+    const alcanza = CR.disponible('foto') >= costo.creditos && !(n().creditos && n().creditos.pausa);
+    pie.innerHTML = `<span class="gl-cupo">${CR.resumenHTML('foto', costo)}</span>${alcanza ? '' : '<button type="button" class="btn-ghost" data-gl-recargar>⚡ Comprar créditos</button>'}
+      <button type="submit" class="btn-ia"${alcanza ? '' : ' disabled'}>${textoBoton || '✨ Crear foto'}</button>`;
   }
 
   // Activa el formulario. alCrear({ categoria, archivo }) se llama con cada foto nueva.
   function activarFormIA(raiz, { item, alCrear }) {
     const form = raiz.querySelector('[data-gl-ia]');
     if (!form) return;
+    pintarPie(form);
+    form.addEventListener('change', (e) => { if (e.target.name === 'calidad') pintarPie(form); });
     form.addEventListener('click', (e) => {
       const idea = e.target.closest('[data-gl-idea]');
       if (idea) form.texto.value = idea.dataset.glIdea;
       if (e.target.closest('[data-gl-recargar]') && window.RubrofyRecargas) {
         const dlg = document.getElementById('dlg-galeria');
         if (dlg && dlg.open) dlg.close();
-        window.RubrofyRecargas.abrir('fotos');
+        window.RubrofyRecargas.abrir('creditos');
       }
     });
     form.addEventListener('submit', async (e) => {
@@ -100,22 +115,20 @@
       try {
         const r = await ctx.api(`/api/negocios/${n().id}/galeria/ia`, {
           method: 'POST',
-          body: JSON.stringify({ texto: form.texto.value, estilo: form.estilo.value, formato: form.formato.value, itemId: item ? item.id : undefined }),
+          body: JSON.stringify({ texto: form.texto.value, estilo: form.estilo.value, formato: form.formato.value, calidad: (form.querySelector('input[name="calidad"]:checked') || {}).value, itemId: item ? item.id : undefined }),
         });
         ctx.setFotos(r.fotos);
         if (r.negocio) ctx.setNegocio(r.negocio);
         espera.className = 'gl-res';
         espera.innerHTML = `<img src="${esc(url(r.categoria, r.archivo))}" alt="Foto creada con IA"><span class="gl-ia-tag">✨ IA</span>`;
-        const cupo = form.querySelector('.gl-cupo b');
-        if (cupo) cupo.textContent = n().fotosIADisponibles || 0;
+        if (window.RubrofyCreditos) window.RubrofyCreditos.pintarChip();
         if (alCrear) await alCrear({ categoria: r.categoria, archivo: r.archivo });
       } catch (e2) {
         espera.remove();
         err.textContent = e2.mensaje || 'No se pudo crear la foto. Intenta de nuevo.';
         err.hidden = false;
       } finally {
-        btn.disabled = (n().fotosIADisponibles || 0) <= 0;
-        btn.textContent = '✨ Crear otra';
+        pintarPie(form, '✨ Crear otra');
       }
     });
   }

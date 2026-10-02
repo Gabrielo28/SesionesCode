@@ -410,6 +410,121 @@
     }));
   }
 
+  async function guardarCreditos(cuerpo) {
+    const res = await fetch('/api/admin/creditos', { method: 'PUT', headers: { 'x-rubrofy-panel': '1', 'content-type': 'application/json' }, body: JSON.stringify(cuerpo) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(d.error || 'No se pudo guardar');
+    return d;
+  }
+
+  // Créditos ⚡: comisión, modelos y su costo real, packs, créditos por plan y
+  // promociones. Rubrofy calcula cuántos créditos cobra cada creación.
+  async function pintarCreditos(datos) {
+    let d = datos;
+    if (!d) { try { d = await api('/api/admin/creditos'); } catch (err) { return; } }
+    let sec = $('#adm-creditos');
+    if (!sec) {
+      sec = document.createElement('section');
+      sec.className = 'adm-bloque';
+      sec.id = 'adm-creditos';
+      const ancla = $('#adm').querySelectorAll('.adm-bloque')[1];
+      if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
+    }
+    const c = d.config, p = c.parametros;
+    const CAL = d.calidades;
+    const usdTxt = (m) => (m.tipo === 'video' ? 'por segundo' : 'por imagen');
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Créditos y modelos de IA${AY('admin-creditos')}</h2></div>
+      ${d.pausa ? `<div class="ig-card adm-pausa"><b>⏸ Fotos y videos con IA en pausa</b><p class="sub">Higgsfield respondió que no hay saldo (${esc(d.pausa.motivo || '')}) el ${esc(fecha(d.pausa.desde))}. Carga saldo en open.higgsfield.ai y reanuda. A los clientes no se les cobró.</p><button type="button" class="btn-approve" data-cr-reanudar>Reanudar ahora</button></div>` : ''}
+      <section class="adm-kpis">
+        ${tile('Créditos usados este mes', num(d.usoMes.creditos), `${num(d.usoMes.creaciones)} ${d.usoMes.creaciones === 1 ? 'creación' : 'creaciones'}`)}
+        ${tile('Costo máximo de 1 ⚡', clp(d.costoCreditoMax), 'si se gasta en el modelo que más te cuesta')}
+        ${tile('Valor de 1 ⚡ para ti', clp(p.valorCredito), 'sin IVA ni comisión de pago')}
+      </section>
+      <form class="ig-card adm-cr" id="f-creditos">
+        <div class="ig-card-head"><h2>Cómo se calculan</h2></div>
+        <div class="adm-cr-params">
+          <label>Tu comisión (%)<input name="comision" type="number" min="0" max="300" step="1" value="${p.comision}"><small>Sobre el costo real de la IA</small></label>
+          <label>Dólar (CLP)<input name="dolar" type="number" min="300" step="10" value="${p.dolar}"><small>Pon uno algo más alto que el real, como colchón</small></label>
+          <label>Valor de 1 ⚡ (CLP)<input name="valorCredito" type="number" min="5" step="1" value="${p.valorCredito}"><small>Lo que te queda por crédito vendido</small></label>
+          <label>Comisión de Flow (%)<input name="flow" type="number" min="0" step="0.1" value="${p.flow}"><small>Para calcular la ganancia</small></label>
+        </div>
+        <label class="switch"><input type="checkbox" name="videosSoloConPacks"${p.videosSoloConPacks ? ' checked' : ''}> <span>Los videos solo se pagan con créditos de packs (los del plan quedan para fotos)</span></label>
+        <p class="adm-nota">Créditos de una creación = costo real × dólar × (1 + comisión) ÷ valor de 1 ⚡, hacia arriba. Videos: por cada 5 segundos.</p>
+
+        <h3 class="adm-cr-t">Modelos</h3>
+        <div class="adm-tabla-scroll"><table class="adm-tabla">
+          <thead><tr><th>Activo</th><th>Modelo</th><th>Tipo</th><th>Calidad</th><th>Costo real (USD)</th><th>Costo</th><th>Cobra</th></tr></thead>
+          <tbody>${d.modelos.map((m) => `<tr>
+            <td><input type="checkbox" data-m-activo="${esc(m.id)}"${m.activo ? ' checked' : ''} aria-label="Activar ${esc(m.nombre)}"></td>
+            <td><b>${esc(m.nombre)}</b><small>${esc(m.proveedor)} · ${esc(m.ruta)}</small></td>
+            <td>${m.tipo === 'foto' ? 'Foto' : 'Video'}</td>
+            <td><select data-m-calidad="${esc(m.id)}" aria-label="Calidad de ${esc(m.nombre)}">${Object.entries(CAL).map(([k, q]) => `<option value="${k}"${k === m.calidad ? ' selected' : ''}>${esc(q.nombre)}</option>`).join('')}</select></td>
+            <td><input type="number" step="0.0001" min="0" value="${m.usd}" data-m-usd="${esc(m.id)}" aria-label="Costo de ${esc(m.nombre)}"><small>${usdTxt(m)}</small></td>
+            <td>${clp(m.costoClp)}<small>${m.tipo === 'video' ? 'cada 5 s' : 'cada foto'}</small></td>
+            <td><b>${m.creditos} ⚡</b><small>${clp(m.creditos * p.valorCredito)}</small></td></tr>`).join('')}</tbody>
+        </table></div>
+        <p class="adm-nota">Precios de open.higgsfield.ai/pricing sin descuentos. En cada tipo y calidad queda activo uno solo; si una calidad no tiene modelo activo, el cliente no la ve.</p>
+
+        <div class="adm-grid">
+          <div><h3 class="adm-cr-t">Packs de créditos</h3>
+            <div class="adm-tabla-scroll"><table class="adm-tabla adm-tabla-chica">
+              <thead><tr><th>Créditos</th><th>Precio (con IVA)</th><th>Te queda</th><th>Ganancia mínima</th><th>Destacado</th></tr></thead>
+              <tbody>${d.packs.map((x, i) => `<tr><td><input type="number" min="1" step="1" value="${x.creditos}" data-p-creditos="${i}" aria-label="Créditos del pack"></td><td><input type="number" min="500" step="1000" value="${x.precioClp}" data-p-precio="${i}" aria-label="Precio del pack"></td><td>${clp(x.neto)}</td><td class="${x.ganancia < 0 ? 'adm-neg' : ''}">${clp(x.ganancia)}${x.neto ? ` (${Math.round(x.ganancia / x.neto * 100)}%)` : ''}</td><td><input type="radio" name="destacado" value="${i}"${x.destacado ? ' checked' : ''} aria-label="Pack destacado"></td></tr>`).join('')}</tbody>
+            </table></div>
+            <p class="adm-nota">Ganancia mínima: si el cliente gasta todo en el modelo que más te cuesta por crédito.</p></div>
+          <div><h3 class="adm-cr-t">Créditos de cada plan al mes</h3>
+            <div class="adm-cr-params dos">
+              <label>Pro<input name="plan_pro" type="number" min="0" step="5" value="${c.planes.pro}"></label>
+              <label>Estudio<input name="plan_estudio" type="number" min="0" step="5" value="${c.planes.estudio}"></label>
+            </div>
+            <h3 class="adm-cr-t">Promociones</h3>
+            <div class="adm-cr-params">
+              <label>Bono primera compra (%)<input name="bono" type="number" min="0" max="200" step="5" value="${c.promo.bono}"></label>
+              <label>Créditos en la prueba gratis<input name="prueba" type="number" min="0" step="5" value="${c.promo.prueba}"><small>Reemplazan a los del plan mientras dura</small></label>
+              <label>Por invitación, a cada uno<input name="referido" type="number" min="0" step="5" value="${c.promo.referido}"><small>Cuando el invitado paga su plan</small></label>
+            </div></div>
+        </div>
+        <div class="adm-form-pie"><button type="submit" class="btn-approve">Guardar créditos</button><span class="config-ok" hidden>Guardado.</span><p class="config-error" hidden></p></div>
+      </form>`;
+    const f = sec.querySelector('#f-creditos');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = f.querySelector('.config-error'), ok = f.querySelector('.config-ok');
+      err.hidden = true; ok.hidden = true;
+      const v = (n) => Number(f.elements[n].value);
+      const destacado = (f.querySelector('input[name="destacado"]:checked') || {}).value;
+      const cuerpo = {
+        parametros: { comision: v('comision'), dolar: v('dolar'), valorCredito: v('valorCredito'), flow: v('flow'), videosSoloConPacks: f.elements.videosSoloConPacks.checked },
+        modelos: d.modelos.map((m) => ({
+          id: m.id,
+          activo: f.querySelector(`[data-m-activo="${m.id}"]`).checked,
+          calidad: f.querySelector(`[data-m-calidad="${m.id}"]`).value,
+          usd: Number(f.querySelector(`[data-m-usd="${m.id}"]`).value),
+        })),
+        packs: d.packs.map((x, i) => ({ creditos: Number(f.querySelector(`[data-p-creditos="${i}"]`).value), precioClp: Number(f.querySelector(`[data-p-precio="${i}"]`).value), destacado: String(i) === destacado })),
+        planes: { pro: v('plan_pro'), estudio: v('plan_estudio') },
+        promo: { bono: v('bono'), prueba: v('prueba'), referido: v('referido') },
+      };
+      const btn = f.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      try {
+        await pintarCreditos(await guardarCreditos(cuerpo));
+        const ok2 = sec.querySelector('#f-creditos .config-ok');
+        if (ok2) ok2.hidden = false;
+      } catch (e2) {
+        err.textContent = e2.message;
+        err.hidden = false;
+        btn.disabled = false;
+      }
+    });
+    const re = sec.querySelector('[data-cr-reanudar]');
+    if (re) re.addEventListener('click', async () => {
+      re.disabled = true;
+      try { pintarCreditos(await enviar('/api/admin/creditos/reanudar', {})); } catch (e) { alert(e.message); re.disabled = false; }
+    });
+  }
+
   async function pintarRecargas() {
     let d;
     try { d = await api('/api/admin/recargas?dias=' + dias); } catch (err) { return; }
@@ -428,7 +543,7 @@
             <thead><tr><th>Paquete</th><th>Precio</th><th>IVA</th><th>Comisión ~4%</th><th>IA (peor caso)</th><th>Ganancia</th></tr></thead>
             <tbody>${d.paquetes.map((p) => `<tr><td>${esc(p.nombre)}</td><td>${clp(p.precioClp)}</td><td>${clp(p.iva)}</td><td>${clp(p.comision)}</td><td>${clp(p.ia)}</td><td><b>${clp(p.ganancia)}</b></td></tr>`).join('')}</tbody>
           </table></div>
-          <p class="adm-nota">Precios en server/recargas.js. Costo de IA en el peor caso con el dólar a $950.</p></div>
+          <p class="adm-nota">Piezas y reels: precios en server/recargas.js. Packs de créditos: se editan en "Créditos y modelos de IA".</p></div>
         <div class="ig-card"><div class="ig-card-head"><h2>Últimas recargas</h2></div>
           <div class="adm-tabla-scroll"><table class="adm-tabla">
             <thead><tr><th>Fecha</th><th>Negocio</th><th>Paquete</th><th>Precio</th></tr></thead>
@@ -447,6 +562,7 @@
       await pintarCostos();
       await pintarPruebas();
       await pintarRecargas();
+      await pintarCreditos();
       await pintarBeneficios();
       pintarIA();
     } catch (err) {

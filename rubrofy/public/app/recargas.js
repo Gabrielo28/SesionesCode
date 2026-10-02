@@ -1,14 +1,13 @@
 // Recargas (server/recargas.js): la ventana "Cargar más" y el uso de IA en
 // Plan y pago. La ventana se abre sola cuando el servidor responde 403 con
-// { recargar: 'piezas' | 'fotos' | 'videos' | 'reels' } (ver api() en app.js).
+// { recargar: 'piezas' | 'reels' | 'creditos' } (ver api() en app.js). Las fotos
+// y videos con IA se pagan con créditos ⚡: esa ventana está en creditos.js.
 (function () {
   'use strict';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const clp = (n) => '$' + Math.round(n).toLocaleString('es-CL');
   const TITULOS = {
     piezas: 'piezas con IA',
-    fotos: 'fotos con IA',
-    videos: 'videos con IA',
     reels: 'reels editados',
   };
   let ctx = null;
@@ -34,6 +33,7 @@
 
   async function abrir(tipo) {
     if (!ctx) return;
+    if (['creditos', 'fotos', 'videos'].includes(tipo) && window.RubrofyCreditos) return window.RubrofyCreditos.abrirComprar();
     const n = ctx.negocio();
     const cat = await cargarCatalogo().catch(() => null);
     if (!cat) return;
@@ -72,18 +72,19 @@
       dlg.innerHTML = `<div class="dlg-caja">
           <h2>${esc(titulo)}</h2>
           <p class="sub">${esc(sub)}</p>
-          <div class="rc-tipos" role="group" aria-label="Qué quieres cargar">${Object.keys(TITULOS).map((t) => `<button type="button" class="rc-tipo${t === tipoSel ? ' activo' : ''}" data-tipo="${t}" aria-pressed="${t === tipoSel}">${esc(TITULOS[t].replace(' con IA', ''))}</button>`).join('')}</div>
+          <div class="rc-tipos" role="group" aria-label="Qué quieres cargar">${Object.keys(TITULOS).map((t) => `<button type="button" class="rc-tipo${t === tipoSel ? ' activo' : ''}" data-tipo="${t}" aria-pressed="${t === tipoSel}">${esc(TITULOS[t].replace(' con IA', ''))}</button>`).join('')}<button type="button" class="rc-tipo" data-creditos>créditos ⚡</button></div>
           <div class="rc-packs">${paquetes.map((p) => `<button type="button" class="rc-pack" data-paquete="${p.id}" aria-pressed="${p === paqueteSel}">
               <b>${p.cantidad} ${esc(TITULOS[p.tipo])}</b><span class="rc-precio">${clp(p.precioClp)}</span>
               <small>${clp(p.precioClp / p.cantidad)} c/u</small>${p.destacado ? '<span class="rc-tag">Más conveniente</span>' : '<span></span>'}</button>`).join('')}</div>
           <p class="rc-nota">Pago único, IVA incluido. No es una suscripción.</p>
           ${mensaje ? `<p class="rc-ok">${mensaje}</p>` : ''}
           ${acciones}
-          ${n.plan === 'pro' ? '<p class="rc-alt">¿Te pasa todos los meses? El plan <b>Estudio</b> trae 300 piezas, fotos y videos con IA y 30 reels editados.</p>' : ''}
+          ${n.plan === 'pro' ? '<p class="rc-alt">¿Te pasa todos los meses? El plan <b>Estudio</b> trae 300 piezas, 30 reels editados y más créditos ⚡ para fotos y videos.</p>' : ''}
         </div>`;
     }
 
     dlg.onclick = async (e) => {
+      if (e.target.closest('[data-creditos]')) { dlg.close(); return window.RubrofyCreditos && window.RubrofyCreditos.abrirComprar(); }
       const t = e.target.closest('[data-tipo]');
       if (t) { tipoSel = t.dataset.tipo; return pintar(); }
       const p = e.target.closest('[data-paquete]');
@@ -133,8 +134,13 @@
           ${saldo ? `<div class="rc-saldo">Saldo cargado: <b>${saldo}</b></div>` : ''}
         </div>`;
     }).join('');
-    cont.innerHTML = `<div class="rc-uso-cab"><span class="sub">Tu uso de IA</span><button type="button" class="btn-text" data-recargar="piezas">Cargar más</button></div>${filas}<div class="rc-hist" data-hist></div>`;
-    cont.querySelector('[data-recargar]').addEventListener('click', () => abrir('piezas'));
+    const cr = n.creditos;
+    const filaCreditos = cr ? `<div class="rc-uso">
+          <div class="rc-fila"><span>Créditos ⚡ para fotos y videos</span><b>${cr.saldo}</b></div>
+          <div class="rc-saldo">${cr.plan} de ${cr.planMes} del plan este mes · ${cr.packs} de packs y regalos <button type="button" class="btn-text" data-recargar="creditos">Comprar créditos</button></div>
+        </div>` : '';
+    cont.innerHTML = `<div class="rc-uso-cab"><span class="sub">Tu uso de IA</span><button type="button" class="btn-text" data-recargar="piezas">Cargar más</button></div>${filaCreditos}${filas}<div class="rc-hist" data-hist></div>`;
+    cont.querySelectorAll('[data-recargar]').forEach((b) => b.addEventListener('click', () => abrir(b.dataset.recargar)));
     try {
       const r = await ctx.api(`/api/negocios/${n.id}/recargas`);
       if (r.historial.length) {

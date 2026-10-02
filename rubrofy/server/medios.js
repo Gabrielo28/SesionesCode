@@ -10,6 +10,12 @@
 // cuando está listo y lo deja como video de la pieza (tabla trabajos_media),
 // aunque el dueño haya cerrado el panel.
 //
+// Qué modelo de Higgsfield se usa lo decide server/creditos.js según la
+// calidad que eligió el negocio (Rápida, Recomendada o Premium); cada familia
+// de modelos recibe sus propios parámetros (ver cuerpoImagen / cuerpoVideo).
+// Si Higgsfield responde que no hay saldo, el error lleva sinSaldo = true para
+// que el servidor pause las creaciones y no cobre.
+//
 // Los prompts se arman con la idea visual de la pieza, el rubro y el
 // contexto de "Imágenes con IA" / "Videos con IA" (server/contexto-ia.js).
 // Nunca reemplaza una foto o un video real que el negocio haya subido.
@@ -84,11 +90,43 @@ function hfHeaders() {
   return { authorization: `Key ${process.env.HIGGSFIELD_API_KEY}`, 'content-type': 'application/json', accept: 'application/json' };
 }
 
+const SIN_SALDO = /insufficient|not enough|balance|credits?|funds|top.?up|payment required|billing/i;
+
+function errorProveedor(status, mensaje) {
+  const err = new Error(mensaje);
+  if (status === 402 || SIN_SALDO.test(mensaje)) {
+    err.sinSaldo = true;
+    err.message = 'Las fotos y videos con IA están en pausa por unos minutos. No se descontaron créditos.';
+    err.detalle = mensaje;
+  }
+  return err;
+}
+
 async function hfEnviar(modelo, cuerpo) {
   const res = await fetch(`${HF}/${modelo}`, { method: 'POST', headers: hfHeaders(), body: JSON.stringify(cuerpo) });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.request_id) throw new Error((data && (data.detail || data.error || data.message)) || `Higgsfield respondió ${res.status}`);
+  if (!res.ok || !data.request_id) {
+    const detalle = data && (data.detail || data.error || data.message);
+    throw errorProveedor(res.status, (typeof detalle === 'string' ? detalle : detalle ? JSON.stringify(detalle) : '') || `Higgsfield respondió ${res.status}`);
+  }
   return data.request_id;
+}
+
+// Parámetros de cada familia de modelos (open.higgsfield.ai/models).
+function cuerpoImagen(modelo, prompt, vertical) {
+  const aspect = vertical ? '9:16' : '1:1';
+  if (!modelo || modelo.familia === 'soul') return { prompt, aspect_ratio: aspect, resolution: '1080p', batch_size: 1, enhance_prompt: true };
+  if (modelo.familia === 'ideogram') return { prompt, aspect_ratio: aspect };
+  return { prompt, aspect_ratio: aspect, resolution: '1k' };
+}
+
+function cuerpoVideo(modelo, prompt, segundos, imagenUrl) {
+  let base;
+  if (modelo.familia === 'kling') base = { prompt, duration: segundos, sound: 'on', cfg_scale: 0.5 };
+  else base = { prompt, duration: segundos, resolution: modelo.resolucion || '720p', generate_audio: true };
+  if (imagenUrl) base.image_url = imagenUrl;
+  else base.aspect_ratio = '9:16';
+  return base;
 }
 
 async function hfEstado(id) {
@@ -164,8 +202,8 @@ async function esperar(consultar, id, maxSegundos) {
 }
 
 // Imagen para una pieza: Buffer, o lanza un Error con un mensaje para el dueño.
-async function generarImagen({ negocio, item, incluirTexto }) {
-  return imagenDesdePrompt(promptImagen(negocio, item, incluirTexto), VERTICAL.has(item.formato));
+async function generarImagen({ negocio, item, incluirTexto, modelo }) {
+  return imagenDesdePrompt(promptImagen(negocio, item, incluirTexto), VERTICAL.has(item.formato), modelo);
 }
 
 // Estilos que el negocio elige en "Generar con IA" (Galería y tarjetas).
@@ -187,13 +225,12 @@ function promptLibre(negocio, texto, estilo) {
   return p.slice(0, 3000);
 }
 
-async function imagenDesdePrompt(prompt, vertical) {
+// modelo: el de server/creditos.js para la calidad elegida (sin él, Soul 2).
+async function imagenDesdePrompt(prompt, vertical, modelo) {
   const proveedor = proveedorImagen();
   if (!proveedor) throw new Error('La generación de imágenes con IA no está configurada');
   if (proveedor === 'openai') return oaImagen(prompt, vertical);
-  const id = await hfEnviar(HF_IMAGEN(), {
-    prompt, aspect_ratio: vertical ? '9:16' : '1:1', resolution: '1080p', batch_size: 1, enhance_prompt: true,
-  });
+  const id = await hfEnviar(modelo ? modelo.ruta : HF_IMAGEN(), cuerpoImagen(modelo, prompt, vertical));
   const r = await esperar(hfEstado, id, 150);
   if (r.estado !== 'listo') throw new Error(r.error || 'No se pudo generar la imagen');
   return descargar(r.url, 20 * 1024 * 1024);
@@ -216,10 +253,14 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS trabajos_media_estado ON trabajos_media (estado);
 `);
+// Columnas agregadas después: qué modelo, cuántos segundos y qué se cobró.
+for (const [col, tipo] of [['modelo', 'TEXT'], ['segundos', 'INTEGER'], ['cobro', 'TEXT']]) {
+  if (!db.prepare('PRAGMA table_info(trabajos_media)').all().some((c) => c.name === col)) db.exec(`ALTER TABLE trabajos_media ADD COLUMN ${col} ${tipo}`);
+}
 store.registrarLimpieza((negocioId) => db.prepare('DELETE FROM trabajos_media WHERE negocio_id = ?').run(negocioId));
 const sqlT = {
-  crear: db.prepare(`INSERT INTO trabajos_media (negocio_id, item_id, proveedor, trabajo, estado, creado_el)
-    VALUES (?, ?, ?, ?, 'generando', ?)`),
+  crear: db.prepare(`INSERT INTO trabajos_media (negocio_id, item_id, proveedor, trabajo, estado, creado_el, modelo, segundos, cobro)
+    VALUES (?, ?, ?, ?, 'generando', ?, ?, ?, ?)`),
   pendientes: db.prepare("SELECT * FROM trabajos_media WHERE estado = 'generando' ORDER BY id LIMIT 20"),
   terminar: db.prepare('UPDATE trabajos_media SET estado = ?, error = ?, terminado_el = ? WHERE id = ?'),
   delItem: db.prepare("SELECT * FROM trabajos_media WHERE negocio_id = ? AND item_id = ? AND estado = 'generando'"),
@@ -227,21 +268,26 @@ const sqlT = {
 
 // imagenUrl: foto de la pieza (URL pública firmada) para animarla; si no
 // hay, el video se genera solo desde el texto.
-async function iniciarVideo({ negocio, item, imagenUrl }) {
+// modelo y segundos vienen de server/creditos.js; cobro se guarda para
+// devolverlo si el video no llega.
+async function iniciarVideo({ negocio, item, imagenUrl, modelo, segundos, cobro }) {
   const proveedor = proveedorVideo();
   if (!proveedor) throw new Error('La generación de videos con IA no está configurada');
   if (sqlT.delItem.get(negocio.id, item.id)) throw new Error('Ya se está generando un video para esta pieza');
   const prompt = promptVideo(negocio, item);
+  const seg = segundos || SEGUNDOS_VIDEO();
   let trabajo;
   if (proveedor === 'openai') {
     trabajo = await oaVideo(prompt);
+  } else if (modelo) {
+    trabajo = await hfEnviar(`${modelo.ruta}/${imagenUrl ? 'image-to-video' : 'text-to-video'}`, cuerpoVideo(modelo, prompt, seg, imagenUrl));
   } else {
-    const base = { prompt, duration: SEGUNDOS_VIDEO(), resolution: '720p', generate_audio: process.env.VIDEO_IA_AUDIO === '1' };
+    const base = { prompt, duration: seg, resolution: '720p', generate_audio: process.env.VIDEO_IA_AUDIO === '1' };
     trabajo = imagenUrl
       ? await hfEnviar(`${HF_VIDEO()}/image-to-video`, Object.assign(base, { image_url: imagenUrl }))
       : await hfEnviar(`${HF_VIDEO()}/text-to-video`, Object.assign(base, { aspect_ratio: '9:16' }));
   }
-  sqlT.crear.run(negocio.id, item.id, proveedor, String(trabajo), new Date().toISOString());
+  sqlT.crear.run(negocio.id, item.id, proveedor, String(trabajo), new Date().toISOString(), modelo ? modelo.id : null, seg, cobro ? JSON.stringify(cobro) : null);
   return { proveedor, trabajo, desdeFoto: !!imagenUrl && proveedor === 'higgsfield' };
 }
 
@@ -296,4 +342,4 @@ function crearSondeo(alTerminar, log = console.log) {
   return { detener: () => clearInterval(timer), vuelta };
 }
 
-module.exports = { proveedorImagen, proveedorVideo, estado, generarImagen, imagenDesdePrompt, promptLibre, ESTILOS_IMAGEN, iniciarVideo, crearSondeo, promptImagen, promptVideo };
+module.exports = { cuerpoImagen, cuerpoVideo, proveedorImagen, proveedorVideo, estado, generarImagen, imagenDesdePrompt, promptLibre, ESTILOS_IMAGEN, iniciarVideo, crearSondeo, promptImagen, promptVideo };

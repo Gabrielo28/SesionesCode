@@ -19,14 +19,13 @@ const TIPOS = {
   fotos: { nombre: 'fotos con IA', campo: 'usoFotosIA' },
   videos: { nombre: 'videos con IA', campo: 'usoVideosIA' },
   reels: { nombre: 'reels editados', campo: 'usoReelsEditados' },
+  creditos: { nombre: 'créditos para fotos y videos con IA', campo: null }, // fotos y videos con IA (server/creditos.js)
 };
 // costoClp: costo de IA por unidad en el peor caso (dólar a 950). Piezas: con
 // Claude Sonnet 5.5 y su pensamiento (con Haiku 4.5 eran unos $8).
 const PAQUETES = [
   { id: 'piezas-50', tipo: 'piezas', cantidad: 50, precioClp: 3990, costoClp: 20 },
   { id: 'piezas-150', tipo: 'piezas', cantidad: 150, precioClp: 9990, costoClp: 20, destacado: true },
-  { id: 'fotos-10', tipo: 'fotos', cantidad: 10, precioClp: 2990, costoClp: 38 },
-  { id: 'videos-3', tipo: 'videos', cantidad: 3, precioClp: 5990, costoClp: 713 },
   { id: 'reels-10', tipo: 'reels', cantidad: 10, precioClp: 2990, costoClp: 20 },
 ];
 const COMISION_STRIPE = 0.04;
@@ -58,13 +57,24 @@ const sql = {
   get: db.prepare('SELECT * FROM recargas WHERE id = ?'),
   sesion: db.prepare('UPDATE recargas SET stripe_session = ? WHERE id = ?'),
   pagar: db.prepare("UPDATE recargas SET estado = ?, pagado_el = ?, vence_el = ?, stripe_session = COALESCE(?, stripe_session) WHERE id = ? AND estado = 'pendiente'"),
-  vigentes: db.prepare("SELECT * FROM recargas WHERE negocio_id = ? AND tipo = ? AND estado IN ('pagada', 'simulada') AND restante > 0 AND vence_el > ? ORDER BY pagado_el"),
+  vigentes: db.prepare("SELECT * FROM recargas WHERE negocio_id = ? AND tipo = ? AND estado IN ('pagada', 'simulada', 'regalo') AND restante > 0 AND vence_el > ? ORDER BY pagado_el, rowid"),
+  pagadas: db.prepare("SELECT COUNT(*) AS n FROM recargas WHERE negocio_id = ? AND tipo = ? AND estado IN ('pagada', 'simulada')"),
+  regalo: db.prepare(`INSERT INTO recargas (id, negocio_id, paquete, tipo, cantidad, restante, precio_clp, estado, creado_el, pagado_el, vence_el)
+    VALUES (?, ?, ?, ?, ?, ?, 0, 'regalo', ?, ?, ?)`),
   descontar: db.prepare('UPDATE recargas SET restante = restante - ? WHERE id = ?'),
   delNegocio: db.prepare("SELECT * FROM recargas WHERE negocio_id = ? AND estado IN ('pagada', 'simulada') ORDER BY pagado_el DESC LIMIT 20"),
+  viejos: db.prepare("SELECT * FROM recargas WHERE tipo IN ('fotos', 'videos') AND estado IN ('pagada', 'simulada') AND restante > 0"),
+  aCreditos: db.prepare("UPDATE recargas SET tipo = 'creditos', cantidad = ?, restante = ? WHERE id = ?"),
   vendidas: db.prepare("SELECT * FROM recargas WHERE estado IN ('pagada', 'simulada') AND pagado_el >= ? ORDER BY pagado_el DESC"),
 };
 
-const paquete = (id) => PAQUETES.find((p) => p.id === id) || null;
+// Los packs de créditos los define server/creditos.js (se editan en /admin).
+let dinamicos = () => [];
+function paquetesDinamicos(fn) { dinamicos = fn; }
+const todos = () => PAQUETES.concat(dinamicos());
+const paquete = (id) => todos().find((p) => p.id === id) || null;
+let hookAcreditar = null;
+function alAcreditar(fn) { hookAcreditar = fn; }
 
 function tipoDeCampo(campo) {
   return Object.keys(TIPOS).find((t) => TIPOS[t].campo === campo) || null;
@@ -121,7 +131,20 @@ function venceDesde(fecha) {
 // Devuelve el lote acreditado, o null si no existía o ya estaba acreditado.
 function acreditar(recargaId, { sesion = null, simulada = false, ahora = new Date() } = {}) {
   const cambios = sql.pagar.run(simulada ? 'simulada' : 'pagada', ahora.toISOString(), venceDesde(ahora), sesion, recargaId).changes;
-  return cambios ? sql.get.get(recargaId) : null;
+  const lote = cambios ? sql.get.get(recargaId) : null;
+  if (lote && hookAcreditar) hookAcreditar(lote);
+  return lote;
+}
+
+// Un lote que no se compra: bono, referido o devolución. Dura lo mismo que un pack.
+function regalar(negocioId, tipo, cantidad, motivo, ahora = new Date()) {
+  const id = 'rg_' + crypto.randomBytes(9).toString('hex');
+  sql.regalo.run(id, negocioId, 'regalo', tipo, cantidad, cantidad, ahora.toISOString(), ahora.toISOString(), venceDesde(ahora));
+  return id;
+}
+
+function comprasPagadas(negocioId, tipo) {
+  return sql.pagadas.get(negocioId, tipo).n;
 }
 
 function obtener(recargaId) {
@@ -151,7 +174,7 @@ function catalogo() {
   return {
     vigenciaMeses: MESES_VIGENCIA,
     tipos: Object.fromEntries(Object.entries(TIPOS).map(([k, v]) => [k, v.nombre])),
-    paquetes: PAQUETES.map((p) => ({ id: p.id, tipo: p.tipo, cantidad: p.cantidad, precioClp: p.precioClp, destacado: !!p.destacado })),
+    paquetes: todos().map((p) => ({ id: p.id, tipo: p.tipo, cantidad: p.cantidad, precioClp: p.precioClp, destacado: !!p.destacado })),
   };
 }
 
@@ -170,8 +193,23 @@ function resumenAdmin({ dias = 30, nombreDe }) {
   return { dias, ventas, ingresosClp: ingresos, gananciaClp: ganancia, lista: lista.slice(0, 30) };
 }
 
+// Las recargas de fotos y videos de antes pasan a créditos: 1 ⚡ por foto y
+// 13 ⚡ por video (lo que costaba un video de 5 s al pasar a créditos).
+function migrarACreditos() {
+  let n = 0;
+  store.transaccion(() => {
+    for (const r of sql.viejos.all()) {
+      const factor = r.tipo === 'videos' ? 13 : 1;
+      sql.aCreditos.run(r.cantidad * factor, r.restante * factor, r.id);
+      n++;
+    }
+  });
+  return n;
+}
+migrarACreditos();
+
 module.exports = {
-  obtener,
+  obtener, regalar, comprasPagadas, paquetesDinamicos, alAcreditar, todos,
   TIPOS, PAQUETES, paquete, tipoDeCampo, saldo, saldos, consumir, puedeComprar, crearPendiente, acreditar,
   registrarSesion, historial, cuentas, catalogo, resumenAdmin,
 };

@@ -7,8 +7,8 @@
 // analitica: Resultados e informe mensual. ads / competencia: Meta Ads,
 // Google Ads y seguimiento de competidores (pensados para un futuro plan
 // Agencia; mientras no exista, van en Estudio).
-// cuotaFotosIA / cuotaVideosIA: imágenes y videos con IA por mes (cuestan
-// dinero real en Higgsfield u OpenAI: un video de 5 s ronda USD 0,5-1).
+// Fotos y videos con IA no van acá: se pagan con créditos ⚡ y los créditos
+// que trae cada plan al mes se ajustan en /admin (server/creditos.js).
 // cuotaReelsEditados: reels que Rubrofy edita por mes a partir del video del
 // negocio (server/edicion-reels.js). Casi no usa IA: el límite cuida la CPU
 // del servidor.
@@ -26,8 +26,6 @@ const PLANES = {
     precioClp: 0,
     usaIA: false,
     cuotaTextosIA: 0,
-    cuotaFotosIA: 0,
-    cuotaVideosIA: 0,
     cuotaReelsEditados: 0,
     analitica: false,
     ads: false,
@@ -40,8 +38,6 @@ const PLANES = {
     precioClp: 19990,
     usaIA: true,
     cuotaTextosIA: 150,
-    cuotaFotosIA: 0,
-    cuotaVideosIA: 0,
     cuotaReelsEditados: 10,
     analitica: true,
     ads: false,
@@ -54,8 +50,6 @@ const PLANES = {
     precioClp: 39990,
     usaIA: true,
     cuotaTextosIA: 300,
-    cuotaFotosIA: 20,
-    cuotaVideosIA: 6,
     cuotaReelsEditados: 30,
     analitica: true,
     ads: true,
@@ -77,8 +71,7 @@ function listPlanesPublico() {
     precioClp: p.precioClp,
     usaIA: p.usaIA,
     cuotaTextosIA: p.cuotaTextosIA,
-    cuotaFotosIA: p.cuotaFotosIA,
-    cuotaVideosIA: p.cuotaVideosIA,
+    creditosMes: require('./creditos').config().planes[p.id] || 0,
     cuotaReelsEditados: p.cuotaReelsEditados,
     analitica: p.analitica,
     ads: p.ads,

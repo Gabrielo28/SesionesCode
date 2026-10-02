@@ -66,8 +66,12 @@ const sql = {
 };
 
 // Varias escrituras como una sola: si algo falla a mitad, no queda nada a medias.
+// Reentrante: una transacción dentro de otra corre como parte de la de afuera.
+let enTransaccion = false;
 function transaccion(fn) {
+  if (enTransaccion) return fn();
   db.exec('BEGIN');
+  enTransaccion = true;
   try {
     const resultado = fn();
     db.exec('COMMIT');
@@ -75,6 +79,8 @@ function transaccion(fn) {
   } catch (err) {
     db.exec('ROLLBACK');
     throw err;
+  } finally {
+    enTransaccion = false;
   }
 }
 

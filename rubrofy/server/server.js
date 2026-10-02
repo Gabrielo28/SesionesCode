@@ -43,6 +43,7 @@ const stripe = require('./stripe');
 const pagos = require('./pagos');
 const cobroFlow = require('./cobro-flow');
 const beneficios = require('./beneficios');
+const creditos = require('./creditos');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -221,7 +222,9 @@ function negocioPublico(negocio) {
     sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : {});
   resto.tieneSuscripcion = !!sus || !!(stripeInfo && stripeInfo.customerId);
   delete resto.planRegalado;
+  delete resto.creditosPlan; delete resto.referidoPor;
   resto.regalo = beneficios.regaloVigente(negocio) ? { plan: negocio.planRegalado.plan, hasta: negocio.planRegalado.hasta } : null;
+  resto.creditos = creditos.publico(negocio);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
   resto.videosIADisponibles = videosIADisponibles(negocio);
@@ -236,8 +239,6 @@ function negocioPublico(negocio) {
   const plan = getPlan(negocio.plan);
   resto.cupos = {
     piezas: { usado: usoDelMes(negocio, 'usoTextosIA'), cupo: plan.cuotaTextosIA },
-    fotos: { usado: usoDelMes(negocio, 'usoFotosIA'), cupo: plan.cuotaFotosIA },
-    videos: { usado: usoDelMes(negocio, 'usoVideosIA'), cupo: plan.cuotaVideosIA },
     reels: { usado: usoDelMes(negocio, 'usoReelsEditados'), cupo: plan.cuotaReelsEditados },
   };
   resto.saldos = recargas.saldos(negocio.id);
@@ -420,12 +421,66 @@ function disponibleIA(negocio, cuota, campo) {
   return delMes + recargas.saldo(negocio.id, recargas.tipoDeCampo(campo));
 }
 
+// Fotos y videos con IA se pagan con créditos ⚡ (server/creditos.js): cuántas
+// fotos o videos de 5 s alcanzan con el saldo, en calidad Recomendada.
 function fotosIADisponibles(negocio) {
-  return disponibleIA(negocio, getPlan(negocio.plan).cuotaFotosIA, 'usoFotosIA');
+  if ((negocio.plan || 'gratis') === 'gratis') return 0;
+  const c = creditos.costo('foto', 'recomendada');
+  return c ? Math.floor(creditos.disponible(negocio, 'foto') / c.creditos) : 0;
 }
 
 function videosIADisponibles(negocio) {
-  return disponibleIA(negocio, getPlan(negocio.plan).cuotaVideosIA, 'usoVideosIA');
+  if ((negocio.plan || 'gratis') === 'gratis') return 0;
+  const c = creditos.costo('video', 'recomendada', 5);
+  return c ? Math.floor(creditos.disponible(negocio, 'video') / c.creditos) : 0;
+}
+
+// --- créditos ⚡ ---
+
+function sinCreditos(error, faltan) {
+  return { error, recargar: 'creditos', faltan: faltan || 0 };
+}
+
+// ¿Se puede crear? Devuelve { costo } o { status, body } para responder.
+function prepararCreacion(negocio, tipo, calidad, segundos) {
+  if ((negocio.plan || 'gratis') === 'gratis') return { status: 403, body: sinCreditos('Elige un plan para crear fotos y videos con IA.') };
+  if (creditos.pausa()) return { status: 503, body: { error: 'Las fotos y videos con IA están en pausa por unos minutos. Vuelve a intentarlo más tarde; no se descontaron créditos.', pausa: true } };
+  const costo = creditos.costo(tipo, calidad, segundos);
+  if (!costo) return { status: 400, body: { error: 'Esa calidad no está disponible' } };
+  const hay = creditos.disponible(negocio, tipo);
+  if (hay < costo.creditos) {
+    const que = tipo === 'foto' ? 'Esta foto' : `Este video de ${costo.segundos} s`;
+    const extra = tipo === 'video' && creditos.config().parametros.videosSoloConPacks ? ' Los videos se pagan con créditos de packs.' : '';
+    return { status: 403, body: sinCreditos(`${que} usa ${costo.creditos} ⚡ y te quedan ${hay}.${extra} Puedes comprar más créditos.`, costo.creditos - hay) };
+  }
+  return { costo };
+}
+
+const nombreCreacion = (tipo, costo) => `${tipo === 'foto' ? 'Foto' : 'Video'} ${creditos.CALIDADES[costo.calidad].nombre}${tipo === 'video' ? ` · ${costo.segundos} s` : ''}`;
+
+// Error del proveedor: si se quedó sin saldo, se pausan las creaciones y se
+// avisa a quien administra (una vez por pausa).
+function respuestaErrorMedios(err, que) {
+  if (err.sinSaldo) {
+    if (creditos.pausar('higgsfield', err.detalle || err.message)) avisarAdmins('Higgsfield se quedó sin saldo',
+      `Rubrofy pausó las fotos y videos con IA porque Higgsfield respondió: "${err.detalle || err.message}". `
+      + 'Carga saldo en open.higgsfield.ai/billing y toca "Reanudar" en /admin → Créditos (o espera 30 minutos: se vuelve a intentar sola). '
+      + 'A los clientes no se les descontaron créditos.').catch(() => {});
+    return { status: 503, body: { error: err.message, pausa: true } };
+  }
+  return { status: 502, body: { error: `No se pudo generar ${que}: ${err.message}` } };
+}
+
+async function avisarAdmins(asunto, texto) {
+  console.error('Aviso admin:', asunto, '-', texto);
+  if (!correo.configurado()) return;
+  for (const para of admin.adminEmails()) {
+    await correo.enviar({ para, asunto: 'Rubrofy · ' + asunto, texto, html: `<p>${escapeHtmlSrv(texto)}</p>` });
+  }
+}
+
+function escapeHtmlSrv(t) {
+  return String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function textosIADisponibles(negocio) {
@@ -532,12 +587,17 @@ async function prepararPublicacion(negocio, item) {
   let generadaPorIA = false;
 
   if (!archivo && medios.proveedorImagen()) {
-    if (!store.tieneFotoIA(negocio.id, item.id) && fotosIADisponibles(negocio) > 0) {
-      const buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' }).catch(() => null);
+    const auto = !store.tieneFotoIA(negocio.id, item.id) && prepararCreacion(negocio, 'foto', 'recomendada');
+    if (auto && auto.costo) {
+      const m = auto.costo.modelo;
+      const buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto', modelo: m }).catch((err) => {
+        if (err.sinSaldo) respuestaErrorMedios(err, 'la imagen');
+        return null;
+      });
       if (buffer) {
         store.guardarFotoIA(negocio.id, item.id, buffer);
-        registrarUsoIA(negocio.id, 'usoFotosIA', 1);
-        costos.imagen(negocio.id, medios.proveedorImagen(), medios.estado().modeloImagen);
+        creditos.cobrar(negocio.id, auto.costo.creditos, { tipo: 'foto', detalle: 'Foto automática para publicar' });
+        costos.imagen(negocio.id, medios.proveedorImagen(), m.ruta, m.usd);
       }
     }
     if (store.tieneFotoIA(negocio.id, item.id)) {
@@ -784,6 +844,8 @@ function revisarPruebas(ahora = Date.now()) {
   for (const id of beneficios.revisarRegalos(pagos.suscrito, ahora)) {
     notificar(id, { titulo: 'Terminó tu plan de regalo', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'regalo' });
   }
+  // Referidos: cuando el invitado ya paga, los dos reciben créditos.
+  try { creditos.revisarReferidos((n) => pagos.activa(n)); } catch (err) { console.error('referidos:', err.message); }
 }
 revisarPruebas();
 // Flow: se revisan las suscripciones cada 6 horas (FLOW_REVISION_SEG) por si
@@ -809,15 +871,18 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
     it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
     it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
     descartarContenedor(it);
-    costos.video(t.negocio_id, t.proveedor, medios.estado().modeloVideo, Number(process.env.VIDEO_IA_SEGUNDOS) || 5);
+    const mv = creditos.config().modelos.find((m) => m.id === t.modelo);
+    costos.video(t.negocio_id, t.proveedor, mv ? mv.ruta : medios.estado().modeloVideo, t.segundos || 5, mv ? mv.usd : undefined);
     notificar(t.negocio_id, { titulo: 'Tu video con IA está listo', cuerpo: 'Revísalo en la tarjeta y aprueba la pieza cuando te guste.', url: '/app#cola', tag: 'video-' + it.id });
   } else if (r.ok) {
     store.borrarVideo(t.negocio_id, r.archivo); // mientras tanto subió uno real: gana el real
     delete it.videoIA;
   } else {
     it.videoIA = { estado: 'error', error: r.error };
-    registrarUsoIA(t.negocio_id, 'usoVideosIA', -1); // no se cobra un video que no llegó
-    notificar(t.negocio_id, { titulo: 'El video con IA no se pudo generar', cuerpo: `${r.error}. No se descontó de tu cupo.`, url: '/app#cola', tag: 'video-' + it.id });
+    let cobro = null;
+    try { cobro = t.cobro ? JSON.parse(t.cobro) : null; } catch { cobro = null; }
+    if (cobro) creditos.devolver(t.negocio_id, cobro, 'Devolución: el video no se pudo generar'); // no se cobra un video que no llegó
+    notificar(t.negocio_id, { titulo: 'El video con IA no se pudo generar', cuerpo: `${r.error}. Te devolvimos los créditos.`, url: '/app#cola', tag: 'video-' + it.id });
   }
   store.saveContenido(t.negocio_id, items);
 });
@@ -1074,7 +1139,8 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, listPlanesPublico());
       }
 
-      // POST /api/auth/registro  { nombre, rubro, email, password, datos }
+      // POST /api/auth/registro  { nombre, rubro, email, password, datos, ref? }
+      // ref: código de invitación de otro negocio (créditos para ambos cuando paga).
       if (parts[1] === 'auth' && parts[2] === 'registro' && parts.length === 3 && req.method === 'POST') {
         const ip = ipCliente(req);
         const esperaRegistro = limiteRegistro.esperaSegundos(ip);
@@ -1126,6 +1192,8 @@ const server = http.createServer(async (req, res) => {
             productoDestacado: body.datos && body.datos.productoDestacado ? String(body.datos.productoDestacado).trim() : '',
           },
         };
+        const padrino = body.ref ? creditos.negocioDeCodigo(body.ref) : null;
+        if (padrino) negocio.referidoPor = padrino.id;
         store.saveNegocio(negocio);
         if (pidePrueba) {
           const r = pruebaGratis.activar(negocio, body.prueba);
@@ -1225,10 +1293,28 @@ const server = http.createServer(async (req, res) => {
         if (parts[2] === 'contexto-ia' && parts.length === 3) {
           const vista = () => ({
             contexto: contextoIA.dePlataforma(), secciones: contextoIA.catalogo(),
-            proveedores: Object.assign({ textos: process.env.ANTHROPIC_API_KEY ? require('./claude').MODEL : null }, medios.estado()),
+            proveedores: Object.assign({ textos: process.env.ANTHROPIC_API_KEY ? require('./claude').MODEL : null }, medios.estado(),
+              medios.proveedorImagen() === 'higgsfield' ? { modeloImagen: 'Según la calidad (ver Créditos)', modeloVideo: 'Según la calidad (ver Créditos)' } : {}),
           });
           if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
           return sendJSON(res, 200, vista());
+        }
+        // Créditos ⚡ (server/creditos.js):
+        //   GET  /api/admin/creditos            parámetros, modelos, packs, planes, promociones y estado
+        //   PUT  /api/admin/creditos            guarda lo editado (se valida)
+        //   POST /api/admin/creditos/reanudar   quita la pausa por falta de saldo del proveedor
+        if (parts[2] === 'creditos') {
+          if (req.method === 'GET' && parts.length === 3) return sendJSON(res, 200, creditos.resumenAdmin());
+          if (req.method === 'PUT' && parts.length === 3) {
+            const r = creditos.guardarConfig(await readBody(req));
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 200, creditos.resumenAdmin());
+          }
+          if (req.method === 'POST' && parts[3] === 'reanudar' && parts.length === 4) {
+            creditos.reanudar();
+            return sendJSON(res, 200, creditos.resumenAdmin());
+          }
+          return sendJSON(res, 404, { error: 'No encontrado' });
         }
         // Beneficios (server/beneficios.js):
         //   GET  /api/admin/beneficios                  regalos, códigos y cuentas para elegir
@@ -1287,7 +1373,7 @@ const server = http.createServer(async (req, res) => {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           const nombreDe = (id) => { const n = store.getNegocio(id); return n ? n.nombre : '(eliminado)'; };
           return sendJSON(res, 200, Object.assign(recargas.resumenAdmin({ dias, nombreDe }), {
-            paquetes: recargas.PAQUETES.map((p) => Object.assign({ id: p.id, nombre: `${p.cantidad} ${recargas.TIPOS[p.tipo].nombre}`, precioClp: p.precioClp }, recargas.cuentas(p))),
+            paquetes: recargas.todos().map((p) => Object.assign({ id: p.id, nombre: `${p.cantidad} ${recargas.TIPOS[p.tipo].nombre}`, precioClp: p.precioClp }, recargas.cuentas(p))),
           }));
         }
         // GET /api/admin/pruebas — quién pidió la prueba gratis (datos del formulario) y en qué quedó.
@@ -1538,6 +1624,16 @@ const server = http.createServer(async (req, res) => {
         //   GET  /api/negocios/:id/recargas           saldo e historial
         //   POST /api/negocios/:id/recargas           { paquete } → Stripe Checkout (pago único)
         //   POST /api/negocios/:id/recargas/simular   { paquete } — solo cuentas administradoras, sin cobro
+        // GET /api/negocios/:id/creditos — saldo ⚡, opciones con su costo,
+        // movimientos y el enlace para invitar a otros negocios.
+        if (parts[3] === 'creditos' && parts.length === 4 && req.method === 'GET') {
+          const codigo = creditos.codigoReferido(negocio);
+          return sendJSON(res, 200, Object.assign(creditos.publico(negocio), {
+            movimientos: creditos.movimientos(negocioId),
+            referido: { codigo, enlace: `${urlBase(req)}/registro.html?ref=${codigo}`, creditos: creditos.config().promo.referido },
+            paquetes: recargas.catalogo().paquetes.filter((p) => p.tipo === 'creditos'),
+          }));
+        }
         if (parts[3] === 'recargas') {
           if (parts.length === 4 && req.method === 'GET') {
             return sendJSON(res, 200, { saldos: recargas.saldos(negocioId), historial: recargas.historial(negocioId), catalogo: recargas.catalogo() });
@@ -1767,12 +1863,10 @@ const server = http.createServer(async (req, res) => {
         // guarda en su galería (en la categoría pedida, la de la pieza o la
         // primera). Con itemId, además queda como la foto de esa pieza.
         if (parts[3] === 'galeria' && parts[4] === 'ia' && parts.length === 5 && req.method === 'POST') {
-          if (!getPlan(negocio.plan).cuotaFotosIA && recargas.saldo(negocioId, 'fotos') <= 0) {
-            return sendJSON(res, 403, sinCupo('fotos', 'Las fotos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
-          }
           if (!medios.proveedorImagen()) return sendJSON(res, 400, { error: 'La generación de imágenes con IA todavía no está activa.' });
-          if (fotosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('fotos', 'Ya usaste tus fotos con IA de este mes. Puedes cargar más.'));
           const body = await readBody(req);
+          const prep = prepararCreacion(negocio, 'foto', body.calidad);
+          if (!prep.costo) return sendJSON(res, prep.status, prep.body);
           const texto = String(body.texto || '').replace(/\s+/g, ' ').trim().slice(0, 800);
           if (texto.length < 5) return sendJSON(res, 400, { error: 'Describe qué quieres que muestre la foto' });
           const cats = negocio.estrategia.categoriasFoto;
@@ -1780,15 +1874,17 @@ const server = http.createServer(async (req, res) => {
           if (body.itemId && !itemDe) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
           const categoria = cats.includes(body.categoria) ? body.categoria : (itemDe && cats.includes(itemDe.categoriaFoto) ? itemDe.categoriaFoto : cats[0]);
           let buffer;
+          const modeloFoto = prep.costo.modelo;
           try {
-            buffer = await medios.imagenDesdePrompt(medios.promptLibre(negocio, texto, body.estilo), body.formato === 'vertical');
+            buffer = await medios.imagenDesdePrompt(medios.promptLibre(negocio, texto, body.estilo), body.formato === 'vertical', modeloFoto);
           } catch (err) {
-            return sendJSON(res, 502, { error: `No se pudo generar la imagen: ${err.message}` });
+            const e = respuestaErrorMedios(err, 'la imagen');
+            return sendJSON(res, e.status, e.body);
           }
           const archivo = `ia-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extensionImagen(buffer)}`;
           store.addFoto(negocioId, categoria, archivo, buffer);
-          registrarUsoIA(negocioId, 'usoFotosIA', 1);
-          costos.imagen(negocioId, medios.proveedorImagen(), medios.estado().modeloImagen);
+          creditos.cobrar(negocioId, prep.costo.creditos, { tipo: 'foto', detalle: nombreCreacion('foto', prep.costo) });
+          costos.imagen(negocioId, medios.proveedorImagen(), modeloFoto.ruta, modeloFoto.usd);
           if (itemDe) {
             const cont = store.getContenido(negocioId);
             const it = encontrarItem(cont, itemDe.id);
@@ -2618,9 +2714,6 @@ const server = http.createServer(async (req, res) => {
             const cambiarVersion = aplicar;
             aplicar = (it) => { cambiarVersion(it); delete it.editado; delete it.textoIA; guardian.aplicar(it, negocio); };
           } else if (accion === 'imagen' && req.method === 'POST') {
-            if (!getPlan(negocio.plan).cuotaFotosIA && recargas.saldo(negocioId, 'fotos') <= 0) {
-              return sendJSON(res, 403, sinCupo('fotos', 'Las fotos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
-            }
             if (!medios.proveedorImagen()) {
               return sendJSON(res, 400, { error: 'La generación de imágenes con IA no está configurada' });
             }
@@ -2628,30 +2721,29 @@ const server = http.createServer(async (req, res) => {
             const cuerpoImagen = await readBody(req).catch(() => ({}));
             if (cuerpoImagen.rehacer && store.tieneFotoIA(negocioId, item.id)) fs.rmSync(store.fotoIAAbsolutePath(negocioId, item.id), { force: true });
             if (!store.tieneFotoIA(negocioId, item.id)) {
-              if (fotosIADisponibles(negocio) <= 0) {
-                return sendJSON(res, 403, sinCupo('fotos', 'Ya usaste tus fotos con IA de este mes. Puedes cargar más.'));
-              }
+              const prep = prepararCreacion(negocio, 'foto', cuerpoImagen.calidad);
+              if (!prep.costo) return sendJSON(res, prep.status, prep.body);
               let buffer;
               try {
-                buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto' });
+                buffer = await medios.generarImagen({ negocio, item, incluirTexto: negocio.estiloImagen === 'texto', modelo: prep.costo.modelo });
               } catch (err) {
-                return sendJSON(res, 502, { error: `No se pudo generar la imagen con IA: ${err.message}` });
+                const e = respuestaErrorMedios(err, 'la imagen con IA');
+                return sendJSON(res, e.status, e.body);
               }
               store.guardarFotoIA(negocioId, item.id, buffer);
-              registrarUsoIA(negocioId, 'usoFotosIA', 1);
-              costos.imagen(negocioId, medios.proveedorImagen(), medios.estado().modeloImagen);
+              creditos.cobrar(negocioId, prep.costo.creditos, { tipo: 'foto', detalle: nombreCreacion('foto', prep.costo) });
+              costos.imagen(negocioId, medios.proveedorImagen(), prep.costo.modelo.ruta, prep.costo.modelo.usd);
             }
             aplicar = (it) => { it.imagenIA = true; it.imagenIAVersion = Date.now(); };
           } else if (accion === 'video-ia' && req.method === 'POST') {
             // Video con IA para un Reel o historia: se anima la foto de la
             // pieza si tiene una (real o IA), si no se genera desde el texto.
-            if (!getPlan(negocio.plan).cuotaVideosIA && recargas.saldo(negocioId, 'videos') <= 0) {
-              return sendJSON(res, 403, sinCupo('videos', 'Los videos con IA vienen en el plan Estudio, o puedes cargar un paquete.'));
-            }
             if (!medios.proveedorVideo()) return sendJSON(res, 400, { error: 'La generación de videos con IA no está configurada' });
             if (!['reel', 'historia'].includes(formatoDe(item))) return sendJSON(res, 400, { error: 'Los videos con IA son para Reels e historias' });
             if (item.video && !item.video.generadoIA) return sendJSON(res, 409, { error: 'Esta pieza ya tiene un video subido. Quítalo primero si quieres uno con IA.' });
-            if (videosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('videos', 'Ya usaste tus videos con IA de este mes. Puedes cargar más.'));
+            const cuerpoVideo = await readBody(req).catch(() => ({}));
+            const prepV = prepararCreacion(negocio, 'video', cuerpoVideo.calidad, cuerpoVideo.segundos);
+            if (!prepV.costo) return sendJSON(res, prepV.status, prepV.body);
             let imagenUrl = null;
             const base = process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null;
             if (base) {
@@ -2664,14 +2756,20 @@ const server = http.createServer(async (req, res) => {
                 imagenUrl = `${base}/fotos/${negocioId}/_ia/${a}?t=${auth.crearTokenFoto(negocioId, '_ia', a, 60)}`;
               }
             }
+            // Se cobra antes de pedirlo (así dos pedidos a la vez no gastan de
+            // más) y se devuelve si Higgsfield no lo acepta o el video no llega.
+            const cobroV = creditos.cobrar(negocioId, prepV.costo.creditos, { tipo: 'video', detalle: nombreCreacion('video', prepV.costo) });
+            if (!cobroV) return sendJSON(res, 403, sinCreditos('No te alcanzan los créditos para este video. Puedes comprar más.'));
             let inicio;
             try {
-              inicio = await medios.iniciarVideo({ negocio, item, imagenUrl });
+              inicio = await medios.iniciarVideo({ negocio, item, imagenUrl, modelo: prepV.costo.modelo, segundos: prepV.costo.segundos, cobro: cobroV });
             } catch (err) {
-              return sendJSON(res, 502, { error: `No se pudo iniciar el video: ${err.message}` });
+              creditos.devolver(negocioId, cobroV, 'Devolución: el video no se pudo iniciar');
+              const e = respuestaErrorMedios(err, 'el video');
+              return sendJSON(res, e.status, e.body);
             }
-            registrarUsoIA(negocioId, 'usoVideosIA', 1);
-            aplicar = (it) => { it.videoIA = { estado: 'generando', desdeFoto: inicio.desdeFoto, iniciadoEl: new Date().toISOString() }; };
+            const segV = prepV.costo.segundos, calV = prepV.costo.calidad, crV = prepV.costo.creditos;
+            aplicar = (it) => { it.videoIA = { estado: 'generando', desdeFoto: inicio.desdeFoto, iniciadoEl: new Date().toISOString(), segundos: segV, calidad: calV, creditos: crV }; };
           } else {
             return sendJSON(res, 400, { error: 'Acción o método inválido' });
           }

@@ -666,25 +666,69 @@ Dos proveedores; si están los dos, se usa Higgsfield:
 
 | Proveedor | Variable | Imágenes | Videos |
 |---|---|---|---|
-| Higgsfield | `HIGGSFIELD_API_KEY` = `id:secreto` (de cloud.higgsfield.ai) | Soul 2 (`HIGGSFIELD_MODELO_IMAGEN`) | Seedance 2.0 (`HIGGSFIELD_MODELO_VIDEO`) |
+| Higgsfield | `HIGGSFIELD_API_KEY` = `id:secreto` (de cloud.higgsfield.ai) | Según la calidad (ver Créditos) | Según la calidad (ver Créditos) |
 | OpenAI | `OPENAI_API_KEY` | gpt-image-1 (`OPENAI_IMAGE_MODEL`) | Sora 2 (`OPENAI_VIDEO_MODEL`) |
 
-- **Imágenes**: botón "Generar foto con IA" (y "Otra foto con IA") en la
-  tarjeta, o automáticamente al publicar una pieza sin foto real. Feed en
-  1:1 e historias en 9:16. El pedido espera el resultado (segundos).
+- **Imágenes**: "Crear con IA" en la Galería o en la tarjeta (eligiendo la
+  calidad), o automáticamente al publicar una pieza sin foto real (calidad
+  Recomendada, si le alcanzan los créditos). Feed en 1:1 e historias en
+  9:16. El pedido espera el resultado (segundos).
 - **Videos** (Reels e historias): "o generarlo con IA" junto a "Subir
   video". Si la pieza tiene foto, Higgsfield la anima (image-to-video, por
   eso necesita `PUBLIC_URL`); si no, lo crea desde la idea de la pieza.
   Tarda minutos: queda en la tabla `trabajos_media` y un sondeo cada 15 s
   (`MEDIOS_INTERVALO_SEG`) lo baja y lo deja como video de la pieza, aunque
-  el dueño haya cerrado el panel. Si falla, no se descuenta del cupo. Un
-  video subido por el negocio nunca se reemplaza. Duración con
-  `VIDEO_IA_SEGUNDOS` (5 por defecto) y audio con `VIDEO_IA_AUDIO=1`.
+  el dueño haya cerrado el panel. Si falla, se devuelven los créditos. Un
+  video subido por el negocio nunca se reemplaza. El negocio elige la
+  calidad y la duración (5, 10 o 15 s) antes de crearlo.
 - **Prompts**: idea visual de la pieza, rubro y categoría de foto, más el
   contexto de "Imágenes con IA" / "Videos con IA" de la plataforma y del
   negocio.
-- **Cupos por plan** (`server/planes.js`): Estudio, 20 imágenes y 6 videos
-  al mes. Cada video de 5 s cuesta del orden de USD 0,5 a 1 en el proveedor.
+- **Se pagan con créditos ⚡** (ver la sección siguiente).
+
+## Créditos ⚡ (server/creditos.js, public/app/creditos.js)
+
+Un solo saldo para fotos y videos con IA. Cada creación muestra antes
+cuántos créditos usa:
+
+    créditos = techo(costo real USD × dólar × (1 + comisión) ÷ valor de 1 ⚡)
+
+Los videos se calculan por cada 5 segundos. Con los valores de partida
+(comisión 20%, dólar $1.000, 1 ⚡ = $70 netos):
+
+| Calidad | Fotos | Videos (por 5 s) |
+|---|---|---|
+| Rápida | Z-Image Turbo, apagado (1 ⚡) | Wan 3.0 480p, US$0,05/s (5 ⚡) |
+| Recomendada | Soul 2, US$0,0057 (1 ⚡) | Kling 3.0, US$0,084/s (8 ⚡) |
+| Premium | Qwen Image 3, US$0,04 (1 ⚡) | Kling 3.0 Pro, US$0,168/s (15 ⚡) |
+
+También están Ideogram 4.0, Seedance 2.0 y Seedance 2.5, apagados. Precios
+de open.higgsfield.ai/pricing sin descuentos por volumen.
+
+- **Saldo** = créditos del plan (Pro 30, Estudio 120; se renuevan el día 1)
+  + lotes de `recargas` con tipo `creditos` (packs, regalos y devoluciones;
+  duran 12 meses). Se cobra primero del plan. En la prueba gratis, el plan
+  da los créditos de regalo de la prueba (20).
+- **Packs**: 50 ⚡ $4.990, 150 ⚡ $12.990, 400 ⚡ $32.990 (pago único con
+  Flow o Stripe, como las demás recargas). La primera compra suma un bono
+  (+30%).
+- **Invitaciones**: cada negocio tiene un enlace `/registro.html?ref=CODIGO`.
+  Cuando el invitado paga su plan (`pagos.activa`), los dos reciben 25 ⚡,
+  una sola vez (se revisa junto con las pruebas gratis, cada 30 minutos).
+- **Cobro y devolución**: las fotos se cobran al llegar; los videos, al
+  pedirlos, y se devuelven si Higgsfield no los acepta o no llegan. Todo
+  queda en `creditos_mov` (el panel muestra los movimientos).
+- **Sin saldo en Higgsfield**: si responde 402 o "not enough credits", se
+  pausan las creaciones 30 minutos (`CREDITOS_PAUSA_MIN`), no se cobra a
+  nadie y se avisa por correo a `ADMIN_EMAILS`. `/admin` → Créditos →
+  "Reanudar" la quita antes.
+- **"Videos solo con packs"** (apagado por defecto): los créditos del plan
+  quedan para fotos y los videos se pagan con packs.
+- Todo lo anterior (comisión, dólar, valor de 1 ⚡, modelos y su costo,
+  packs, créditos por plan y promociones) se cambia en `/admin` →
+  "Créditos y modelos de IA", sin desplegar; se guarda en `creditos_config`.
+- Las recargas antiguas de fotos y videos se convirtieron a créditos al
+  arrancar (1 ⚡ por foto, 13 ⚡ por video).
 
 ## Solo de pago y prueba gratis
 
@@ -738,21 +782,19 @@ un **pago único** (Stripe Checkout en modo `payment`, no una suscripción):
 |---|---|
 | 50 piezas con IA | $3.990 |
 | 150 piezas con IA | $9.990 |
-| 10 fotos con IA | $2.990 |
-| 3 videos con IA | $5.990 |
+| Créditos ⚡ para fotos y videos | se editan en /admin (ver Créditos) |
 | 10 reels editados | $2.990 |
 
 - Cada compra es un lote que dura **12 meses**; se usa solo después del cupo
   del mes (`registrarUsoIA` descuenta primero del mes y el resto del lote
-  vigente más antiguo). Con un lote, Pro también puede usar fotos y videos
-  con IA.
+  vigente más antiguo).
 - Compran solo las cuentas con plan pagado (no en la prueba gratis ni sin
   plan). Las cuentas de `ADMIN_EMAILS` tienen "Simular compra" (sin cobro,
   no cuenta como ingreso) para probar.
 - El lote nace pendiente y lo acredita el webhook `checkout.session.completed`
   (con `metadata.tipo = recarga`); un evento repetido no acredita dos veces.
 - El panel ofrece la recarga sola: el servidor responde 403 con
-  `{ recargar: 'piezas' | 'fotos' | 'videos' | 'reels' }` y se abre la
+  `{ recargar: 'piezas' | 'reels' | 'creditos' }` y se abre la
   ventana "Cargar más". Con 15 piezas o menos, un aviso arriba del panel.
 - `/admin` → Recargas: ventas, ingresos y ganancia estimada por paquete
   (descuenta IVA, ~4% de Stripe y el costo de IA en el peor caso).

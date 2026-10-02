@@ -75,12 +75,14 @@ function claude(negocioId, uso, modelo, usage) {
   guardar({ negocioId, proveedor: 'anthropic', tipo: 'textos', uso, modelo, entrada, salida, costo });
 }
 
-function imagen(negocioId, proveedor, modelo) {
-  guardar({ negocioId, proveedor, tipo: 'imagen', uso: 'imagen', modelo, cantidad: 1, costo: tarifa().imagen[proveedor] || 0 });
+// usd: costo real del modelo (server/creditos.js); sin él, la tarifa general.
+function imagen(negocioId, proveedor, modelo, usd) {
+  guardar({ negocioId, proveedor, tipo: 'imagen', uso: 'imagen', modelo, cantidad: 1, costo: usd != null ? usd : (tarifa().imagen[proveedor] || 0) });
 }
 
-function video(negocioId, proveedor, modelo, segundos) {
-  guardar({ negocioId, proveedor, tipo: 'video', uso: 'video', modelo, cantidad: segundos, costo: (tarifa().videoSegundo[proveedor] || 0) * segundos });
+// usdSegundo: costo real por segundo del modelo; sin él, la tarifa general.
+function video(negocioId, proveedor, modelo, segundos, usdSegundo) {
+  guardar({ negocioId, proveedor, tipo: 'video', uso: 'video', modelo, cantidad: segundos, costo: (usdSegundo != null ? usdSegundo : (tarifa().videoSegundo[proveedor] || 0)) * segundos });
 }
 
 // --- resumen para el panel de administración ---

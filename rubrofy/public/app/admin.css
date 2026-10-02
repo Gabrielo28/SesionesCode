@@ -80,3 +80,20 @@ body.adm { height: auto; min-height: 100%; }
 .adm-aviso { color: var(--amber, #e0a33b); margin-bottom: 8px; }
 @media (max-width: 640px) { .adm-form { grid-template-columns: 1fr; } }
 .adm-form .adm-mayus:not(:placeholder-shown) { text-transform: uppercase; }
+
+/* Créditos y modelos de IA */
+.adm-cr { display: flex; flex-direction: column; gap: 12px; }
+.adm-cr-params { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 12px; }
+.adm-cr-params.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.adm-cr-params label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-dim); }
+.adm-cr-params small { color: var(--ink-faint); font-size: 11px; }
+.adm-cr input[type=number], .adm-cr select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13px; padding: 7px 9px; min-width: 0; width: 100%; max-width: 130px; }
+.adm-cr-params input[type=number] { max-width: none; }
+.adm-cr td small { display: block; color: var(--ink-faint); font-size: 11px; }
+.adm-cr input[type=checkbox], .adm-cr input[type=radio] { width: 17px; height: 17px; accent-color: var(--amber); }
+.adm-cr-t { margin: 8px 0 0; font-size: 14px; }
+.adm-neg { color: var(--coral); }
+.adm-pausa { border-color: #e0a33b; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
+@media (max-width: 760px) { .adm-cr-params { grid-template-columns: 1fr 1fr; } }
+.adm-cr .adm-form-pie > button { flex: 0 0 auto; padding: 10px 18px; font-size: 13px; }
+.adm-cr-params.dos input[type=number] { max-width: 160px; }

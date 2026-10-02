@@ -131,6 +131,7 @@
     $('#stat-pendientes').textContent = pendientes;
     $('#stat-aprobados').textContent = aprobados;
     $('#stat-total').textContent = contenido.length;
+    if (window.RubrofyCreditos) window.RubrofyCreditos.pintarChip();
   }
 
   // ---------- render: cola ----------
@@ -266,7 +267,7 @@
           ${disenoUrl
             ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
             : faltaVideo
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><label class="btn-approve card-vacia-btn">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" data-video-editar="1" hidden></label>${mediosIA.video && negocioActual.videosIADisponibles > 0 ? `<button class="btn-ghost card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear video con IA</button>` : ''}</div>`
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><label class="btn-approve card-vacia-btn">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" data-video-editar="1" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-ghost card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear video con IA</button>` : ''}</div>`
             : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
             : faltaFoto
@@ -295,7 +296,7 @@
                 ? `<span class="card-video-ok card-video-ia">Generando video con IA… suele tardar 1 a 3 minutos</span>`
                 : (item.video
                   ? `<span class="card-video-ok">${item.video.generadoIA ? 'Video con IA' : 'Video cargado'} (${(item.video.bytes / 1048576).toFixed(1)} MB)</span>${item.video.generadoIA ? `<a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>` : ''}<button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
-                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && negocioActual.videosIADisponibles > 0 ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
+                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
               ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
               ${conVideo && item.video ? edicionHTML(item) : ''}
               ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
@@ -924,7 +925,7 @@
       }
       const detalle = [
         `${p.cuotaTextosIA} piezas con IA`,
-        p.cuotaFotosIA ? `${p.cuotaFotosIA} fotos y ${p.cuotaVideosIA} videos con IA` : '',
+        p.creditosMes ? `${p.creditosMes} créditos ⚡ para fotos y videos` : '',
         p.cuotaReelsEditados ? `${p.cuotaReelsEditados} reels editados` : '',
       ].filter(Boolean).join(' · ') + ' al mes';
       return `
@@ -1217,6 +1218,12 @@
     }
   }
 
+  // Vuelve a leer el negocio (saldo de créditos, cupos) sin recargar la página.
+  async function refrescarNegocio() {
+    negocioActual = await api('/api/me');
+    if (window.RubrofyCreditos) window.RubrofyCreditos.pintarChip();
+  }
+
   async function refreshContenido() {
     contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
     render();
@@ -1333,6 +1340,13 @@
         setNegocio: (n) => { negocioActual = n; },
         irA: irAVista,
         alCerrar: () => render(),
+      });
+      if (window.RubrofyCreditos) window.RubrofyCreditos.iniciar({
+        api,
+        negocio: () => negocioActual,
+        setNegocio: (n) => { negocioActual = n; },
+        irA: irAVista,
+        alCerrar: () => refrescarNegocio().then(render).catch(() => render()),
       });
     }
     fotos = fotosData;
@@ -1470,6 +1484,9 @@
 
     $('#google-card').addEventListener('click', (e) => { accionGoogle(e).catch((err) => alert(err.mensaje || err.message)); });
     $('#google-card').addEventListener('submit', elegirCuentaGoogle);
+
+    // saldo de créditos ⚡ arriba: abre la compra
+    $('#creditos-chip').addEventListener('click', () => window.RubrofyCreditos && window.RubrofyCreditos.abrirComprar());
 
     // pestañas de Resultados
     document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.addEventListener('click', () => {
@@ -1755,16 +1772,20 @@
         return;
       }
       if (accion === 'video-ia') {
+        // Primero se elige calidad y duración (con su costo en créditos ⚡).
+        const eleccion = window.RubrofyCreditos ? await window.RubrofyCreditos.elegir({ tipo: 'video' }) : { calidad: 'recomendada', segundos: 5 };
+        if (!eleccion) return;
+        const textoAntes = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Iniciando…';
         try {
-          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video-ia`, { method: 'POST' });
-          negocioActual.videosIADisponibles = Math.max(0, (negocioActual.videosIADisponibles || 1) - 1);
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/video-ia`, { method: 'POST', body: JSON.stringify(eleccion) });
+          await refrescarNegocio();
           await refreshContenido();
         } catch (err) {
-          alert(err.mensaje || 'No se pudo iniciar el video con IA.');
+          if (!err.recargar) alert(err.mensaje || 'No se pudo iniciar el video con IA.');
           btn.disabled = false;
-          btn.textContent = 'o generarlo con IA';
+          btn.textContent = textoAntes;
         }
         return;
       }
