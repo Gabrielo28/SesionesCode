@@ -1089,7 +1089,7 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .guia li small { color: var(--ink-dim); font-size: 12px; line-height: 1.4; display: block; }
 .guia-n { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 77, 148, 0.16); color: var(--amber); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 .guia-acc { display: flex; gap: 10px; flex-wrap: wrap; }
-.guia-acc > button { flex: 0 0 auto; width: auto; }
+.guia-acc > button { flex: 0 0 auto; width: auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 16px; font-size: 12.5px; line-height: 1; text-align: center; }
 .guia-x { position: absolute; top: 10px; right: 10px; border: 0; background: transparent; color: var(--ink-faint); font-size: 18px; width: 30px; height: 30px; border-radius: 8px; line-height: 1; }
 .guia-x:hover { background: rgba(255, 255, 255, 0.06); color: var(--ink); }
 .guia-pista { position: relative; display: flex; gap: 10px; align-items: flex-start; background: rgba(224, 163, 59, 0.08); border: 1px solid rgba(224, 163, 59, 0.3); color: var(--ink-dim); border-radius: 10px; padding: 10px 44px 10px 12px; font-size: 13px; }
@@ -1123,6 +1123,7 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .gc-pie { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
 .gc-saltar { margin-right: auto; border: 0; background: transparent; color: #807a8a; font-size: 12.5px; padding: 6px 0; }
 .gc-esp { margin-right: auto; }
+.gc-pie > button:not(.gc-saltar) { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 0 14px; font-size: 12.5px; line-height: 1; text-align: center; }
 #guia-cartel .btn-ghost { background: #f1eef4; border-color: #e2dde7; color: #17141c; }
 @media (max-width: 1100px) { .rail-avance { display: none !important; } }
 @media (max-width: 760px) {
