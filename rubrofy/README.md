@@ -671,7 +671,7 @@ Dos proveedores; si están los dos, se usa Higgsfield:
 | Proveedor | Variable | Imágenes | Videos |
 |---|---|---|---|
 | Higgsfield | `HIGGSFIELD_API_KEY` = `id:secreto` (de cloud.higgsfield.ai) | Según la calidad (ver Créditos) | Según la calidad (ver Créditos) |
-| OpenAI | `OPENAI_API_KEY` | gpt-image-1 (`OPENAI_IMAGE_MODEL`) | Sora 2 (`OPENAI_VIDEO_MODEL`) |
+| OpenAI | `OPENAI_API_KEY` | gpt-image-2.5-flare (`OPENAI_IMAGE_MODEL`, calidad `OPENAI_IMAGE_QUALITY`, por omisión medium) | — (OpenAI cerró su API de videos el 24-09-2026) |
 
 - **Imágenes**: "Crear con IA" en la Galería o en la tarjeta (eligiendo la
   calidad), o automáticamente al publicar una pieza sin foto real (calidad

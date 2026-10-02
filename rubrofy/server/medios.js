@@ -3,7 +3,10 @@
 //   - Higgsfield (HIGGSFIELD_API_KEY = "id:secreto", de cloud.higgsfield.ai):
 //     una sola cuenta para imágenes (Soul 2) y videos (Seedance), con saldo
 //     prepagado en dólares. Es el preferido si está configurado.
-//   - OpenAI (OPENAI_API_KEY): imágenes con gpt-image-1 y videos con Sora 2.
+//   - OpenAI (OPENAI_API_KEY): solo imágenes, con gpt-image-2.5-flare
+//     (gpt-image-1 se retira el 23 de octubre de 2026). OpenAI cerró su API
+//     de videos (Sora 2) el 24 de septiembre de 2026: los videos con IA
+//     necesitan Higgsfield.
 //
 // Las imágenes se esperan en el mismo pedido (tardan segundos). Los videos
 // tardan minutos: se crea un trabajo y un sondeo en segundo plano lo baja
@@ -27,7 +30,7 @@ const contextoIA = require('./contexto-ia');
 const HF = 'https://api.higgsfield.ai';
 const HF_IMAGEN = () => process.env.HIGGSFIELD_MODELO_IMAGEN || 'higgsfield-ai/soul/v2/standard';
 const HF_VIDEO = () => process.env.HIGGSFIELD_MODELO_VIDEO || 'bytedance/seedance-2.0';
-const OA_IMAGEN = () => process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1';
+const OA_IMAGEN = () => process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2.5-flare';
 const OA_VIDEO = () => process.env.OPENAI_VIDEO_MODEL || 'sora-2';
 const SEGUNDOS_VIDEO = () => Math.min(12, Math.max(4, Number(process.env.VIDEO_IA_SEGUNDOS) || 5));
 const VERTICAL = new Set(['reel', 'historia']);
@@ -39,7 +42,10 @@ function proveedorImagen() {
   if (process.env.OPENAI_API_KEY) return 'openai';
   return null;
 }
-const proveedorVideo = proveedorImagen;
+// Videos: solo Higgsfield (OpenAI ya no tiene API de videos).
+function proveedorVideo() {
+  return process.env.HIGGSFIELD_API_KEY ? 'higgsfield' : null;
+}
 
 function estado() {
   return {
@@ -149,7 +155,7 @@ async function oaImagen(prompt, vertical) {
   const res = await fetch('https://api.openai.com/v1/images/generations', {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({ model: OA_IMAGEN(), prompt, size: vertical ? '1024x1536' : '1024x1024', n: 1, output_format: 'jpeg' }),
+    body: JSON.stringify({ model: OA_IMAGEN(), prompt, size: vertical ? '1024x1536' : '1024x1024', quality: process.env.OPENAI_IMAGE_QUALITY || 'medium', n: 1, output_format: 'jpeg' }),
   });
   if (!res.ok) throw new Error(`OpenAI respondió ${res.status}`);
   const data = await res.json();

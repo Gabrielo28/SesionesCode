@@ -22,7 +22,7 @@ const PRECIOS_CLAUDE = {
 };
 const num = (v, d) => (Number.isFinite(Number(v)) && v !== '' && v != null ? Number(v) : d);
 const tarifa = () => ({
-  imagen: { higgsfield: num(process.env.COSTO_IMAGEN_HIGGSFIELD_USD, 0.006), openai: num(process.env.COSTO_IMAGEN_OPENAI_USD, 0.04) },
+  imagen: { higgsfield: num(process.env.COSTO_IMAGEN_HIGGSFIELD_USD, 0.006), openai: num(process.env.COSTO_IMAGEN_OPENAI_USD, 0.053) },
   videoSegundo: { higgsfield: num(process.env.COSTO_VIDEO_SEG_HIGGSFIELD_USD, 0.15), openai: num(process.env.COSTO_VIDEO_SEG_OPENAI_USD, 0.1) },
 });
 const DOLAR_CLP = () => num(process.env.DOLAR_CLP, 950);
