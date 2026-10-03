@@ -972,7 +972,19 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Solicitud inválida');
   }
-  const parts = url.pathname.split('/').filter(Boolean);
+  // Cada tramo decodificado: una categoría de fotos con espacios o tildes
+  // ("equipo trabajando") llega como "equipo%20trabajando".
+  let parts;
+  try {
+    parts = url.pathname.split('/').filter(Boolean).map((p) => decodeURIComponent(p));
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Solicitud inválida');
+  }
+  if (parts.some((p) => p.includes('/') || p.includes('\\') || p === '..')) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Solicitud inválida');
+  }
 
   // El webhook de Stripe es una mutación legítima que no viene del panel
   // (no puede llevar la cabecera custom): se autentica con su propia firma
@@ -2050,7 +2062,7 @@ const server = http.createServer(async (req, res) => {
             return sendJSON(res, 200, vista());
           }
           if (parts.length === 5 && req.method === 'DELETE') {
-            competencia.quitar(negocioId, decodeURIComponent(parts[4]));
+            competencia.quitar(negocioId, parts[4]);
             return sendJSON(res, 200, vista());
           }
           return sendJSON(res, 400, { error: 'Acción inválida' });
