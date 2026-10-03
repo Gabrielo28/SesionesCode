@@ -183,6 +183,9 @@ function idUnico(base) {
   return id;
 }
 
+// Cuando falla un servicio externo (Flow, Stripe, Higgsfield, Instagram) se
+// responde 424 y no 502: Cloudflare reemplaza los 502 por su propia página y
+// el panel perdería el mensaje del error.
 function sendJSON(res, status, data, extraHeaders) {
   const body = JSON.stringify(data);
   res.writeHead(status, Object.assign({
@@ -468,7 +471,7 @@ function respuestaErrorMedios(err, que) {
       + 'A los clientes no se les descontaron créditos.').catch(() => {});
     return { status: 503, body: { error: err.message, pausa: true } };
   }
-  return { status: 502, body: { error: `No se pudo generar ${que}: ${err.message}` } };
+  return { status: 424, body: { error: `No se pudo generar ${que}: ${err.message}` } };
 }
 
 async function avisarAdmins(asunto, texto) {
@@ -1581,16 +1584,16 @@ const server = http.createServer(async (req, res) => {
           const subscriptionId = negocio.stripe && negocio.stripe.subscriptionId;
           if (subscriptionId) {
             const actual = await stripe.obtenerSuscripcion(subscriptionId);
-            if (actual.error) return sendJSON(res, 502, { error: actual.error });
+            if (actual.error) return sendJSON(res, 424, { error: actual.error });
             const sub = actual.data;
             if (!SUSCRIPCION_TERMINADA.has(sub.status)) {
               const item = sub.items && sub.items.data && sub.items.data[0];
-              if (!item) return sendJSON(res, 502, { error: 'La suscripción no tiene un plan asociado' });
+              if (!item) return sendJSON(res, 424, { error: 'La suscripción no tiene un plan asociado' });
               if (item.price && item.price.id === priceId) {
                 return sendJSON(res, 409, { error: 'Ya tienes ese plan' });
               }
               const cambio = await stripe.cambiarPrecioSuscripcion({ subscriptionId, itemId: item.id, priceId, planId });
-              if (cambio.error) return sendJSON(res, 502, { error: cambio.error });
+              if (cambio.error) return sendJSON(res, 424, { error: cambio.error });
 
               // El webhook customer.subscription.updated también lo confirma;
               // esto solo evita que el panel muestre el plan viejo mientras llega.
@@ -1613,7 +1616,7 @@ const server = http.createServer(async (req, res) => {
             customerId: negocio.stripe && negocio.stripe.customerId,
             email: negocio.email,
           });
-          if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+          if (resultado.error) return sendJSON(res, 424, { error: resultado.error });
           return sendJSON(res, 200, { url: resultado.data.url });
         }
 
@@ -1660,7 +1663,7 @@ const server = http.createServer(async (req, res) => {
             const base = urlBase(req);
             if (pagos.proveedor() === 'flow') {
               const pf = await cobroFlow.pagarRecarga({ negocio, recarga: r, base });
-              if (pf.error) return sendJSON(res, 502, { error: pf.error });
+              if (pf.error) return sendJSON(res, 424, { error: pf.error });
               return sendJSON(res, 200, { url: pf.url });
             }
             const resultado = await stripe.crearCheckoutPago({
@@ -1668,7 +1671,7 @@ const server = http.createServer(async (req, res) => {
               successUrl: `${base}/app?recarga=exito`, cancelUrl: `${base}/app?recarga=cancelada`,
               customerId: negocio.stripe && negocio.stripe.customerId, email: negocio.email,
             });
-            if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+            if (resultado.error) return sendJSON(res, 424, { error: resultado.error });
             recargas.registrarSesion(r.id, resultado.data.id);
             return sendJSON(res, 200, { url: resultado.data.url });
           }
@@ -1713,7 +1716,7 @@ const server = http.createServer(async (req, res) => {
             delete fresco.flow.planPendiente;
             store.saveNegocio(fresco);
             const r = await cobroFlow.inscribirTarjeta(fresco, urlBase(req));
-            if (r.error) return sendJSON(res, 502, { error: r.error });
+            if (r.error) return sendJSON(res, 424, { error: r.error });
             return sendJSON(res, 200, { url: r.url });
           }
         }
@@ -1726,7 +1729,7 @@ const server = http.createServer(async (req, res) => {
             customerId: negocio.stripe.customerId,
             returnUrl: `${urlBase(req)}/app`,
           });
-          if (resultado.error) return sendJSON(res, 502, { error: resultado.error });
+          if (resultado.error) return sendJSON(res, 424, { error: resultado.error });
           return sendJSON(res, 200, { url: resultado.data.url });
         }
 
@@ -1808,7 +1811,7 @@ const server = http.createServer(async (req, res) => {
             urlPanel: base + '/app', urlBaja: base + enlaceBajaAvisos(negocioId), forzar: true,
           });
           const r = await correo.enviar({ para: negocio.email, asunto: mail.asunto, html: mail.html, texto: mail.texto });
-          if (!r.ok) return sendJSON(res, 502, { error: r.error });
+          if (!r.ok) return sendJSON(res, 424, { error: r.error });
           return sendJSON(res, 200, { ok: true, para: negocio.email });
         }
 
@@ -2335,7 +2338,7 @@ const server = http.createServer(async (req, res) => {
               const r = await estilo.importarDeInstagram(negocio);
               return sendJSON(res, 200, Object.assign(vistaEstilo(negocio), { importadas: r.nuevas }));
             } catch (err) {
-              return sendJSON(res, 502, { error: 'No se pudo leer tu Instagram: ' + err.message });
+              return sendJSON(res, 424, { error: 'No se pudo leer tu Instagram: ' + err.message });
             }
           }
           if (parts[4] === 'analizar' && parts.length === 5 && req.method === 'POST') {
