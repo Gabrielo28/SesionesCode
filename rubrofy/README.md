@@ -703,7 +703,7 @@ Los videos se calculan por cada 5 segundos. Con los valores de partida
 | Calidad | Fotos | Videos (por 5 s) |
 |---|---|---|
 | Rápida | Z-Image Turbo, apagado (1 ⚡) | Wan 3.0 480p, US$0,05/s (5 ⚡) |
-| Recomendada | Soul 2, US$0,0057 (1 ⚡) | Kling 3.0, US$0,084/s (8 ⚡) |
+| Recomendada | Soul 2, US$0,0057 (1 ⚡) | Kling 3.0, US$0,126/s (11 ⚡) |
 | Premium | Qwen Image 3, US$0,04 (1 ⚡) | Kling 3.0 Pro, US$0,168/s (15 ⚡) |
 
 También están Ideogram 4.0, Seedance 2.0 y Seedance 2.5, apagados. Precios
@@ -720,7 +720,9 @@ de open.higgsfield.ai/pricing sin descuentos por volumen.
   Cuando el invitado paga su plan (`pagos.activa`), los dos reciben 25 ⚡,
   una sola vez (se revisa junto con las pruebas gratis, cada 30 minutos).
 - **Cobro y devolución**: las fotos se cobran al llegar; los videos, al
-  pedirlos, y se devuelven si Higgsfield no los acepta o no llegan. Todo
+  pedirlos, y se devuelven si Higgsfield no los acepta o no llegan. Si
+  animar la foto de la pieza falla, se reintenta una vez desde el texto sin
+  cobrar de nuevo. Todo
   queda en `creditos_mov` (el panel muestra los movimientos).
 - **Sin saldo en Higgsfield**: si responde 402 o "not enough credits", se
   pausan las creaciones 30 minutos (`CREDITOS_PAUSA_MIN`), no se cobra a

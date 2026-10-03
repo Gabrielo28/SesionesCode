@@ -894,7 +894,7 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
     notificar(t.negocio_id, { titulo: 'El video con IA no se pudo generar', cuerpo: `${r.error}. Te devolvimos los créditos.`, url: '/app#cola', tag: 'video-' + it.id });
   }
   store.saveContenido(t.negocio_id, items);
-});
+}, console.log, (id) => creditos.config().modelos.find((m) => m.id === id) || null);
 
 const avisador = avisos.crearAvisador({
   listarNegocios: () => store.listNegocios(),

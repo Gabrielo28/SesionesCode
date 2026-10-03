@@ -26,7 +26,7 @@ const MODELOS_BASE = [
   { id: 'ideogram_4', nombre: 'Ideogram 4.0', proveedor: 'Ideogram', tipo: 'foto', calidad: 'premium', usd: 0.03, ruta: 'ideogram/v4.0', familia: 'ideogram', activo: false },
   // Videos: USD por segundo en formato vertical.
   { id: 'wan_3', nombre: 'Wan 3.0', proveedor: 'Alibaba', tipo: 'video', calidad: 'rapida', usd: 0.05, ruta: 'alibaba/wan-3.0', familia: 'wan', resolucion: '480p', activo: true },
-  { id: 'kling_3_std', nombre: 'Kling 3.0', proveedor: 'Kling', tipo: 'video', calidad: 'recomendada', usd: 0.084, ruta: 'kling-video/v3.0/std', familia: 'kling', activo: true },
+  { id: 'kling_3_std', nombre: 'Kling 3.0', proveedor: 'Kling', tipo: 'video', calidad: 'recomendada', usd: 0.126, ruta: 'kling-video/v3.0/std', familia: 'kling', activo: true },
   { id: 'kling_3_pro', nombre: 'Kling 3.0 Pro', proveedor: 'Kling', tipo: 'video', calidad: 'premium', usd: 0.168, ruta: 'kling-video/v3.0/pro', familia: 'kling', activo: true },
   { id: 'seedance_2_0', nombre: 'Seedance 2.0', proveedor: 'Bytedance', tipo: 'video', calidad: 'premium', usd: 0.3024, ruta: 'bytedance/seedance-2.0', familia: 'seedance', resolucion: '720p', activo: false },
   { id: 'seedance_2_5', nombre: 'Seedance 2.5', proveedor: 'Bytedance', tipo: 'video', calidad: 'premium', usd: 0.4622, ruta: 'bytedance/seedance-2.5', familia: 'seedance', resolucion: '720p', activo: false },

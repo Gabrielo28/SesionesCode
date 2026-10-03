@@ -156,7 +156,11 @@ async function hfEstado(id) {
     const url = (data.video && data.video.url) || (data.images && data.images[0] && data.images[0].url) || null;
     return url ? { estado: 'listo', url } : { estado: 'error', error: 'Higgsfield no entregó el archivo' };
   }
-  if (s === 'failed' || s === 'canceled') return { estado: 'error', error: 'La generación falló en Higgsfield' };
+  if (s === 'failed' || s === 'canceled') {
+    const motivo = data.error || data.detail || data.message || data.failure_reason || '';
+    if (motivo) console.log('Higgsfield falló:', typeof motivo === 'string' ? motivo : JSON.stringify(motivo));
+    return { estado: 'error', error: 'La generación falló en Higgsfield' };
+  }
   if (s === 'nsfw') return { estado: 'error', error: 'Higgsfield rechazó el contenido por sus políticas' };
   return { estado: 'generando' };
 }
@@ -272,13 +276,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS trabajos_media_estado ON trabajos_media (estado);
 `);
 // Columnas agregadas después: qué modelo, cuántos segundos y qué se cobró.
-for (const [col, tipo] of [['modelo', 'TEXT'], ['segundos', 'INTEGER'], ['cobro', 'TEXT']]) {
+// desde_foto / prompt / reintento: si animar la foto falla, se reintenta una
+// vez desde el texto, sin cobrar de nuevo.
+for (const [col, tipo] of [['modelo', 'TEXT'], ['segundos', 'INTEGER'], ['cobro', 'TEXT'], ['desde_foto', 'INTEGER'], ['prompt', 'TEXT'], ['reintento', 'INTEGER']]) {
   if (!db.prepare('PRAGMA table_info(trabajos_media)').all().some((c) => c.name === col)) db.exec(`ALTER TABLE trabajos_media ADD COLUMN ${col} ${tipo}`);
 }
 store.registrarLimpieza((negocioId) => db.prepare('DELETE FROM trabajos_media WHERE negocio_id = ?').run(negocioId));
 const sqlT = {
-  crear: db.prepare(`INSERT INTO trabajos_media (negocio_id, item_id, proveedor, trabajo, estado, creado_el, modelo, segundos, cobro)
-    VALUES (?, ?, ?, ?, 'generando', ?, ?, ?, ?)`),
+  crear: db.prepare(`INSERT INTO trabajos_media (negocio_id, item_id, proveedor, trabajo, estado, creado_el, modelo, segundos, cobro, desde_foto, prompt)
+    VALUES (?, ?, ?, ?, 'generando', ?, ?, ?, ?, ?, ?)`),
+  reintentar: db.prepare('UPDATE trabajos_media SET trabajo = ?, creado_el = ?, desde_foto = 0, reintento = 1 WHERE id = ?'),
   pendientes: db.prepare("SELECT * FROM trabajos_media WHERE estado = 'generando' ORDER BY id LIMIT 20"),
   terminar: db.prepare('UPDATE trabajos_media SET estado = ?, error = ?, terminado_el = ? WHERE id = ?'),
   delItem: db.prepare("SELECT * FROM trabajos_media WHERE negocio_id = ? AND item_id = ? AND estado = 'generando'"),
@@ -305,12 +312,14 @@ async function iniciarVideo({ negocio, item, imagenUrl, modelo, segundos, cobro 
       ? await hfEnviar(`${HF_VIDEO()}/image-to-video`, Object.assign(base, { image_url: imagenUrl }))
       : await hfEnviar(`${HF_VIDEO()}/text-to-video`, Object.assign(base, { aspect_ratio: '9:16' }));
   }
-  sqlT.crear.run(negocio.id, item.id, proveedor, String(trabajo), new Date().toISOString(), modelo ? modelo.id : null, seg, cobro ? JSON.stringify(cobro) : null);
+  sqlT.crear.run(negocio.id, item.id, proveedor, String(trabajo), new Date().toISOString(), modelo ? modelo.id : null, seg, cobro ? JSON.stringify(cobro) : null,
+    imagenUrl && modelo ? 1 : 0, modelo ? prompt : null);
   return { proveedor, trabajo, desdeFoto: !!imagenUrl && proveedor === 'higgsfield' };
 }
 
 // Revisa los videos en curso. alTerminar(t, { ok, archivo, bytes, error }).
-async function revisarTrabajos(alTerminar) {
+// modeloDe(id): el modelo de server/creditos.js, para reintentar desde el texto.
+async function revisarTrabajos(alTerminar, modeloDe) {
   for (const t of sqlT.pendientes.all()) {
     let r;
     try {
@@ -333,6 +342,16 @@ async function revisarTrabajos(alTerminar) {
         sqlT.terminar.run('error', err.message, ahora, t.id);
         await alTerminar(t, { ok: false, error: err.message });
       }
+    } else if (r.estado === 'error' && t.desde_foto && !t.reintento && t.prompt && modeloDe && modeloDe(t.modelo)) {
+      // Animar la foto falló: una vez más desde el texto, sin cobrar de nuevo.
+      try {
+        const m = modeloDe(t.modelo);
+        const nuevo = await hfEnviar(`${m.ruta}/text-to-video`, cuerpoVideo(m, t.prompt, t.segundos || 5, null));
+        sqlT.reintentar.run(String(nuevo), ahora, t.id);
+      } catch (err) {
+        sqlT.terminar.run('error', err.message, ahora, t.id);
+        await alTerminar(t, { ok: false, error: err.message });
+      }
     } else {
       const error = r.error || 'El video tardó demasiado y se canceló';
       sqlT.terminar.run('error', error, ahora, t.id);
@@ -341,14 +360,14 @@ async function revisarTrabajos(alTerminar) {
   }
 }
 
-function crearSondeo(alTerminar, log = console.log) {
+function crearSondeo(alTerminar, log = console.log, modeloDe = null) {
   let ocupado = false;
   const intervalo = (Number(process.env.MEDIOS_INTERVALO_SEG) || 15) * 1000;
   const vuelta = async () => {
     if (ocupado) return;
     ocupado = true;
     try {
-      await revisarTrabajos(alTerminar);
+      await revisarTrabajos(alTerminar, modeloDe);
     } catch (err) {
       log('medios: ' + err.message);
     } finally {
