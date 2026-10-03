@@ -1,6 +1,7 @@
 // Imágenes y videos con IA para las piezas de contenido. Dos proveedores:
 //
-//   - Higgsfield (HIGGSFIELD_API_KEY = "id:secreto", de cloud.higgsfield.ai):
+//   - Higgsfield (HIGGSFIELD_API_KEY: la llave completa, tal como se copia de
+//     open.higgsfield.ai/api-keys; las antiguas venían como "id:secreto"):
 //     una sola cuenta para imágenes (Soul 2) y videos (Seedance), con saldo
 //     prepagado en dólares. Es el preferido si está configurado.
 //   - OpenAI (OPENAI_API_KEY): solo imágenes, con gpt-image-2.5-flare
@@ -92,15 +93,26 @@ function promptVideo(negocio, item) {
 
 // --- Higgsfield ---
 
-function hfHeaders() {
-  return { authorization: `Key ${process.env.HIGGSFIELD_API_KEY}`, 'content-type': 'application/json', accept: 'application/json' };
+// La llave tal como se pegó, sin espacios, comillas ni un "Key " de más
+// (errores comunes al copiarla a Railway).
+function hfLlave() {
+  return String(process.env.HIGGSFIELD_API_KEY || '').trim().replace(/^["']|["']$/g, '').replace(/^Key\s+/i, '').trim();
 }
 
-const SIN_SALDO = /insufficient|not enough|balance|credits?|funds|top.?up|payment required|billing/i;
+function hfHeaders() {
+  return { authorization: `Key ${hfLlave()}`, 'content-type': 'application/json', accept: 'application/json' };
+}
+
+const SIN_SALDO = /insufficient|not enough|balance|credits? (left|remaining)|out of credits|funds|top.?up|payment required|billing/i;
 
 function errorProveedor(status, mensaje) {
   const err = new Error(mensaje);
-  if (status === 402 || SIN_SALDO.test(mensaje)) {
+  if (status === 401 || status === 403 || /invalid credentials|unauthori[sz]ed|invalid api key/i.test(mensaje)) {
+    // La llave está mal puesta: es un problema de configuración, no del cliente.
+    err.credenciales = true;
+    err.message = 'Las fotos y videos con IA no están disponibles por un problema de configuración. Ya avisamos para solucionarlo; no se descontaron créditos.';
+    err.detalle = mensaje;
+  } else if (status === 402 || SIN_SALDO.test(mensaje)) {
     err.sinSaldo = true;
     err.message = 'Las fotos y videos con IA están en pausa por unos minutos. No se descontaron créditos.';
     err.detalle = mensaje;

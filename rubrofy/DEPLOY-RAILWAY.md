@@ -63,7 +63,7 @@ queda apagada y el resto funciona igual)
 | Parte | Variables |
 |---|---|
 | IA de textos y estilo | `ANTHROPIC_API_KEY` (opcional `ANTHROPIC_MODEL`) |
-| Imágenes y videos con IA | `HIGGSFIELD_API_KEY` (`id:secreto`, de cloud.higgsfield.ai; preferido) u `OPENAI_API_KEY`. Opcionales: `HIGGSFIELD_MODELO_IMAGEN`, `HIGGSFIELD_MODELO_VIDEO`, `OPENAI_IMAGE_MODEL`, `OPENAI_VIDEO_MODEL`, `VIDEO_IA_SEGUNDOS`, `VIDEO_IA_AUDIO` |
+| Imágenes y videos con IA | `HIGGSFIELD_API_KEY` (la llave completa, tal como se copia de open.higgsfield.ai/api-keys; preferido) u `OPENAI_API_KEY`. Opcionales: `HIGGSFIELD_MODELO_IMAGEN`, `HIGGSFIELD_MODELO_VIDEO`, `OPENAI_IMAGE_MODEL`, `OPENAI_VIDEO_MODEL`, `VIDEO_IA_SEGUNDOS`, `VIDEO_IA_AUDIO` |
 | Notificaciones push | Nada: las claves VAPID se generan solas. Opcional fijarlas con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` |
 | Cobro (**obligatorio**: el servicio es solo de pago) | Con **Flow** (recomendado en Chile): `FLOW_API_KEY`, `FLOW_SECRET_KEY` y, mientras pruebas, `FLOW_SANDBOX=1`. Los planes se crean solos en Flow. Con Stripe (alternativa): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Si están las de Flow, se usa Flow. Sin ninguna, nadie puede pagar ni crear contenido. |
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |

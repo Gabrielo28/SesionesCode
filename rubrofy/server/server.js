@@ -471,6 +471,12 @@ function respuestaErrorMedios(err, que) {
       + 'A los clientes no se les descontaron créditos.').catch(() => {});
     return { status: 503, body: { error: err.message, pausa: true } };
   }
+  if (err.credenciales) {
+    if (creditos.pausar('higgsfield', 'Llave rechazada: ' + (err.detalle || err.message))) avisarAdmins('Higgsfield rechazó la llave',
+      `Higgsfield respondió "${err.detalle || err.message}" al crear una foto o video. Revisa HIGGSFIELD_API_KEY en Railway: debe ser la llave completa `
+      + 'copiada de open.higgsfield.ai/api-keys, sin comillas ni espacios. Después toca "Reanudar" en /admin → Créditos. A los clientes no se les cobró.').catch(() => {});
+    return { status: 503, body: { error: err.message, pausa: true } };
+  }
   return { status: 424, body: { error: `No se pudo generar ${que}: ${err.message}` } };
 }
 
