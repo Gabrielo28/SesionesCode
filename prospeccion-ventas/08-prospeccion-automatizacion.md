@@ -102,11 +102,32 @@ de atención (frecuente en inmobiliarias).
 
 ### Guion de primer contacto (LinkedIn o email)
 
-> "Hola [nombre], vi que [observación pública concreta — ej. "en su sitio no hay forma de agendar
-> una visita online, todo pasa por WhatsApp"]. Trabajamos con empresas de [rubro] justamente en
-> eso — automatizar la atención y el seguimiento sin cambiar las herramientas que ya usan.
-> Armamos un diagnóstico gratis de 2 minutos que muestra dónde conviene partir — ¿te interesa
-> verlo? [link]"
+Los mensajes reales, ya escritos por empresa y por persona, están en `mensajes-frio-v2.md`. La
+estructura que siguen (y que se usa para cualquier empresa nueva) es:
+
+1. **Nombre y cargo reales.** Nunca "Hola [nombre]". Si no se encontró al decisor, la empresa es
+   prioridad B y se busca primero (LinkedIn de la empresa, página "nosotros", registro del
+   dominio, reseñas que nombran a alguien).
+2. **Un dato específico de esa empresa** que no se pueda copiar a otra: el número de propiedades
+   publicadas, la promesa de respuesta en 24 o 48 horas, el botón que no hace nada, las dos
+   carteras de clientes distintas. Si el dato sirve para dos empresas, no sirve.
+3. **Qué cuesta el hueco, en el idioma del rubro.** No "automatizar la atención" sino "la visita
+   del sábado a las 10 de la noche la agenda otra corredora" o "la hora más cara del estudio
+   haciendo recepción".
+4. **Qué se automatiza y qué no.** Siempre explícito: lo repetitivo corre solo, el criterio sigue
+   siendo de ellos. Esto desarma la objeción "¿reemplaza a mi gente?" antes de que aparezca.
+5. **Un cierre distinto cada vez**, de tamaño chico: una pregunta con número ("¿cuántas consultas
+   quedan sin responder el mismo día?"), una llamada de 15 minutos, un ejemplo de una página
+   con una propiedad o un cliente real de ellos, o el diagnóstico de 2 minutos — pero no todos
+   el mismo cierre.
+
+**Invitación de LinkedIn** (300 caracteres máximo): un dato de la empresa + a qué me dedico en
+una frase + "me gustaría conectar". Sin pedir nada.
+
+**Regla Auditron, ampliada:** si en la primera respuesta dicen "eso ya lo tenemos", se pregunta
+qué tienen exactamente y se cambia el ángulo. Varias empresas del pipeline tienen *algo*
+(un saludo automático, un cotizador solo para vehículos, un selector de horarios que no
+reserva, Calendly) y el mensaje ya parte reconociéndolo — es mejor apertura que ignorarlo.
 
 ### Secuencia de seguimiento (3 toques)
 

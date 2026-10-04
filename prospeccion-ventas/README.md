@@ -13,12 +13,12 @@
 | [07-icp-automatizacion.md](07-icp-automatizacion.md) | A quién vendemos automatización con IA — distinto del ICP de redes, 100% remoto |
 | [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
-| [mensajes-lote1-frio.md](mensajes-lote1-frio.md) | Primer lote (15 empresas) de prospección fría verificada de `leads-automatizacion-chile.csv`, con mensaje listo para copiar y pegar |
-| [mensajes-lote2-frio.md](mensajes-lote2-frio.md) | Segundo lote (15 empresas) de prospección fría verificada, con mensaje y solución sugerida del catálogo real para cada una |
-| [mensajes-lote3-frio.md](mensajes-lote3-frio.md) | Tercer y último lote (13 empresas) — completa la revisión de las 43 filas del CSV, con mensaje y solución sugerida |
-| [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 de las 43 empresas — confirma o corrige las notas de cautela de los 3 lotes |
+| [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 54 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
+| [mensajes-frio-v2.md](mensajes-frio-v2.md) | **Los mensajes vigentes**: secuencia completa (invitación LinkedIn → mensaje 1 → día 4 → día 10) para las 20 de prioridad A, mensaje 1 para las 26 de B, y por qué no se escribe a las 8 de C |
+| [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
-| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | 54 empresas (inmobiliaria + servicios profesionales B2B) para automatización, con fuente pública de cada señal — se suma semanalmente por búsqueda automática |
+| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (54 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
+| [archivo/](archivo/) | Lotes 1-3 de mensajes anteriores, reemplazados por `mensajes-frio-v2.md`. Se guardan solo como historial |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
 
@@ -123,6 +123,20 @@ Dos fuentes, ver [07-icp-automatizacion.md](07-icp-automatizacion.md) para el cr
    datos no salían de fuentes públicas verificables — cada fila trae la señal encontrada, la
    fuente, y qué falta confirmar antes de escribirle. No sirve para mandar en frío tal cual:
    primero hay que revisar el sitio de cada una y confirmar tamaño real de equipo.
+
+El trabajo diario no se hace sobre ese CSV sino sobre **`pipeline-automatizacion.csv`**, que ya
+tiene la verificación hecha, el decisor identificado donde se pudo, y la prioridad:
+
+- **A (20):** decisor con nombre y cargo, hueco verificado en el sitio, tamaño entre 3 y 50
+  personas. Tienen secuencia completa en `mensajes-frio-v2.md`. Se escriben ya.
+- **B (26):** falta el nombre del decisor, o hay que confirmar tamaño/sitio, o el ángulo cambia
+  (ya tienen algo automatizado, son más grandes, o conviene más como aliado que como cliente).
+  Tienen el mensaje 1 listo y una instrucción de qué resolver antes de mandarlo.
+- **C (8):** descartadas con motivo (unipersonales, cadenas, legal-tech, sin fuente).
+
+Los decisores se buscaron por web (LinkedIn indexado, sitios, registros). Apollo en plan gratuito
+**no permite buscar personas** — solo enriquecer empresas a 1 crédito cada una — así que ese
+paso no se automatiza; se resuelve a mano antes de escribir a una B.
 
 ---
 
