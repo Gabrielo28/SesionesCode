@@ -552,7 +552,6 @@
   function renderConfig() {
     if (!negocioActual) return;
     renderPerfil();
-    if (window.RubrofyDiseno) window.RubrofyDiseno.renderKit($('#marca-card'));
     window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
     $('#config-nombre').value = negocioActual.nombre || '';
     $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
@@ -1034,7 +1033,11 @@
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config', 'cuenta', 'soporte'];
+  const VISTAS = ['inicio', 'estrategia', 'marca', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'resultados', 'config', 'cuenta', 'soporte'];
+  // Voz de marca, Mi estilo y el Kit de marca ahora son pestañas de "Tu marca":
+  // los enlaces antiguos (avisos, ruta de Inicio, /app#voz) siguen sirviendo.
+  const ALIAS_MARCA = { voz: 'voz', estilo: 'ejemplos', kit: 'kit' };
+  let tabMarca = 'voz';
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -1046,10 +1049,64 @@
 
   // ancla: id de una sección dentro de la vista (ej: 'cta-plan').
   let vistaPrevia = 'inicio'; // para saber desde qué pantalla se pide ayuda
+  // "Tu marca": cómo hablas (voz.js), tus ejemplos (estilo.js) y cómo se ve
+  // (Kit de marca, diseno.js). Arriba, un resumen de lo que ya sabe Rubrofy.
+  function renderMarca() {
+    const n = negocioActual;
+    const v = n.voz || {};
+    const vozLista = !!(v.quienesSomos || (v.personalidad || []).length || (v.palabrasNo || []).length || (v.ejemplos || []).length);
+    const estiloListo = !!(n.estilo && (n.estilo.general || n.estilo.post || n.estilo.reel));
+    const logo = !!(n.marca && n.marca.logo);
+    const item = (ok, si, no, tab) => `<button type="button" class="marca-res ${ok ? 'ok' : 'falta'}" data-marca-tab="${tab}"><i aria-hidden="true">${ok ? '✓' : '○'}</i>${escapeHtml(ok ? si : no)}</button>`;
+    $('#marca-resumen').innerHTML = `<span class="marca-res-tit">Lo que Rubrofy ya sabe de tu marca:</span>
+      ${item(vozLista, 'Conoce tu forma de hablar', 'Falta tu forma de hablar', 'voz')}
+      ${item(estiloListo, 'Aprendió de tus ejemplos', 'Faltan ejemplos de lo que te gusta', 'ejemplos')}
+      ${item(logo, 'Tiene tu logo y colores', 'Falta tu logo', 'kit')}`;
+    document.querySelectorAll('#view-marca [role="tab"][data-marca-tab]').forEach((b) => {
+      const on = b.dataset.marcaTab === tabMarca;
+      b.classList.toggle('activa', on);
+      b.setAttribute('aria-selected', on);
+    });
+    document.querySelectorAll('#view-marca [data-marca-panel]').forEach((p) => { p.hidden = p.dataset.marcaPanel !== tabMarca; });
+    if (tabMarca === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
+    else if (tabMarca === 'ejemplos') window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
+    else if (window.RubrofyDiseno) window.RubrofyDiseno.renderKit($('#marca-card'));
+  }
+
+  // Menú por etapas (1 Configura, 2 Cada semana, 3 Mide, 4 Cada mes): cada
+  // una se abre y se cierra, y se recuerda en este navegador. Si se va a una
+  // pantalla de una etapa cerrada, esa etapa se abre sola.
+  const LLAVE_MENU = 'rubrofy-menu-cerrados';
+  let gruposCerrados = [];
+  try { gruposCerrados = JSON.parse(localStorage.getItem(LLAVE_MENU) || '[]'); } catch (e) { gruposCerrados = []; }
+  function pintarGrupos() {
+    document.querySelectorAll('.rail-grupo[data-grupo]').forEach((b) => {
+      const cerrado = gruposCerrados.includes(b.dataset.grupo);
+      b.setAttribute('aria-expanded', String(!cerrado));
+      const items = document.querySelector(`[data-grupo-items="${b.dataset.grupo}"]`);
+      if (items) items.classList.toggle('cerrado', cerrado);
+    });
+  }
+  function alternarGrupo(grupo, abrir) {
+    const cerrado = gruposCerrados.includes(grupo);
+    const cerrar = abrir === undefined ? !cerrado : !abrir;
+    gruposCerrados = gruposCerrados.filter((g) => g !== grupo).concat(cerrar ? [grupo] : []);
+    try { localStorage.setItem(LLAVE_MENU, JSON.stringify(gruposCerrados)); } catch (e) { /* sin almacenamiento */ }
+    pintarGrupos();
+  }
+  function abrirGrupoDe(vista) {
+    const b = document.querySelector(`.rail-grupo-items .rail-btn[data-view="${vista}"]`);
+    const g = b && b.closest('[data-grupo-items]');
+    if (g && gruposCerrados.includes(g.dataset.grupoItems)) alternarGrupo(g.dataset.grupoItems, true);
+  }
+
   function irAVista(vista, tab, ancla) {
+    if (ALIAS_MARCA[vista]) { tab = ALIAS_MARCA[vista]; vista = 'marca'; }
+    if (vista === 'config' && ancla === 'cfg-marca') { vista = 'marca'; tab = 'kit'; ancla = null; }
     if (vista === 'soporte' && vistaActual !== 'soporte') vistaPrevia = vistaActual;
     vistaActual = vista;
-    if (tab) tabResultados = tab;
+    if (vista === 'marca') { if (tab) tabMarca = tab; } else if (tab) tabResultados = tab;
+    abrirGrupoDe(vista);
     marcarMenu();
     for (const v of VISTAS) $('#view-' + v).hidden = v !== vista;
     render();
@@ -1099,16 +1156,13 @@
       renderPlan();
       window.RubrofyCuenta.render(Object.assign(ctxPanel(), { alCambiar: () => { renderAvisoCorreo(); actualizarSwitcher(); } })).catch(() => {});
     }
-    else if (vistaActual === 'estilo') {
-      window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
-    }
+    else if (vistaActual === 'marca') renderMarca();
     else if (vistaActual === 'resultados') renderResultados();
     else if (vistaActual === 'inicio') window.RubrofyInicio.render($('#inicio'), ctxPanel()).catch(() => {});
     else if (vistaActual === 'estrategia') {
       window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
       window.RubrofyContexto.editor($('#ctx-estrategia'), ctxPanel(), ['estrategia'], 'estrategia');
     }
-    else if (vistaActual === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
     else if (vistaActual === 'contexto') window.RubrofyContexto.render($('#contexto'), ctxPanel());
   }
 
@@ -1417,7 +1471,7 @@
     vistaActual = 'inicio';
     // Enlaces de las notificaciones: /app#cola, /app#config…
     const destino = window.location.hash.slice(1);
-    irAVista(VISTAS.includes(destino) ? destino : 'inicio');
+    irAVista(VISTAS.includes(destino) || ALIAS_MARCA[destino] ? destino : 'inicio');
     if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
     const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
     avisarRetornoCorreo();
@@ -1535,6 +1589,14 @@
     });
     $('#btn-logout').addEventListener('click', () => {
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
+    });
+    pintarGrupos();
+    document.querySelectorAll('.rail-grupo[data-grupo]').forEach((b) => b.addEventListener('click', () => alternarGrupo(b.dataset.grupo)));
+    $('#view-marca').addEventListener('click', (e) => {
+      const t = e.target.closest('[data-marca-tab]');
+      if (!t) return;
+      tabMarca = t.dataset.marcaTab;
+      renderMarca();
     });
     $('#btn-logout-cuenta').addEventListener('click', () => {
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));

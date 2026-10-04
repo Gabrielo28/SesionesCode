@@ -104,7 +104,7 @@ function calcular(input) {
       estado: referencias >= 5 ? 'hecho' : 'pendiente',
       prioridad: 7,
       accion: { tipo: 'vista', vista: 'estilo' },
-      boton: 'Ir a Mi estilo',
+      boton: 'Ir a Tu marca',
       botonHecho: 'Ver mi estilo',
     },
   ];

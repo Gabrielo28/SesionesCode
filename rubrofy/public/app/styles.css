@@ -40,7 +40,15 @@ a { color: var(--amber); }
 .rail-grupo {
   font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--ink-faint); padding: 14px 10px 6px;
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  background: none; border: 0; border-radius: 7px; cursor: pointer; text-align: left;
 }
+.rail-grupo:hover, .rail-grupo:focus-visible { color: var(--ink); outline: none; }
+.rail-grupo:focus-visible { box-shadow: 0 0 0 2px var(--amber) inset; }
+.rail-grupo-flecha { flex: 0 0 auto; stroke: currentColor; transition: transform .2s; }
+.rail-grupo[aria-expanded="false"] .rail-grupo-flecha { transform: rotate(-90deg); }
+.rail-grupo-items { display: flex; flex-direction: column; width: 100%; }
+.rail-grupo-items.cerrado { display: none; }
 .rail-btn {
   display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 10px; border-radius: 9px;
   margin-bottom: 2px; background: transparent; border: none; color: var(--ink-dim); font-size: 13.5px;
@@ -63,7 +71,10 @@ a { color: var(--amber); }
   .rail { width: 72px; padding: 18px 0; align-items: center; }
   .rail .logo { padding: 0; margin-bottom: 14px; }
   .rail-marca, .rail-label, .rail-plan, .rail-planactual { display: none !important; }
-  .rail-grupo { font-size: 0; padding: 8px 0; width: 28px; border-top: 1px solid var(--border); margin-top: 6px; }
+  .rail-grupo { font-size: 0; padding: 8px 0; width: 28px; border-top: 1px solid var(--border); border-radius: 0; margin-top: 6px; cursor: default; pointer-events: none; }
+  .rail-grupo > * { display: none; }
+  /* Solo íconos: no hay espacio para títulos, así que las etapas no se pliegan. */
+  .rail-grupo-items, .rail-grupo-items.cerrado { display: flex; align-items: center; }
   .rail-btn { width: 40px; height: 40px; justify-content: center; padding: 0; margin-bottom: 6px; }
   .rail-btn.active::before { display: none; }
   .rail-num { position: absolute; top: 1px; right: 0; font-size: 9px; padding: 0 5px; }
@@ -1402,3 +1413,16 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .cta-chip.pend { background: rgba(255, 196, 0, .14); color: #ffc400; }
 .cta-botones { display: inline-flex; gap: 8px; flex-wrap: wrap; flex: 0 0 auto; }
 @media (max-width: 760px) { .aviso-correo { margin: 10px 12px 0; } }
+
+/* Tu marca */
+.marca-resumen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 2px; }
+.marca-res-tit { font-size: 12.5px; color: var(--ink-faint); margin-right: 4px; }
+.marca-res { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim); font: inherit; font-size: 12.5px; cursor: pointer; }
+.marca-res i { font-style: normal; font-weight: 700; }
+.marca-res.ok i { color: var(--green); }
+.marca-res.falta { border-style: dashed; }
+.marca-res.falta i { color: var(--amber); }
+.marca-res:hover, .marca-res:focus-visible { border-color: var(--amber); color: var(--ink); outline: none; }
+.marca-pestanas { margin: 6px 0 4px; flex-shrink: 0; }
+.marca-resumen { flex-shrink: 0; }
+.marca-kit { max-width: 640px; }

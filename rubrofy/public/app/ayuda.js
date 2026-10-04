@@ -76,7 +76,7 @@
     'res-horario': { t: 'Cuándo publicar', d: 'Qué día y franja horaria logran más interacción. Más intenso = mejor.',
       p: ['Busca la celda más intensa.', 'Rubrofy ya programa tus posts a esa hora; puedes cambiarla en Estrategia.'] },
     'res-mejores': { t: 'Tus mejores publicaciones', d: 'Las publicaciones del periodo con más interacción.',
-      p: ['Mira qué tienen en común (tema, formato, foto).', 'Agrégalas a Mi estilo para que Rubrofy aprenda de ellas.'] },
+      p: ['Mira qué tienen en común (tema, formato, foto).', 'Agrégalas en Tu marca → Tus ejemplos para que Rubrofy aprenda de ellas.'] },
     'informe': { t: 'Informe mensual', d: 'Un resumen del mes con resultados, qué funcionó y una conclusión escrita, listo para imprimir o compartir.',
       p: ['Elige el mes.', 'Pulsa "Generar conclusión" si aún no la tiene.', 'Imprímelo o guárdalo en PDF, o copia el enlace para compartirlo.'] },
 
@@ -170,6 +170,8 @@
       p: ['"Foto limpia": imagen sin texto.', '"Con el titular": la imagen lleva el titular escrito.'] },
     'editar-ia': { t: 'Editar fotos con IA', d: 'Cambia una foto tuya escribiendo lo que quieres: el fondo, los colores, la luz o agregarle un texto. Usa créditos ⚡ (1 en Recomendada).',
       p: ['En Galería, toca una foto para verla en grande.', 'Pulsa "✨ Editar con IA".', 'Escribe qué cambiar o toca una idea. Para agregar un texto, escríbelo entre comillas.', 'Pulsa "Editar foto". La editada se guarda como una foto nueva; la original no cambia.'], n: 'Si no te gusta, edítala otra vez o pulsa "Seguir editando esta" para hacerle más cambios. Si la edición falla, no se descuentan créditos.' },
+    'marca': { t: 'Tu marca', d: 'Todo lo que le enseña a Rubrofy cómo es tu marca, en tres pestañas.',
+      p: ['Cómo hablas: tu tono, a quién le hablas, palabras que sí y que no. La IA lo usa en todo lo que escribe.', 'Tus ejemplos: publicaciones que te gustan o que ya hiciste, para que aprenda tu estilo.', 'Cómo se ve: logo, colores y letra para los diseños y los reels.'], n: 'Arriba ves qué le falta saber. Toca cualquiera de esos avisos para ir directo a completarlo.' },
     'soporte': { t: 'Ayuda y soporte', d: 'Respuestas rápidas, una revisión de tu cuenta y un canal directo con el equipo de Rubrofy.',
       p: ['Busca tu duda arriba: aparecen las ayudas y preguntas que coinciden.', 'Mira la revisión rápida: te dice si algo de tu cuenta impide publicar.', 'Si no lo resuelves, escríbenos: elige el tema, cuéntanos qué pasó y adjunta una captura si puedes.', 'Te respondemos aquí (en Mis solicitudes) y por correo.'], n: 'Los detalles técnicos incluyen la pantalla, el navegador y los últimos errores del panel. No incluyen tus publicaciones ni tus fotos.' },
     'cuenta': { t: 'Mi cuenta', d: 'Tu acceso, tu plan, tus créditos y tus pagos, en un solo lugar.',

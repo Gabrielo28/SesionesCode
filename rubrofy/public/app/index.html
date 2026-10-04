@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=31">
+  <link rel="stylesheet" href="/app/styles.css?v=32">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -44,23 +44,23 @@
       <button class="rail-btn active" data-view="inicio" title="Inicio">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4.5 L20 11"/><path d="M6.5 9.5 V19.5 H17.5 V9.5"/><path d="M10 19.5 V14 H14 V19.5"/></svg><span class="rail-label">Inicio</span>
       </button>
-      <span class="rail-grupo">1 · Configura</span>
+      <button type="button" class="rail-grupo" data-grupo="configura" aria-expanded="true"><span>1 · Configura</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
+      <div class="rail-grupo-items" data-grupo-items="configura">
       <button class="rail-btn" data-view="estrategia" title="Estrategia">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2"/></svg><span class="rail-label">Estrategia</span>
       </button>
-      <button class="rail-btn" data-view="voz" title="Voz de marca">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 V14.5 H7.5 L12.5 18.5 V5.5 L7.5 9.5 Z"/><path d="M15.5 9 C16.8 10.4 16.8 13.6 15.5 15"/><path d="M18 6.5 C20.6 9.3 20.6 14.7 18 17.5"/></svg><span class="rail-label">Voz de marca</span>
+      <button class="rail-btn" data-view="marca" title="Tu marca">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.5 L12 15.2 L7.4 18.5 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg><span class="rail-label">Tu marca</span>
       </button>
       <button class="rail-btn" data-view="fotos" title="Galería">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16 L15 11 L6 19"/></svg><span class="rail-label">Galería</span>
       </button>
-      <button class="rail-btn" data-view="estilo" title="Mi estilo">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.4 L12 15.1 L7.4 18.4 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/></svg><span class="rail-label">Mi estilo</span>
-      </button>
       <button class="rail-btn" data-view="contexto" title="Contexto para la IA">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8 H16 M8 12 H16 M8 16 H12.5"/></svg><span class="rail-label">Contexto para la IA</span>
       </button>
-      <span class="rail-grupo">2 · Cada semana</span>
+      </div>
+      <button type="button" class="rail-grupo" data-grupo="semana" aria-expanded="true"><span>2 · Cada semana</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
+      <div class="rail-grupo-items" data-grupo-items="semana">
       <button class="rail-btn" data-view="cola" title="Cola de aprobación">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="10.5" width="17" height="4.5" rx="1.2"/><rect x="3.5" y="16.5" width="10" height="4" rx="1.2"/></svg><span class="rail-label">Por aprobar</span><em class="rail-num" id="rail-pendientes" hidden></em>
       </button>
@@ -70,7 +70,9 @@
       <button class="rail-btn" data-view="calendario" title="Calendario">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5 H20.5"/><path d="M8 3 V6.5 M16 3 V6.5"/></svg><span class="rail-label">Calendario</span>
       </button>
-      <span class="rail-grupo">3 · Mide</span>
+      </div>
+      <button type="button" class="rail-grupo" data-grupo="mide" aria-expanded="true"><span>3 · Mide</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
+      <div class="rail-grupo-items" data-grupo-items="mide">
       <button class="rail-btn" data-view="resultados" data-tab="instagram" title="Resultados">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg><span class="rail-label">Resultados</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
       </button>
@@ -80,10 +82,13 @@
       <button class="rail-btn" data-view="resultados" data-tab="competencia" title="Competencia">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10.5" r="2.3"/><path d="M3.5 19 c0.8-3.2 3-4.8 5.5-4.8 s4.7 1.6 5.5 4.8"/><path d="M15 15 c2.4-0.4 4.6 0.8 5.5 3.6"/></svg><span class="rail-label">Competencia</span><em class="rail-plan" data-plan-req="competencia" hidden>Estudio</em>
       </button>
-      <span class="rail-grupo">4 · Cada mes</span>
+      </div>
+      <button type="button" class="rail-grupo" data-grupo="mes" aria-expanded="true"><span>4 · Cada mes</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
+      <div class="rail-grupo-items" data-grupo-items="mes">
       <a class="rail-btn" href="/app/informe.html" target="_blank" rel="noopener" title="Informe mensual">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5 H14 L18.5 8 V20.5 H7 Z"/><path d="M14 3.5 V8 H18.5"/><path d="M10 13 H15.5 M10 16.5 H15.5"/></svg><span class="rail-label">Informe mensual</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
       </a>
+      </div>
       <button class="rail-btn rail-instalar" id="btn-instalar" type="button" title="Instalar Rubrofy en este dispositivo" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5 V14.5 M9 11.5 L12 14.5 L15 11.5"/></svg><span class="rail-label">Instalar Rubrofy</span>
       </button>
@@ -170,13 +175,6 @@
         </div>
       </section>
 
-      <section id="view-voz" class="view" hidden>
-        <div>
-          <h1>Voz de marca<button type="button" class="ay" data-ayuda="voz" aria-label="Ayuda: Voz de marca" aria-expanded="false">?</button></h1>
-          <p class="sub">Cómo habla tu marca. La IA la usa en todo lo que escribe, mide qué tan fiel es cada texto y escribe con tu voz cualquier texto que necesites.</p>
-        </div>
-        <div id="voz" class="estilo"></div>
-      </section>
 
       <section id="view-contexto" class="view" hidden>
         <div>
@@ -184,6 +182,24 @@
           <p class="sub">Todo lo que la IA debe saber de tu negocio, ordenado por sección: estrategia, textos, cada formato, imágenes y videos.</p>
         </div>
         <div id="contexto" class="estilo"></div>
+      </section>
+
+      <section id="view-marca" class="view" hidden>
+        <div>
+          <h1>Tu marca<button type="button" class="ay" data-ayuda="marca" aria-label="Ayuda: Tu marca" aria-expanded="false">?</button></h1>
+          <p class="sub">Todo lo que le enseña a Rubrofy cómo es tu marca: cómo hablas, ejemplos de lo que te gusta y cómo se ve.</p>
+        </div>
+        <div class="marca-resumen" id="marca-resumen"></div>
+        <div class="pestanas marca-pestanas" role="tablist" aria-label="Tu marca">
+          <button type="button" role="tab" data-marca-tab="voz">🗣 Cómo hablas</button>
+          <button type="button" role="tab" data-marca-tab="ejemplos">★ Tus ejemplos</button>
+          <button type="button" role="tab" data-marca-tab="kit">🎨 Cómo se ve</button>
+        </div>
+        <div data-marca-panel="voz"><div id="voz" class="estilo"></div></div>
+        <div data-marca-panel="ejemplos" hidden><div id="estilo" class="estilo"></div></div>
+        <div data-marca-panel="kit" hidden>
+          <div class="ig-card marca-kit" id="marca-card"></div>
+        </div>
       </section>
 
       <section id="view-fotos" class="view" hidden>
@@ -203,13 +219,6 @@
         <div id="reels-estudio"></div>
       </section>
 
-      <section id="view-estilo" class="view" hidden>
-        <div>
-          <h1>Mi estilo<button type="button" class="ay" data-ayuda="estilo" aria-label="Ayuda: Mi estilo" aria-expanded="false">?</button></h1>
-          <p class="sub">Muéstrale a Rubrofy el contenido que ya haces — posts, carruseles, reels e historias — y aprenderá a escribir y proponer contenido como el tuyo.</p>
-        </div>
-        <div id="estilo" class="estilo"></div>
-      </section>
 
       <section id="view-resultados" class="view" hidden>
         <div>
@@ -231,14 +240,12 @@
           <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y elige tus avisos. Tu plan, créditos y pagos están en <a href="#cuenta" data-ir-cuenta>Mi cuenta</a>.</p>
         </div>
         <nav class="cfg-indice" aria-label="Secciones de ajustes">
-          <a href="#cfg-perfil">Tu negocio</a><a href="#cfg-marca">Kit de marca</a><a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos</a><a href="#cfg-datos">Datos del negocio</a><a href="#cuenta" data-ir-cuenta class="cfg-indice-ir">Plan y pagos →</a>
+          <a href="#cfg-perfil">Tu negocio</a><a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos</a><a href="#cfg-datos">Datos del negocio</a><a href="#cuenta" data-ir-cuenta class="cfg-indice-ir">Plan y pagos →</a>
         </nav>
 
         <h2 class="cfg-titulo" id="cfg-perfil">Tu negocio</h2>
         <div class="ig-card" id="perfil-card"></div>
 
-        <h2 class="cfg-titulo" id="cfg-marca">Kit de marca<button type="button" class="ay" data-ayuda="kit-marca" aria-label="Ayuda: Kit de marca" aria-expanded="false">?</button></h2>
-        <div class="ig-card" id="marca-card"></div>
 
         <h2 class="cfg-titulo" id="cfg-conexiones">Conexiones</h2>
         <div class="ig-card" id="ig-card">
@@ -421,28 +428,28 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=31"></script>
-  <script src="/app/guias.js?v=31"></script>
-  <script src="/app/graficos.js?v=31"></script>
-  <script src="/app/plan.js?v=31"></script>
-  <script src="/app/prueba-form.js?v=31"></script>
-  <script src="/app/recargas.js?v=31"></script>
-  <script src="/app/diseno.js?v=31"></script>
-  <script src="/app/reels.js?v=31"></script>
-  <script src="/app/creditos.js?v=31"></script>
-  <script src="/app/imagen.js?v=31"></script>
-  <script src="/app/galeria.js?v=31"></script>
-  <script src="/app/cuenta.js?v=31"></script>
-  <script src="/app/soporte.js?v=31"></script>
-  <script src="/app/bienvenida.js?v=31"></script>
-  <script src="/app/inicio.js?v=31"></script>
-  <script src="/app/resultados.js?v=31"></script>
-  <script src="/app/estilo.js?v=31"></script>
-  <script src="/app/ads.js?v=31"></script>
-  <script src="/app/competencia.js?v=31"></script>
-  <script src="/app/contexto.js?v=31"></script>
-  <script src="/app/voz.js?v=31"></script>
-  <script src="/app/pwa.js?v=31"></script>
-  <script src="/app/app.js?v=31"></script>
+  <script src="/app/ayuda.js?v=32"></script>
+  <script src="/app/guias.js?v=32"></script>
+  <script src="/app/graficos.js?v=32"></script>
+  <script src="/app/plan.js?v=32"></script>
+  <script src="/app/prueba-form.js?v=32"></script>
+  <script src="/app/recargas.js?v=32"></script>
+  <script src="/app/diseno.js?v=32"></script>
+  <script src="/app/reels.js?v=32"></script>
+  <script src="/app/creditos.js?v=32"></script>
+  <script src="/app/imagen.js?v=32"></script>
+  <script src="/app/galeria.js?v=32"></script>
+  <script src="/app/cuenta.js?v=32"></script>
+  <script src="/app/soporte.js?v=32"></script>
+  <script src="/app/bienvenida.js?v=32"></script>
+  <script src="/app/inicio.js?v=32"></script>
+  <script src="/app/resultados.js?v=32"></script>
+  <script src="/app/estilo.js?v=32"></script>
+  <script src="/app/ads.js?v=32"></script>
+  <script src="/app/competencia.js?v=32"></script>
+  <script src="/app/contexto.js?v=32"></script>
+  <script src="/app/voz.js?v=32"></script>
+  <script src="/app/pwa.js?v=32"></script>
+  <script src="/app/app.js?v=32"></script>
 </body>
 </html>

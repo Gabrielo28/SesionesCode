@@ -140,15 +140,24 @@
         { sel: '#resultados', t: 'Tu competencia', d: 'Agrega cuentas y Rubrofy las analiza por ti.' },
       ],
     },
+    marca: {
+      ilu: '★', titulo: 'Tu marca, en un solo lugar',
+      texto: 'Aquí le enseñas a Rubrofy cómo es tu marca. Mientras más sepa, más tuyo suena y se ve lo que crea.',
+      pasos: [['Cómo hablas', 'Tu tono, a quién le hablas y las palabras que usas (o evitas).'], ['Tus ejemplos', 'Publicaciones que te gustan, para que aprenda de ellas.'], ['Cómo se ve', 'Tu logo, colores y letra para los diseños y reels.']],
+      pista: 'Arriba ves qué falta: toca cualquiera de esos avisos para ir directo.',
+      tour: [
+        { sel: '#marca-resumen', t: 'Lo que ya sabe', d: 'En verde lo listo; lo que falta, punteado. Tócalo para completarlo.' },
+        { sel: '#view-marca .marca-pestanas', t: 'Tres partes', d: 'Cómo hablas, tus ejemplos y cómo se ve tu marca.' },
+      ],
+    },
     config: {
       ilu: '⚙', titulo: 'Tus ajustes',
-      texto: 'Aquí conectas Instagram, subes tu logo y eliges tus avisos.',
-      pasos: [['Conecta Instagram', 'Es lo más importante: sin esto, nada se publica solo.'], ['Sube tu logo y colores', 'En Kit de marca. Rubrofy los usa en tus diseños.'], ['Elige tus avisos', 'Te avisamos cuando hay algo para revisar.']],
+      texto: 'Aquí conectas Instagram, completas los datos de tu negocio y eliges tus avisos.',
+      pasos: [['Conecta Instagram', 'Es lo más importante: sin esto, nada se publica solo.'], ['Revisa tu negocio', 'Precios y promociones al día: Rubrofy los usa en tus publicaciones.'], ['Elige tus avisos', 'Te avisamos cuando hay algo para revisar.']],
       pista: 'Tu plan, tus créditos y tus pagos están en Mi cuenta.',
       tour: [
         { sel: '#view-config .cfg-indice', t: 'Índice', d: 'Toca una parte para ir directo a ella.' },
         { sel: '#ig-card', t: 'Conecta Instagram', d: 'Inicias sesión en Instagram y aceptas los permisos. Solo se hace una vez.' },
-        { sel: '#marca-card', t: 'Tu Kit de marca', d: 'Logo, colores y letra. Rubrofy los pone en tus diseños y reels.' },
       ],
     },
     cuenta: {

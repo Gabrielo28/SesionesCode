@@ -430,6 +430,19 @@ estrategia, conexiones y primera semana.
   solo "Tu negocio" y "Lo que vendes" hasta completar el perfil. También se
   edita en Conexiones y ajustes → Tu negocio.
 
+## Menú por etapas y "Tu marca"
+
+El menú agrupa las pantallas en 1 · Configura, 2 · Cada semana, 3 · Mide y
+4 · Cada mes. Cada etapa se abre y se cierra con un clic (se recuerda en el
+navegador, `localStorage` `rubrofy-menu-cerrados`); si se navega a una
+pantalla de una etapa cerrada, esa etapa se abre sola. Con el menú de solo
+íconos (pantallas angostas) las etapas no se pliegan.
+
+**Tu marca** reúne en pestañas Cómo hablas (voz.js), Tus ejemplos
+(estilo.js) y Cómo se ve (Kit de marca, diseno.js), con un resumen arriba de
+lo que falta. Los enlaces antiguos siguen sirviendo: `#voz`, `#estilo` y
+`config` → `cfg-marca` abren la pestaña que corresponde.
+
 ## Mi cuenta (public/app/cuenta.js)
 
 Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
