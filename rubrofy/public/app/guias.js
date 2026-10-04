@@ -26,10 +26,10 @@
       pasos: [['Cuenta qué quieres lograr', 'Vender más, recibir consultas, ganar seguidores…'], ['Elige cuánto publicar', 'Un ritmo sugerido o tu propia cantidad por semana.'], ['Guarda', 'Desde la próxima semana tu contenido sigue este plan.']],
       pista: 'Si no sabes qué poner, toca “Proponer otra con IA” y después cambia lo que no te guste.',
       tour: [
-        { sel: '#view-estrategia [data-seccion="plan"]', t: 'Tu negocio y tu objetivo', d: 'Cuéntale a Rubrofy qué vendes, a quién y qué te hace distinto. Elige hasta 2 objetivos.' },
-        { sel: '#view-estrategia [data-seccion="ritmo"]', t: 'Cuánto publicar', d: 'Elige uno de los ritmos sugeridos o ajusta la cantidad de cada formato.' },
-        { sel: '#view-estrategia [data-est-accion="proponer"]', t: 'Pídele ayuda a la IA', d: 'Rubrofy te propone una estrategia completa. Puedes editarla antes de guardarla.' },
-        { sel: '#view-estrategia [data-est-accion="guardar-plan"]', t: 'No olvides guardar', d: 'Los cambios se usan desde la próxima vez que generes la semana.' },
+        { sel: '#view-estrategia [data-est-accion="proponer"]', t: 'Pídele ayuda a la IA', d: 'Rubrofy te propone una estrategia completa: la frase, el tono y los temas.' },
+        { sel: '#view-estrategia [data-seccion="objetivo"]', t: 'Tu objetivo', d: 'Lo que quieres lograr con Instagram y cómo suenas. Elige hasta 2 objetivos.' },
+        { sel: '#view-estrategia [data-seccion="ritmo"]', t: 'Cuánto publicar', d: 'Cuántos posts, carruseles, reels e historias por semana.' },
+        { sel: '#view-estrategia [data-seccion="objetivo"] .es-editar', t: 'Edita por partes', d: 'Cada tarjeta tiene su “Editar” y su propio Guardar. Los cambios se usan la próxima vez que generes la semana.' },
       ],
     },
     voz: {

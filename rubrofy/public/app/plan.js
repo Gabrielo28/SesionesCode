@@ -314,7 +314,8 @@
 
   // --- estrategia ---
 
-  function estrategiaEditable(est) {
+  // soloEnfoques: sin el resumen ni el tono (vista Estrategia, tarjeta "De qué hablas").
+  function estrategiaEditable(est, soloEnfoques) {
     const cats = est.categoriasFoto || [];
     const fila = (e) => `
       <div class="pc-enfoque" data-enfoque-id="${esc(e.id || '')}">
@@ -323,13 +324,13 @@
         <label class="pc-foto">Foto<select data-e="categoriaFoto">${cats.map((c) => `<option${c === e.categoriaFoto ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
         <button type="button" class="pc-quitar" data-quitar-enfoque title="Quitar enfoque" aria-label="Quitar enfoque">×</button>
       </div>`;
-    return `
+    return `${soloEnfoques ? '' : `
       <label class="pc-bloque">Resumen de la estrategia
         <textarea data-est="resumen" rows="3" maxlength="500" placeholder="Qué vas a comunicar y para qué">${esc(est.resumen || '')}</textarea></label>
       <label class="pc-bloque">Tono de voz
-        <input type="text" data-est="tono" value="${esc(est.tono)}" maxlength="300"></label>
+        <input type="text" data-est="tono" value="${esc(est.tono)}" maxlength="300"></label>`}
       <div class="pc-bloque">
-        <span class="pc-etq">Enfoques de contenido ${AY('enfoques')} <span class="opc">Los temas que se van turnando en tus publicaciones</span></span>
+        ${soloEnfoques ? '' : `<span class="pc-etq">Enfoques de contenido ${AY('enfoques')} <span class="opc">Los temas que se van turnando en tus publicaciones</span></span>`}
         <div class="pc-enfoques" data-enfoques>${(est.enfoques || []).map(fila).join('')}</div>
         <button type="button" class="btn-ghost pc-agregar" data-agregar-enfoque>+ Agregar enfoque</button>
       </div>
@@ -355,8 +356,8 @@
 
   function leerEstrategia(root) {
     return {
-      resumen: root.querySelector('[data-est="resumen"]').value,
-      tono: root.querySelector('[data-est="tono"]').value,
+      resumen: (root.querySelector('[data-est="resumen"]') || {}).value,
+      tono: (root.querySelector('[data-est="tono"]') || {}).value,
       enfoques: [...root.querySelectorAll('.pc-enfoque')].map((f) => ({
         id: f.dataset.enfoqueId || undefined,
         label: f.querySelector('[data-e="label"]').value,
@@ -374,79 +375,188 @@
   }
 
   // --- vista "Estrategia" ---
+  // Primero un resumen en tarjetas; cada tarjeta se edita por separado
+  // ("Editar" la abre a lo ancho con su propio Guardar).
+
+  let editando = null; // resumen | objetivo | ritmo | temas | negocio
+  let guardadoEn = null;
+
+  function nombreRitmo(semanal, cat) {
+    const r = cat.ritmos.find((x) => Object.keys(ETIQUETAS).every((f) => (x.semanal[f] || 0) === ((semanal || {})[f] || 0)));
+    return r ? `plan ${r.label}` : 'a tu medida';
+  }
+
+  function tarjetaVista(clave, ic, titulo, ayuda, cuerpo) {
+    return `<section class="es-card" data-seccion="${clave}">
+      <div class="es-cab"><span class="es-ic" aria-hidden="true">${ic}</span><h2>${titulo}${AY(ayuda)}</h2>
+        ${guardadoEn === clave ? '<span class="es-ok">✓ Guardado</span>' : ''}
+        <button type="button" class="es-editar" data-es-editar="${clave}">Editar</button></div>
+      ${cuerpo}
+    </section>`;
+  }
+
+  function tarjetaEdicion(clave, ic, titulo, ayuda, campos) {
+    return `<section class="es-card editando" data-seccion="${clave}">
+      <div class="es-cab"><span class="es-ic" aria-hidden="true">${ic}</span><h2>${titulo}${AY(ayuda)}</h2></div>
+      <div class="es-campos">${campos}</div>
+      <p class="config-error" data-es-error hidden></p>
+      <div class="es-pie"><button type="button" class="btn-ghost" data-es-cancelar>Cancelar</button><button type="button" class="btn-approve" data-es-guardar="${clave}">Guardar</button></div>
+    </section>`;
+  }
+
+  const falta = (texto, clave, foco) => `<button type="button" class="es-falta" data-es-editar="${clave}"${foco ? ` data-es-foco="${foco}"` : ''}>${esc(texto)}</button>`;
+
+  function htmlVista(n, est, cat) {
+    const plan = n.planContenido || {};
+    const d = n.datos || {};
+    const tonoCat = cat.tonos.find((t) => t.id === plan.tono);
+    const objetivos = (plan.objetivos || []).map((id) => cat.objetivos.find((o) => o.id === id)).filter(Boolean);
+    const semanal = plan.semanal || cat.ritmos[1].semanal;
+    const total = Object.values(semanal).reduce((s, x) => s + x, 0);
+
+    // Resumen en una frase
+    const resumen = editando === 'resumen'
+      ? `<section class="es-card es-resumen editando" data-seccion="resumen">
+          <div class="es-cab"><span class="es-ic grande" aria-hidden="true">◎</span><h2>Tu estrategia en una frase${AY('estrategia-editar')}</h2></div>
+          <textarea data-est="resumen" rows="3" maxlength="500" placeholder="Qué vas a comunicar y para qué">${esc(est.resumen || '')}</textarea>
+          <p class="config-error" data-es-error hidden></p>
+          <div class="es-pie"><button type="button" class="btn-ghost" data-es-cancelar>Cancelar</button><button type="button" class="btn-approve" data-es-guardar="resumen">Guardar</button></div>
+        </section>`
+      : `<section class="es-card es-resumen" data-seccion="resumen">
+          <span class="es-ic grande" aria-hidden="true">◎</span>
+          <div class="es-resumen-txt"><h2>Tu estrategia en una frase${AY('estrategia-editar')}${guardadoEn === 'resumen' ? '<span class="es-ok">✓ Guardado</span>' : ''}</h2>
+            ${est.resumen ? `<p>${esc(est.resumen)}</p>` : '<p class="es-vacio">Todavía no la tienes. Pídesela a la IA o escríbela tú.</p>'}</div>
+          <div class="es-resumen-acc"><button type="button" class="btn-ghost" data-est-accion="proponer">✨ Proponer otra con IA</button><button type="button" class="es-editar" data-es-editar="resumen">Editar</button></div>
+        </section>`;
+
+    const objetivo = editando === 'objetivo'
+      ? tarjetaEdicion('objetivo', '🎯', 'Objetivo y tono', 'negocio-objetivo', `${camposObjetivo(plan, cat)}
+          <label class="pc-bloque">Tu tono en tus palabras <span class="opc">cómo describirías tu forma de hablar</span><input type="text" data-est="tono" value="${esc(est.tono || '')}" maxlength="300"></label>`)
+      : tarjetaVista('objetivo', '🎯', 'Objetivo y tono', 'negocio-objetivo', `
+          <div class="es-fila"><span class="es-etq">Quieres</span>${objetivos.length ? `<div class="es-chips">${objetivos.map((o) => `<span class="es-chip on">${esc(o.label)}</span>`).join('')}</div>` : falta('Elige qué quieres lograr', 'objetivo')}</div>
+          <div class="es-fila"><span class="es-etq">Suenas</span><div class="es-chips"><span class="es-chip">${[tonoCat && tonoCat.label, est.tono].filter(Boolean).map(esc).join(' · ') || 'Sin definir'}</span></div></div>`);
+
+    const ritmo = editando === 'ritmo'
+      ? tarjetaEdicion('ritmo', '📅', 'Cuánto publicas', 'cuanto-publicar', `<p class="sub">"Generar semana" crea exactamente esta mezcla y la reparte en los días de la semana.</p>${camposRitmo(plan, cat)}`)
+      : tarjetaVista('ritmo', '📅', 'Cuánto publicas', 'cuanto-publicar', `
+          <div class="es-numeros">${Object.keys(ETIQUETAS).map((f) => `<div class="es-numero${semanal[f] ? '' : ' cero'}"><b>${semanal[f] || 0}</b><span>${(semanal[f] === 1 ? SINGULAR[f] : ETIQUETAS[f])}</span></div>`).join('')}</div>
+          <p class="es-total"><b>${total} por semana</b> · ${esc(nombreRitmo(semanal, cat))} · posts a las ${esc(plan.hora || '09:00')}</p>`);
+
+    const enfoques = est.enfoques || [];
+    const temas = editando === 'temas'
+      ? tarjetaEdicion('temas', '💬', 'De qué hablas', 'enfoques', `<p class="sub">Los temas que se van turnando en tus publicaciones. Cada publicación usa uno.</p>${estrategiaEditable(est, true)}`)
+      : tarjetaVista('temas', '💬', 'De qué hablas', 'enfoques', enfoques.length
+        ? `<div class="es-temas">${enfoques.map((e) => `<div class="es-tema"><b>${esc(e.label)}</b><span>${esc(e.pista)}</span><i>📷 ${esc(e.categoriaFoto || '')}</i></div>`).join('')}</div>`
+        : falta('Agrega los temas de los que quieres hablar', 'temas'));
+
+    const dato = (etq, valorTxt) => `<div class="es-dato"><span>${etq}</span><b>${esc(valorTxt)}</b></div>`;
+    const datos = [
+      d.productoDestacado && dato('Producto estrella', d.productoDestacado),
+      d.precioDesde && dato('Precio desde', [d.precioDesde, d.unidad].filter(Boolean).join(' · ')),
+      d.promo && dato('Promoción', d.promo),
+      plan.publico && dato('Le hablas a', plan.publico),
+      plan.diferenciador && dato('Te hace distinto', plan.diferenciador),
+    ].filter(Boolean);
+    const faltan = [
+      !d.productoDestacado && falta('Tu producto estrella', 'negocio', 'productoDestacado'),
+      !d.precioDesde && falta('Un precio de referencia', 'negocio', 'precioDesde'),
+      !plan.publico && falta('A quién le hablas', 'negocio', 'publico'),
+      !plan.diferenciador && falta('Qué te hace distinto', 'negocio', 'diferenciador'),
+    ].filter(Boolean);
+    const negocio = editando === 'negocio'
+      ? tarjetaEdicion('negocio', '🏪', 'Tu negocio', 'negocio-objetivo', `<p class="sub">Datos reales que Rubrofy usa en tus textos.</p>${camposNegocio(n)}`)
+      : tarjetaVista('negocio', '🏪', 'Tu negocio', 'negocio-objetivo', `${datos.length ? `<div class="es-datos">${datos.join('')}</div>` : ''}${faltan.length ? `<div class="es-faltan">${faltan.join('')}</div>` : ''}`);
+
+    return `<div class="es">
+      ${resumen}
+      <p class="config-error" data-es-error-general hidden></p>
+      <div class="es-grid${editando && editando !== 'resumen' ? ' con-edicion' : ''}">${objetivo}${ritmo}${temas}${negocio}</div>
+      <p class="es-bienvenida"><button type="button" class="btn-text" data-est-accion="repetir-bienvenida">Repetir la bienvenida</button></p>
+    </div>`;
+  }
 
   async function renderVista(cont, ctx) {
     const cat = await catalogo(ctx.api);
-    const n = ctx.negocio;
-    cont.innerHTML = `
-      <div class="est-grid">
-        <section class="ig-card est-card" data-seccion="estrategia">
-          <div class="ig-card-head"><h2>Tu estrategia${AY('estrategia-editar')}</h2>
-            <button type="button" class="btn-ghost" data-est-accion="proponer">Proponer otra con IA</button></div>
-          <p class="sub">Rubrofy la usa para escribir cada publicación. Cámbiala cuando quieras.</p>
-          <div data-est-form>${estrategiaEditable(ctx.estrategia)}</div>
-          <p class="config-error" data-est-error hidden></p>
-          <p class="config-ok" data-est-ok hidden>Guardado.</p>
-          <div class="config-actions"><button type="button" class="btn-approve" data-est-accion="guardar-estrategia">Guardar estrategia</button></div>
-        </section>
-        <section class="ig-card est-card" data-seccion="plan">
-          <div class="ig-card-head"><h2>Tu negocio y objetivo${AY('negocio-objetivo')}</h2></div>
-          ${camposNegocio(n)}
-          ${camposObjetivo(n.planContenido, cat)}
-        </section>
-        <section class="ig-card est-card" data-seccion="ritmo">
-          <div class="ig-card-head"><h2>Cuánto publicar${AY('cuanto-publicar')}</h2></div>
-          <p class="sub">"Generar semana" crea exactamente esta mezcla y la reparte en los días de la semana.</p>
-          ${camposRitmo(n.planContenido, cat)}
-          <p class="config-error" data-plan-error hidden></p>
-          <p class="config-ok" data-plan-ok hidden>Guardado.</p>
-          <div class="config-actions">
-            <button type="button" class="btn-ghost" data-est-accion="repetir-bienvenida">Repetir la bienvenida</button>
-            <button type="button" class="btn-approve" data-est-accion="guardar-plan">Guardar plan</button>
-          </div>
-        </section>
-      </div>`;
-    activar(cont, cat.maxPorFormato);
-    activarEstrategia(cont.querySelector('[data-seccion="estrategia"]'));
+    let n = ctx.negocio;
+    let est = ctx.estrategia;
+    guardadoEn = null;
 
-    const aviso = (sel, texto, ok) => {
-      cont.querySelectorAll('[data-est-error],[data-est-ok],[data-plan-error],[data-plan-ok]').forEach((x) => { x.hidden = true; });
-      const el = cont.querySelector(sel);
-      if (texto) el.textContent = texto;
-      el.hidden = false;
-      if (ok) setTimeout(() => { el.hidden = true; }, 2500);
+    const pintar = (foco) => {
+      cont.innerHTML = htmlVista(n, est, cat);
+      activar(cont, cat.maxPorFormato);
+      activarEstrategia(cont);
+      const abierta = cont.querySelector('.es-card.editando');
+      if (abierta) {
+        abierta.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        const campo = (foco && abierta.querySelector(`[data-pc="${foco}"]`)) || abierta.querySelector('textarea, input:not([type=time])');
+        if (campo && foco) campo.focus();
+      }
+    };
+    const error = (texto) => {
+      const el = cont.querySelector('.es-card.editando [data-es-error]') || cont.querySelector('[data-es-error-general]');
+      el.textContent = texto; el.hidden = false;
+    };
+    const guardado = (clave) => {
+      editando = null; guardadoEn = clave; pintar();
+      setTimeout(() => { if (guardadoEn === clave) { guardadoEn = null; const ok = cont.querySelector(`[data-seccion="${clave}"] .es-ok`); if (ok) ok.remove(); } }, 2500);
+    };
+    const guardarEst = async (cambios) => {
+      est = await ctx.api(`/api/negocios/${n.id}/estrategia`, { method: 'PUT', body: JSON.stringify(Object.assign({ resumen: est.resumen || '', tono: est.tono, enfoques: est.enfoques }, cambios)) });
+      ctx.setEstrategia(est);
+    };
+    const guardarPlan = async (root) => {
+      // Sin plan guardado se parte de lo que muestra la vista (ritmo Recomendado, 9:00).
+      const previo = Object.assign({ semanal: cat.ritmos[1].semanal, hora: '09:00' }, n.planContenido || {});
+      n = await ctx.api(`/api/negocios/${n.id}/plan-contenido`, { method: 'PUT', body: JSON.stringify(leerPlan(root, previo)) });
+      ctx.setNegocio(n);
     };
 
+    pintar();
+
     cont.onclick = async (e) => {
-      const b = e.target.closest('[data-est-accion]');
+      const ed = e.target.closest('[data-es-editar]');
+      if (ed) { editando = ed.dataset.esEditar; guardadoEn = null; return pintar(ed.dataset.esFoco); }
+      if (e.target.closest('[data-es-cancelar]')) { editando = null; return pintar(); }
+      const g = e.target.closest('[data-es-guardar]');
+      const b = g || e.target.closest('[data-est-accion]');
       if (!b) return;
-      const accion = b.dataset.estAccion;
+      const card = b.closest('.es-card');
       b.disabled = true;
       try {
-        if (accion === 'guardar-estrategia') {
-          const est = await ctx.api(`/api/negocios/${n.id}/estrategia`, { method: 'PUT', body: JSON.stringify(leerEstrategia(cont)) });
-          ctx.setEstrategia(est);
-          aviso('[data-est-ok]', null, true);
-        } else if (accion === 'proponer') {
-          if (!confirm('La IA va a proponer una estrategia nueva con tu objetivo y plan actuales. Reemplaza la que tienes en pantalla. ¿Seguir?')) return;
-          b.textContent = 'Pensando…';
-          const est = await ctx.api(`/api/negocios/${n.id}/estrategia/generar`, { method: 'POST' });
-          ctx.setEstrategia(est);
-          cont.querySelector('[data-est-form]').innerHTML = estrategiaEditable(est);
-          aviso('[data-est-ok]', 'Nueva estrategia lista. Revísala y guarda si quieres cambiar algo.', false);
-        } else if (accion === 'guardar-plan') {
-          await ctx.guardarDatos(leerDatos(cont, n));
-          const neg = await ctx.api(`/api/negocios/${n.id}/plan-contenido`, { method: 'PUT', body: JSON.stringify(leerPlan(cont, n.planContenido)) });
-          ctx.setNegocio(neg);
-          aviso('[data-plan-ok]', null, true);
-        } else if (accion === 'repetir-bienvenida') {
-          ctx.abrirBienvenida();
+        if (g) {
+          const clave = g.dataset.esGuardar;
+          if (clave === 'resumen') await guardarEst({ resumen: card.querySelector('[data-est="resumen"]').value });
+          else if (clave === 'objetivo') {
+            await guardarPlan(card);
+            const tono = card.querySelector('[data-est="tono"]').value;
+            if (tono.trim() !== String(est.tono || '').trim()) await guardarEst({ tono });
+          } else if (clave === 'ritmo') await guardarPlan(card);
+          else if (clave === 'temas') {
+            const leido = leerEstrategia(card);
+            await guardarEst({ enfoques: leido.enfoques });
+          } else if (clave === 'negocio') {
+            await ctx.guardarDatos(leerDatos(card, n));
+            await guardarPlan(card);
+          }
+          return guardado(clave);
         }
+        const accion = b.dataset.estAccion;
+        if (accion === 'proponer') {
+          if (!confirm('La IA va a proponer una estrategia nueva (frase, tono y temas) con tu objetivo y plan actuales. Reemplaza la actual. ¿Seguir?')) return;
+          b.textContent = 'Pensando…';
+          est = await ctx.api(`/api/negocios/${n.id}/estrategia/generar`, { method: 'POST' });
+          ctx.setEstrategia(est);
+          editando = null;
+          return guardado('resumen');
+        }
+        if (accion === 'repetir-bienvenida') ctx.abrirBienvenida();
       } catch (err) {
-        aviso(accion === 'guardar-plan' ? '[data-plan-error]' : '[data-est-error]', err.mensaje || 'No se pudo guardar.', false);
+        error(err.mensaje || 'No se pudo guardar.');
       } finally {
-        b.disabled = false;
-        if (accion === 'proponer') b.textContent = 'Proponer otra con IA';
+        if (b.isConnected) {
+          b.disabled = false;
+          if (b.dataset.estAccion === 'proponer') b.textContent = '✨ Proponer otra con IA';
+        }
       }
     };
   }
