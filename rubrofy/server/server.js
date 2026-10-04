@@ -47,6 +47,7 @@ const creditos = require('./creditos');
 const soporte = require('./soporte');
 const alertas = require('./alertas');
 const respaldos = require('./respaldos');
+const videos = require('./videos');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -615,6 +616,34 @@ function enlaceFotoPublico(base, negocioId, categoria, archivo, minutos) {
   return `${base}/fotos/${encodeURIComponent(negocioId)}/${encodeURIComponent(categoria)}/${encodeURIComponent(archivo)}?t=${auth.crearTokenFoto(negocioId, categoria, archivo, minutos)}`;
 }
 
+// Nombre del archivo que eligió el cliente (cabecera x-nombre, codificada).
+function nombreSubido(req) {
+  try { return decodeURIComponent(String(req.headers['x-nombre'] || '')).replace(/\.[^.]+$/, '').replace(/[\u0000-\u001f]/g, '').trim().slice(0, 80); } catch (e) { return ''; }
+}
+
+// Recibe un video del cuerpo crudo en `temporal`. Devuelve los bytes, -1 si
+// pasa del máximo o -2 si falló.
+function recibirVideo(req, temporal) {
+  return new Promise((resolve) => {
+    const salida = fs.createWriteStream(temporal);
+    let total = 0;
+    let cortado = false;
+    req.on('data', (chunk) => {
+      total += chunk.length;
+      if (total > MAX_VIDEO_BYTES && !cortado) {
+        cortado = true;
+        req.unpipe(salida);
+        salida.destroy();
+        resolve(-1);
+      }
+    });
+    req.pipe(salida);
+    salida.on('finish', () => { if (!cortado) resolve(total); });
+    salida.on('error', () => { if (!cortado) resolve(-2); });
+    req.on('error', () => { if (!cortado) resolve(-2); });
+  });
+}
+
 function escapeHtmlSrv(t) {
   return String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -961,6 +990,22 @@ store.db.exec('DROP TABLE IF EXISTS canjes; DROP TABLE IF EXISTS codigos;');
 edicionReels.iniciar({
   alCosto: (negocioId, segundos) => costos.audio(negocioId, 'openai', process.env.OPENAI_TRANSCRIPCION_MODEL || 'whisper-1', segundos),
   alTerminar: async ({ negocioId, itemId, ok, archivoTemporal, info, error }) => {
+    // Un video de "Mis videos" (itemId "lib-<id>"): la edición queda como un video nuevo.
+    if (String(itemId).startsWith('lib-')) {
+      const origen = videos.obtener(negocioId, String(itemId).slice(4));
+      if (!ok) {
+        registrarUsoIA(negocioId, 'usoReelsEditados', -1);
+        notificar(negocioId, { titulo: 'No se pudo editar tu video', cuerpo: String(error || 'Intenta de nuevo.').slice(0, 140), url: '/app#reels', tag: 'edicion-' + itemId });
+        if (archivoTemporal) fs.rmSync(archivoTemporal, { force: true });
+        return;
+      }
+      const archivo = videos.nombreArchivo('.mp4');
+      fs.mkdirSync(store.videoDir(negocioId), { recursive: true });
+      fs.renameSync(archivoTemporal, store.videoAbsolutePath(negocioId, archivo));
+      videos.agregar(negocioId, archivo, { nombre: `${origen ? origen.nombre : 'Video'} (editado)`, duracion: info && info.duracion, origen: 'editado', editadoDe: origen ? origen.id : null });
+      notificar(negocioId, { titulo: 'Tu video editado está listo', cuerpo: 'Lo encuentras en Estudio de reels → Mis videos.', url: '/app#reels', tag: 'edicion-' + itemId });
+      return;
+    }
     const items = store.getContenido(negocioId);
     const it = encontrarItem(items, itemId);
     if (!it) return;
@@ -978,6 +1023,8 @@ edicionReels.iniciar({
     else if (it.video && it.video.archivo !== it.videoOriginal.archivo) store.borrarVideo(negocioId, it.video.archivo);
     const bytes = fs.statSync(store.videoAbsolutePath(negocioId, archivo)).size;
     it.video = { archivo, bytes, editado: true, subidoEl: new Date().toISOString() };
+    const deBiblio = videos.desdeReel(negocioId, archivo, { nombre: `${String(it.gancho || it.headline || 'Reel').replace(/\n/g, ' ').slice(0, 50)} (editado)`, duracion: info.duracion, origen: 'editado' });
+    if (deBiblio) it.video.desdeBiblioteca = deBiblio;
     it.edicion = { estado: 'lista', duracion: Math.round(info.duracion * 10) / 10, subtitulos: info.subtitulos, terminadoEl: new Date().toISOString() };
     descartarContenedor(it);
     store.saveContenido(negocioId, items);
@@ -1036,6 +1083,8 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
   if (r.ok && !(it.video && !it.video.generadoIA)) {
     if (it.video && it.video.archivo !== r.archivo) store.borrarVideo(t.negocio_id, it.video.archivo);
     it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
+    const deBiblio = videos.desdeReel(t.negocio_id, r.archivo, { nombre: 'Video creado con IA', duracion: t.segundos, origen: 'ia' });
+    if (deBiblio) it.video.desdeBiblioteca = deBiblio;
     it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
     descartarContenedor(it);
     const mv = creditos.config().modelos.find((m) => m.id === t.modelo);
@@ -1163,8 +1212,8 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && parts[3] === 'contenido'
-    && parts[5] === 'video' && parts.length === 6 && req.method === 'POST';
+  const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && req.method === 'POST'
+    && ((parts[3] === 'contenido' && parts[5] === 'video' && parts.length === 6) || (parts[3] === 'videos' && parts.length === 4));
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
   if (parts[0] === 'api' && mutando && !esWebhookStripe && !esAvisoFlow && !peticionLegitima(req, esSubidaVideo)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
@@ -2855,6 +2904,95 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, item);
         }
 
+        // Mis videos (server/videos.js), en Estudio de reels:
+        //   GET    /api/negocios/:id/videos
+        //   POST   /api/negocios/:id/videos                 cuerpo crudo video/mp4|quicktime (x-nombre, x-duracion)
+        //   DELETE /api/negocios/:id/videos/:vid
+        //   POST   /api/negocios/:id/videos/:vid/usar        { itemId } lo pone en ese reel
+        //   POST   /api/negocios/:id/videos/:vid/reel-nuevo  { descripcion? } crea un reel con texto de la IA
+        //   POST   /api/negocios/:id/videos/:vid/editar      { opciones, capas } la edición queda como video nuevo
+        if (parts[3] === 'videos') {
+          if (parts.length === 4 && req.method === 'GET') {
+            return sendJSON(res, 200, { videos: videos.lista(negocioId).map((v) => Object.assign(v, { editando: edicionReels.enProceso(negocioId, 'lib-' + v.id) })), max: videos.MAX_VIDEOS });
+          }
+          if (parts.length === 4 && req.method === 'POST') {
+            if (videos.lleno(negocioId)) return sendJSON(res, 400, { error: `Llegaste al máximo de ${videos.MAX_VIDEOS} videos. Borra algunos que ya no uses.` });
+            const tipo = (req.headers['content-type'] || '').split(';')[0].trim();
+            if (Number(req.headers['content-length']) > MAX_VIDEO_BYTES) return sendJSON(res, 413, { error: `El video pesa más de ${MAX_VIDEO_BYTES / 1024 / 1024} MB` });
+            const archivo = videos.nombreArchivo(TIPOS_VIDEO[tipo]);
+            fs.mkdirSync(store.videoDir(negocioId), { recursive: true });
+            const destino = store.videoAbsolutePath(negocioId, archivo);
+            const temporal = `${destino}.subiendo-${Date.now()}`;
+            const bytes = await recibirVideo(req, temporal);
+            if (bytes <= 0) {
+              fs.rmSync(temporal, { force: true });
+              if (bytes === -1) { res.setHeader('Connection', 'close'); return sendJSON(res, 413, { error: `El video pesa más de ${MAX_VIDEO_BYTES / 1024 / 1024} MB` }); }
+              return sendJSON(res, 400, { error: bytes === 0 ? 'Falta el video' : 'No se pudo recibir el video' });
+            }
+            fs.renameSync(temporal, destino);
+            const fila = videos.agregar(negocioId, archivo, { nombre: nombreSubido(req) || 'Video', duracion: req.headers['x-duracion'] });
+            return sendJSON(res, 201, { video: videos.publico(fila, []) });
+          }
+          const fila = videos.obtener(negocioId, parts[4]);
+          if (!fila) return sendJSON(res, 404, { error: 'No encontramos ese video.' });
+          if (parts.length === 5 && req.method === 'DELETE') {
+            if (edicionReels.enProceso(negocioId, 'lib-' + fila.id)) return sendJSON(res, 409, { error: 'Ese video se está editando. Espera a que termine.' });
+            videos.borrar(negocioId, fila.id);
+            return sendJSON(res, 200, { ok: true });
+          }
+          if (parts.length === 6 && req.method === 'POST' && parts[5] === 'usar') {
+            const body = await readBody(req);
+            const items = store.getContenido(negocioId);
+            const it = encontrarItem(items, String(body.itemId || ''));
+            if (!it) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+            if (!['reel', 'historia'].includes(formatoDe(it))) return sendJSON(res, 400, { error: 'Los videos son para Reels e historias' });
+            const pub = it.publicacion;
+            if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, it.id)) return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
+            if (edicionReels.enProceso(negocioId, it.id)) return sendJSON(res, 409, { error: 'Este reel se está editando. Espera a que termine.' });
+            const archivo = `${it.id}-${Date.now()}${videos.extDe(fila.archivo)}`;
+            const bytes = videos.copiarParaReel(negocioId, fila, archivo);
+            if (it.video) store.borrarVideo(negocioId, it.video.archivo);
+            if (it.videoOriginal) store.borrarVideo(negocioId, it.videoOriginal.archivo);
+            delete it.videoOriginal; delete it.edicion; delete it.videoIA;
+            it.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
+            descartarContenedor(it);
+            store.saveContenido(negocioId, items);
+            return sendJSON(res, 200, it);
+          }
+          if (parts.length === 6 && req.method === 'POST' && parts[5] === 'reel-nuevo') {
+            if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para crear contenido.', sinPlan: true });
+            const usaIA = getPlan(negocio.plan).usaIA;
+            if (usaIA && textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
+            const body = await readBody(req);
+            const descripcion = String(body.descripcion || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+            const existentes = store.getContenido(negocioId);
+            const [nuevo] = await generarBanco(negocio, 1, existentes.length, {
+              usarIA: usaIA, formato: 'reel', diaInicio: diaSiguienteDeLaCola(existentes),
+              indicaciones: contextoIA.indicacion(`Este reel usa un video que el negocio ya grabó${descripcion ? `: ${descripcion}` : ''}. Escribe el gancho y el texto para ese video.`),
+            });
+            registrarUsoIA(negocioId, 'usoTextosIA', nuevo.generadoConIA ? 1 : 0);
+            const archivo = `${nuevo.id}-${Date.now()}${videos.extDe(fila.archivo)}`;
+            const bytes = videos.copiarParaReel(negocioId, fila, archivo);
+            nuevo.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
+            if (descripcion) nuevo.idea = descripcion;
+            const items = store.getContenido(negocioId).concat([nuevo]);
+            store.saveContenido(negocioId, items);
+            return sendJSON(res, 201, { item: nuevo });
+          }
+          if (parts.length === 6 && req.method === 'POST' && parts[5] === 'editar') {
+            if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para editar videos.', sinPlan: true });
+            if (!edicionReels.disponible()) return sendJSON(res, 503, { error: 'La edición de videos todavía no está disponible. Intenta más tarde.' });
+            if (edicionReels.enProceso(negocioId, 'lib-' + fila.id)) return sendJSON(res, 409, { error: 'Ese video ya se está editando.' });
+            if (reelsEditadosDisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('reels', 'Ya usaste tus reels editados de este mes. Puedes cargar más.'));
+            const body = await readBody(req, 14e6);
+            const r = edicionReels.encolar({ negocioId, itemId: 'lib-' + fila.id, entrada: fila.archivo, opciones: body.opciones, capas: body.capas });
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            registrarUsoIA(negocioId, 'usoReelsEditados', 1);
+            return sendJSON(res, 200, { ok: true, editando: true });
+          }
+          return sendJSON(res, 404, { error: 'No encontrado' });
+        }
+
         // Edición de reels (server/edicion-reels.js):
         //   POST /api/negocios/:id/contenido/:itemId/editar-reel  { opciones, capas: { gancho, cta, logo } }
         //   POST /api/negocios/:id/contenido/:itemId/video-original — deshace la edición
@@ -2970,6 +3108,9 @@ const server = http.createServer(async (req, res) => {
             delete fresco.edicion;
             fs.renameSync(temporal, destino);
             fresco.video = { archivo, bytes, subidoEl: new Date().toISOString() };
+            // También queda en "Mis videos" (Estudio de reels).
+            const deBiblio = videos.desdeReel(negocioId, archivo, { nombre: nombreSubido(req) || 'Video de un reel', duracion: req.headers['x-duracion'] });
+            if (deBiblio) fresco.video.desdeBiblioteca = deBiblio;
             descartarContenedor(fresco);
             store.saveContenido(negocioId, items);
             return sendJSON(res, 200, fresco);

@@ -220,7 +220,7 @@
   async function subirVideo(id, file) {
     const res = await fetch(`/api/negocios/${negocioActual.id}/contenido/${id}/video`, {
       method: 'POST',
-      headers: { 'content-type': file.type || 'video/mp4', 'x-rubrofy-panel': '1' },
+      headers: { 'content-type': file.type || 'video/mp4', 'x-rubrofy-panel': '1', 'x-nombre': encodeURIComponent(file.name || 'Video') },
       body: file,
     });
     if (!res.ok) {
@@ -275,12 +275,12 @@
     const canvasH = isPost ? 600 : 854;
 
     return `
-      <div class="card">
+      <div class="card" id="card-${item.id}">
         <div class="card-media ${isPost ? 'post' : 'historia'}" ${fotoUrl ? '' : `style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
           ${disenoUrl
             ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
             : faltaVideo
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><label class="btn-approve card-vacia-btn">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" data-video-editar="1" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-ghost card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear video con IA</button>` : ''}</div>`
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">🎬 Elegir video</button></div>`
             : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
             : faltaFoto
@@ -464,57 +464,10 @@
     window.RubrofyGaleria.renderVista(cont);
   }
 
-  // Estudio de reels: los reels de la semana, con su video y su edición.
+  // Estudio de reels (public/app/videos.js): Reels por publicar y Mis videos.
   function renderEstudioReels() {
-    const cont = $('#reels-estudio');
     vigilarVideos();
-    const er = negocioActual.edicionReels || {};
-    const reels = contenido
-      .filter((i) => formatoDe(i) === 'reel' && i.status !== 'rechazado' && !(i.instagram && i.instagram.ok))
-      .sort((a, b) => String(a.publicarEl || '').localeCompare(String(b.publicarEl || '')));
-    const fila = (it) => {
-      const ed = it.edicion || {};
-      const v = it.video;
-      const src = v ? `/videos/${negocioActual.id}/${encodeURIComponent(v.archivo)}` : null;
-      let estado, botones;
-      if (!v) {
-        estado = '<span class="rs-estado rs-falta">Falta el video</span>';
-        botones = `<label class="btn-approve">⬆ Subir video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${it.id}" data-video-editar="1" hidden></label>`;
-      } else if (ed.estado === 'editando') {
-        estado = '<span class="rs-estado rs-editando">Editando… suele tardar 1 o 2 minutos</span>';
-        botones = '';
-      } else if (v.editado) {
-        estado = `<span class="rs-estado rs-listo">✓ Editado${ed.duracion ? ` · ${String(ed.duracion).replace('.', ',')} s` : ''}</span>`;
-        botones = `<a class="btn-ghost" href="${escapeHtml(src)}" target="_blank" rel="noopener">▶ Ver</a>${er.disponible ? `<button class="btn-ghost" data-rs="editar" data-id="${it.id}">✂ Editar de nuevo</button>` : ''}${it.videoOriginal ? `<button class="btn-text" data-rs="original" data-id="${it.id}">Volver al original</button>` : ''}`;
-      } else {
-        estado = '<span class="rs-estado">Video subido, sin editar</span>';
-        botones = `${er.disponible ? `<button class="btn-approve" data-rs="editar" data-id="${it.id}">✂ Editar con Rubrofy</button>` : ''}<a class="btn-ghost" href="${escapeHtml(src)}" target="_blank" rel="noopener">▶ Ver</a><label class="btn-text">Cambiar video<input type="file" accept="video/mp4,video/quicktime" data-video-id="${it.id}" data-video-editar="1" hidden></label>`;
-      }
-      if (ed.estado === 'error') estado += `<span class="rs-estado rs-falta">La edición falló: ${escapeHtml(ed.error || '')}</span>`;
-      return `<article class="rs-item">
-        <div class="rs-thumb">${src ? `<video src="${escapeHtml(src)}#t=0.5" muted playsinline preload="metadata"></video>` : '<span>🎬</span>'}</div>
-        <div class="rs-info"><b>${escapeHtml(it.gancho || String(it.headline || '').replace(/\n/g, ' '))}</b><span class="rs-fecha">${escapeHtml(it.date || '')}</span>${estado}${it.idea && !v ? `<span class="rs-idea">Qué grabar: ${escapeHtml(it.idea)}</span>` : ''}</div>
-        <div class="rs-acc">${botones}</div>
-      </article>`;
-    };
-    cont.innerHTML = `${er.disponible ? '' : '<p class="rs-nota">La edición automática se está activando en el servidor. Mientras tanto puedes subir tus videos.</p>'}
-      <div class="rs-pasos"><span><b>1</b> Sube el video de un reel</span><span><b>2</b> Elige qué hace Rubrofy: cortes, subtítulos, gancho, logo</span><span><b>3</b> Revisa la vista previa y aprueba</span></div>
-      ${reels.length ? `<div class="rs-lista">${reels.map(fila).join('')}</div>`
-        : `<div class="gl-vacia"><b>No tienes reels pendientes</b><p>En <b>Por aprobar</b>, cambia el formato de una publicación a <b>Reel</b>, o pide más reels en <b>Estrategia → Cuánto publicar</b>.</p><button type="button" class="btn-approve" data-rs="cola">Ir a Por aprobar</button></div>`}`;
-    cont.onclick = async (e) => {
-      const b = e.target.closest('[data-rs]');
-      if (!b) return;
-      if (b.dataset.rs === 'cola') return irAVista('cola');
-      const it = contenido.find((x) => x.id === b.dataset.id);
-      if (!it) return;
-      if (b.dataset.rs === 'editar') return window.RubrofyReels.abrir(it);
-      if (b.dataset.rs === 'original') {
-        b.disabled = true;
-        try { await api(`/api/negocios/${negocioActual.id}/contenido/${it.id}/video-original`, { method: 'POST' }); await refreshContenido(); }
-        catch (err) { alert(err.mensaje || 'No se pudo volver al original.'); b.disabled = false; }
-      }
-    };
-    cont.onchange = (e) => { subirVideoDesde(e.target); };
+    window.RubrofyVideos.renderEstudio($('#reels-estudio'));
   }
 
   // "Tu negocio" en Conexiones y ajustes: el mismo perfil de la bienvenida.
@@ -1395,6 +1348,7 @@
   // ---------- login / sesión ----------
   function mostrarLogin(mensaje) {
     negocioActual = null;
+    if (window.RubrofyVideos) window.RubrofyVideos.olvidar();
     $('#view-app').hidden = true;
     $('#view-login').hidden = false;
     $('#login-error').hidden = !mensaje;
@@ -1418,6 +1372,20 @@
         setNegocio: (n) => { negocioActual = n; },
         irA: irAVista,
         recargarContenido: async () => { contenido = await api('/api/negocios/' + negocioActual.id + '/contenido'); render(); },
+      });
+    }
+    if (window.RubrofyVideos) {
+      window.RubrofyVideos.iniciar({
+        api,
+        negocio: () => negocioActual,
+        contenido: () => contenido,
+        formatoDe,
+        irAVista,
+        recargar: async () => {
+          negocioActual = await api('/api/me');
+          contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
+          render();
+        },
       });
     }
     if (window.RubrofyReels) {
@@ -1844,6 +1812,11 @@
         return;
       }
       if (accion === 'expandir') return btn.classList.toggle('abierta');
+      if (accion === 'elegir-video') {
+        const it = contenido.find((x) => x.id === id);
+        if (it) window.RubrofyVideos.elegirParaReel(it);
+        return;
+      }
       if (accion === 'editar-reel') {
         const it = contenido.find((x) => x.id === id);
         if (it) window.RubrofyReels.abrir(it);

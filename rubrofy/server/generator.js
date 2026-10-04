@@ -170,8 +170,11 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
 
   // Formatos: los del plan semanal del negocio; si no tiene, la mezcla que
   // mostró en "Mi estilo" (o el patrón de siempre).
-  const formatos = estilo.planFormatos(negocio.id, cantidad, startIndex, planContenido.mezcla(pc));
-  const fechas = pc ? fechasSegunPlan(formatos, pc, opciones.diaInicio || 1) : null;
+  // opciones.formato: todas las piezas de ese formato (ej.: un reel nuevo a
+  // partir de un video de "Mis videos"), desde opciones.diaInicio.
+  const formatos = opciones.formato ? Array(cantidad).fill(opciones.formato) : estilo.planFormatos(negocio.id, cantidad, startIndex, planContenido.mezcla(pc));
+  const fechas = opciones.formato ? Array.from({ length: cantidad }, (_, i) => (opciones.diaInicio || 1) + i)
+    : pc ? fechasSegunPlan(formatos, pc, opciones.diaInicio || 1) : null;
   for (let i = 0; i < cantidad; i++) {
     const idx = startIndex + i;
     const enfoque = enfoques[idx % enfoques.length];

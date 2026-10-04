@@ -99,11 +99,15 @@
   }
 
   // ---------- el editor ----------
-  async function abrir(item) {
+  // opciones.biblioteca: un video de "Mis videos" (el resultado queda como
+  // un video nuevo en la galería); opciones.alEnviar se llama al encolarlo.
+  async function abrir(item, opciones) {
+    const op0 = opciones || {};
+    const lib = op0.biblioteca || null;
     const n = ctx.negocio();
     const D = window.RubrofyDiseno;
     const kit = D.kitDe(n);
-    const base = item.videoOriginal || item.video;
+    const base = lib ? { archivo: lib.archivo } : (item.videoOriginal || item.video);
     if (!base) return;
     const src = `/videos/${n.id}/${encodeURIComponent(base.archivo)}`;
     const auto = !!(n.edicionReels && n.edicionReels.subtitulosAuto);
@@ -115,13 +119,14 @@
       document.body.appendChild(dlg);
     }
     const quedan = n.reelsEditadosDisponibles || 0;
-    dlg.innerHTML = `<div class="dlg-caja">
-      <h2>Editar con Rubrofy</h2>
+    const ganchoInicial = lib ? '' : (item.gancho || String(item.headline || '').replace(/\n/g, ' '));
+    dlg.innerHTML = `<div class="dlg-caja modo-auto">
+      <h2>${lib ? `Editar “${esc(lib.nombre)}”` : 'Editar con Rubrofy'}</h2>
       <div class="rl-grid">
         <div class="rl-vista">
           <div class="rl-tel" style="--c1:${esc(kit.color)}; --c1-ink:${D.tintaSobre(kit.color)}">
             <video data-rl-video playsinline preload="auto" src="${esc(src)}"></video>
-            <div class="rl-gancho" data-rl-gancho><span>${esc(item.gancho || String(item.headline || '').replace(/\n/g, ' '))}</span></div>
+            <div class="rl-gancho" data-rl-gancho><span>${esc(ganchoInicial)}</span></div>
             <div class="rl-sub" data-rl-sub></div>
             <div class="rl-cta" data-rl-cta>${esc(kit.cta || 'Escríbenos por WhatsApp')}</div>
             <div class="rl-logo" data-rl-logo></div>
@@ -132,21 +137,27 @@
           <div class="fila-botones"><button type="button" class="btn-approve" data-rl-play>Reproducir</button><button type="button" class="btn-ghost" data-rl-inicio>Desde el inicio</button></div>
         </div>
         <div class="rl-ctrl">
-          <div class="dz-grupo"><b>Duración máxima</b><div class="dz-chips">${[['15', '15 s'], ['30', '30 s'], ['60', '60 s'], ['0', 'Completo']].map(([v, t]) => `<button type="button" class="rc-tipo${v === '30' ? ' activo' : ''}" data-rl-dur="${v}">${t}</button>`).join('')}</div></div>
-          <label class="rl-check"><input type="checkbox" data-rl="cortarSilencios" checked> Cortar silencios y partes muertas <small data-rl-sil-estado>Buscando silencios…</small></label>
-          <div class="rl-rango"><label>Empieza en <b data-rl-ini-v>0,0 s</b><input type="range" data-rl-ini min="0" step="0.1" value="0"></label><label>Termina en <b data-rl-fin-v>—</b><input type="range" data-rl-fin min="0" step="0.1" value="0"></label></div>
-          <div class="dz-grupo"><b>En pantalla</b>
-            <label class="rl-check"><input type="checkbox" data-rl="gancho" checked> Gancho en los primeros 2 s</label>
-            <input data-rl-texto="gancho" maxlength="120" value="${esc(item.gancho || String(item.headline || '').replace(/\n/g, ' '))}">
-            <label class="rl-check"><input type="checkbox" data-rl="cta" checked> Llamado a la acción al final</label>
-            <input data-rl-texto="cta" maxlength="50" value="${esc(kit.cta || 'Escríbenos por WhatsApp')}">
-            <label class="rl-check"><input type="checkbox" data-rl="logo" checked> Logo</label>
+          <div class="rl-modos" role="radiogroup" aria-label="Tipo de edición">
+            <button type="button" class="rl-modo activo" role="radio" aria-checked="true" data-rl-modo="auto"><b>✨ Automático</b><small>Corta silencios y pone subtítulos, gancho, logo y llamado a la acción</small><em>Recomendado</em></button>
+            <button type="button" class="rl-modo" role="radio" aria-checked="false" data-rl-modo="subs"><b>💬 Solo subtítulos</b><small>Tu video tal cual, con subtítulos</small></button>
+            <button type="button" class="rl-modo" role="radio" aria-checked="false" data-rl-modo="pers"><b>⚙ Personalizado</b><small>Tú eliges cada opción</small></button>
+          </div>
+          <p class="rl-quedan">Te quedan <b>${quedan}</b> ediciones este mes${lib ? ' · el resultado queda como un video nuevo en Mis videos' : ''}.</p>
+          <div class="dz-grupo rl-pers"><b>Duración máxima</b><div class="dz-chips">${[['15', '15 s'], ['30', '30 s'], ['60', '60 s'], ['0', 'Completo']].map(([v, t]) => `<button type="button" class="rc-tipo${v === '30' ? ' activo' : ''}" data-rl-dur="${v}">${t}</button>`).join('')}</div></div>
+          <label class="rl-check rl-pers"><input type="checkbox" data-rl="cortarSilencios" checked> Cortar silencios y partes muertas <small data-rl-sil-estado>Buscando silencios…</small></label>
+          <div class="rl-rango rl-pers"><label>Empieza en <b data-rl-ini-v>0,0 s</b><input type="range" data-rl-ini min="0" step="0.1" value="0"></label><label>Termina en <b data-rl-fin-v>—</b><input type="range" data-rl-fin min="0" step="0.1" value="0"></label></div>
+          <div class="dz-grupo rl-no-subs"><b>Textos en pantalla</b>
+            <label class="rl-check rl-pers"><input type="checkbox" data-rl="gancho" checked> Gancho en los primeros 2 s</label>
+            <input data-rl-texto="gancho" maxlength="120" value="${esc(ganchoInicial)}" placeholder="Gancho de los primeros 2 s (opcional)" aria-label="Gancho">
+            <label class="rl-check rl-pers"><input type="checkbox" data-rl="cta" checked> Llamado a la acción al final</label>
+            <input data-rl-texto="cta" maxlength="50" value="${esc(kit.cta || 'Escríbenos por WhatsApp')}" placeholder="Llamado a la acción" aria-label="Llamado a la acción">
+            <label class="rl-check rl-pers"><input type="checkbox" data-rl="logo" checked> Logo</label>
           </div>
           <div class="dz-grupo"><b>Subtítulos</b>
             <select data-rl-subs>${auto ? '<option value="auto">Automáticos (se transcribe tu voz)</option>' : ''}<option value="manual">Los escribo yo</option><option value="no">Sin subtítulos</option></select>
             <textarea data-rl-guion rows="3" placeholder="Lo que dices en el video, una frase por línea" ${auto ? 'hidden' : ''}></textarea>
           </div>
-          <div class="dz-grupo"><b>Audio y efectos</b>
+          <div class="dz-grupo rl-pers"><b>Audio y efectos</b>
             <label class="rl-check"><input type="checkbox" data-rl="silenciar"> Silenciar el audio</label>
             <label class="rl-check"><input type="checkbox" data-rl="zoom" checked> Zoom suave</label>
             <div class="rl-selects">
@@ -154,11 +165,11 @@
               <label>Color<select data-rl-color><option value="original">Original</option><option value="calido">Cálido</option><option value="contraste">Contraste</option><option value="bn">Blanco y negro</option></select></label>
             </div>
           </div>
-          <p class="sub">Música: próximamente. Te quedan <b>${quedan}</b> reels editados este mes. ${item.videoOriginal ? 'Se edita a partir de tu video original.' : 'Tu video original se guarda.'}</p>
+          <p class="sub">Música: próximamente. ${lib ? 'Tu video original no cambia.' : item.videoOriginal ? 'Se edita a partir de tu video original.' : 'Tu video original se guarda.'}</p>
         </div>
       </div>
       <p class="config-error" data-rl-error hidden></p>
-      <div class="dlg-acciones"><button type="button" class="btn-ghost" data-rl-cerrar>Cancelar</button><button type="button" class="btn-approve" data-rl-crear>Crear reel editado</button></div>
+      <div class="dlg-acciones"><button type="button" class="btn-ghost" data-rl-cerrar>Cancelar</button><button type="button" class="btn-approve" data-rl-crear>${lib ? 'Crear video editado' : 'Crear reel editado'}</button></div>
     </div>`;
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
 
@@ -213,7 +224,7 @@
     }
     function capas() {
       const tf = tiempoFinal(vid.currentTime), total = durFinal();
-      $('[data-rl-gancho]').classList.toggle('oculto', !(op('gancho') && tf < 2.2));
+      $('[data-rl-gancho]').classList.toggle('oculto', !(op('gancho') && tf < 2.2 && $('[data-rl-texto="gancho"]').value.trim()));
       $('[data-rl-cta]').classList.toggle('oculto', !(op('cta') && tf > total - 3));
       logoEl.classList.toggle('oculto', !op('logo'));
       const modo = $('[data-rl-subs]').value, sub = $('[data-rl-sub]');
@@ -276,8 +287,37 @@
       if (e.target.matches('[data-rl-subs]')) $('[data-rl-guion]').hidden = e.target.value !== 'manual';
       pintarBarra(); capas();
     };
+    // Los modos: Automático y Solo subtítulos fijan las opciones; Personalizado las muestra todas.
+    const caja = $('.dlg-caja');
+    function aplicarModo(m) {
+      caja.classList.remove('modo-auto', 'modo-subs', 'modo-pers');
+      caja.classList.add('modo-' + m);
+      dlg.querySelectorAll('[data-rl-modo]').forEach((b) => { const on = b.dataset.rlModo === m; b.classList.toggle('activo', on); b.setAttribute('aria-checked', String(on)); });
+      if (m === 'pers') return;
+      const auto = m === 'auto';
+      const marcar = (k, v) => { const el = dlg.querySelector(`[data-rl="${k}"]`); if (el) el.checked = v; };
+      ['cortarSilencios', 'gancho', 'cta', 'logo', 'zoom'].forEach((k) => marcar(k, auto));
+      marcar('silenciar', false);
+      const subs = $('[data-rl-subs]');
+      subs.value = subs.querySelector('option[value="auto"]') ? 'auto' : 'manual';
+      $('[data-rl-guion]').hidden = subs.value !== 'manual';
+      $('[data-rl-vel]').value = '1';
+      $('[data-rl-color]').value = 'original';
+      est.dur = auto ? 30 : 0;
+      dlg.querySelectorAll('[data-rl-dur]').forEach((b) => b.classList.toggle('activo', Number(b.dataset.rlDur) === est.dur));
+      if (est.total) {
+        est.ini = 0; est.fin = est.total;
+        $('[data-rl-ini]').value = 0; $('[data-rl-fin]').value = est.total;
+        $('[data-rl-ini-v]').textContent = fmtS(0); $('[data-rl-fin-v]').textContent = fmtS(est.total);
+      }
+      pintarBarra(); capas();
+    }
+    aplicarModo('auto');
+
     dlg.addEventListener('close', () => { est.jugando = false; vid.pause(); }, { once: true });
     dlg.onclick = async (e) => {
+      const modo = e.target.closest('[data-rl-modo]');
+      if (modo) return aplicarModo(modo.dataset.rlModo);
       const d = e.target.closest('[data-rl-dur]');
       if (d) { est.dur = Number(d.dataset.rlDur); dlg.querySelectorAll('[data-rl-dur]').forEach((b) => b.classList.toggle('activo', b === d)); pintarBarra(); return capas(); }
       if (e.target.closest('[data-rl-play]')) {
@@ -308,13 +348,15 @@
         velocidad: Number($('[data-rl-vel]').value), color: $('[data-rl-color]').value, zoom: op('zoom'), colorMarca: kit.color,
       };
       try {
-        await ctx.api(`/api/negocios/${n.id}/contenido/${item.id}/editar-reel`, { method: 'POST', body: JSON.stringify({ opciones, capas: capasPng }) });
+        const ruta = lib ? `/api/negocios/${n.id}/videos/${lib.id}/editar` : `/api/negocios/${n.id}/contenido/${item.id}/editar-reel`;
+        await ctx.api(ruta, { method: 'POST', body: JSON.stringify({ opciones, capas: capasPng }) });
         dlg.close();
         await ctx.recargar();
+        if (op0.alEnviar) await op0.alEnviar();
       } catch (err) {
         errorEl.textContent = err.mensaje || 'No se pudo enviar el reel a edición.';
         errorEl.hidden = false;
-        crear.disabled = false; crear.textContent = 'Crear reel editado';
+        crear.disabled = false; crear.textContent = lib ? 'Crear video editado' : 'Crear reel editado';
       }
     };
   }

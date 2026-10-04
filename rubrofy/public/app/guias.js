@@ -86,18 +86,18 @@
         { sel: '#cola-grid .card-vacia', t: '¿Falta la foto o el video?', d: 'Elígela de tu galería, súbela desde el celular o pídele a la IA que la cree.' },
         { sel: '#cola-grid .card-date-btn', t: 'Cambia el día', d: 'Toca la fecha para mover la publicación a otro día u hora.' },
         { sel: '#cola-grid .card-actions', t: 'Aprueba y listo', d: '“Aprobar” la deja programada. Si no te convence, pide “Otra versión” o un cambio puntual.' },
-        { sel: '.rail-btn[data-view="reels"]', t: 'Tus videos, aquí', d: 'En Estudio de reels subes un video y Rubrofy lo edita por ti.' },
+        { sel: '.rail-btn[data-view="reels"]', t: 'Tus videos, aquí', d: 'En Estudio de reels guardas tus videos y Rubrofy los edita por ti.' },
       ],
     },
     reels: {
       ilu: '▶', titulo: 'Cómo hacer un reel',
       texto: 'No necesitas saber editar. Graba con tu celular y Rubrofy hace el resto.',
-      pasos: [['Sube tu video', 'Unos 30 segundos, grabado con el celular.'], ['Elige qué arreglar', 'Ya vienen marcadas las mejores opciones.'], ['Míralo y úsalo', 'Revisa cómo quedó y apruébalo como cualquier publicación.']],
+      pasos: [['Sube tus videos', 'En Mis videos, todos los que quieras.'], ['Úsalo en un reel', 'Elige un reel de tu semana o deja que Rubrofy cree uno nuevo con su texto.'], ['Edita y aprueba', 'Con “Automático” queda listo en 1 o 2 minutos.']],
       pista: 'Graba en vertical y con buena luz. No importa si te equivocas: Rubrofy corta las pausas.',
       tour: [
-        { sel: '#reels-estudio .rs-pasos', t: 'Lo que hace Rubrofy', d: 'Corta silencios, pone subtítulos, tu gancho, tu logo y el llamado a la acción.' },
-        { sel: '#reels-estudio .rs-item', t: 'Tus reels de la semana', d: 'Cada reel de tu semana aparece aquí con su idea de grabación.' },
-        { sel: '#reels-estudio .rs-acc', t: 'Sube el video', d: 'Toca aquí, elige el video y Rubrofy abre el editor.' },
+        { sel: '#reels-estudio .vd-pestanas', t: 'Dos pestañas', d: 'Reels por publicar muestra el avance de cada reel; Mis videos guarda todos tus videos.' },
+        { sel: '#reels-estudio .rs-progreso', t: 'El avance', d: 'Cada reel pasa por tres pasos: video, edición y aprobación.' },
+        { sel: '#reels-estudio .rs-acc', t: 'El siguiente paso', d: 'El botón grande siempre te dice qué hacer ahora.' },
       ],
     },
     calendario: {

@@ -1437,3 +1437,100 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
   .rail-abajo { align-items: center; }
   .rail-punto { position: absolute; top: 4px; right: 4px; margin: 0; }
 }
+
+/* Estudio de reels: pestañas, Reels por publicar y Mis videos (videos.js) */
+.vd-pestanas { margin: 2px 0 14px; flex-shrink: 0; }
+.vd-num { display: inline-grid; place-items: center; min-width: 20px; height: 18px; padding: 0 6px; margin-left: 4px; border-radius: 99px; background: var(--surface); border: 1px solid var(--border); font-size: 11px; color: var(--ink-dim); }
+.vd-num.falta { background: rgba(255, 77, 148, .15); border-color: rgba(255, 77, 148, .45); color: #ffb3cf; }
+#reels-estudio { display: flex; flex-direction: column; min-width: 0; }
+.rs-progreso { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 2px; padding: 0; counter-reset: paso; }
+.rs-progreso li { counter-increment: paso; display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-faint); padding: 3px 9px 3px 4px; border-radius: 99px; border: 1px solid var(--border); }
+.rs-progreso li::before { content: counter(paso); width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 700; background: var(--bg); color: var(--ink-faint); }
+.rs-progreso li.hecho { color: var(--green); border-color: rgba(63, 191, 95, .35); }
+.rs-progreso li.hecho::before { content: '✓'; background: var(--green); color: #0b0a0d; }
+.rs-progreso li.actual { color: var(--ink); border-color: var(--amber); }
+.rs-progreso li.actual::before { background: var(--amber); color: #140a10; }
+.rs-progreso li.en-curso::before { content: '…'; }
+.rs-progreso li.omitido { text-decoration: line-through; opacity: .7; }
+button.rs-thumb { position: relative; border: 0; padding: 0; cursor: pointer; transition: width .2s; }
+.rs-play { position: absolute; inset: 0; display: grid; place-items: center; font-size: 18px; color: #fff; background: rgba(0, 0, 0, .25); text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
+.rs-thumb.grande { width: 180px; cursor: default; }
+.rs-item:has(.rs-thumb.grande) { grid-template-columns: 180px minmax(0, 1fr) auto; align-items: start; }
+.rs-item.resaltado { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255, 77, 148, .18); }
+.rs-acc { flex-direction: column; align-items: flex-end; }
+.rs-extras { display: flex; gap: 4px 12px; flex-wrap: wrap; justify-content: flex-end; }
+.vd-drop { margin-bottom: 12px; }
+.vd-subidas { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.vd-subida { display: grid; grid-template-columns: minmax(0, 1fr) 120px 40px; gap: 10px; align-items: center; font-size: 12.5px; }
+.vd-subida span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd-subida small { color: var(--ink-faint); text-align: right; }
+.vd-barra { height: 6px; border-radius: 99px; background: var(--bg); overflow: hidden; }
+.vd-barra i { display: block; height: 100%; background: var(--amber); transition: width .2s; }
+.vd-subidas .sub { margin: 0; }
+.vd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.vd-grid-chica { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.vd-card { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.vd-thumb { position: relative; aspect-ratio: 9 / 16; border-radius: 12px; overflow: hidden; background: #0b0a0d; border: 1px solid var(--border); padding: 0; cursor: pointer; }
+.vd-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.vd-thumb:hover, .vd-thumb:focus-visible { border-color: var(--amber); outline: none; }
+.vd-dur { position: absolute; right: 6px; bottom: 6px; font-size: 11px; font-weight: 600; color: #fff; background: rgba(0, 0, 0, .65); padding: 2px 6px; border-radius: 6px; }
+.vd-thumb .vd-estado { position: absolute; left: 6px; bottom: 6px; }
+.vd-estado { font-size: 10.5px; font-weight: 700; padding: 3px 7px; border-radius: 6px; color: #fff; background: rgba(0, 0, 0, .65); white-space: nowrap; }
+.vd-e-editado { background: rgba(63, 191, 95, .9); color: #0b0a0d; }
+.vd-e-reel { background: rgba(255, 77, 148, .9); }
+.vd-e-editando { background: rgba(245, 180, 60, .9); color: #140a10; }
+.vd-nombre { font-size: 12px; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd-visor .gl-visor-caja { grid-template-rows: auto minmax(0, 1fr) auto auto; }
+.vd-escena video { max-width: 100%; max-height: 100%; border-radius: 10px; background: #000; box-shadow: 0 10px 40px rgba(0, 0, 0, .5); }
+.vd-en-reels { margin: 10px 16px 0; text-align: center; font-size: 12.5px; color: rgba(255, 255, 255, .65); }
+.vd-pie { flex-wrap: wrap; }
+.vd-borrar:hover, .vd-borrar:focus-visible { background: rgba(255, 107, 90, .3); }
+.vd-editando { align-self: center; font-size: 13px; color: #f5b43c; }
+.vd-nuevo { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 77, 148, .4); background: rgba(255, 77, 148, .06); }
+.vd-nuevo .sub { margin: 0; }
+.vd-nuevo textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--ink); font: inherit; font-size: 13.5px; padding: 8px 10px; resize: vertical; }
+.vd-nuevo .btn-approve { align-self: flex-start; flex: none; padding: 9px 16px; }
+.vd-o { margin: 16px 0 8px; }
+.vd-reels { display: flex; flex-direction: column; gap: 6px; }
+.vd-reel { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); cursor: pointer; font: inherit; }
+.vd-reel:hover, .vd-reel:focus-visible { border-color: var(--amber); outline: none; }
+.vd-reel b { font-size: 13.5px; }
+.vd-reel small { font-size: 12px; color: var(--ink-faint); }
+.vd-para { margin: 10px 18px 0; font-size: 13px; color: var(--ink-dim); }
+.vd-ia { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.vd-ia p { margin: 0; }
+.vd-ia .btn-approve { flex: none; padding: 9px 16px; }
+@media (max-width: 640px) {
+  .rs-acc { align-items: stretch; }
+  .rs-acc .btn-approve { width: 100%; }
+  .rs-extras { justify-content: flex-start; }
+  .rs-item:has(.rs-thumb.grande) { grid-template-columns: minmax(0, 1fr); }
+  .rs-thumb.grande { width: 100%; max-width: 260px; justify-self: center; }
+  .vd-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+  .vd-subida { grid-template-columns: minmax(0, 1fr) 80px 36px; }
+}
+
+/* Editor de reels: modos */
+.rl-modos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rl-modo { position: relative; display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+.rl-modo b { font-size: 13.5px; }
+.rl-modo small { font-size: 11.5px; color: var(--ink-dim); line-height: 1.35; }
+.rl-modo em { position: absolute; top: -9px; right: 10px; font-style: normal; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; background: var(--amber); color: #140a10; }
+.rl-modo.activo { border-color: var(--amber); background: rgba(255, 77, 148, .08); }
+.rl-modo:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.rl-quedan { margin: 0; font-size: 12.5px; color: var(--ink-dim); }
+.dlg-reel .dlg-caja:not(.modo-pers) .rl-pers { display: none; }
+.dlg-reel .dlg-caja.modo-subs .rl-no-subs { display: none; }
+@media (max-width: 640px) {
+  .rl-modos { grid-template-columns: minmax(0, 1fr); }
+  .rl-modo small { display: none; }
+  .rl-modo em { top: 50%; transform: translateY(-50%); }
+}
+@media (max-width: 760px) {
+  /* En el celular primero se elige el modo; la vista previa va después y más chica. */
+  .rl-ctrl { order: -1; }
+  .rl-tel { width: min(220px, 70%); }
+}
+@media (max-width: 640px) {
+  .vd-grid-chica { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+}

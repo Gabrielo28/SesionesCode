@@ -996,6 +996,35 @@ servidor:
   nuevo" parte siempre del original. Push cuando termina o falla.
 - Sin ffmpeg el botón no aparece; `/api/salud` informa `edicionReels`.
 
+## Estudio de reels: Mis videos (server/videos.js, public/app/videos.js)
+
+Dos pestañas en Estudio de reels:
+
+- **Reels por publicar:** cada reel con su avance (Video → Edición →
+  Aprobado), un botón principal con el siguiente paso y vista previa ahí
+  mismo. "Elegir video" abre un selector: Mis videos / Subir / Crear con IA.
+- **Mis videos:** la galería de videos del negocio (tabla
+  `videos_biblioteca`, máx. 300). Se suben varios a la vez o arrastrándolos
+  (cuerpo crudo `video/mp4|quicktime`, cabeceras `x-nombre` y `x-duracion`,
+  100 MB c/u). También llegan solos los videos subidos en una tarjeta, los
+  creados con IA y los editados. Tocar uno lo abre en grande: Editar, Usar en
+  un reel (uno pendiente, o un reel nuevo cuyo texto escribe la IA: usa 1
+  pieza), Descargar, Eliminar.
+
+Los archivos viven en `data/videos/<negocio>/lib-…`; el reel usa su propio
+archivo (enlace duro o copia), así que borrar de la galería no rompe un reel.
+Editar un video de la galería (`itemId` `lib-<id>` en la cola de edición)
+deja el resultado como un video nuevo "editado" y descuenta 1 edición (se
+devuelve si falla).
+
+Rutas: `GET|POST /api/negocios/:id/videos`, `DELETE …/videos/:vid`,
+`POST …/videos/:vid/usar { itemId }`, `POST …/videos/:vid/reel-nuevo
+{ descripcion }`, `POST …/videos/:vid/editar { opciones, capas }`.
+
+El editor (`reels.js`) parte en **Automático** (cortes, subtítulos, gancho,
+logo y llamado a la acción); también **Solo subtítulos** y **Personalizado**
+(todas las opciones).
+
 ## Beneficios: planes de regalo y códigos de descuento (/admin)
 
 `server/beneficios.js`. Solo quien administra (ADMIN_EMAILS) los otorga,
