@@ -44,6 +44,25 @@
     return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB';
   }
 
+  // Respaldo en R2/S3: cuándo fue el último, qué subió y "Respaldar ahora".
+  function respaldoHTML(r) {
+    if (!r || !r.configurado) return '<p class="adm-nota">Sin configurar: todo vive solo en el Volume de Railway. Sigue los pasos de DEPLOY-RAILWAY.md (Cloudflare R2, gratis hasta 10 GB).</p>';
+    const u = r.ultimo;
+    const linea = !u ? 'Todavía no se ha hecho ninguno.'
+      : u.ok ? `Último ${esc(hace(u.cuando))}: base ${esc(bytes(u.base && u.base.bytes))}${u.base && u.base.cifrado ? ' (cifrada)' : ''}, ${num(u.archivos ? u.archivos.subidos : 0)} archivos nuevos${u.archivos && u.archivos.pendientes ? `, ${num(u.archivos.pendientes)} pendientes para la próxima tanda` : ''}.`
+        : `<span class="adm-mal">Falló ${esc(hace(u.cuando))}: ${esc(u.error || '')}</span>`;
+    return `<p class="adm-nota">${linea} En total, ${num(r.archivos)} archivos respaldados (${esc(bytes(r.bytesArchivos))}).${r.cifrado ? '' : ' Sin RESPALDO_CLAVE: la base va sin cifrar.'}</p>
+      <button type="button" class="btn-ghost adm-respaldar" data-respaldar${r.corriendo ? ' disabled' : ''}>${r.corriendo ? 'Respaldando…' : 'Respaldar ahora'}</button>`;
+  }
+  document.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-respaldar]');
+    if (!b) return;
+    b.disabled = true;
+    b.textContent = 'Respaldando… (puede tardar un par de minutos)';
+    try { await enviar('/api/admin/respaldo', {}); } catch (err) { alert('El respaldo falló: ' + err.message); }
+    cargar();
+  });
+
   function tile(titulo, valor, detalle, alerta) {
     return `<div class="adm-kpi${alerta ? ' alerta' : ''}"><span>${esc(titulo)}</span><b>${valor}</b><em>${detalle || ''}</em></div>`;
   }
@@ -90,6 +109,8 @@
         <div class="ig-card"><div class="ig-card-head"><h2>Sistema${AY('adm-sistema')}</h2><span class="adm-ayuda">v${esc(r.sistema.version)}</span></div>
           <ul class="adm-lista adm-config">${Object.entries(r.sistema.config).map(([n, ok]) => `<li><span>${esc(n)}</span><b class="${ok ? 'ok' : 'no'}">${ok ? 'Activo' : 'Falta configurar'}</b></li>`).join('')}</ul>
           <p class="adm-nota">Encendido ${esc(hace(r.sistema.encendidoDesde))} · base de datos ${esc(bytes(r.sistema.tamanoDb))} · zona ${esc(r.sistema.zona)}</p>
+          <h3 class="adm-sub">Respaldo externo${AY('adm-respaldo')}</h3>
+          ${respaldoHTML(r.sistema.respaldo)}
           <h3 class="adm-sub">Alertas recientes</h3>
           ${(r.sistema.alertas || []).length
             ? `<ul class="adm-alertas">${r.sistema.alertas.map((a) => `<li><b>${esc(a.asunto)}</b>${a.veces > 1 ? ` <em>×${a.veces}</em>` : ''}<small>${esc(hace(a.cuando))}${a.detalle ? ' · ' + esc(a.detalle) : ''}</small></li>`).join('')}</ul>`

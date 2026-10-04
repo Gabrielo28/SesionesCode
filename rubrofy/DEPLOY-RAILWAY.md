@@ -40,7 +40,8 @@ en el panel de Railway (unos 20 minutos) y en el DNS del dominio.
 
 Ahí viven la base (`rubrofy.db`), las fotos, los videos, los ejemplos de
 "Mi estilo" y la clave de sesión. Activa los **backups del Volume** en
-Railway si tu plan los incluye. Si al arrancar aparecen errores de permisos
+Railway si tu plan los incluye y, además, el respaldo externo en R2
+(sección 6b). Si al arrancar aparecen errores de permisos
 sobre `/data`, agrega `RAILWAY_RUN_UID=0` (la imagen no está corriendo
 como root).
 
@@ -154,6 +155,48 @@ Una vez que `https://rubrofy.com` funcione:
      `RESEND_API_KEY`. Pon `EMAIL_FROM` = `Rubrofy <avisos@rubrofy.com>`.
   4. En el panel, Conexiones y ajustes → Avisos por correo → "Enviarme uno
      ahora" para probar. Los resúmenes salen solos los lunes desde las 8:00.
+
+## 6b. Respaldo fuera de Railway (Cloudflare R2)
+
+Todo vive en un solo Volume de Railway. Con esto, Rubrofy guarda solo una
+copia en Cloudflare R2: la base una vez al día (desde las 4:00 de Chile) y
+las fotos y videos nuevos. R2 es gratis hasta 10 GB y no cobra por
+descargar.
+
+1. En Cloudflare: **R2 Object Storage → Create bucket**, nombre
+   `rubrofy-respaldos` (ubicación automática). Déjalo **privado** (no
+   actives el acceso público).
+2. **R2 → Manage API tokens → Create API token**: permiso **Object Read &
+   Write**, solo para el bucket `rubrofy-respaldos`. Al crearlo, Cloudflare
+   muestra el **Access Key ID**, el **Secret Access Key** y el endpoint
+   `https://<ID de tu cuenta>.r2.cloudflarestorage.com` (se ven una sola
+   vez).
+3. En Railway → Variables:
+   - `RESPALDO_S3_ENDPOINT` = el endpoint del paso 2
+   - `RESPALDO_S3_BUCKET` = `rubrofy-respaldos`
+   - `RESPALDO_S3_KEY_ID` = el Access Key ID
+   - `RESPALDO_S3_SECRET` = el Secret Access Key
+   - `RESPALDO_CLAVE` = una frase larga que inventes (cifra la base del
+     respaldo). **Guárdala en tu gestor de claves**: sin ella el respaldo
+     no se puede abrir.
+4. En `/admin` → Sistema → Respaldo externo, pulsa **Respaldar ahora**. El
+   primero sube todas las fotos por tandas; los siguientes, solo lo nuevo.
+   Si un respaldo falla, te llega una alerta por correo.
+
+En el bucket queda `base/rubrofy-<día>.db.gz.enc` (7 diarias que se van
+renovando), `base/mensual/rubrofy-AAAA-MM.db.gz.enc` (una por mes) y
+`archivos/` con la misma estructura que `/data`.
+
+**Restaurar**: descarga el archivo desde el panel de R2 y, en tu
+computador, en la carpeta `rubrofy`:
+
+```
+RESPALDO_CLAVE='tu frase' node scripts/restaurar-respaldo.js rubrofy-lunes.db.gz.enc rubrofy.db
+```
+
+Después, en Railway: detén el servicio, reemplaza `rubrofy.db` en el
+Volume (borra `rubrofy.db-wal` y `rubrofy.db-shm` si existen) y enciéndelo.
+Las fotos y videos se copian de vuelta desde `archivos/`.
 
 ## 7. Problemas comunes
 

@@ -450,6 +450,19 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
 API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
 `{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
 
+## Respaldo externo (server/respaldos.js)
+
+Copia fuera de Railway en un bucket compatible con S3 (Cloudflare R2), con
+la firma SigV4 hecha con `node:crypto`. Cada día desde `RESPALDO_HORA`
+(4:00 de Chile): la base (copia consistente con `sqlite.backup` o `VACUUM
+INTO`, gzip y, con `RESPALDO_CLAVE`, AES-256-GCM) como
+`base/rubrofy-<día>.db.gz[.enc]` y la primera del mes en `base/mensual/`;
+y los archivos de `data/` nuevos o cambiados en `archivos/<ruta>` (por
+tandas de 300 archivos / 400 MB; si quedan pendientes, otra tanda cada
+hora). Estado y "Respaldar ahora" en /admin → Sistema
+(`POST /api/admin/respaldo`); si falla, alerta por correo. Restaurar:
+`scripts/restaurar-respaldo.js`. Pasos en DEPLOY-RAILWAY.md (6b).
+
 ## Confirmar el correo y gestionar cuentas desde /admin
 
 **Confirmar el correo**: las cuentas nuevas quedan con `emailVerificado:

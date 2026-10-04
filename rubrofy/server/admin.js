@@ -189,6 +189,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     'Google Ads': !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
     'Correo semanal (Resend)': !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM),
     'URL pública (PUBLIC_URL)': !!process.env.PUBLIC_URL,
+    'Respaldo externo (R2/S3)': require('./respaldos').configurado(),
   };
 
   return {
@@ -221,6 +222,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
       zona: require('./programacion').ZONA,
       config,
       alertas: require('./alertas').ultimas(),
+      respaldo: require('./respaldos').estado(),
     },
   };
 }

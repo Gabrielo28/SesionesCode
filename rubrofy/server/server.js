@@ -46,6 +46,7 @@ const beneficios = require('./beneficios');
 const creditos = require('./creditos');
 const soporte = require('./soporte');
 const alertas = require('./alertas');
+const respaldos = require('./respaldos');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -1020,6 +1021,7 @@ let ultimaRevisionFlow = 0;
 const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
 setTimeout(revisarFlow, 60 * 1000).unref();
 setInterval(revisarFlow, (Number(process.env.FLOW_REVISION_SEG) || 6 * 3600) * 1000).unref();
+respaldos.iniciar(); // respaldo externo diario (si están las variables RESPALDO_S3_*)
 const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); revisarPruebas(); }, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
 timerRecordatorios.unref();
 
@@ -1585,6 +1587,12 @@ const server = http.createServer(async (req, res) => {
             return sendJSON(res, 200, vista());
           }
           return sendJSON(res, 404, { error: 'No encontrado' });
+        }
+        // POST /api/admin/respaldo — respaldo externo ahora (base + archivos nuevos).
+        if (parts[2] === 'respaldo' && parts.length === 3 && req.method === 'POST') {
+          if (!respaldos.configurado()) return sendJSON(res, 400, { error: 'Faltan las variables RESPALDO_S3_* (ver DEPLOY-RAILWAY.md).' });
+          const r = await respaldos.respaldar({ motivo: 'manual' });
+          return sendJSON(res, r.ok ? 200 : 424, Object.assign({ estado: respaldos.estado() }, r.ok ? {} : { error: r.error }));
         }
         // Acciones de soporte sobre una cuenta (sin ver su contenido):
         //   POST /api/admin/negocios/:id/clave       manda el enlace para elegir clave
