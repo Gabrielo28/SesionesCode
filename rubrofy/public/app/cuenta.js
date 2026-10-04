@@ -75,7 +75,7 @@
       </form>
       <p class="config-ok" data-cta-clave-ok hidden></p>
       <div class="cta-fila">
-        <span><b>Datos del negocio</b><small>Nombre, rubro, lo que vendes, precios y logo.</small></span>
+        <span><b>Datos del negocio</b><small>Nombre, lo que vendes, precios, promociones y logo.</small></span>
         <button type="button" class="btn-ghost" data-cta-ir="cfg-perfil">Editar</button>
       </div>`;
   }

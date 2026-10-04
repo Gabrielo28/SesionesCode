@@ -450,6 +450,38 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
 API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
 `{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
 
+## Ayuda y soporte (server/soporte.js, public/app/soporte.js)
+
+Pantalla "Ayuda y soporte" del panel (menú, con aviso cuando hay una
+respuesta nueva):
+
+- **Buscador** sobre las ayudas de cada pantalla y las preguntas frecuentes
+  (compara por la raíz de cada palabra y sin tildes).
+- **Revisión rápida**: Instagram, plan y pago, publicaciones fallidas y la
+  creación con IA, con un botón para arreglar cada cosa.
+- **Escríbenos**: tema (algo no funciona, consulta, pagos y facturación,
+  sugerencia), asunto, mensaje, una captura opcional y, si se deja marcado,
+  detalles técnicos: pantalla desde la que pidió ayuda, navegador, tamaño
+  de la ventana y los últimos errores del panel (pedidos que fallaron y
+  errores de JavaScript, solo en memoria). No incluye contenido del negocio.
+- **Mis solicitudes**: cada una con sus mensajes; el cliente responde,
+  la marca resuelta o la reabre escribiendo.
+
+En `/admin`, sección **Soporte**: por responder / todas, detalle con el
+registro técnico y las capturas, responder, responder y cerrar, cerrar o
+reabrir. Es lo único de cada negocio que el equipo lee, porque el cliente
+se lo envía. Cada solicitud nueva y cada respuesta del cliente llega por
+correo a `ADMIN_EMAILS` (con enlace a `/admin#soporte-<id>`); el cliente
+recibe la confirmación y cada respuesta por correo y push. Tope: 8
+solicitudes nuevas y 40 mensajes por negocio al día; capturas PNG/JPG/WebP
+de hasta 5 MB en `data/soporte/<negocio>/`. Todo se borra con la cuenta.
+
+API del negocio: `GET/POST /api/negocios/:id/soporte`,
+`POST .../soporte/:sid/mensajes`, `POST .../soporte/:sid/cerrar`,
+`GET .../soporte/:sid/adjunto/:archivo`. Admin: `GET /api/admin/soporte`,
+`GET /api/admin/soporte/:sid`, `POST .../responder` `{ texto, cerrar }`,
+`POST .../estado`, `GET .../adjunto/:archivo`.
+
 ## Costo de IA (server/costos.js)
 
 Cada llamada a Claude registra sus tokens reales (tabla `uso_ia`);

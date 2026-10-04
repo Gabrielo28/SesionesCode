@@ -44,6 +44,7 @@ const pagos = require('./pagos');
 const cobroFlow = require('./cobro-flow');
 const beneficios = require('./beneficios');
 const creditos = require('./creditos');
+const soporte = require('./soporte');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -238,6 +239,7 @@ function negocioPublico(negocio) {
   delete resto.creditosPlan; delete resto.referidoPor;
   resto.regalo = beneficios.regaloVigente(negocio) ? { plan: negocio.planRegalado.plan, hasta: negocio.planRegalado.hasta } : null;
   resto.creditos = creditos.publico(negocio);
+  resto.soporteSinLeer = soporte.sinLeer(negocio.id);
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
   resto.videosIADisponibles = videosIADisponibles(negocio);
@@ -496,6 +498,53 @@ async function avisarAdmins(asunto, texto) {
   for (const para of admin.adminEmails()) {
     await correo.enviar({ para, asunto: 'Rubrofy · ' + asunto, texto, html: `<p>${escapeHtmlSrv(texto)}</p>` });
   }
+}
+
+// Avisos de soporte (server/soporte.js). Al equipo: cada solicitud nueva o
+// mensaje del cliente (el registro técnico se ve en /admin). Al cliente: que
+// la recibimos y cada respuesta. Sin correo configurado, no se envía nada.
+function avisarSoporteEquipo(negocio, sol, req, que) {
+  if (!correo.configurado()) return;
+  const ultimo = sol.mensajes[sol.mensajes.length - 1] || { texto: '' };
+  const { html, texto } = avisos.plantilla({
+    titulo: `${sol.tipoNombre}: ${sol.asunto}`,
+    parrafos: [`${negocio.nombre} (${negocio.email || 'sin correo'}) ${que === 'nueva' ? 'escribió' : 'respondió'}:`, ...ultimo.texto.split(/\n+/), ultimo.adjunto ? 'Adjuntó una captura.' : ''].filter(Boolean),
+    boton: { texto: 'Responder en la administración', url: `${urlPublica(req)}/admin#soporte-${sol.id}` },
+    pie: 'Aviso interno de Rubrofy.',
+  });
+  const asunto = `Rubrofy · Soporte #${sol.id} · ${que === 'nueva' ? 'Nueva' : 'Respuesta del cliente'}: ${sol.asunto}`;
+  for (const para of admin.adminEmails()) correo.enviar({ para, asunto, html, texto });
+}
+function avisarSoporteCliente(negocio, sol, req, que) {
+  if (!correo.configurado() || !negocio.email) return;
+  const ultimo = sol.mensajes[sol.mensajes.length - 1] || { texto: '' };
+  const recibida = que === 'recibida';
+  const { html, texto } = avisos.plantilla({
+    titulo: recibida ? 'Recibimos tu solicitud' : 'Te respondimos',
+    parrafos: recibida
+      ? [`Gracias por escribirnos sobre "${sol.asunto}". La revisamos y te respondemos lo antes posible (días hábiles).`, 'Te avisamos por correo cuando respondamos. También la ves en Rubrofy → Ayuda y soporte.']
+      : [`Sobre "${sol.asunto}":`, ...ultimo.texto.split(/\n+/), sol.estado === 'cerrada'
+        ? 'Dimos tu solicitud por resuelta. Si necesitas algo más, respóndenos desde Rubrofy y la abrimos de nuevo.'
+        : 'Si necesitas algo más, respóndenos desde Rubrofy → Ayuda y soporte.'],
+    boton: { texto: 'Ver en Rubrofy', url: `${urlPublica(req)}/app#soporte` },
+    pie: 'Recibes este correo porque escribiste a soporte de Rubrofy.',
+  });
+  correo.enviar({ para: negocio.email, asunto: `${recibida ? 'Recibimos' : 'Respondimos'} tu solicitud #${sol.id} · Rubrofy`, html, texto });
+}
+// Lo que el equipo ve del negocio en una solicitud: nombre, correo y plan.
+function negocioSoporte(id) {
+  const n = store.getNegocio(id);
+  if (!n) return { id, nombre: '(cuenta eliminada)', email: null, plan: null };
+  return { id, nombre: n.nombre, email: n.email || null, plan: n.sinPlan ? 'Sin plan' : getPlan(n.plan).nombre || n.plan };
+}
+// Una imagen adjunta (ruta ya validada) o 404.
+function enviarImagen(res, ruta) {
+  if (!ruta) return notFound(res);
+  return fs.readFile(ruta, (err, content) => {
+    if (err) return notFound(res);
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(ruta).toLowerCase()] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'private, max-age=3600' });
+    res.end(content);
+  });
 }
 
 function escapeHtmlSrv(t) {
@@ -856,12 +905,12 @@ edicionReels.iniciar({
 function revisarPruebas(ahora = Date.now()) {
   for (const a of pruebaGratis.revisar(ahora)) {
     notificar(a.negocioId, a.tipo === 'termino'
-      ? { titulo: 'Terminó tu prueba gratis de Rubrofy', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'prueba' }
-      : { titulo: 'Tu prueba gratis termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#config', tag: 'prueba' });
+      ? { titulo: 'Terminó tu prueba gratis de Rubrofy', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#cuenta', tag: 'prueba' }
+      : { titulo: 'Tu prueba gratis termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#cuenta', tag: 'prueba' });
   }
   // Planes de regalo vencidos (/admin → Beneficios).
   for (const id of beneficios.revisarRegalos(pagos.suscrito, ahora)) {
-    notificar(id, { titulo: 'Terminó tu plan de regalo', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#config', tag: 'regalo' });
+    notificar(id, { titulo: 'Terminó tu plan de regalo', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#cuenta', tag: 'regalo' });
   }
   // Referidos: cuando el invitado ya paga, los dos reciben créditos.
   try { creditos.revisarReferidos((n) => pagos.activa(n)); } catch (err) { console.error('referidos:', err.message); }
@@ -1330,6 +1379,37 @@ const server = http.createServer(async (req, res) => {
           if (req.method === 'PUT') contextoIA.guardarPlataforma(await readBody(req));
           return sendJSON(res, 200, vista());
         }
+        // Soporte (server/soporte.js): lo que los clientes escriben al equipo.
+        //   GET  /api/admin/soporte?estado=abiertas|todas
+        //   GET  /api/admin/soporte/:sid                     (queda leída)
+        //   POST /api/admin/soporte/:sid/responder           { texto, cerrar? }
+        //   POST /api/admin/soporte/:sid/estado              { estado: 'abierta'|'respondida'|'cerrada' }
+        //   GET  /api/admin/soporte/:sid/adjunto/:archivo
+        if (parts[2] === 'soporte') {
+          if (req.method === 'GET' && parts.length === 3) {
+            return sendJSON(res, 200, soporte.bandeja({ estado: url.searchParams.get('estado') === 'todas' ? 'todas' : 'abiertas', nombreDe: negocioSoporte }));
+          }
+          const sol = soporte.obtener(parts[3]);
+          if (!sol) return sendJSON(res, 404, { error: 'No encontramos esa solicitud.' });
+          const detalle = () => Object.assign(soporte.detalleEquipo(sol.id), { negocio: negocioSoporte(sol.negocio_id) });
+          if (req.method === 'GET' && parts.length === 4) return sendJSON(res, 200, detalle());
+          if (req.method === 'GET' && parts[4] === 'adjunto' && parts.length === 6) return enviarImagen(res, soporte.rutaAdjunto(sol, parts[5]));
+          if (req.method === 'POST' && parts[4] === 'responder' && parts.length === 5) {
+            const body = await readBody(req, 8e6);
+            const r = soporte.responder(sol.id, 'equipo', { texto: body.texto, adjunto: body.adjunto, cerrar: !!body.cerrar });
+            if (r.error) return sendJSON(res, r.status, { error: r.error });
+            const cliente = store.getNegocio(sol.negocio_id);
+            if (cliente) {
+              avisarSoporteCliente(cliente, soporte.publica(r.fila), req, 'respuesta');
+              notificar(cliente.id, { titulo: 'Te respondimos', cuerpo: sol.asunto, url: '/app#soporte', tag: 'soporte-' + sol.id });
+            }
+            return sendJSON(res, 200, detalle());
+          }
+          if (req.method === 'POST' && parts[4] === 'estado' && parts.length === 5) {
+            if (!soporte.cambiarEstado(sol.id, (await readBody(req)).estado)) return sendJSON(res, 400, { error: 'Estado inválido' });
+            return sendJSON(res, 200, detalle());
+          }
+        }
         // Créditos ⚡ (server/creditos.js):
         //   GET  /api/admin/creditos            parámetros, modelos, packs, planes, promociones y estado
         //   PUT  /api/admin/creditos            guarda lo editado (se valida)
@@ -1369,7 +1449,7 @@ const server = http.createServer(async (req, res) => {
             if (r.error) return sendJSON(res, 400, { error: r.error });
             store.saveNegocio(r.negocio);
             const pl = getPlan(r.negocio.planRegalado.plan);
-            notificar(n.id, { titulo: `Te regalamos el plan ${pl.nombre}`, cuerpo: r.negocio.planRegalado.hasta ? 'Úsalo sin costo hasta la fecha que ves en tu panel.' : 'Ya puedes usarlo sin costo.', url: '/app#config', tag: 'regalo' });
+            notificar(n.id, { titulo: `Te regalamos el plan ${pl.nombre}`, cuerpo: r.negocio.planRegalado.hasta ? 'Úsalo sin costo hasta la fecha que ves en tu panel.' : 'Ya puedes usarlo sin costo.', url: '/app#cuenta', tag: 'regalo' });
             return sendJSON(res, 200, vista());
           }
           if (parts[3] === 'regalo' && parts[4] === 'revocar' && parts.length === 5) {
@@ -1665,6 +1745,40 @@ const server = http.createServer(async (req, res) => {
             paquetes: recargas.catalogo().paquetes.filter((p) => p.tipo === 'creditos'),
           }));
         }
+        // Ayuda y soporte (server/soporte.js, public/app/soporte.js):
+        //   GET  /api/negocios/:id/soporte                      sus solicitudes (y quedan leídas)
+        //   POST /api/negocios/:id/soporte                      { tipo, asunto, texto, contexto?, adjunto? }
+        //   POST /api/negocios/:id/soporte/:sid/mensajes        { texto, adjunto? }
+        //   POST /api/negocios/:id/soporte/:sid/cerrar
+        //   GET  /api/negocios/:id/soporte/:sid/adjunto/:archivo
+        if (parts[3] === 'soporte') {
+          if (parts.length === 4 && req.method === 'GET') {
+            return sendJSON(res, 200, { solicitudes: soporte.delNegocio(negocioId, { marcarLeidas: true }), contacto: process.env.CONTACTO_EMAIL || null });
+          }
+          if (parts.length === 4 && req.method === 'POST') {
+            const r = soporte.crear(negocioId, await readBody(req, 8e6));
+            if (r.error) return sendJSON(res, r.status, { error: r.error });
+            avisarSoporteEquipo(negocio, r.solicitud, req, 'nueva');
+            avisarSoporteCliente(negocio, r.solicitud, req, 'recibida');
+            return sendJSON(res, 201, { solicitud: r.solicitud });
+          }
+          const sol = soporte.obtener(parts[4]);
+          if (!sol || sol.negocio_id !== negocioId) return sendJSON(res, 404, { error: 'No encontramos esa solicitud.' });
+          if (parts[5] === 'mensajes' && parts.length === 6 && req.method === 'POST') {
+            const body = await readBody(req, 8e6);
+            const r = soporte.responder(sol.id, 'negocio', { texto: body.texto, adjunto: body.adjunto });
+            if (r.error) return sendJSON(res, r.status, { error: r.error });
+            avisarSoporteEquipo(negocio, soporte.publica(r.fila), req, 'mensaje');
+            return sendJSON(res, 200, { solicitud: soporte.publica(r.fila) });
+          }
+          if (parts[5] === 'cerrar' && parts.length === 6 && req.method === 'POST') {
+            return sendJSON(res, 200, { solicitud: soporte.publica(soporte.cambiarEstado(sol.id, 'cerrada')) });
+          }
+          if (parts[5] === 'adjunto' && parts.length === 7 && req.method === 'GET') {
+            return enviarImagen(res, soporte.rutaAdjunto(sol, parts[6]));
+          }
+        }
+
         // Mi cuenta (public/app/cuenta.js):
         //   GET  /api/negocios/:id/cuenta — correo, alta y pagos (plan y créditos)
         //   POST /api/negocios/:id/cuenta/clave  { actual, nueva }

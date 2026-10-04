@@ -582,7 +582,7 @@ a { color: var(--amber); }
   .pc-campos .form-row { flex-direction: column; }
 }
 #inicio .ig-card, #estrategia .ig-card { max-width: none; margin-bottom: 0; }
-#view-config .ig-card, #view-cuenta .ig-card { max-width: 640px; }
+#view-config .ig-card, #view-cuenta .ig-card, #view-soporte .ig-card { max-width: 680px; }
 .bv-proponer { align-self: flex-start; }
 .ayuda { font-size: 12.5px; color: var(--ink-dim); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; background: var(--bg); }
 .ayuda summary { cursor: pointer; color: var(--amber); font-weight: 600; }
@@ -1300,3 +1300,66 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .gl-foto.gl-rota .gl-borrar { opacity: 1; z-index: 1; }
 .gl-visor-rota { color: rgba(255, 255, 255, .75); font-size: 14px; text-align: center; max-width: 320px; }
 .gl-subir.subiendo { opacity: .7; pointer-events: none; }
+
+/* Ayuda y soporte */
+#soporte { display: flex; flex-direction: column; gap: 14px; }
+#soporte .cfg-titulo { margin-bottom: -4px; }
+#soporte .ig-card { margin-bottom: 0; }
+.sop-buscar-caja { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 14px; }
+.sop-buscar-caja:focus-within { border-color: var(--amber); }
+.sop-buscar-caja span { color: var(--ink-faint); font-size: 18px; }
+.sop-buscar-caja input { flex: 1; min-width: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: 14.5px; padding: 10px 0; outline: none; }
+.sop-res { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 6px; }
+.sop-res details, .sop-q { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.sop-res summary, .sop-q summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.sop-res p, .sop-q p, .sop-res ol { margin: 8px 0 0; font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+.sop-res ol { padding-left: 20px; }
+.sop-nota { margin: 6px 0 0; font-size: 12px; color: var(--ink-faint); }
+.sop-nota a, .sop-buscar .sub a { color: var(--amber); }
+.sop-ir { margin-top: 10px; padding: 6px 12px; font-size: 12.5px; }
+.sop-faq { gap: 8px; }
+.sop-q[open] summary { color: var(--amber); }
+.sop-rev { list-style: none; margin: 0; padding: 0; display: grid; }
+.sop-rev li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.sop-rev li > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; }
+.sop-rev small { color: var(--ink-faint); font-size: 12px; }
+.sop-rev-ic { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.sop-rev li.ok .sop-rev-ic { background: rgba(63, 191, 95, .15); color: var(--green); }
+.sop-rev li.mal .sop-rev-ic { background: rgba(255, 107, 90, .15); color: var(--coral); }
+.sop-rev li > button { flex: 0 0 auto; padding: 6px 12px; font-size: 12.5px; }
+.sop-form { display: grid; gap: 12px; }
+.sop-form label:not(.sop-tipo):not(.switch):not(.sop-adj-btn) { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; color: var(--ink-dim); }
+.sop-form input[name="asunto"], .sop-form textarea, .sop-responder textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; color: var(--ink); font: inherit; font-size: 13.5px; resize: vertical; }
+.sop-form input:focus, .sop-form textarea:focus, .sop-responder textarea:focus { outline: none; border-color: var(--amber); }
+.sop-tipos { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.sop-tipo input { position: absolute; opacity: 0; pointer-events: none; }
+.sop-tipo span { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; cursor: pointer; }
+.sop-tipo span i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .06); font-size: 12px; }
+.sop-tipo input:checked + span { border-color: var(--amber); background: rgba(255, 77, 148, .08); }
+.sop-tipo input:checked + span i { background: var(--amber); color: #111; }
+.sop-tipo input:focus-visible + span { outline: 2px solid var(--amber); outline-offset: 2px; }
+.sop-adjuntar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sop-adj-btn { padding: 7px 12px; font-size: 12.5px; cursor: pointer; }
+.sop-adj-nombre { font-size: 12px; color: var(--ink-faint); overflow-wrap: anywhere; }
+.sop-tecnico small { display: block; color: var(--ink-faint); font-size: 11.5px; }
+.sop-mias { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sop-mias > li { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.sop-mias > li.nueva { border-color: var(--amber); }
+.sop-sol-cab { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: none; border: 0; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sop-sol-cab > span:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 13.5px; }
+.sop-sol-cab b { overflow-wrap: anywhere; }
+.sop-sol-cab small { color: var(--ink-faint); font-size: 12px; }
+.sop-sol-cab em { color: var(--amber); font-style: normal; font-weight: 600; }
+.sop-hilo { display: grid; gap: 10px; padding: 4px 12px 12px; border-top: 1px solid var(--border); }
+.sop-msj { max-width: 88%; padding: 9px 12px; border-radius: 12px; font-size: 13.5px; }
+.sop-msj.yo { justify-self: end; background: rgba(255, 255, 255, .06); }
+.sop-msj.equipo { justify-self: start; background: rgba(255, 77, 148, .1); border: 1px solid rgba(255, 77, 148, .25); }
+.sop-msj small { display: block; color: var(--ink-faint); font-size: 11px; margin-bottom: 3px; }
+.sop-msj p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.sop-msj img { display: block; margin-top: 8px; max-width: 100%; max-height: 240px; border-radius: 8px; border: 1px solid var(--border); }
+.sop-responder { display: grid; gap: 8px; }
+@media (max-width: 600px) {
+  .sop-rev li { flex-wrap: wrap; }
+  .sop-rev li > button { margin-left: 38px; }
+  .sop-msj { max-width: 100%; }
+}

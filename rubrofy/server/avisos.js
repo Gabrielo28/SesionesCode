@@ -213,4 +213,4 @@ function crearAvisador(deps) {
   };
 }
 
-module.exports = { construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar };
+module.exports = { construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar, plantilla };

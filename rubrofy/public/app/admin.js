@@ -554,11 +554,119 @@
     if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
   }
 
+  // Soporte: lo que los clientes escriben desde "Ayuda y soporte". Es lo
+  // único de cada negocio que se lee aquí, porque te lo mandan a ti.
+  let sopEstado = 'abiertas';
+  let sopSel = null;
+  const SOP_ESTADOS = { abierta: ['Por responder', 'pend'], respondida: ['Respondida', 'ok'], cerrada: ['Resuelta', 'nulo'] };
+  async function pintarSoporte() {
+    let d;
+    try { d = await api('/api/admin/soporte?estado=' + sopEstado); } catch (err) { return; }
+    let sec = $('#adm-soporte');
+    if (!sec) {
+      sec = document.createElement('section');
+      sec.className = 'adm-bloque';
+      sec.id = 'adm-soporte';
+      const kpis = $('#adm .adm-kpis');
+      if (kpis) kpis.after(sec); else $('#adm').appendChild(sec);
+      sec.addEventListener('click', clicSoporte);
+      sec.addEventListener('submit', responderSoporte);
+    }
+    const c = d.conteo;
+    sec.innerHTML = `
+      <div class="adm-bloque-cab"><h2>Soporte${AY('adm-soporte')}</h2>
+        <p class="sub">Lo que los clientes te escriben desde "Ayuda y soporte". Solo ves lo que ellos te mandaron.</p></div>
+      <div class="adm-sop-barra">
+        <div class="pestanas"><button type="button" data-sop-estado="abiertas" class="${sopEstado === 'abiertas' ? 'activa' : ''}">Por responder (${num(c.abiertas)})</button><button type="button" data-sop-estado="todas" class="${sopEstado === 'todas' ? 'activa' : ''}">Todas</button></div>
+        ${c.nuevas ? `<span class="adm-sop-nuevas">${num(c.nuevas)} sin leer</span>` : ''}
+      </div>
+      <div class="adm-sop">
+        <ul class="adm-sop-lista">${d.solicitudes.length ? d.solicitudes.map((s) => {
+          const [txt, clase] = SOP_ESTADOS[s.estado] || [s.estado, 'nulo'];
+          return `<li><button type="button" data-sop-ver="${s.id}" class="${s.id === sopSel ? 'activa' : ''}${s.nueva ? ' nueva' : ''}">
+            <span class="adm-sop-l1"><b>#${s.id} · ${esc(s.asunto)}</b><span class="cta-estado ${clase}">${txt}</span></span>
+            <span class="adm-sop-l2">${esc(s.negocio.nombre)} · ${esc(s.tipoNombre)} · ${hace(s.actualizadoEl)}</span>
+            ${s.ultimo ? `<span class="adm-sop-l3">${s.ultimo.autor === 'equipo' ? 'Tú: ' : ''}${esc(s.ultimo.texto)}</span>` : ''}
+          </button></li>`;
+        }).join('') : `<li class="adm-sop-vacia">${sopEstado === 'abiertas' ? 'No hay nada por responder. 🎉' : 'Todavía no hay solicitudes.'}</li>`}</ul>
+        <div class="adm-sop-detalle" data-sop-detalle>${sopSel ? '<p class="sub">Cargando…</p>' : '<p class="sub">Elige una solicitud para verla y responder.</p>'}</div>
+      </div>`;
+    if (sopSel) await verSolicitud(sopSel);
+  }
+
+  async function verSolicitud(id) {
+    const caja = $('#adm-soporte [data-sop-detalle]');
+    let s;
+    try { s = await api('/api/admin/soporte/' + id); } catch (err) { caja.innerHTML = '<p class="sub">No se encontró esa solicitud.</p>'; return; }
+    sopSel = s.id;
+    const [txt, clase] = SOP_ESTADOS[s.estado] || [s.estado, 'nulo'];
+    const cx = s.contexto || {};
+    const base = '/api/admin/soporte/' + s.id + '/adjunto/';
+    caja.innerHTML = `
+      <div class="adm-sop-cab"><div><h3>#${s.id} · ${esc(s.asunto)}</h3>
+        <p class="sub">${esc(s.negocio.nombre)} · ${s.negocio.email ? `<a href="mailto:${esc(s.negocio.email)}">${esc(s.negocio.email)}</a>` : 'sin correo'} · ${esc(s.negocio.plan || '')}<br>${esc(s.tipoNombre)} · creada ${esc(fecha(s.creadoEl))}</p></div>
+        <span class="cta-estado ${clase}">${txt}</span></div>
+      ${s.contexto ? `<details class="adm-sop-ctx"><summary>Detalles técnicos${cx.errores && cx.errores.length ? ` · ${cx.errores.length} error${cx.errores.length === 1 ? '' : 'es'}` : ''}</summary>
+        <dl><dt>Pantalla</dt><dd>${esc(cx.pantalla || '—')}</dd><dt>Navegador</dt><dd>${esc(cx.navegador || '—')}</dd><dt>Ventana</dt><dd>${esc(cx.ventana || '—')}</dd><dt>Versión</dt><dd>${esc(cx.version || '—')}</dd></dl>
+        ${cx.errores && cx.errores.length ? `<ul>${cx.errores.map((e) => `<li><code>${esc(e.que)}${e.estado ? ` → ${esc(e.estado)}` : ''}</code> ${esc(e.mensaje || '')} <small>${esc(hace(e.cuando))}</small></li>`).join('')}</ul>` : '<p class="sub">Sin errores registrados.</p>'}
+      </details>` : ''}
+      <div class="sop-hilo adm-sop-hilo">${s.mensajes.map((m) => `<div class="sop-msj ${m.autor === 'equipo' ? 'yo' : 'equipo'}"><small>${m.autor === 'equipo' ? 'Tú (equipo)' : esc(s.negocio.nombre)} · ${esc(new Date(m.creadoEl).toLocaleString('es-CL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }))}</small><p>${esc(m.texto)}</p>${m.adjunto ? `<a href="${base}${encodeURIComponent(m.adjunto)}" target="_blank" rel="noopener"><img src="${base}${encodeURIComponent(m.adjunto)}" alt="Captura adjunta" loading="lazy"></a>` : ''}</div>`).join('')}</div>
+      <form class="adm-sop-resp" data-sop-responder="${s.id}">
+        <textarea name="texto" rows="4" maxlength="4000" required placeholder="Escribe tu respuesta. Le llega por correo y la ve en su panel."></textarea>
+        <p class="config-error" data-sop-error hidden></p>
+        <div class="config-actions">
+          ${s.estado === 'cerrada' ? `<button type="button" class="btn-ghost" data-sop-marcar="abierta">Reabrir</button>` : `<button type="button" class="btn-ghost" data-sop-marcar="cerrada">Cerrar sin responder</button>`}
+          <button type="submit" class="btn-ghost" data-cerrar="1">Responder y cerrar</button>
+          <button type="submit" class="btn-approve">Responder</button>
+        </div>
+      </form>`;
+    $('#adm-soporte').querySelectorAll('[data-sop-ver]').forEach((b) => { b.classList.toggle('activa', Number(b.dataset.sopVer) === s.id); if (Number(b.dataset.sopVer) === s.id) b.classList.remove('nueva'); });
+  }
+
+  async function clicSoporte(e) {
+    const est = e.target.closest('[data-sop-estado]');
+    if (est) { sopEstado = est.dataset.sopEstado; return pintarSoporte(); }
+    const ver = e.target.closest('[data-sop-ver]');
+    if (ver) {
+      await verSolicitud(Number(ver.dataset.sopVer));
+      if (window.innerWidth < 900) $('#adm-soporte [data-sop-detalle]').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      return;
+    }
+    const marcar = e.target.closest('[data-sop-marcar]');
+    if (marcar && sopSel) {
+      try { await enviar('/api/admin/soporte/' + sopSel + '/estado', { estado: marcar.dataset.sopMarcar }); } catch (err) { alert(err.message); return; }
+      return pintarSoporte();
+    }
+  }
+
+  async function responderSoporte(e) {
+    const form = e.target.closest('[data-sop-responder]');
+    if (!form) return;
+    e.preventDefault();
+    const cerrar = !!(e.submitter && e.submitter.dataset.cerrar);
+    const error = form.querySelector('[data-sop-error]');
+    error.hidden = true;
+    form.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+    try {
+      await enviar('/api/admin/soporte/' + form.dataset.sopResponder + '/responder', { texto: form.texto.value, cerrar });
+      await pintarSoporte();
+    } catch (err) {
+      error.textContent = err.message;
+      error.hidden = false;
+      form.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+    }
+  }
+
   async function cargar() {
     try {
       const [r, n] = await Promise.all([api('/api/admin/resumen?dias=' + dias), api('/api/admin/negocios')]);
       negocios = n;
       pintar(r);
+      // /admin#soporte-12 (el enlace del correo) abre esa solicitud.
+      const m = /^#soporte-(\d+)$/.exec(window.location.hash);
+      if (m) sopSel = Number(m[1]);
+      await pintarSoporte();
+      if (m || window.location.hash === '#soporte') $('#adm-soporte').scrollIntoView({ block: 'start' });
       await pintarCostos();
       await pintarPruebas();
       await pintarRecargas();

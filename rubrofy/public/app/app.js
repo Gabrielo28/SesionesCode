@@ -31,7 +31,15 @@
       { 'content-type': 'application/json', 'x-rubrofy-panel': '1' },
       opts.headers
     );
-    const res = await fetch(path, Object.assign({}, opts, { headers }));
+    let res;
+    try {
+      res = await fetch(path, Object.assign({}, opts, { headers }));
+    } catch (e) {
+      if (window.RubrofySoporte) window.RubrofySoporte.registrar({ que: `${opts.method || 'GET'} ${path}`, mensaje: 'Sin conexión: ' + e.message });
+      const err = new Error('No pudimos conectarnos. Revisa tu internet e intenta de nuevo.');
+      err.mensaje = err.message;
+      throw err;
+    }
     if (!res.ok) {
       // El servidor explica el motivo en { error } (cuota agotada, demasiados
       // intentos, etc.); se guarda aparte para mostrárselo al usuario.
@@ -49,6 +57,11 @@
       err.mensaje = mensaje;
       err.campo = campo;
       err.recargar = recargar;
+      // Queda registrado por si el cliente reporta un problema (Ayuda y soporte).
+      if (window.RubrofySoporte && negocioActual) window.RubrofySoporte.registrar({ que: `${opts.method || 'GET'} ${path}`, estado: res.status, mensaje });
+      // La sesión se cerró (cambio de clave o "cerrar en todos lados" desde
+      // otro dispositivo): de vuelta a la pantalla para entrar.
+      if (res.status === 401 && negocioActual && !/^\/api\/auth\//.test(path)) mostrarLogin('Tu sesión se cerró. Vuelve a entrar.');
       // Se acabó un cupo (piezas, fotos, videos o reels): se ofrece cargar más.
       if (res.status === 403 && recargar && window.RubrofyRecargas) window.RubrofyRecargas.abrir(recargar);
       throw err;
@@ -996,7 +1009,7 @@
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config', 'cuenta'];
+  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config', 'cuenta', 'soporte'];
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -1007,7 +1020,9 @@
   function tabMenu() { return tabResultados === 'google' ? 'meta' : tabResultados; }
 
   // ancla: id de una sección dentro de la vista (ej: 'cta-plan').
+  let vistaPrevia = 'inicio'; // para saber desde qué pantalla se pide ayuda
   function irAVista(vista, tab, ancla) {
+    if (vista === 'soporte' && vistaActual !== 'soporte') vistaPrevia = vistaActual;
     vistaActual = vista;
     if (tab) tabResultados = tab;
     marcarMenu();
@@ -1024,6 +1039,9 @@
     const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
     const num = $('#rail-pendientes');
     num.textContent = pendientes; num.hidden = !pendientes;
+    const respuestas = negocioActual.soporteSinLeer || 0;
+    const numSop = $('#rail-soporte');
+    numSop.textContent = respuestas; numSop.hidden = !respuestas;
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     document.querySelectorAll('[data-plan-req]').forEach((el) => { el.hidden = !!plan[el.dataset.planReq] || !planesInfo.length; });
     const enlaceAdmin = $('#rail-admin');
@@ -1045,6 +1063,12 @@
     else if (vistaActual === 'fotos') renderFotos();
     else if (vistaActual === 'reels') renderEstudioReels();
     else if (vistaActual === 'config') renderConfig();
+    else if (vistaActual === 'soporte') {
+      window.RubrofySoporte.render(Object.assign(ctxPanel(), {
+        vista: vistaPrevia,
+        alLeer: () => { if (negocioActual) { negocioActual.soporteSinLeer = 0; renderMenu(); } },
+      })).catch(() => {});
+    }
     else if (vistaActual === 'cuenta') {
       renderPlan();
       window.RubrofyCuenta.render(ctxPanel()).catch(() => {});
@@ -1673,7 +1697,7 @@
     });
     $('#btn-eliminar-negocio').addEventListener('click', () => {
       if (!negocioActual) return;
-      const confirmado = confirm(`¿Eliminar "${negocioActual.nombre}"? Se borra tu cuenta, tu contenido y tus fotos. Esta acción no se puede deshacer.`);
+      const confirmado = confirm(`¿Eliminar "${negocioActual.nombre}"? Se borra tu cuenta, tu contenido, tus fotos y los créditos que te queden. Esta acción no se puede deshacer.`);
       if (confirmado) eliminarNegocioActual().catch((err) => alert('No se pudo eliminar: ' + err.message));
     });
 
