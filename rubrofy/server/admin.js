@@ -97,7 +97,7 @@ function fila(n, contenido, rutaNegocio) {
     nombre: n.nombre,
     email: n.email || null,
     plan: plan.id,
-    precioClp: n.cortesia || require('./beneficios').regaloVigente(n) ? 0 : plan.precioClp || 0, // la cuenta de cortesía del administrador no es ingreso
+    precioClp: require('./pagos').pagoMensual(n), // lo que paga de verdad (sin pruebas, regalos ni cortesía; con descuento)
     suscripcion: require('./pagos').estado(n),
     creadoEl: creadoEl(n, contenido),
     ultimoAcceso: n.ultimoAcceso || null,
@@ -217,6 +217,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
       tamanoDb,
       zona: require('./programacion').ZONA,
       config,
+      alertas: require('./alertas').ultimas(),
     },
   };
 }

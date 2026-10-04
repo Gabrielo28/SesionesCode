@@ -89,7 +89,11 @@
           <ul class="adm-lista"><li><span>Textos escritos con IA</span><b>${num(k.iaTextosMes)}</b></li><li><span>Fotos generadas con IA</span><b>${num(k.iaFotosMes)}</b></li></ul></div>
         <div class="ig-card"><div class="ig-card-head"><h2>Sistema${AY('adm-sistema')}</h2><span class="adm-ayuda">v${esc(r.sistema.version)}</span></div>
           <ul class="adm-lista adm-config">${Object.entries(r.sistema.config).map(([n, ok]) => `<li><span>${esc(n)}</span><b class="${ok ? 'ok' : 'no'}">${ok ? 'Activo' : 'Falta configurar'}</b></li>`).join('')}</ul>
-          <p class="adm-nota">Encendido ${esc(hace(r.sistema.encendidoDesde))} · base de datos ${esc(bytes(r.sistema.tamanoDb))} · zona ${esc(r.sistema.zona)}</p></div>
+          <p class="adm-nota">Encendido ${esc(hace(r.sistema.encendidoDesde))} · base de datos ${esc(bytes(r.sistema.tamanoDb))} · zona ${esc(r.sistema.zona)}</p>
+          <h3 class="adm-sub">Alertas recientes</h3>
+          ${(r.sistema.alertas || []).length
+            ? `<ul class="adm-alertas">${r.sistema.alertas.map((a) => `<li><b>${esc(a.asunto)}</b>${a.veces > 1 ? ` <em>×${a.veces}</em>` : ''}<small>${esc(hace(a.cuando))}${a.detalle ? ' · ' + esc(a.detalle) : ''}</small></li>`).join('')}</ul>`
+            : '<p class="adm-nota">Sin alertas desde que se encendió el servidor. Si algo falla (Claude, Flow, correos, Instagram o el servidor) te avisamos por correo.</p>'}</div>
       </section>
 
       <section class="ig-card adm-negocios">

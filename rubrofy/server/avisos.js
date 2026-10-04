@@ -141,6 +141,72 @@ function correoReconectar({ negocio, urlPanel, motivo }) {
   return { para: negocio.email, asunto: 'Tu Instagram se desconectó de Rubrofy', html, texto };
 }
 
+// --- Correos de la cuenta: prueba, plan, cobros y publicaciones ---
+// urlPanel puede faltar (sin PUBLIC_URL): el correo va sin botón.
+const clp = (n) => '$' + Math.round(Number(n) || 0).toLocaleString('es-CL');
+const boton = (texto, url) => (url ? { texto, url } : null);
+const fechaLarga = (iso) => (iso ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso + 'T12:00:00' : iso).toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
+
+function correoPrueba({ negocio, urlPanel, termino }) {
+  const { html, texto } = plantilla({
+    titulo: termino ? 'Terminó tu prueba gratis' : 'Tu prueba gratis termina en 2 días',
+    parrafos: termino
+      ? [`La prueba gratis de ${negocio.nombre} en Rubrofy terminó. Todo lo que armaste sigue guardado: tu estrategia, tus publicaciones y tus fotos.`, 'Elige un plan para seguir creando y publicando. Pagas con tarjeta y cancelas cuando quieras.']
+      : [`A la prueba gratis de ${negocio.nombre} le quedan 2 días.`, 'Si eliges tu plan antes, no se corta nada: tus publicaciones programadas siguen saliendo solas.'],
+    boton: boton('Elegir mi plan', urlPanel),
+  });
+  return { para: negocio.email, asunto: termino ? 'Terminó tu prueba gratis de Rubrofy' : 'Tu prueba gratis de Rubrofy termina en 2 días', html, texto };
+}
+
+function correoRegaloTermino({ negocio, urlPanel }) {
+  const { html, texto } = plantilla({
+    titulo: 'Terminó tu plan de regalo',
+    parrafos: [`El plan de regalo de ${negocio.nombre} en Rubrofy terminó. Todo lo que armaste sigue guardado.`, 'Elige un plan para seguir creando y publicando.'],
+    boton: boton('Elegir mi plan', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'Terminó tu plan de regalo en Rubrofy', html, texto };
+}
+
+function correoCobroFallido({ negocio, urlPanel, tarjeta }) {
+  const { html, texto } = plantilla({
+    titulo: 'No pudimos cobrar tu plan',
+    parrafos: [`Intentamos cobrar el plan de ${negocio.nombre} ${tarjeta ? `con ${tarjeta}` : 'con tu tarjeta'} y no se pudo.`, 'Mientras tanto, la creación de contenido queda en pausa. Cambia la tarjeta en Mi cuenta → Plan y pago y todo vuelve a funcionar.'],
+    boton: boton('Revisar mi pago', urlPanel),
+    pie: 'Si ya lo resolviste, ignora este correo.',
+  });
+  return { para: negocio.email, asunto: 'No pudimos cobrar tu plan de Rubrofy', html, texto };
+}
+
+// detalle: "Plan Pro" o "150 créditos para fotos y videos con IA".
+function correoRecibo({ negocio, urlPanel, montoClp, detalle, periodo, fecha }) {
+  const { html, texto } = plantilla({
+    titulo: 'Recibimos tu pago',
+    parrafos: [`Gracias. Recibimos ${clp(montoClp)} (IVA incluido) de ${negocio.nombre}.`, `Detalle: ${detalle}${periodo ? `, del ${fechaLarga(periodo.desde)} al ${fechaLarga(periodo.hasta)}` : ''}. Fecha: ${fechaLarga(fecha || new Date().toISOString())}.`,
+      'Ves todos tus pagos en Mi cuenta → Pagos y facturación. ¿Necesitas boleta o factura? Escríbenos desde Ayuda y soporte.'],
+    boton: boton('Ver mis pagos', urlPanel),
+    pie: 'Este correo es un comprobante de pago, no una boleta.',
+  });
+  return { para: negocio.email, asunto: `Recibimos tu pago de ${clp(montoClp)} · Rubrofy`, html, texto };
+}
+
+function correoCancelacion({ negocio, urlPanel, hasta }) {
+  const { html, texto } = plantilla({
+    titulo: 'Cancelaste tu suscripción',
+    parrafos: [`La suscripción de ${negocio.nombre} quedó cancelada. ${hasta ? `Tu plan sigue funcionando hasta el ${fechaLarga(hasta)}` : 'Tu plan sigue funcionando hasta el fin del período que pagaste'} y no se vuelve a cobrar.`, 'Si cambias de opinión, elige un plan de nuevo cuando quieras: todo lo que armaste sigue guardado.'],
+    boton: boton('Ir a mi cuenta', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'Cancelaste tu suscripción de Rubrofy', html, texto };
+}
+
+function correoPublicacionFallida({ negocio, urlPanel, formato, motivo }) {
+  const { html, texto } = plantilla({
+    titulo: `No se pudo publicar tu ${formato}`,
+    parrafos: [`Instagram no aceptó una publicación de ${negocio.nombre}${motivo ? `: ${motivo}` : '.'}`, 'Entra a Por aprobar: ahí ves el motivo y puedes pulsar "Reintentar" cuando esté resuelto.'],
+    boton: boton('Revisar la publicación', urlPanel),
+  });
+  return { para: negocio.email, asunto: `No se pudo publicar tu ${formato} en Instagram`, html, texto };
+}
+
 // deps: { listarNegocios(), datosDe(negocio) → { negocioPublico, ruta, contenido },
 //         urlPublica() → string|null, enlaceBaja(negocioId) → path, guardarEnvio(negocioId, semana), log }
 function crearAvisador(deps) {
@@ -213,4 +279,7 @@ function crearAvisador(deps) {
   };
 }
 
-module.exports = { construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar, plantilla };
+module.exports = {
+  construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar, plantilla,
+  correoPrueba, correoRegaloTermino, correoCobroFallido, correoRecibo, correoCancelacion, correoPublicacionFallida,
+};

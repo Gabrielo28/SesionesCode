@@ -450,6 +450,30 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
 API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
 `{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
 
+## Correos de la cuenta y alertas al equipo (server/avisos.js, server/alertas.js)
+
+Además del push, por correo (llegan aunque el cliente no active las
+notificaciones): prueba gratis por terminar y terminada, plan de regalo
+terminado, cobro fallido, comprobante de cada pago (cobro de la suscripción
+de Flow recién pagado, de los últimos 4 días, una vez; compra de créditos),
+cancelación de la suscripción y publicación fallida (como mucho un correo
+cada 6 horas por negocio).
+
+**Alertas** a `ADMIN_EMAILS` cuando algo falla por detrás: Claude no
+responde (los textos salen de plantilla), Flow responde 5xx/401 o no
+conecta, error interno del servidor, publicación fallida, respaldo fallido.
+Como mucho un correo por hora por tipo (`ALERTAS_CADA_MIN`); el siguiente
+dice cuántas veces pasó. Las últimas se ven en /admin → Sistema (también
+los correos que Resend no pudo enviar).
+
+**Ingresos en /admin**: cada negocio suma lo que paga de verdad
+(`pagos.pagoMensual`): 0 en prueba gratis, regalo, cortesía o sin
+suscripción al día; con Flow, el último cobro pagado (ya trae el descuento);
+sin cobros todavía, el precio del plan menos el código vigente.
+
+**Páginas de error**: 404 y 500 con el estilo del sitio para personas
+(`public/site/404.html` y `error.html`); la API sigue respondiendo JSON.
+
 ## Editar fotos con IA (server/medios.js: editarImagen)
 
 En la Galería, al tocar una foto se abre en grande con **✨ Editar con IA**:

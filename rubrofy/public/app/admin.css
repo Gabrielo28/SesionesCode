@@ -128,3 +128,10 @@ body.adm { height: auto; min-height: 100%; }
 .adm-sop-resp textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; color: var(--ink); font: inherit; font-size: 13.5px; resize: vertical; }
 .adm-sop-resp .config-actions { flex-wrap: wrap; justify-content: flex-end; }
 @media (max-width: 900px) { .adm-sop { grid-template-columns: 1fr; } .adm-sop-lista { max-height: none; } }
+
+/* Alertas del sistema */
+.adm-sub { margin: 10px 0 4px; font-size: 13px; color: var(--ink-dim); }
+.adm-alertas { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 220px; overflow: auto; }
+.adm-alertas li { font-size: 12.5px; border-left: 3px solid var(--coral); padding: 4px 8px; }
+.adm-alertas em { color: var(--coral); font-style: normal; font-weight: 700; }
+.adm-alertas small { display: block; color: var(--ink-faint); font-size: 11.5px; overflow-wrap: anywhere; }

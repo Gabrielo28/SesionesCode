@@ -45,6 +45,7 @@ const cobroFlow = require('./cobro-flow');
 const beneficios = require('./beneficios');
 const creditos = require('./creditos');
 const soporte = require('./soporte');
+const alertas = require('./alertas');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -347,7 +348,7 @@ function readBody(req, maxBytes) {
 
 // Páginas legales: el email de contacto sale de CONTACTO_EMAIL (o del
 // remitente de los correos). Sin ninguno, el enlace queda como texto.
-const PAGINAS_CON_CONTACTO = new Set(['/privacidad.html', '/terminos.html', '/eliminar-datos.html']);
+const PAGINAS_CON_CONTACTO = new Set(['/privacidad.html', '/terminos.html', '/eliminar-datos.html', '/404.html', '/error.html']);
 function emailContacto() {
   const directo = String(process.env.CONTACTO_EMAIL || '').trim();
   if (directo) return directo;
@@ -360,13 +361,26 @@ function conContacto(html) {
   return html.replace(/<a href="mailto:\{\{CONTACTO\}\}">\{\{CONTACTO\}\}<\/a>/g, 'nuestro correo de contacto');
 }
 
+// Página de error para personas (404 o 500), con el estilo del sitio. Un
+// archivo que no es una página (imagen, script) responde 404 sin cuerpo HTML.
+function paginaError(res, status, rel) {
+  const ext = path.extname(rel || '');
+  if (ext && ext !== '.html') { res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', ...CABECERAS_SEGURIDAD }); return res.end(status === 404 ? 'No encontrado' : 'Error'); }
+  fs.readFile(path.join(SITE_DIR, status === 404 ? '404.html' : 'error.html'), (err, content) => {
+    if (err) return sendJSON(res, status, { error: status === 404 ? 'No encontrado' : 'Error interno' });
+    res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...CABECERAS_SEGURIDAD });
+    res.end(conContacto(content.toString('utf8')));
+  });
+}
+const quiereHTML = (req, ruta) => !String(ruta || '').startsWith('/api/') && /text\/html/.test(req.headers.accept || '');
+
 function serveStatic(res, baseDir, rel) {
   const relLimpio = rel === '' || rel === '/' ? '/index.html' : rel;
   const filePath = path.join(baseDir, relLimpio);
-  if (!filePath.startsWith(baseDir)) return notFound(res);
+  if (!filePath.startsWith(baseDir)) return paginaError(res, 404, relLimpio);
 
   fs.readFile(filePath, (err, content) => {
-    if (err) return notFound(res);
+    if (err) return paginaError(res, 404, relLimpio);
     if (baseDir === SITE_DIR && PAGINAS_CON_CONTACTO.has(relLimpio)) content = Buffer.from(conContacto(content.toString('utf8')));
     const ext = path.extname(filePath);
     // HTML, JS y CSS se revalidan en cada visita (sin versión en la URL, un
@@ -812,12 +826,29 @@ const NOMBRE_FORMATO = { post: 'post', carrusel: 'carrusel', reel: 'Reel', histo
 function notificar(negocioId, mensaje) {
   push.enviar(negocioId, mensaje).catch((err) => console.log(`Push ${negocioId}: ${err.message}`));
 }
+// Correo de la cuenta (prueba, cobros, publicaciones): llega aunque el
+// cliente no haya activado las notificaciones del celular.
+function correoCliente(negocioId, armar) {
+  const negocio = store.getNegocio(negocioId);
+  if (!negocio || !negocio.email || !correo.configurado()) return;
+  const base = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+  correo.enviar(armar(negocio, (hash) => (base ? `${base}/app${hash || ''}` : null)));
+}
+// Una publicación fallida avisa por correo como mucho cada 6 horas por negocio
+// (si Instagram falla para todos, no se llena la bandeja del cliente).
+const ultimoCorreoFallida = new Map();
 function avisoPublicador(evento, negocioId, item) {
   const formato = item ? (NOMBRE_FORMATO[formatoDe(item)] || 'publicación') : '';
   if (evento === 'publicada') {
     notificar(negocioId, { titulo: `Se publicó tu ${formato} en Instagram`, cuerpo: (item.variants[item.variantIndex] || '').slice(0, 120), url: '/app#cola', tag: 'publicada' });
   } else if (evento === 'fallida') {
-    notificar(negocioId, { titulo: `No se pudo publicar tu ${formato}`, cuerpo: (item.publicacion && item.publicacion.motivo) || 'Revísala en Por aprobar y usa "Reintentar".', url: '/app#cola', tag: 'fallida-' + item.id, urgente: true });
+    const motivo = (item.publicacion && item.publicacion.motivo) || '';
+    notificar(negocioId, { titulo: `No se pudo publicar tu ${formato}`, cuerpo: motivo || 'Revísala en Por aprobar y usa "Reintentar".', url: '/app#cola', tag: 'fallida-' + item.id, urgente: true });
+    if (Date.now() - (ultimoCorreoFallida.get(negocioId) || 0) > 6 * 3600 * 1000) {
+      ultimoCorreoFallida.set(negocioId, Date.now());
+      correoCliente(negocioId, (negocio, url) => avisos.correoPublicacionFallida({ negocio, urlPanel: url('#cola'), formato, motivo }));
+    }
+    alertas.alertar('instagram', 'Falló una publicación en Instagram', `${(store.getNegocio(negocioId) || {}).nombre || negocioId}: ${motivo || 'sin motivo'}`);
   } else if (evento === 'reconectar') {
     notificar(negocioId, { titulo: 'Instagram se desconectó', cuerpo: 'Tus publicaciones programadas esperan hasta que lo vuelvas a conectar en Conexiones y ajustes.', url: '/app#config', tag: 'reconectar', urgente: true });
   }
@@ -912,10 +943,12 @@ function revisarPruebas(ahora = Date.now()) {
     notificar(a.negocioId, a.tipo === 'termino'
       ? { titulo: 'Terminó tu prueba gratis de Rubrofy', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#cuenta', tag: 'prueba' }
       : { titulo: 'Tu prueba gratis termina en 2 días', cuerpo: 'Elige tu plan para no cortar tus publicaciones programadas.', url: '/app#cuenta', tag: 'prueba' });
+    correoCliente(a.negocioId, (negocio, url) => avisos.correoPrueba({ negocio, urlPanel: url('#cuenta'), termino: a.tipo === 'termino' }));
   }
   // Planes de regalo vencidos (/admin → Beneficios).
   for (const id of beneficios.revisarRegalos(pagos.suscrito, ahora)) {
     notificar(id, { titulo: 'Terminó tu plan de regalo', cuerpo: 'Elige tu plan para seguir creando y publicando. Todo lo que armaste sigue aquí.', url: '/app#cuenta', tag: 'regalo' });
+    correoCliente(id, (negocio, url) => avisos.correoRegaloTermino({ negocio, urlPanel: url('#cuenta') }));
   }
   // Referidos: cuando el invitado ya paga, los dos reciben créditos.
   try { creditos.revisarReferidos((n) => pagos.activa(n)); } catch (err) { console.error('referidos:', err.message); }
@@ -923,7 +956,19 @@ function revisarPruebas(ahora = Date.now()) {
 revisarPruebas();
 // Flow: se revisan las suscripciones cada 6 horas (FLOW_REVISION_SEG) por si
 // un aviso de cobro no llegó, y un minuto después de arrancar.
-cobroFlow.configurar({ planDeCortesia, notificar });
+cobroFlow.configurar({
+  planDeCortesia,
+  notificar,
+  // Comprobante de cada pago y aviso si no se pudo cobrar, por correo.
+  alCobro: (negocioId, evento, datos) => correoCliente(negocioId, (negocio, url) => {
+    if (evento === 'fallido') {
+      const t = negocio.flow && negocio.flow.tarjeta;
+      return avisos.correoCobroFallido({ negocio, urlPanel: url('#cuenta'), tarjeta: t && t.ultimos4 ? `${t.tipo || 'tu tarjeta'} terminada en ${t.ultimos4}` : null });
+    }
+    if (evento === 'recarga') return avisos.correoRecibo({ negocio, urlPanel: url('#cuenta'), montoClp: datos.monto, detalle: datos.detalle });
+    return avisos.correoRecibo({ negocio, urlPanel: url('#cuenta'), montoClp: datos.monto, detalle: `Plan ${getPlan(negocio.plan).nombre || ''}`.trim(), periodo: datos.periodo, fecha: datos.fecha });
+  }),
+});
 let ultimaRevisionFlow = 0;
 const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
 setTimeout(revisarFlow, 60 * 1000).unref();
@@ -1501,8 +1546,8 @@ const server = http.createServer(async (req, res) => {
         if (parts[2] === 'costos' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
           return sendJSON(res, 200, costos.resumen({
-            dias, negocios: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, plan: n.plan, cortesia: !!n.cortesia || beneficios.regaloVigente(n) })),
-            precioPlan: (p) => getPlan(p).precioClp || 0,
+            dias, negocios: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, plan: n.plan, cortesia: !!n.cortesia || beneficios.regaloVigente(n), pago: pagos.pagoMensual(n) })),
+            precioPlan: (n) => n.pago,
           }));
         }
         return sendJSON(res, 404, { error: 'No encontrado' });
@@ -1895,6 +1940,7 @@ const server = http.createServer(async (req, res) => {
           if (parts[4] === 'cancelar') {
             const r = await cobroFlow.cancelar(negocio);
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            correoCliente(negocioId, (n, url) => avisos.correoCancelacion({ negocio: n, urlPanel: url('#cuenta'), hasta: n.flow && n.flow.periodoFin }));
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
           }
           if (parts[4] === 'tarjeta') {
@@ -3091,9 +3137,13 @@ const server = http.createServer(async (req, res) => {
       if (req.method === 'GET') admin.registrarVisita(req, url.pathname);
       return serveStatic(res, SITE_DIR, url.pathname);
     }
+    if (quiereHTML(req, url && url.pathname)) return paginaError(res, 404, url.pathname);
     return notFound(res);
   } catch (err) {
     console.error(err);
+    alertas.alertar('error-interno', 'Error interno del servidor', `${req.method} ${url ? url.pathname : req.url}: ${err.message}`);
+    if (res.headersSent) return res.end();
+    if (quiereHTML(req, url && url.pathname)) return paginaError(res, 500, url.pathname);
     sendJSON(res, 500, { error: 'Error interno' });
   }
 });

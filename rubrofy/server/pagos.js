@@ -33,4 +33,18 @@ function activa(negocio) {
   return ['active', 'trialing'].includes(estado(negocio));
 }
 
-module.exports = { proveedor, nombre: (p) => NOMBRES[p] || null, suscripcion, estado, suscrito, activa };
+// Lo que el negocio paga de verdad al mes (CLP), para los ingresos de /admin:
+// 0 sin una suscripción al día (prueba gratis, plan de regalo, cortesía o
+// cobro cancelado). Con Flow manda el último cobro pagado, que ya trae el
+// descuento; sin cobros todavía, el precio del plan menos el código vigente.
+function pagoMensual(negocio, ahora = Date.now()) {
+  const beneficios = require('./beneficios');
+  if (negocio.cortesia || beneficios.regaloVigente(negocio, ahora) || !activa(negocio)) return 0;
+  const pagados = ((negocio.flow && negocio.flow.cobros) || []).filter((c) => c.estado === 'pagado' && c.monto > 0)
+    .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
+  if (pagados.length) return pagados[pagados.length - 1].monto;
+  const plan = require('./planes').getPlan(negocio.plan);
+  return beneficios.precioConDescuento(plan.precioClp || 0, beneficios.descuentoVigente(negocio.id, plan.id, ahora));
+}
+
+module.exports = { proveedor, nombre: (p) => NOMBRES[p] || null, suscripcion, estado, suscrito, activa, pagoMensual };

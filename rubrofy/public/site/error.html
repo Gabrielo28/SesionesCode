@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Algo salió mal · Rubrofy</title>
+  <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+  <link rel="icon" href="/favicon-32.png?v=2" sizes="32x32">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .error-pag { max-width: 640px; padding-top: 72px; padding-bottom: 110px; text-align: center; }
+    .error-num { font-size: clamp(72px, 18vw, 132px); font-weight: 800; line-height: 1; letter-spacing: -0.04em; margin: 0; color: var(--rosa); }
+    .error-pag h1 { font-size: clamp(26px, 5vw, 36px); margin: 14px 0 10px; }
+    .error-pag p { font-size: 17px; line-height: 1.55; margin: 0 auto 26px; max-width: 520px; }
+    .error-acc { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .error-ayuda { margin-top: 34px; font-size: 14.5px; }
+    .error-ayuda a { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap topinner">
+      <a class="marca" href="/" aria-label="Rubrofy, inicio"><img src="/icon-512.png?v=2" alt="">Rubrofy</a>
+      <div class="top-ctas"><a class="btn btn-borde" href="/app">Entra</a><a class="btn btn-negro" href="/registro.html">Regístrate</a></div>
+    </div>
+  </header>
+  <main class="wrap error-pag">
+    <p class="error-num" aria-hidden="true">Uy</p>
+    <h1>Algo salió mal de nuestro lado</h1>
+    <p>No es tu culpa: ya nos llegó el aviso y lo estamos revisando. Intenta de nuevo en un momento.</p>
+    <div class="error-acc"><a class="btn btn-negro" href="/app">Volver a mi panel</a><a class="btn btn-borde" href="/">Ir al inicio</a></div>
+    <p class="error-ayuda">¿Necesitas ayuda? Escríbenos a <a href="mailto:{{CONTACTO}}">{{CONTACTO}}</a> o desde tu panel, en <a href="/app#soporte">Ayuda y soporte</a>.</p>
+  </main>
+  <footer class="pie">
+    <div class="wrap pie-fin">© 2026 Rubrofy · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a> · <a href="/eliminar-datos.html">Eliminar tus datos</a></div>
+  </footer>
+</body>
+</html>

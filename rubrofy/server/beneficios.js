@@ -68,6 +68,7 @@ const sql = {
   activar: db.prepare('UPDATE codigos_descuento SET activo = ? WHERE codigo = ?'),
   cupon: db.prepare('UPDATE codigos_descuento SET flow_cupon = ? WHERE codigo = ?'),
   usado: db.prepare('SELECT 1 FROM canjes_descuento WHERE codigo = ? AND negocio_id = ?'),
+  canjesDe: db.prepare('SELECT c.*, d.tipo, d.valor, d.meses FROM canjes_descuento c JOIN codigos_descuento d ON d.codigo = c.codigo WHERE c.negocio_id = ? AND c.plan = ? ORDER BY c.fecha DESC'),
   canjear: db.prepare('INSERT OR IGNORE INTO canjes_descuento (codigo, negocio_id, plan, fecha) VALUES (?, ?, ?, ?)'),
   sumarUso: db.prepare('UPDATE codigos_descuento SET usos = usos + 1 WHERE codigo = ?'),
   regalar: db.prepare('INSERT INTO regalos (negocio_id, negocio_nombre, email, plan, desde, hasta, motivo) VALUES (?, ?, ?, ?, ?, ?, ?)'),
@@ -212,6 +213,18 @@ function precioConDescuento(precio, c) {
   return Math.max(0, precio - d);
 }
 
+// El código de descuento que sigue aplicando a la suscripción de ese plan
+// (meses = 0: mientras dure la suscripción), o null.
+function descuentoVigente(negocioId, plan, ahora = Date.now()) {
+  for (const c of sql.canjesDe.all(negocioId, plan)) {
+    if (!c.meses) return c;
+    const fin = new Date(c.fecha);
+    fin.setMonth(fin.getMonth() + c.meses);
+    if (fin.getTime() > ahora) return c;
+  }
+  return null;
+}
+
 function registrarCanje(codigo, negocioId, plan, ahora = Date.now()) {
   return store.transaccion(() => {
     const r = sql.canjear.run(normalizarCodigo(codigo), negocioId, plan, new Date(ahora).toISOString());
@@ -225,6 +238,7 @@ function guardarCuponFlow(codigo, cuponId) {
 }
 
 module.exports = {
+  descuentoVigente,
   PLANES_PAGADOS, regaloVigente, planSinPago, regalar, terminarRegalo, revisarRegalos, listarRegalos,
   normalizarCodigo, crearCodigo, listarCodigos, activarCodigo, validarCodigo, describir, precioConDescuento,
   registrarCanje, guardarCuponFlow,

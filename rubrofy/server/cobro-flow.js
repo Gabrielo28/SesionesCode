@@ -18,7 +18,9 @@ const pruebaGratis = require('./prueba-gratis');
 const { PLANES, getPlan } = require('./planes');
 const beneficios = require('./beneficios');
 
-let deps = { planDeCortesia: () => false, notificar: () => {} };
+// alCobro(negocioId, evento, datos): 'pago' (cobro de la suscripción pagado),
+// 'fallido' (no se pudo cobrar) y 'recarga' (compra de créditos pagada).
+let deps = { planDeCortesia: () => false, notificar: () => {}, alCobro: () => {} };
 function configurar(d) { deps = Object.assign(deps, d); }
 
 const ACTIVAS = new Set(['active', 'trialing']);
@@ -58,6 +60,7 @@ function aplicarSuscripcion(negocioId, sub) {
   // Una suscripción que no es la que el negocio sigue (una anterior) no le cambia el plan.
   if (negocio.flow && negocio.flow.subscriptionId && negocio.flow.subscriptionId !== sub.subscriptionId) return negocio;
   const estado = flow.estadoSuscripcion(sub);
+  const antes = new Map(((negocio.flow && negocio.flow.cobros) || []).map((c) => [c.id, c.estado]));
   negocio.flow = Object.assign({}, negocio.flow, {
     subscriptionId: sub.subscriptionId,
     customerId: sub.customerId || (negocio.flow && negocio.flow.customerId),
@@ -68,6 +71,10 @@ function aplicarSuscripcion(negocioId, sub) {
   });
   // Los cobros de la suscripción, para "Mi cuenta" (los últimos 24).
   if (Array.isArray(sub.invoices)) negocio.flow.cobros = sub.invoices.slice(-24).map(cobroDeFlow);
+  // Cobros recién pagados (de los últimos 4 días: al empezar a guardarlos no
+  // se manda un comprobante por cada pago antiguo).
+  const recientes = Date.now() - 4 * 24 * 3600 * 1000;
+  const pagados = (negocio.flow.cobros || []).filter((c) => c.estado === 'pagado' && antes.get(c.id) !== 'pagado' && c.fecha && Date.parse(c.fecha) >= recientes);
   delete negocio.flow.planPendiente;
   delete negocio.flow.codigoPendiente;
   const enPrueba = pruebaGratis.vigente(negocio);
@@ -84,6 +91,7 @@ function aplicarSuscripcion(negocioId, sub) {
   }
   deps.planDeCortesia(negocio);
   store.saveNegocio(negocio);
+  for (const c of pagados) deps.alCobro(negocioId, 'pago', c);
   return negocio;
 }
 
@@ -97,6 +105,7 @@ async function sincronizar(negocioId) {
   const despues = aplicarSuscripcion(negocioId, r.data);
   if (despues && antes !== 'gratis' && despues.plan === 'gratis' && despues.flow.estado === 'past_due') {
     deps.notificar(negocioId, { titulo: 'No pudimos cobrar tu plan', cuerpo: 'Revisa tu tarjeta en Plan para seguir creando contenido.', url: '/app#cuenta', tag: 'cobro' });
+    deps.alCobro(negocioId, 'fallido', {});
   }
   return { negocio: despues };
 }
@@ -284,7 +293,10 @@ async function confirmarPago(token) {
     return { estado: 'error' };
   }
   const lote = recargas.acreditar(recarga.id, { sesion: 'flow:' + pago.flowOrder });
-  if (lote) deps.notificar(lote.negocio_id, { titulo: 'Recarga lista', cuerpo: `Se cargaron ${lote.cantidad} ${recargas.TIPOS[lote.tipo].nombre}. Ya puedes seguir creando.`, url: '/app', tag: 'recarga' });
+  if (lote) {
+    deps.notificar(lote.negocio_id, { titulo: 'Recarga lista', cuerpo: `Se cargaron ${lote.cantidad} ${recargas.TIPOS[lote.tipo].nombre}. Ya puedes seguir creando.`, url: '/app', tag: 'recarga' });
+    deps.alCobro(lote.negocio_id, 'recarga', { monto: recarga.precio_clp, detalle: `${lote.cantidad} ${recargas.TIPOS[lote.tipo].nombre}` });
+  }
   return { estado: 'pagado' };
 }
 

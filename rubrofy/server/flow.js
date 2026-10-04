@@ -50,9 +50,14 @@ async function llamar(metodo, ruta, datos) {
     const texto = await res.text();
     let data;
     try { data = JSON.parse(texto); } catch (e) { data = null; }
-    if (!res.ok || !data) return { error: (data && data.message) || `Error de Flow (${res.status})`, codigo: data && data.code, status: res.status };
+    if (!res.ok || !data) {
+      // Llaves malas o Flow caído: se avisa al equipo (los rechazos normales, como un cupón inválido, no).
+      if (res.status >= 500 || res.status === 401) require('./alertas').alertar('flow', 'Flow está fallando', `${metodo} ${ruta} respondió ${res.status}${data && data.message ? ': ' + data.message : ''}. Revisa FLOW_API_KEY y FLOW_SECRET_KEY o el estado de Flow.`);
+      return { error: (data && data.message) || `Error de Flow (${res.status})`, codigo: data && data.code, status: res.status };
+    }
     return { data };
   } catch (err) {
+    require('./alertas').alertar('flow', 'No se puede conectar con Flow', `${metodo} ${ruta}: ${err.message}`);
     return { error: 'Error de red al conectar con Flow: ' + err.message };
   }
 }

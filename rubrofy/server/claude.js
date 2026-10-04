@@ -67,6 +67,10 @@ async function llamar({ maxTokens = 800, content, negocioId, uso }) {
       let detalle = '';
       try { detalle = ((await res.json()).error || {}).message || ''; } catch (e) { /* sin cuerpo */ }
       console.log(`Claude respondió ${res.status}${detalle ? ': ' + detalle : ''}`);
+      // Sin Claude los textos salen de plantilla y nadie se entera: se avisa al equipo.
+      if (res.status >= 500 || [401, 403, 429].includes(res.status)) {
+        require('./alertas').alertar('claude', 'Claude no está respondiendo', `Respondió ${res.status}${detalle ? ': ' + detalle : ''}. Mientras tanto, los clientes reciben textos de plantilla.${res.status === 401 ? ' Revisa ANTHROPIC_API_KEY.' : res.status === 429 ? ' Llegaste al límite de uso o de saldo en Anthropic.' : ''}`);
+      }
       return { error: 'http', status: res.status };
     }
     const data = await res.json();
@@ -77,6 +81,7 @@ async function llamar({ maxTokens = 800, content, negocioId, uso }) {
     const texto = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim();
     return { texto, data };
   } catch (err) {
+    require('./alertas').alertar('claude', 'No se puede conectar con Claude', err.message);
     return { error: 'red' };
   }
 }

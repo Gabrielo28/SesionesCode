@@ -17,9 +17,13 @@ async function enviar({ para, asunto, html, texto, encabezados }) {
       body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [para], subject: asunto, html, text: texto, headers: encabezados }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: data.message || `Resend respondió ${res.status}` };
+    if (!res.ok) {
+      require('./alertas').alertar('correo', 'No se pudo enviar un correo', `Resend respondió ${res.status}: ${data.message || ''}`, { conCorreo: false });
+      return { ok: false, error: data.message || `Resend respondió ${res.status}` };
+    }
     return { ok: true, id: data.id };
   } catch (err) {
+    require('./alertas').alertar('correo', 'No se pudo enviar un correo', err.message, { conCorreo: false });
     return { ok: false, error: 'Error de red al enviar el correo: ' + err.message };
   }
 }
