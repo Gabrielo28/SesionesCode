@@ -107,12 +107,13 @@ const SIN_SALDO = /insufficient|not enough|balance|credits? (left|remaining)|out
 
 function errorProveedor(status, mensaje) {
   const err = new Error(mensaje);
-  if (status === 401 || status === 403 || /invalid credentials|unauthori[sz]ed|invalid api key/i.test(mensaje)) {
+  // Higgsfield: 401 es la llave mala; 402 y 403 son falta de saldo.
+  if (status === 401 || /invalid credentials|unauthori[sz]ed|invalid api key/i.test(mensaje)) {
     // La llave está mal puesta: es un problema de configuración, no del cliente.
     err.credenciales = true;
     err.message = 'Las fotos y videos con IA no están disponibles por un problema de configuración. Ya avisamos para solucionarlo; no se descontaron créditos.';
     err.detalle = mensaje;
-  } else if (status === 402 || SIN_SALDO.test(mensaje)) {
+  } else if (status === 402 || status === 403 || SIN_SALDO.test(mensaje)) {
     err.sinSaldo = true;
     err.message = 'Las fotos y videos con IA están en pausa por unos minutos. No se descontaron créditos.';
     err.detalle = mensaje;
@@ -258,6 +259,94 @@ async function imagenDesdePrompt(prompt, vertical, modelo) {
   return descargar(r.url, 20 * 1024 * 1024);
 }
 
+// --- edición de fotos con IA (Higgsfield) ---
+
+function edicionDisponible() {
+  return proveedorImagen() === 'higgsfield';
+}
+
+// Ancho y alto de una foto JPG, PNG o WebP (para pedir la misma proporción).
+function medidas(b) {
+  if (!b || b.length < 30) return null;
+  if (b[0] === 0x89 && b[1] === 0x50) return { ancho: b.readUInt32BE(16), alto: b.readUInt32BE(20) };
+  if (b.slice(0, 4).toString('latin1') === 'RIFF' && b.slice(8, 12).toString('latin1') === 'WEBP') {
+    const tipo = b.slice(12, 16).toString('latin1');
+    if (tipo === 'VP8X') return { ancho: 1 + b.readUIntLE(24, 3), alto: 1 + b.readUIntLE(27, 3) };
+    if (tipo === 'VP8L') { const v = b.readUInt32LE(21); return { ancho: 1 + (v & 0x3fff), alto: 1 + ((v >> 14) & 0x3fff) }; }
+    if (tipo === 'VP8 ') return { ancho: b.readUInt16LE(26) & 0x3fff, alto: b.readUInt16LE(28) & 0x3fff };
+    return null;
+  }
+  if (b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) { i += 1; continue; }
+      const marca = b[i + 1];
+      if (marca >= 0xc0 && marca <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marca)) return { alto: b.readUInt16BE(i + 5), ancho: b.readUInt16BE(i + 7) };
+      if (marca === 0xd8 || marca === 0x01 || (marca >= 0xd0 && marca <= 0xd7)) { i += 2; continue; }
+      i += 2 + b.readUInt16BE(i + 2);
+    }
+  }
+  return null;
+}
+
+// La proporción que acepta el modelo más parecida a la de la foto.
+const PROPORCIONES = ['1:1', '4:5', '3:4', '2:3', '9:16', '5:4', '4:3', '3:2', '16:9'];
+const PROPORCIONES_QWEN = new Set(['1:1', '2:3', '3:2', '3:4', '4:3', '9:16', '16:9']);
+function proporcion(m, familia) {
+  if (!m || !m.ancho || !m.alto) return '1:1';
+  const r = m.ancho / m.alto;
+  const lista = PROPORCIONES.filter((p) => familia !== 'qwen-edit' || PROPORCIONES_QWEN.has(p));
+  return lista.reduce((mejor, p) => {
+    const [a, b] = p.split(':').map(Number);
+    return Math.abs(Math.log(a / b / r)) < Math.abs(Math.log(mejor.r)) ? { p, r: a / b / r } : mejor;
+  }, { p: '1:1', r: 1 / r }).p;
+}
+
+function cuerpoEdicion(modelo, prompt, imagenUrl, aspecto) {
+  if (modelo.familia === 'flare') return { prompt, image_urls: [imagenUrl], quality: 'high', resolution: modelo.resolucion || '1k', aspect_ratio: aspecto };
+  return { prompt, image_urls: [imagenUrl], resolution: modelo.resolucion || '1k', aspect_ratio: aspecto };
+}
+
+// Lo que el dueño escribe ("ponle fondo blanco y que diga Oferta 20%") se
+// pasa a una instrucción precisa en inglés para el modelo; los textos que
+// deben aparecer en la foto quedan tal cual, en español. Sin Claude, se
+// manda la instrucción original envuelta en reglas básicas.
+async function promptEdicion(negocio, instruccion) {
+  const reglas = 'If it asks to add text, write that text exactly as given, in Spanish, with correct accents, clean and legible. Do not add logos, watermarks or anything that was not asked. Keep everything else in the photo unchanged.';
+  const claude = require('./claude');
+  if (claude.configurado()) {
+    const e = negocio.estrategia || {};
+    const r = await claude.llamar({
+      maxTokens: 300,
+      negocioId: negocio.id,
+      uso: 'edicion',
+      content: `Convierte la instrucción de un dueño de negocio para editar una foto en una instrucción para un modelo de edición de imágenes.
+Reglas:
+- Responde SOLO con la instrucción, en inglés, en 1 a 4 oraciones.
+- Todo texto que deba quedar escrito en la imagen va entre comillas dobles y EXACTAMENTE como lo pidió el dueño, en español, con tildes y ñ. No lo traduzcas. Si lo pide sin comillas ("que diga oferta 20%"), deduce el texto exacto.
+- Si dijo dónde, de qué tamaño o color va algo, inclúyelo; si no, elige algo legible que combine con la foto.
+- Termina con "Keep everything else in the photo unchanged." salvo que pida cambiar la foto completa.
+- No agregues logos, marcas de agua ni elementos que no pidió.
+Negocio: ${negocio.nombre} (${e.rubro || 'rubro no indicado'}).
+Instrucción del dueño: <<<${instruccion}>>>`,
+    });
+    const t = r.texto && r.texto.replace(/^["'\s]+|["'\s]+$/g, '').trim();
+    if (t && t.length > 8) return t.slice(0, 1500);
+  }
+  return `Edit this photo following this instruction written in Spanish: "${instruccion}". ${reglas}`;
+}
+
+// Foto editada: Buffer, o lanza un Error con un mensaje para el dueño.
+// imagenUrl: enlace público y temporal a la foto original (Higgsfield la descarga).
+async function editarImagen({ negocio, original, imagenUrl, instruccion, modelo }) {
+  if (!edicionDisponible()) throw new Error('La edición de fotos con IA no está configurada');
+  const prompt = await promptEdicion(negocio, instruccion);
+  const id = await hfEnviar(modelo.ruta, cuerpoEdicion(modelo, prompt, imagenUrl, proporcion(medidas(original), modelo.familia)));
+  const r = await esperar(hfEstado, id, 210);
+  if (r.estado !== 'listo') throw new Error(r.error === 'La imagen tardó demasiado' ? 'La edición tardó demasiado. Intenta de nuevo; no se descontaron créditos.' : (r.error || 'No se pudo editar la foto'));
+  return descargar(r.url, 25 * 1024 * 1024);
+}
+
 // --- videos: trabajos en segundo plano ---
 
 const db = store.db;
@@ -379,4 +468,4 @@ function crearSondeo(alTerminar, log = console.log, modeloDe = null) {
   return { detener: () => clearInterval(timer), vuelta };
 }
 
-module.exports = { cuerpoImagen, cuerpoVideo, proveedorImagen, proveedorVideo, estado, generarImagen, imagenDesdePrompt, promptLibre, ESTILOS_IMAGEN, iniciarVideo, crearSondeo, promptImagen, promptVideo };
+module.exports = { edicionDisponible, editarImagen, promptEdicion, medidas, proporcion, cuerpoEdicion, cuerpoImagen, cuerpoVideo, proveedorImagen, proveedorVideo, estado, generarImagen, imagenDesdePrompt, promptLibre, ESTILOS_IMAGEN, iniciarVideo, crearSondeo, promptImagen, promptVideo };

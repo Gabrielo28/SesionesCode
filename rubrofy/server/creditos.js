@@ -24,6 +24,11 @@ const MODELOS_BASE = [
   { id: 'z_image_turbo', nombre: 'Z-Image Turbo', proveedor: 'Alibaba', tipo: 'foto', calidad: 'rapida', usd: 0.015, ruta: 'z-image/turbo', familia: 'qwen', activo: false },
   { id: 'qwen_image_3', nombre: 'Qwen Image 3', proveedor: 'Alibaba', tipo: 'foto', calidad: 'premium', usd: 0.04, ruta: 'alibaba/qwen-image-3/text-to-image', familia: 'qwen', activo: true },
   { id: 'ideogram_4', nombre: 'Ideogram 4.0', proveedor: 'Ideogram', tipo: 'foto', calidad: 'premium', usd: 0.03, ruta: 'ideogram/v4.0', familia: 'ideogram', activo: false },
+  // Edición de fotos (la foto del negocio + lo que escribe): USD por imagen.
+  // GPT Image 2.5 se cobra por tokens: el precio es estimado, probar antes de activarlo.
+  { id: 'qwen_edit_1k', nombre: 'Qwen Image 3 Edit', proveedor: 'Alibaba', tipo: 'edicion', calidad: 'recomendada', usd: 0.04, ruta: 'alibaba/qwen-image-3/edit', familia: 'qwen-edit', resolucion: '1k', activo: true },
+  { id: 'qwen_edit_2k', nombre: 'Qwen Image 3 Edit 2K', proveedor: 'Alibaba', tipo: 'edicion', calidad: 'premium', usd: 0.075, ruta: 'alibaba/qwen-image-3/edit', familia: 'qwen-edit', resolucion: '2k', activo: true },
+  { id: 'gpt_image_25_edit', nombre: 'GPT Image 2.5 (Flare)', proveedor: 'OpenAI', tipo: 'edicion', calidad: 'premium', usd: 0.15, ruta: 'marketing-studio/image/flare', familia: 'flare', resolucion: '1k', activo: false },
   // Videos: USD por segundo en formato vertical.
   { id: 'wan_3', nombre: 'Wan 3.0', proveedor: 'Alibaba', tipo: 'video', calidad: 'rapida', usd: 0.05, ruta: 'alibaba/wan-3.0', familia: 'wan', resolucion: '480p', activo: true },
   { id: 'kling_3_std', nombre: 'Kling 3.0', proveedor: 'Kling', tipo: 'video', calidad: 'recomendada', usd: 0.126, ruta: 'kling-video/v3.0/std', familia: 'kling', activo: true },
@@ -45,9 +50,9 @@ const CONFIG_BASE = {
 };
 
 const CALIDADES = {
-  rapida: { nombre: 'Rápida', foto: 'Buena para el día a día', video: '480p · ideal para historias' },
-  recomendada: { nombre: 'Recomendada', foto: 'Realista, el mejor equilibrio', video: 'Alta calidad · con audio' },
-  premium: { nombre: 'Premium', foto: 'Máximo detalle y texto legible', video: 'Máxima calidad · audio · mejor movimiento' },
+  rapida: { nombre: 'Rápida', foto: 'Buena para el día a día', video: '480p · ideal para historias', edicion: 'Cambios simples' },
+  recomendada: { nombre: 'Recomendada', foto: 'Realista, el mejor equilibrio', video: 'Alta calidad · con audio', edicion: 'Colores, fondo y textos' },
+  premium: { nombre: 'Premium', foto: 'Máximo detalle y texto legible', video: 'Máxima calidad · audio · mejor movimiento', edicion: 'Más resolución y detalle' },
 };
 const DURACIONES = [5, 10, 15];
 
@@ -163,7 +168,7 @@ function costo(tipo, calidad, segundos, c = config()) {
 // Opciones para el panel: cada calidad con su modelo y cuánto cuesta.
 function opciones(c = config()) {
   const out = {};
-  for (const tipo of ['foto', 'video']) {
+  for (const tipo of ['foto', 'video', 'edicion']) {
     out[tipo] = Object.entries(CALIDADES).map(([id, q]) => {
       const m = modeloDe(tipo, id, c);
       return m ? { calidad: id, nombre: q.nombre, detalle: q[tipo], modelo: m.nombre, creditos: creditosModelo(m, c) } : null;

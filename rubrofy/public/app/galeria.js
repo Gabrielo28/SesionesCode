@@ -186,6 +186,7 @@
     };
     const abrirEnGrande = (i) => verFotos(visibles, i, {
       alBorrar: async (f) => { await ctx.borrarFoto(f.categoria, f.archivo); renderVista(cont); },
+      alEditar: (n().mediosIA || {}).edicion ? (f) => editarConIA(f, { alTerminar: () => { filtro = 'todas'; renderVista(cont); } }) : null,
     });
     cont.onkeydown = (e) => {
       const v = (e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-gl-ver]') ? e.target : null;
@@ -246,6 +247,7 @@
       </div>
       <div class="gl-visor-pie">
         <a class="gl-visor-btn" data-v-bajar>⬇ Descargar</a>
+        ${op.alEditar ? '<button type="button" class="gl-visor-btn gl-visor-ia" data-v-editar>✨ Editar con IA</button>' : ''}
         ${op.alBorrar ? '<button type="button" class="gl-visor-btn gl-visor-peligro" data-v-borrar>Eliminar</button>' : ''}
       </div></div>`;
     const el = (s) => dlg.querySelector(s);
@@ -269,6 +271,7 @@
       if (e.target === dlg || e.target.matches('[data-v-escena]') || e.target.closest('[data-v-cerrar]')) { dlg.close(); return; }
       const p = e.target.closest('[data-v-paso]');
       if (p) { pasoVisor(Number(p.dataset.vPaso)); return; }
+      if (e.target.closest('[data-v-editar]')) { const f = fs[i]; dlg.close(); op.alEditar(f); return; }
       const b = e.target.closest('[data-v-borrar]');
       if (b) {
         if (!confirm('¿Eliminar esta foto de tu galería?')) return;
@@ -292,6 +295,115 @@
     };
     mostrar();
     if (!dlg.open) dlg.showModal();
+  }
+
+  // --- Editar una foto con IA: el dueño escribe qué cambiar ---
+  // La original no se toca: la editada queda como foto nueva (server/server.js:
+  // /galeria/editar). Se puede seguir editando la nueva.
+  function ideasEdicion() {
+    const m = n().marca || {};
+    return [
+      ['Fondo blanco', 'Cambia el fondo por uno blanco y limpio'],
+      ['Colores más cálidos', 'Haz los colores más cálidos y luminosos'],
+      ['Agregar un texto', 'Agrega arriba el texto "Oferta 20%" en letras grandes y blancas'],
+      ['Quitar lo que sobra', 'Quita del fondo los objetos que distraen'],
+      ['Más luz', 'Dale más luz y nitidez, como una foto profesional'],
+      ...(m.color ? [['Colores de mi marca', `Usa los colores de mi marca (${m.color}${m.color2 ? ' y ' + m.color2 : ''}) en el fondo y los detalles`]] : []),
+    ];
+  }
+
+  function editarConIA(foto, { alTerminar } = {}) {
+    const CR = window.RubrofyCreditos;
+    let base = foto;
+    let creadas = 0;
+    let dlg = document.getElementById('dlg-editar-ia');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-editar-ia';
+      dlg.className = 'dlg dlg-editar-ia';
+      document.body.appendChild(dlg);
+    }
+    dlg.innerHTML = `<div class="dlg-caja ed-caja">
+      <div class="gl-dlg-cab"><h2>✨ Editar con IA${window.Ayuda ? window.Ayuda.boton('editar-ia') : ''}</h2><button type="button" class="gl-x" data-ed-cerrar aria-label="Cerrar">×</button></div>
+      <div class="ed-cuerpo">
+        <div class="ed-fotos">
+          <figure class="ed-foto"><img data-ed-base src="${esc(base.url)}" alt="Foto a editar"><figcaption data-ed-base-txt>Original</figcaption></figure>
+          <figure class="ed-foto ed-resultado" data-ed-resultado hidden><img alt="Foto editada"><figcaption>Editada ✨</figcaption>
+            <div class="ed-res-acc"><button type="button" class="btn-ghost" data-ed-grande>Ver en grande</button><button type="button" class="btn-ghost" data-ed-seguir>Seguir editando esta</button></div></figure>
+        </div>
+        <form class="ed-form" data-ed-form>
+          <label class="gl-campo"><span>¿Qué quieres cambiar?</span>
+            <textarea name="instruccion" rows="3" maxlength="600" required placeholder='Ej: cambia el fondo a blanco y agrega arriba el texto "Oferta 20%"'></textarea></label>
+          <div class="gl-ideas">${ideasEdicion().map(([t, d]) => `<button type="button" class="gl-idea" data-ed-idea="${esc(d)}">${esc(t)}</button>`).join('')}</div>
+          <p class="ed-tip">Para agregar un texto, escríbelo entre comillas: así sale tal cual, con tildes.</p>
+          ${CR ? `<div class="gl-campo"><span>Calidad</span>${CR.opcionesHTML('edicion')}</div>` : ''}
+          <div class="gl-ia-pie" data-ed-pie></div>
+          <p class="config-error" data-ed-error hidden></p>
+          <p class="ed-nota">Tu foto original no cambia: la editada se guarda como una foto nueva en tu galería.</p>
+        </form>
+      </div></div>`;
+    const form = dlg.querySelector('[data-ed-form]');
+    const pie = () => {
+      const p = form.querySelector('[data-ed-pie]');
+      if (!CR) return;
+      if (n().sinPlan) { p.innerHTML = '<span class="gl-cupo">Elige un plan para editar fotos con IA.</span>'; return; }
+      const costo = CR.costoDe(form, 'edicion');
+      const alcanza = CR.disponible('edicion') >= costo.creditos && !(n().creditos && n().creditos.pausa);
+      p.innerHTML = `<span class="gl-cupo">${CR.resumenHTML('edicion', costo)}</span>${alcanza ? '' : '<button type="button" class="btn-ghost" data-ed-recargar>⚡ Comprar créditos</button>'}
+        <button type="submit" class="btn-ia"${alcanza ? '' : ' disabled'}>${creadas ? '✨ Editar otra vez' : '✨ Editar foto'}</button>`;
+    };
+    let ultima = null;
+    dlg.onclick = (e) => {
+      if (e.target === dlg || e.target.closest('[data-ed-cerrar]')) { dlg.close(); return; }
+      const idea = e.target.closest('[data-ed-idea]');
+      if (idea) { form.instruccion.value = idea.dataset.edIdea; form.instruccion.focus(); return; }
+      if (e.target.closest('[data-ed-recargar]') && window.RubrofyRecargas) { dlg.close(); window.RubrofyRecargas.abrir('creditos'); return; }
+      if (e.target.closest('[data-ed-grande]') && ultima) { verFotos([ultima], 0); return; }
+      if (e.target.closest('[data-ed-seguir]') && ultima) {
+        base = ultima;
+        dlg.querySelector('[data-ed-base]').src = base.url;
+        dlg.querySelector('[data-ed-base-txt]').textContent = 'La que vas a editar';
+        dlg.querySelector('[data-ed-resultado]').hidden = true;
+        form.instruccion.value = '';
+        form.instruccion.focus();
+      }
+    };
+    form.addEventListener('change', (e) => { if (e.target.name === 'calidad') pie(); });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const error = form.querySelector('[data-ed-error]');
+      const btn = form.querySelector('button[type="submit"]');
+      const res = dlg.querySelector('[data-ed-resultado]');
+      error.hidden = true;
+      btn.disabled = true;
+      btn.textContent = 'Editando… (10 a 40 segundos)';
+      res.hidden = false;
+      res.classList.add('cargando');
+      res.querySelector('img').removeAttribute('src');
+      try {
+        const r = await ctx.api(`/api/negocios/${n().id}/galeria/editar`, {
+          method: 'POST',
+          body: JSON.stringify({ categoria: base.categoria, archivo: base.archivo, instruccion: form.instruccion.value, calidad: (form.querySelector('input[name="calidad"]:checked') || {}).value }),
+        });
+        ctx.setFotos(r.fotos);
+        if (r.negocio) ctx.setNegocio(r.negocio);
+        if (CR) CR.pintarChip();
+        creadas += 1;
+        ultima = { categoria: r.categoria, archivo: r.archivo, url: url(r.categoria, r.archivo), ia: true };
+        res.querySelector('img').src = ultima.url;
+      } catch (err) {
+        res.hidden = true;
+        error.textContent = err.mensaje || 'No se pudo editar la foto. Intenta de nuevo.';
+        error.hidden = false;
+      } finally {
+        res.classList.remove('cargando');
+        pie();
+      }
+    });
+    dlg.addEventListener('close', () => { if (creadas && alTerminar) alTerminar(); }, { once: true });
+    pie();
+    if (!dlg.open) dlg.showModal();
+    setTimeout(() => form.instruccion.focus(), 50);
   }
 
   // --- Selector "Foto para la publicación" ---
@@ -357,5 +469,5 @@
     if (nuevas[0]) await usarEnPieza(item, cat, nuevas[0]);
   }
 
-  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, subirParaPieza, verFotos };
+  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, subirParaPieza, verFotos, editarConIA };
 })();

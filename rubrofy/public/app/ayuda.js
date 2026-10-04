@@ -166,6 +166,8 @@
       p: ['Actualiza lo que haya cambiado (sobre todo precios y promociones).', 'Pulsa "Guardar cambios".', 'Rubrofy vuelve a revisar las alertas de lo que aún no se publica.'] },
     'fotos-ia': { t: 'Fotos generadas por IA', d: 'Cuando una pieza no tiene foto real, Rubrofy puede crear una con tus créditos ⚡ (1 por foto en calidad Recomendada).',
       p: ['"Foto limpia": imagen sin texto.', '"Con el titular": la imagen lleva el titular escrito.'] },
+    'editar-ia': { t: 'Editar fotos con IA', d: 'Cambia una foto tuya escribiendo lo que quieres: el fondo, los colores, la luz o agregarle un texto. Usa créditos ⚡ (1 en Recomendada).',
+      p: ['En Galería, toca una foto para verla en grande.', 'Pulsa "✨ Editar con IA".', 'Escribe qué cambiar o toca una idea. Para agregar un texto, escríbelo entre comillas.', 'Pulsa "Editar foto". La editada se guarda como una foto nueva; la original no cambia.'], n: 'Si no te gusta, edítala otra vez o pulsa "Seguir editando esta" para hacerle más cambios. Si la edición falla, no se descuentan créditos.' },
     'soporte': { t: 'Ayuda y soporte', d: 'Respuestas rápidas, una revisión de tu cuenta y un canal directo con el equipo de Rubrofy.',
       p: ['Busca tu duda arriba: aparecen las ayudas y preguntas que coinciden.', 'Mira la revisión rápida: te dice si algo de tu cuenta impide publicar.', 'Si no lo resuelves, escríbenos: elige el tema, cuéntanos qué pasó y adjunta una captura si puedes.', 'Te respondemos aquí (en Mis solicitudes) y por correo.'], n: 'Los detalles técnicos incluyen la pantalla, el navegador y los últimos errores del panel. No incluyen tus publicaciones ni tus fotos.' },
     'cuenta': { t: 'Mi cuenta', d: 'Tu acceso, tu plan, tus créditos y tus pagos, en un solo lugar.',

@@ -243,7 +243,7 @@ function negocioPublico(negocio) {
   resto.fotosIADisponibles = fotosIADisponibles(negocio);
   resto.textosIADisponibles = textosIADisponibles(negocio);
   resto.videosIADisponibles = videosIADisponibles(negocio);
-  resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo() };
+  resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo(), edicion: medios.edicionDisponible() && !!creditos.costo('edicion', 'recomendada') };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
   resto.guias = process.env.GUIAS !== 'no'; // GUIAS=no apaga las guías del panel para todos
   resto.perfilCompleto = perfil.completo(negocio);
@@ -464,14 +464,14 @@ function prepararCreacion(negocio, tipo, calidad, segundos) {
   if (!costo) return { status: 400, body: { error: 'Esa calidad no está disponible' } };
   const hay = creditos.disponible(negocio, tipo);
   if (hay < costo.creditos) {
-    const que = tipo === 'foto' ? 'Esta foto' : `Este video de ${costo.segundos} s`;
+    const que = tipo === 'foto' ? 'Esta foto' : tipo === 'edicion' ? 'Esta edición' : `Este video de ${costo.segundos} s`;
     const extra = tipo === 'video' && creditos.config().parametros.videosSoloConPacks ? ' Los videos se pagan con créditos de packs.' : '';
     return { status: 403, body: sinCreditos(`${que} usa ${costo.creditos} ⚡ y te quedan ${hay}.${extra} Puedes comprar más créditos.`, costo.creditos - hay) };
   }
   return { costo };
 }
 
-const nombreCreacion = (tipo, costo) => `${tipo === 'foto' ? 'Foto' : 'Video'} ${creditos.CALIDADES[costo.calidad].nombre}${tipo === 'video' ? ` · ${costo.segundos} s` : ''}`;
+const nombreCreacion = (tipo, costo) => `${{ foto: 'Foto', video: 'Video', edicion: 'Edición de foto' }[tipo] || 'Creación'} ${creditos.CALIDADES[costo.calidad].nombre}${tipo === 'video' ? ` · ${costo.segundos} s` : ''}`;
 
 // Error del proveedor: si se quedó sin saldo, se pausan las creaciones y se
 // avisa a quien administra (una vez por pausa).
@@ -547,6 +547,12 @@ function enviarImagen(res, ruta) {
   });
 }
 
+// Enlace público y temporal a una foto (Instagram y Higgsfield la descargan
+// sin sesión). La categoría puede tener espacios o tildes: va codificada.
+function enlaceFotoPublico(base, negocioId, categoria, archivo, minutos) {
+  return `${base}/fotos/${encodeURIComponent(negocioId)}/${encodeURIComponent(categoria)}/${encodeURIComponent(archivo)}?t=${auth.crearTokenFoto(negocioId, categoria, archivo, minutos)}`;
+}
+
 function escapeHtmlSrv(t) {
   return String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -610,8 +616,7 @@ async function prepararPublicacion(negocio, item) {
     : item.publicacion && item.publicacion.urlBase;
   if (!base) return { motivo: 'Falta configurar PUBLIC_URL en el servidor' };
 
-  const enlace = (categoria, archivo, minutos) =>
-    `${base}/fotos/${negocio.id}/${categoria}/${archivo}?t=${auth.crearTokenFoto(negocio.id, categoria, archivo, minutos)}`;
+  const enlace = (categoria, archivo, minutos) => enlaceFotoPublico(base, negocio.id, categoria, archivo, minutos);
   const enlaceVideo = (archivo) =>
     `${base}/videos/${negocio.id}/${archivo}?t=${auth.crearTokenFoto(negocio.id, '_video', archivo, 60)}`;
   const formato = formatoDe(item);
@@ -2084,6 +2089,39 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 201, { fotos: store.listFotos(negocioId), categoria, archivo, negocio: negocioPublico(store.getNegocio(negocioId)) });
         }
 
+        // POST /api/negocios/:id/galeria/editar  { categoria, archivo, instruccion, calidad }
+        // Edita con IA una foto de la galería según lo que el dueño escribe
+        // (colores, fondo, textos…). La original no se toca: la editada queda
+        // como una foto nueva en la misma categoría. Se cobra solo si sale bien.
+        if (parts[3] === 'galeria' && parts[4] === 'editar' && parts.length === 5 && req.method === 'POST') {
+          if (!medios.edicionDisponible()) return sendJSON(res, 400, { error: 'La edición de fotos con IA todavía no está activa.' });
+          const body = await readBody(req);
+          const prep = prepararCreacion(negocio, 'edicion', body.calidad);
+          if (!prep.costo) return sendJSON(res, prep.status, prep.body);
+          const instruccion = String(body.instruccion || '').replace(/\s+/g, ' ').trim().slice(0, 600);
+          if (instruccion.length < 4) return sendJSON(res, 400, { error: 'Escribe qué quieres cambiar en la foto.' });
+          const categoria = String(body.categoria || '');
+          const archivo = String(body.archivo || '');
+          if (!(store.listFotos(negocioId)[categoria] || []).includes(archivo)) return sendJSON(res, 404, { error: 'No encontramos esa foto en tu galería.' });
+          const modeloEd = prep.costo.modelo;
+          let buffer;
+          try {
+            buffer = await medios.editarImagen({
+              negocio, instruccion, modelo: modeloEd,
+              original: fs.readFileSync(store.fotoAbsolutePath(negocioId, categoria, archivo)),
+              imagenUrl: enlaceFotoPublico(urlPublica(req), negocioId, categoria, archivo, 30),
+            });
+          } catch (err) {
+            const e = respuestaErrorMedios(err, 'la foto editada');
+            return sendJSON(res, e.status, e.body);
+          }
+          const nuevo = `ia-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${extensionImagen(buffer)}`;
+          store.addFoto(negocioId, categoria, nuevo, buffer);
+          creditos.cobrar(negocioId, prep.costo.creditos, { tipo: 'edicion', detalle: nombreCreacion('edicion', prep.costo) });
+          costos.imagen(negocioId, 'higgsfield', modeloEd.ruta, modeloEd.usd);
+          return sendJSON(res, 201, { fotos: store.listFotos(negocioId), categoria, archivo: nuevo, negocio: negocioPublico(store.getNegocio(negocioId)) });
+        }
+
         // DELETE /api/negocios/:id/fotos/:categoria/:archivo
         if (parts[3] === 'fotos' && parts.length === 6 && req.method === 'DELETE') {
           const categoria = path.basename(parts[4]);
@@ -2941,7 +2979,7 @@ const server = http.createServer(async (req, res) => {
               const propia = fotoDeItem(negocioId, item);
               const cat = propia && propia.categoria;
               const real = propia && propia.archivo;
-              if (real) imagenUrl = `${base}/fotos/${negocioId}/${cat}/${real}?t=${auth.crearTokenFoto(negocioId, cat, real, 60)}`;
+              if (real) imagenUrl = enlaceFotoPublico(base, negocioId, cat, real, 60);
               else if (store.tieneFotoIA(negocioId, item.id)) {
                 const a = item.id + '.png';
                 imagenUrl = `${base}/fotos/${negocioId}/_ia/${a}?t=${auth.crearTokenFoto(negocioId, '_ia', a, 60)}`;

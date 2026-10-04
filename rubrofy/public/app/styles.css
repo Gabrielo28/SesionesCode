@@ -1363,3 +1363,30 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
   .sop-rev li > button { margin-left: 38px; }
   .sop-msj { max-width: 100%; }
 }
+
+/* Editar con IA */
+.gl-visor-ia { border-color: rgba(255, 77, 148, .55); background: linear-gradient(135deg, rgba(255, 77, 148, .28), rgba(168, 85, 247, .28)); }
+.dlg.dlg-editar-ia { width: min(900px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.ed-caja { gap: 14px; }
+.ed-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.ed-fotos { display: grid; gap: 12px; }
+.ed-foto { margin: 0; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #0b0a0d; }
+.ed-foto img { display: block; width: 100%; max-height: 340px; object-fit: contain; background: #0b0a0d; }
+.ed-foto figcaption { padding: 6px 10px; font-size: 11.5px; color: var(--ink-dim); border-top: 1px solid var(--border); }
+.ed-resultado { border-color: rgba(255, 77, 148, .5); }
+.ed-resultado.cargando img { min-height: 220px; }
+.ed-resultado.cargando::after { content: 'Editando tu foto…'; position: absolute; inset: 0 0 34px; display: grid; place-items: center; color: var(--ink-dim); font-size: 13px; background: repeating-linear-gradient(135deg, #16151a 0 12px, #1b1a20 12px 24px); animation: ed-brillo 1.2s ease-in-out infinite alternate; }
+@keyframes ed-brillo { from { opacity: .55; } to { opacity: 1; } }
+.ed-res-acc { display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 10px; border-top: 1px solid var(--border); }
+.ed-res-acc .btn-ghost { padding: 6px 10px; font-size: 12px; }
+.ed-resultado.cargando .ed-res-acc { visibility: hidden; }
+.ed-form { display: grid; gap: 12px; }
+.ed-form textarea { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; color: var(--ink); font: inherit; font-size: 13.5px; resize: vertical; }
+.ed-form textarea:focus { outline: none; border-color: var(--amber); }
+.ed-tip, .ed-nota { margin: 0; font-size: 12px; color: var(--ink-faint); }
+.ed-tip { color: var(--ink-dim); }
+@media (max-width: 760px) {
+  .ed-cuerpo { grid-template-columns: 1fr; }
+  .ed-foto img { max-height: 260px; }
+}
+@media (prefers-reduced-motion: reduce) { .ed-resultado.cargando::after { animation: none; } }

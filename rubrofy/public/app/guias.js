@@ -46,8 +46,8 @@
     fotos: {
       ilu: '▦', titulo: 'Tu galería de fotos',
       texto: 'Mientras más fotos reales subas, mejor se ven tus publicaciones.',
-      pasos: [['Sube tus fotos', 'Desde el celular o el computador: productos, local, equipo.'], ['O créalas con IA', 'Describe lo que quieres y elige la que más te guste.'], ['Rubrofy las usa', 'Elige la mejor foto para cada publicación. Tú puedes cambiarla.']],
-      pista: 'Las fotos con personas reciben más “me gusta”. Sube alguna tuya o de tu equipo.',
+      pasos: [['Sube tus fotos', 'Desde el celular o el computador: productos, local, equipo.'], ['Créalas o edítalas con IA', 'Describe una foto nueva, o toca una tuya y escribe qué cambiarle.'], ['Rubrofy las usa', 'Elige la mejor foto para cada publicación. Tú puedes cambiarla.']],
+      pista: 'Toca una foto para verla en grande, descargarla o editarla con IA: cambiar el fondo, los colores o agregarle un texto.',
       tour: [
         { sel: '#view-fotos .gl-subir', t: 'Sube tus fotos', d: 'Elige varias a la vez desde tu celular o computador. También puedes arrastrarlas.' },
         { sel: '#view-fotos [data-gl-abrir-ia]', t: 'Crea fotos con IA', d: 'Describe lo que quieres (“pan amasado recién salido del horno”) y elige la mejor.' },

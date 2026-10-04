@@ -458,10 +458,10 @@
           <tbody>${d.modelos.map((m) => `<tr>
             <td><input type="checkbox" data-m-activo="${esc(m.id)}"${m.activo ? ' checked' : ''} aria-label="Activar ${esc(m.nombre)}"></td>
             <td><b>${esc(m.nombre)}</b><small>${esc(m.proveedor)} · ${esc(m.ruta)}</small></td>
-            <td>${m.tipo === 'foto' ? 'Foto' : 'Video'}</td>
+            <td>${{ foto: 'Foto', video: 'Video', edicion: 'Edición' }[m.tipo] || m.tipo}</td>
             <td><select data-m-calidad="${esc(m.id)}" aria-label="Calidad de ${esc(m.nombre)}">${Object.entries(CAL).map(([k, q]) => `<option value="${k}"${k === m.calidad ? ' selected' : ''}>${esc(q.nombre)}</option>`).join('')}</select></td>
             <td><input type="number" step="0.0001" min="0" value="${m.usd}" data-m-usd="${esc(m.id)}" aria-label="Costo de ${esc(m.nombre)}"><small>${usdTxt(m)}</small></td>
-            <td>${clp(m.costoClp)}<small>${m.tipo === 'video' ? 'cada 5 s' : 'cada foto'}</small></td>
+            <td>${clp(m.costoClp)}<small>${m.tipo === 'video' ? 'cada 5 s' : m.tipo === 'edicion' ? 'cada edición' : 'cada foto'}</small></td>
             <td><b>${m.creditos} ⚡</b><small>${clp(m.creditos * p.valorCredito)}</small></td></tr>`).join('')}</tbody>
         </table></div>
         <p class="adm-nota">Precios de open.higgsfield.ai/pricing sin descuentos. En cada tipo y calidad queda activo uno solo; si una calidad no tiene modelo activo, el cliente no la ve.</p>

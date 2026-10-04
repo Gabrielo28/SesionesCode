@@ -70,7 +70,7 @@
   // Línea "usa N ⚡ · te quedan M" o el aviso de que falta.
   function resumenHTML(tipo, costo) {
     const hay = disponible(tipo);
-    const que = tipo === 'foto' ? 'Esta foto' : `Este video de ${costo.segundos} s`;
+    const que = tipo === 'foto' ? 'Esta foto' : tipo === 'edicion' ? 'Esta edición' : `Este video de ${costo.segundos} s`;
     if (datos() && datos().pausa) return '<span class="cr-falta">Las fotos y videos con IA están en pausa por unos minutos. No se descuentan créditos.</span>';
     return hay >= costo.creditos
       ? `<span>${que} usa <b>${costo.creditos} ⚡</b> · te quedan <b>${hay - costo.creditos}</b></span>`

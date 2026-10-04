@@ -450,6 +450,29 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
 API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
 `{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
 
+## Editar fotos con IA (server/medios.js: editarImagen)
+
+En la Galería, al tocar una foto se abre en grande con **✨ Editar con IA**:
+el dueño escribe qué cambiar (fondo, colores, luz, agregar un texto entre
+comillas) o toca una idea, y elige la calidad con su costo en créditos ⚡.
+`POST /api/negocios/:id/galeria/editar { categoria, archivo, instruccion, calidad }`:
+
+- Claude pasa la instrucción a un pedido preciso en inglés y deja los
+  textos que van en la foto tal cual, en español (sin Claude, se manda la
+  instrucción envuelta en reglas básicas).
+- Higgsfield recibe un enlace público y temporal a la foto original (con
+  la categoría codificada) y la proporción más parecida a la de la foto.
+- Modelos (tipo `edicion` en Créditos de /admin): Recomendada = Qwen Image 3
+  Edit 1K ($0.04, 1 ⚡), Premium = Qwen Image 3 Edit 2K ($0.075, 2 ⚡). GPT
+  Image 2.5 (Flare) queda cargado pero apagado: se cobra por tokens y su
+  precio es estimado.
+- La editada se guarda como foto nueva (`ia-…`) en la misma categoría; la
+  original no se toca. Se cobra solo si sale bien.
+
+Las fotos que se suben se preparan antes en el navegador (`imagen.js`):
+JPEG de hasta 2048 px y derecha (las del iPhone vienen en HEIC). El
+servidor revisa los bytes y rechaza HEIC o lo que no sea JPG, PNG o WebP.
+
 ## Ayuda y soporte (server/soporte.js, public/app/soporte.js)
 
 Pantalla "Ayuda y soporte" del panel (menú, con aviso cuando hay una
