@@ -158,4 +158,4 @@ body.adm { height: auto; min-height: 100%; }
    se desplaza dentro de la tarjeta (en el celular la página se agrandaba). */
 .adm-grid > *, .adm-sop > * { min-width: 0; }
 
-.adm-respaldar { margin-top: 6px; padding: 6px 12px; font-size: 12.5px; }
+.adm-respaldar { margin-top: 6px; padding: 6px 12px; font-size: 12.5px; align-self: flex-start; }
