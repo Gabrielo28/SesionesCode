@@ -147,7 +147,7 @@
           </li>`;
         }).join('')}</ul>`
         : '<p class="sub">Todavía no hay pagos. Cuando pagues tu plan o compres créditos, cada pago queda registrado aquí.</p>'}
-      <p class="cta-nota">Los precios incluyen IVA.${cuenta.contacto ? ` ¿Necesitas tu boleta o una factura? Escríbenos a <a href="mailto:${esc(cuenta.contacto)}">${esc(cuenta.contacto)}</a>.` : ''}</p>`;
+      <p class="cta-nota">Los precios incluyen IVA. La boleta electrónica de cada pago te llega por correo desde Flow.${cuenta.contacto ? ` ¿Necesitas factura? Escríbenos a <a href="mailto:${esc(cuenta.contacto)}">${esc(cuenta.contacto)}</a>.` : ' ¿Necesitas factura? Escríbenos desde Ayuda y soporte.'}</p>`;
   }
 
   // Un solo manejador para toda la vista (las tarjetas se redibujan).

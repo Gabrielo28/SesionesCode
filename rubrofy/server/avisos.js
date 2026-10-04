@@ -206,9 +206,9 @@ function correoRecibo({ negocio, urlPanel, montoClp, detalle, periodo, fecha }) 
   const { html, texto } = plantilla({
     titulo: 'Recibimos tu pago',
     parrafos: [`Gracias. Recibimos ${clp(montoClp)} (IVA incluido) de ${negocio.nombre}.`, `Detalle: ${detalle}${periodo ? `, del ${fechaLarga(periodo.desde)} al ${fechaLarga(periodo.hasta)}` : ''}. Fecha: ${fechaLarga(fecha || new Date().toISOString())}.`,
-      'Ves todos tus pagos en Mi cuenta → Pagos y facturación. ¿Necesitas boleta o factura? Escríbenos desde Ayuda y soporte.'],
+      'La boleta electrónica te llega aparte, por correo desde Flow. Ves todos tus pagos en Mi cuenta → Pagos y facturación; si necesitas factura, escríbenos desde Ayuda y soporte.'],
     boton: boton('Ver mis pagos', urlPanel),
-    pie: 'Este correo es un comprobante de pago, no una boleta.',
+    pie: 'Este correo es un comprobante de pago; la boleta electrónica la envía Flow.',
   });
   return { para: negocio.email, asunto: `Recibimos tu pago de ${clp(montoClp)} · Rubrofy`, html, texto };
 }
