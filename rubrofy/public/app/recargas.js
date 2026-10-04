@@ -90,7 +90,7 @@
       const p = e.target.closest('[data-paquete]');
       if (p) { paqueteSel = cat.paquetes.find((x) => x.id === p.dataset.paquete); return pintar(); }
       if (e.target.closest('[data-cerrar]')) return dlg.close();
-      if (e.target.closest('[data-ver-planes]')) { dlg.close(); return ctx.irA('config', null, 'cfg-plan'); }
+      if (e.target.closest('[data-ver-planes]')) { dlg.close(); return ctx.irA('cuenta', null, 'cta-plan'); }
       const pagar = e.target.closest('[data-pagar]');
       const simular = e.target.closest('[data-simular]');
       if (!pagar && !simular) return;

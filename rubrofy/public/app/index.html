@@ -93,13 +93,16 @@
       <button class="rail-btn spacer" data-view="config" title="Conexiones y ajustes">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg><span class="rail-label">Conexiones y ajustes</span>
       </button>
+      <button class="rail-btn" data-view="cuenta" title="Mi cuenta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20 C5.7 16.2 8.5 14.2 12 14.2 S18.3 16.2 19.2 20"/></svg><span class="rail-label">Mi cuenta</span>
+      </button>
       <button type="button" class="rail-avance" id="rail-avance" title="Ver tu ruta en Inicio" hidden></button>
-      <div class="rail-planactual" id="rail-planactual" hidden></div>
+      <button type="button" class="rail-planactual" id="rail-planactual" title="Ver tu plan en Mi cuenta" hidden></button>
     </nav>
 
     <div class="main">
       <header class="topbar">
-        <div class="switcher">
+        <div class="switcher" id="switcher" role="button" tabindex="0" title="Mi cuenta: plan, créditos, pagos y sesión">
           <div class="badge" id="switcher-badge">--</div>
           <div>
             <span class="negocio-nombre" id="switcher-nombre">-</span>
@@ -221,10 +224,10 @@
       <section id="view-config" class="view" hidden>
         <div>
           <h1>Conexiones y ajustes<button type="button" class="ay" data-ayuda="config" aria-label="Ayuda: Conexiones y ajustes" aria-expanded="false">?</button></h1>
-          <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y administra tu plan.</p>
+          <p class="sub">Conecta Instagram y tu publicidad, actualiza los datos de tu negocio y elige tus avisos. Tu plan, créditos y pagos están en <a href="#cuenta" data-ir-cuenta>Mi cuenta</a>.</p>
         </div>
         <nav class="cfg-indice" aria-label="Secciones de ajustes">
-          <a href="#cfg-perfil">Tu negocio</a><a href="#cfg-marca">Kit de marca</a><a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos</a><a href="#cfg-datos">Datos del negocio</a><a href="#cfg-plan">Plan y pago</a>
+          <a href="#cfg-perfil">Tu negocio</a><a href="#cfg-marca">Kit de marca</a><a href="#cfg-conexiones">Conexiones</a><a href="#cfg-avisos">Avisos</a><a href="#cfg-datos">Datos del negocio</a><a href="#cuenta" data-ir-cuenta class="cfg-indice-ir">Plan y pagos →</a>
         </nav>
 
         <h2 class="cfg-titulo" id="cfg-perfil">Tu negocio</h2>
@@ -327,13 +330,48 @@
           <p class="config-error" id="config-error" hidden></p>
           <p class="config-ok" id="config-ok" hidden>Guardado.</p>
           <div class="config-actions">
-            <span><button type="button" id="btn-eliminar-negocio" class="btn-danger">Eliminar negocio</button><button type="button" class="ay" data-ayuda="eliminar" aria-label="Ayuda: Eliminar negocio" aria-expanded="false">?</button></span>
             <button type="submit" class="btn-approve">Guardar cambios</button>
           </div>
         </form>
+      </section>
 
-        <h2 class="cfg-titulo" id="cfg-plan">Plan y pago<button type="button" class="ay" data-ayuda="plan-pago" aria-label="Ayuda: Plan y pago" aria-expanded="false">?</button></h2>
+      <section id="view-cuenta" class="view" hidden>
+        <div>
+          <h1>Mi cuenta<button type="button" class="ay" data-ayuda="cuenta" aria-label="Ayuda: Mi cuenta" aria-expanded="false">?</button></h1>
+          <p class="sub">Tu acceso, tu plan, tus créditos y tus pagos, en un solo lugar.</p>
+        </div>
+        <nav class="cfg-indice" aria-label="Secciones de tu cuenta">
+          <a href="#cta-perfil">Perfil</a><a href="#cta-plan">Plan</a><a href="#cta-creditos">Créditos</a><a href="#cta-pagos">Pagos</a><a href="#cta-sesion">Sesión</a>
+        </nav>
+
+        <h2 class="cfg-titulo" id="cta-perfil">Perfil</h2>
+        <div class="ig-card" id="cuenta-perfil"></div>
+
+        <h2 class="cfg-titulo" id="cta-plan">Plan y pago<button type="button" class="ay" data-ayuda="plan-pago" aria-label="Ayuda: Plan y pago" aria-expanded="false">?</button></h2>
         <div class="ig-card" id="plan-card"></div>
+
+        <h2 class="cfg-titulo" id="cta-creditos">Créditos ⚡<button type="button" class="ay" data-ayuda="creditos" aria-label="Ayuda: Créditos" aria-expanded="false">?</button></h2>
+        <div class="ig-card" id="cuenta-creditos"></div>
+
+        <h2 class="cfg-titulo" id="cta-pagos">Pagos y facturación</h2>
+        <div class="ig-card" id="cuenta-pagos"></div>
+
+        <h2 class="cfg-titulo" id="cta-sesion">Sesión y seguridad</h2>
+        <div class="ig-card" id="cuenta-sesion">
+          <div class="cta-fila">
+            <span><b>Cerrar sesión</b><small>Sales de Rubrofy en este dispositivo.</small></span>
+            <button type="button" class="btn-ghost" id="btn-logout-cuenta">Cerrar sesión</button>
+          </div>
+          <div class="cta-fila">
+            <span><b>Cerrar sesión en todos lados</b><small>Si entraste desde un computador ajeno o perdiste tu celular. Aquí sigues conectado.</small></span>
+            <button type="button" class="btn-ghost" data-cta-cerrar-todas>Cerrar en todos</button>
+          </div>
+          <p class="config-ok" data-cta-sesion-ok hidden></p>
+          <div class="cta-fila cta-peligro">
+            <span><b>Eliminar mi cuenta</b><small>Se borran tu cuenta, tu contenido y tus fotos, y se cancela tu suscripción. No se puede deshacer.</small></span>
+            <span class="cta-peligro-acc"><button type="button" id="btn-eliminar-negocio" class="btn-danger">Eliminar cuenta</button><button type="button" class="ay" data-ayuda="eliminar" aria-label="Ayuda: Eliminar cuenta" aria-expanded="false">?</button></span>
+          </div>
+        </div>
       </section>
     </div>
   </div>
@@ -381,6 +419,7 @@
   <script src="/app/reels.js?v=22"></script>
   <script src="/app/creditos.js?v=22"></script>
   <script src="/app/galeria.js?v=22"></script>
+  <script src="/app/cuenta.js?v=22"></script>
   <script src="/app/bienvenida.js?v=22"></script>
   <script src="/app/inicio.js?v=22"></script>
   <script src="/app/resultados.js?v=22"></script>

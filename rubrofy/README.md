@@ -430,6 +430,26 @@ estrategia, conexiones y primera semana.
   solo "Tu negocio" y "Lo que vendes" hasta completar el perfil. También se
   edita en Conexiones y ajustes → Tu negocio.
 
+## Mi cuenta (public/app/cuenta.js)
+
+Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
+
+- **Perfil**: correo para entrar, cambiar la clave (pide la actual; al
+  cambiarla se cierran las sesiones de los otros dispositivos) y enlace a
+  los datos del negocio.
+- **Plan y pago**: la tarjeta del plan (cambiar plan, tarjeta o cancelar).
+- **Créditos ⚡**: saldo (del plan y de packs), comprar, enlace para invitar
+  y últimos movimientos.
+- **Pagos y facturación**: los cobros de la suscripción de Flow (se guardan
+  al sincronizar la suscripción; si uno está pendiente, botón para pagarlo)
+  y las compras de créditos. Si hay `CONTACTO_EMAIL`, a quién pedir boleta o
+  factura.
+- **Sesión**: cerrar sesión, cerrarla en todos los dispositivos y eliminar
+  la cuenta.
+
+API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
+`{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
+
 ## Costo de IA (server/costos.js)
 
 Cada llamada a Claude registra sus tokens reales (tabla `uso_ia`);

@@ -131,7 +131,7 @@
         etapaAbierta = etapa.dataset.etapa;
         return render(cont, ctx);
       }
-      if (e.target.closest('[data-planes]')) return ctx.irA('config', null, 'cfg-plan');
+      if (e.target.closest('[data-planes]')) return ctx.irA('cuenta', null, 'cta-plan');
       const b = e.target.closest('[data-accion]');
       if (!b) return;
       const a = JSON.parse(b.dataset.accion);

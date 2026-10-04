@@ -35,6 +35,23 @@ function buscarPor(campo, valor) {
 }
 
 // Aplica lo que Flow dice de una suscripción al negocio que la sigue.
+// Un cobro (invoice) de Flow como lo muestra "Mi cuenta". El enlace de
+// pago solo se guarda si el cobro está pendiente y es de flow.cl.
+function cobroDeFlow(i) {
+  const st = Number(i.status);
+  const estado = st === 1 ? 'pagado' : st === 2 ? 'anulado' : 'pendiente';
+  const enlace = String(i.paymentLink || '');
+  const dia = (v) => (/^\d{4}-\d{2}-\d{2}/.test(String(v || '')) ? String(v).slice(0, 10) : null);
+  return {
+    id: i.id,
+    fecha: dia(i.created),
+    monto: Number(i.amount) || 0,
+    estado,
+    periodo: dia(i.period_start) && dia(i.period_end) ? { desde: dia(i.period_start), hasta: dia(i.period_end) } : null,
+    link: estado === 'pendiente' && /^https:\/\/([a-z0-9-]+\.)?flow\.cl\//.test(enlace) ? enlace : null,
+  };
+}
+
 function aplicarSuscripcion(negocioId, sub) {
   const negocio = store.getNegocio(negocioId);
   if (!negocio || !sub) return null;
@@ -49,6 +66,8 @@ function aplicarSuscripcion(negocioId, sub) {
     cancelaAlFinal: Number(sub.cancel_at_period_end) === 1,
     periodoFin: sub.period_end || null,
   });
+  // Los cobros de la suscripción, para "Mi cuenta" (los últimos 24).
+  if (Array.isArray(sub.invoices)) negocio.flow.cobros = sub.invoices.slice(-24).map(cobroDeFlow);
   delete negocio.flow.planPendiente;
   delete negocio.flow.codigoPendiente;
   const enPrueba = pruebaGratis.vigente(negocio);
@@ -77,7 +96,7 @@ async function sincronizar(negocioId) {
   const antes = negocio.plan;
   const despues = aplicarSuscripcion(negocioId, r.data);
   if (despues && antes !== 'gratis' && despues.plan === 'gratis' && despues.flow.estado === 'past_due') {
-    deps.notificar(negocioId, { titulo: 'No pudimos cobrar tu plan', cuerpo: 'Revisa tu tarjeta en Plan para seguir creando contenido.', url: '/app#config', tag: 'cobro' });
+    deps.notificar(negocioId, { titulo: 'No pudimos cobrar tu plan', cuerpo: 'Revisa tu tarjeta en Plan para seguir creando contenido.', url: '/app#cuenta', tag: 'cobro' });
   }
   return { negocio: despues };
 }
@@ -284,5 +303,5 @@ function publico(negocio) {
 module.exports = {
   configurar, planDesdeFlow, aplicarSuscripcion, sincronizar, sincronizarTodas,
   elegirPlan, aplicarCodigo, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente,
-  pagarRecarga, confirmarPago, publico,
+  pagarRecarga, confirmarPago, publico, cobroDeFlow,
 };

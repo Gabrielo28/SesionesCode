@@ -42,7 +42,7 @@
     const plan = (planes || []).find((p) => p.id === (negocio.plan || 'gratis'));
     if (!plan || !plan.analitica) {
       cont.innerHTML = aviso('Resultados muestra el alcance, la interacción y qué publicaciones te funcionan mejor, y con eso la IA aprende a escribir lo que le sirve a tu negocio. Está disponible en los planes <b>Pro</b> y <b>Estudio</b>. <button class="btn-approve" data-res="plan">Ver planes</button>');
-      cont.querySelector('[data-res="plan"]').addEventListener('click', () => irA('config'));
+      cont.querySelector('[data-res="plan"]').addEventListener('click', () => irA('cuenta', null, 'cta-plan'));
       return;
     }
     if (!negocio.instagramConectado) {

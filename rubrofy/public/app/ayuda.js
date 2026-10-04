@@ -150,7 +150,7 @@
       p: ['Conecta Meta en Conexiones y ajustes, eligiendo tu cuenta de Instagram (plan Estudio).', 'Escribe el @usuario de un competidor y pulsa "Seguir".', 'Para dejar de seguir una cuenta, pulsa "Quitar".', 'Se actualiza solo cada 12 horas.'], n: 'Solo funciona con cuentas profesionales (empresa o creador).' },
 
     // ---------- Conexiones y ajustes ----------
-    'config': { t: 'Conexiones y ajustes', d: 'Donde conectas Instagram y tu publicidad, activas los avisos por correo, actualizas los datos del negocio y administras tu plan.',
+    'config': { t: 'Conexiones y ajustes', d: 'Donde conectas Instagram y tu publicidad, activas los avisos y actualizas los datos del negocio. Tu plan, créditos y pagos están en Mi cuenta.',
       p: ['Usa los botones de arriba para saltar a cada sección.'] },
     'instagram': { t: 'Conectar Instagram', d: 'Con Instagram conectado, lo que apruebas se publica solo, en su fecha y hora.',
       p: ['Tu cuenta debe ser profesional (empresa o creador): Instagram → Configuración → Tipo de cuenta.', 'Pulsa "Conectar con Instagram".', 'Inicia sesión en Instagram y acepta los permisos.', 'Vuelves a Rubrofy ya conectado.'], n: 'Si no ves el botón, conecta pegando el ID y el token (hay una guía en la misma tarjeta).' },
@@ -164,10 +164,14 @@
       p: ['Actualiza lo que haya cambiado (sobre todo precios y promociones).', 'Pulsa "Guardar cambios".', 'Rubrofy vuelve a revisar las alertas de lo que aún no se publica.'] },
     'fotos-ia': { t: 'Fotos generadas por IA', d: 'Cuando una pieza no tiene foto real, Rubrofy puede crear una con tus créditos ⚡ (1 por foto en calidad Recomendada).',
       p: ['"Foto limpia": imagen sin texto.', '"Con el titular": la imagen lleva el titular escrito.'] },
+    'cuenta': { t: 'Mi cuenta', d: 'Tu acceso, tu plan, tus créditos y tus pagos, en un solo lugar.',
+      p: ['Perfil: tu correo y tu clave (puedes cambiarla).', 'Plan y pago: cambia de plan, de tarjeta o cancela.', 'Créditos: tu saldo y en qué se usó.', 'Pagos: cada cobro del plan y cada compra de créditos.', 'Sesión: cierra sesión aquí o en todos tus dispositivos.'], n: 'También llegas aquí tocando el nombre de tu negocio, arriba.' },
+    'creditos': { t: 'Créditos ⚡', d: 'Un solo saldo para crear fotos y videos con IA. Antes de crear, siempre ves cuánto usa.',
+      p: ['Tu plan trae créditos que se renuevan el día 1 de cada mes.', 'Si necesitas más, compra un pack: esos duran 12 meses.', 'Invita a otro negocio con tu enlace y los dos reciben créditos de regalo.'], n: 'Si una creación falla, los créditos se devuelven solos.' },
     'plan-pago': { t: 'Plan y pago', d: 'Tu plan actual y lo que usaste este mes.',
-      p: ['Para subir de plan, pulsa "Actualizar a…" y paga con tarjeta.', 'Para cambiar de plan, cancelar o ver tus boletas, pulsa "Gestionar suscripción".'], n: 'Las piezas con IA, los reels editados y los créditos ⚡ del plan se renuevan el día 1 de cada mes. Los créditos de packs duran 12 meses.' },
-    'eliminar': { t: 'Eliminar negocio', d: 'Borra tu cuenta y todo su contenido, fotos, métricas y conexiones. No se puede deshacer.',
-      p: ['Pulsa "Eliminar negocio".', 'Confirma.'], n: 'Si tienes un plan de pago, la suscripción se cancela.' },
+      p: ['Para subir de plan, pulsa "Actualizar a…" y paga con tarjeta.', 'Para cambiar la tarjeta o cancelar, usa los botones al final de esta tarjeta.', 'Tus pagos quedan en la sección Pagos, más abajo.'], n: 'Las piezas con IA, los reels editados y los créditos ⚡ del plan se renuevan el día 1 de cada mes. Los créditos de packs duran 12 meses.' },
+    'eliminar': { t: 'Eliminar cuenta', d: 'Borra tu cuenta y todo su contenido, fotos, métricas y conexiones. No se puede deshacer.',
+      p: ['Pulsa "Eliminar cuenta".', 'Confirma.'], n: 'Si tienes un plan de pago, la suscripción se cancela.' },
 
     // ---------- Bienvenida ----------
     'bv-negocio': { t: 'Tu negocio', d: 'Lo primero es que Rubrofy te conozca: qué es tu negocio, dónde está, cómo te compran y dónde te encuentran.',

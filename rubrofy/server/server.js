@@ -1655,6 +1655,48 @@ const server = http.createServer(async (req, res) => {
             paquetes: recargas.catalogo().paquetes.filter((p) => p.tipo === 'creditos'),
           }));
         }
+        // Mi cuenta (public/app/cuenta.js):
+        //   GET  /api/negocios/:id/cuenta — correo, alta y pagos (plan y créditos)
+        //   POST /api/negocios/:id/cuenta/clave  { actual, nueva }
+        //   POST /api/negocios/:id/cuenta/cerrar-sesiones — cierra los demás dispositivos
+        // Cambiar la clave también cierra las sesiones abiertas en otros
+        // dispositivos; esta sigue con una cookie nueva.
+        if (parts[3] === 'cuenta') {
+          if (parts.length === 4 && req.method === 'GET') {
+            const f = negocio.flow || {};
+            const lista = [
+              ...(f.cobros || []).map((c) => ({ fecha: c.fecha, detalle: 'Suscripción mensual', periodo: c.periodo || null, montoClp: c.monto, estado: c.estado, enlacePago: c.link || null })),
+              ...recargas.historial(negocioId).filter((h) => h.precioClp > 0).map((h) => ({ fecha: h.fecha, detalle: `${h.cantidad} ${h.nombre}`, montoClp: h.precioClp, estado: h.simulada ? 'simulada' : 'pagado' })),
+            ].sort((x, y) => String(y.fecha).localeCompare(String(x.fecha)));
+            return sendJSON(res, 200, {
+              email: negocio.email || null,
+              creadoEl: negocio.creadoEl || null,
+              contacto: process.env.CONTACTO_EMAIL || null,
+              pagos: lista.slice(0, 40),
+            });
+          }
+          if (parts.length === 5 && req.method === 'POST' && (parts[4] === 'clave' || parts[4] === 'cerrar-sesiones')) {
+            if (parts[4] === 'clave') {
+              const ip = ipCliente(req);
+              const espera = limiteLoginFallido.esperaSegundos(ip);
+              if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.' }, { 'Retry-After': String(espera) });
+              const body = await readBody(req);
+              const actual = String(body.actual || '');
+              const nueva = String(body.nueva || '');
+              if (!(negocio.auth && auth.verifyPassword(actual, negocio.auth.salt, negocio.auth.hash))) {
+                limiteLoginFallido.registrar(ip);
+                return sendJSON(res, 400, { error: 'La clave actual no es correcta.' });
+              }
+              if (nueva.length < 8) return sendJSON(res, 400, { error: 'La clave nueva debe tener al menos 8 caracteres.' });
+              if (nueva === actual) return sendJSON(res, 400, { error: 'La clave nueva tiene que ser distinta a la actual.' });
+              negocio.auth = auth.hashPassword(nueva);
+            }
+            negocio.sesionesDesde = new Date().toISOString();
+            store.saveNegocio(negocio);
+            return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, auth.crearSesion(negocioId)) });
+          }
+        }
+
         if (parts[3] === 'recargas') {
           if (parts.length === 4 && req.method === 'GET') {
             return sendJSON(res, 200, { saldos: recargas.saldos(negocioId), historial: recargas.historial(negocioId), catalogo: recargas.catalogo() });

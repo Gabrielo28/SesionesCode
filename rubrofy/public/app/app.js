@@ -588,7 +588,6 @@
 
     renderAvisos();
 
-    renderPlan();
     renderMeta();
     renderGoogle();
   }
@@ -989,15 +988,15 @@
     if (!plan[clave]) {
       cont.innerHTML = `<div class="res-aviso">${tabResultados === 'competencia'
         ? 'Sigue a tus competidores en Instagram (seguidores, frecuencia e interacción) y compáralos contigo.'
-        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'}${AY(tabResultados === 'competencia' ? 'competencia' : 'publicidad')} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="config">Ver planes</button></div>`;
-      cont.querySelector('[data-ir]').addEventListener('click', () => irAVista('config'));
+        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'}${AY(tabResultados === 'competencia' ? 'competencia' : 'publicidad')} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="cuenta">Ver planes</button></div>`;
+      cont.querySelector('[data-ir]').addEventListener('click', () => irAVista('cuenta', null, 'cta-plan'));
       return;
     }
     if (tabResultados === 'competencia') return window.RubrofyCompetencia && window.RubrofyCompetencia.render(cont, ctx);
     return window.RubrofyAds.render(cont, ctx, tabResultados);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config'];
+  const VISTAS = ['inicio', 'estrategia', 'voz', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'estilo', 'resultados', 'config', 'cuenta'];
 
   // El menú lateral tiene entradas que abren Resultados en una pestaña
   // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
@@ -1007,7 +1006,7 @@
   }
   function tabMenu() { return tabResultados === 'google' ? 'meta' : tabResultados; }
 
-  // ancla: id de una sección dentro de la vista (ej: 'cfg-plan').
+  // ancla: id de una sección dentro de la vista (ej: 'cta-plan').
   function irAVista(vista, tab, ancla) {
     vistaActual = vista;
     if (tab) tabResultados = tab;
@@ -1046,6 +1045,10 @@
     else if (vistaActual === 'fotos') renderFotos();
     else if (vistaActual === 'reels') renderEstudioReels();
     else if (vistaActual === 'config') renderConfig();
+    else if (vistaActual === 'cuenta') {
+      renderPlan();
+      window.RubrofyCuenta.render(ctxPanel()).catch(() => {});
+    }
     else if (vistaActual === 'estilo') {
       window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
     }
@@ -1479,6 +1482,21 @@
     $('#btn-logout').addEventListener('click', () => {
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
     });
+    $('#btn-logout-cuenta').addEventListener('click', () => {
+      cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
+    });
+
+    // Mi cuenta: desde el nombre del negocio (arriba), el plan del menú y
+    // los enlaces "Plan y pagos" de Conexiones y ajustes.
+    const irACuenta = () => { if (negocioActual) irAVista('cuenta'); };
+    $('#switcher').addEventListener('click', irACuenta);
+    $('#switcher').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); irACuenta(); } });
+    $('#rail-planactual').addEventListener('click', () => { if (negocioActual) irAVista('cuenta', null, 'cta-plan'); });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-ir-cuenta]')) return;
+      e.preventDefault();
+      irAVista('cuenta', null, 'cta-plan');
+    });
 
     // conexión con Meta (delegación: el contenido de la tarjeta se redibuja)
     $('#meta-card').addEventListener('click', (e) => { accionMeta(e).catch((err) => alert(err.mensaje || err.message)); });
@@ -1658,7 +1676,7 @@
 
     $('#btn-generar').addEventListener('click', abrirGenerar);
     $('#aviso-plan').addEventListener('click', (e) => {
-      if (e.target.closest('[data-ir-plan]')) return irAVista('config', null, 'cfg-plan');
+      if (e.target.closest('[data-ir-plan]')) return irAVista('cuenta', null, 'cta-plan');
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
       if (e.target.closest('[data-recargar]')) return window.RubrofyRecargas.abrir('piezas');
       if (e.target.closest('[data-ocultar-pocas]')) {

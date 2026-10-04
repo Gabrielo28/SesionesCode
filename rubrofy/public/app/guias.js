@@ -142,14 +142,25 @@
     },
     config: {
       ilu: '⚙', titulo: 'Tus ajustes',
-      texto: 'Aquí conectas Instagram, subes tu logo y administras tu plan.',
-      pasos: [['Conecta Instagram', 'Es lo más importante: sin esto, nada se publica solo.'], ['Sube tu logo y colores', 'En Kit de marca. Rubrofy los usa en tus diseños.'], ['Revisa tu plan', 'Al final de la página: plan, pago y recargas.']],
-      pista: 'Usa el índice de arriba para saltar directo a cada parte.',
+      texto: 'Aquí conectas Instagram, subes tu logo y eliges tus avisos.',
+      pasos: [['Conecta Instagram', 'Es lo más importante: sin esto, nada se publica solo.'], ['Sube tu logo y colores', 'En Kit de marca. Rubrofy los usa en tus diseños.'], ['Elige tus avisos', 'Te avisamos cuando hay algo para revisar.']],
+      pista: 'Tu plan, tus créditos y tus pagos están en Mi cuenta.',
       tour: [
         { sel: '#view-config .cfg-indice', t: 'Índice', d: 'Toca una parte para ir directo a ella.' },
         { sel: '#ig-card', t: 'Conecta Instagram', d: 'Inicias sesión en Instagram y aceptas los permisos. Solo se hace una vez.' },
         { sel: '#marca-card', t: 'Tu Kit de marca', d: 'Logo, colores y letra. Rubrofy los pone en tus diseños y reels.' },
-        { sel: '#plan-card', t: 'Plan y pago', d: 'Tu plan, cómo pagas y las recargas si necesitas más.' },
+      ],
+    },
+    cuenta: {
+      ilu: '◉', titulo: 'Tu cuenta',
+      texto: 'Aquí ves tu plan, tus créditos y tus pagos, y cambias tu clave.',
+      pasos: [['Revisa tu plan', 'Cámbialo, cambia la tarjeta o cancela cuando quieras.'], ['Mira tus créditos', 'Cuántos te quedan y en qué se usaron.'], ['Revisa tus pagos', 'Cada cobro queda registrado aquí.']],
+      pista: 'Para volver aquí desde cualquier pantalla, toca el nombre de tu negocio, arriba.',
+      tour: [
+        { sel: '#view-cuenta .cfg-indice', t: 'Índice', d: 'Toca una parte para ir directo a ella.' },
+        { sel: '#plan-card', t: 'Plan y pago', d: 'Tu plan, cómo pagas y lo que usaste este mes.' },
+        { sel: '#cuenta-creditos', t: 'Créditos', d: 'Tu saldo para fotos y videos con IA, y en qué se usó.' },
+        { sel: '#cuenta-sesion', t: 'Sesión', d: 'Cierra sesión aquí o en todos tus dispositivos.' },
       ],
     },
   };

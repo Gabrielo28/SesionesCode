@@ -164,7 +164,7 @@
       const pk = e.target.closest('[data-paquete]');
       if (pk) { sel = pk.dataset.paquete; return pintar(); }
       if (e.target.closest('[data-cerrar]')) return dlg.close();
-      if (e.target.closest('[data-ver-planes]')) { dlg.close(); return ctx.irA('config', null, 'cfg-plan'); }
+      if (e.target.closest('[data-ver-planes]')) { dlg.close(); return ctx.irA('cuenta', null, 'cta-plan'); }
       if (e.target.closest('[data-copiar]')) {
         const inp = dlg.querySelector('#cr-ref-enlace');
         const boton = e.target.closest('[data-copiar]');
