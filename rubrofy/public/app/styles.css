@@ -60,6 +60,7 @@ a { color: var(--amber); }
 .rail-btn.active { background: rgba(255, 77, 148, 0.14); color: var(--amber); font-weight: 600; }
 .rail-btn.active::before { content: ''; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--amber); }
 .rail-btn.spacer { margin-top: auto; }
+.rail-abajo { margin-top: auto; display: flex; flex-direction: column; width: 100%; padding-top: 12px; }
 .rail-num { font-style: normal; font-size: 11px; font-weight: 700; background: var(--amber); color: #140a10; border-radius: 10px; padding: 1px 7px; }
 .rail-plan { font-style: normal; font-size: 9.5px; font-weight: 700; color: var(--ink-faint); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
 .rail-planactual { margin-top: 10px; padding: 10px; border-radius: 9px; border: 1px solid var(--border); background: none; font: inherit; font-size: 12px; color: var(--ink-faint); text-align: left; cursor: pointer; }
@@ -1426,3 +1427,13 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .marca-pestanas { margin: 6px 0 4px; flex-shrink: 0; }
 .marca-resumen { flex-shrink: 0; }
 .marca-kit { max-width: 640px; }
+
+/* Vincular cuentas: botón destacado del menú */
+.rail-btn.rail-vincular { position: relative; margin-bottom: 6px; border: 1px solid rgba(255, 77, 148, .55); background: linear-gradient(135deg, rgba(255, 77, 148, .16), rgba(168, 85, 247, .16)); color: var(--ink); font-weight: 600; }
+.rail-btn.rail-vincular svg { stroke: var(--amber); }
+.rail-btn.rail-vincular:hover, .rail-btn.rail-vincular:focus-visible { background: linear-gradient(135deg, rgba(255, 77, 148, .28), rgba(168, 85, 247, .28)); outline: none; }
+.rail-punto { margin-left: auto; width: 9px; height: 9px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 3px rgba(255, 107, 90, .25); }
+@media (max-width: 1100px) {
+  .rail-abajo { align-items: center; }
+  .rail-punto { position: absolute; top: 4px; right: 4px; margin: 0; }
+}

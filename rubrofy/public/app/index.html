@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=32">
+  <link rel="stylesheet" href="/app/styles.css?v=33">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -92,10 +92,16 @@
       <button class="rail-btn rail-instalar" id="btn-instalar" type="button" title="Instalar Rubrofy en este dispositivo" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5 V14.5 M9 11.5 L12 14.5 L15 11.5"/></svg><span class="rail-label">Instalar Rubrofy</span>
       </button>
-      <a class="rail-btn spacer" href="/admin" id="rail-admin" title="Administración" hidden>
+      <div class="rail-abajo">
+      <button type="button" class="rail-btn rail-vincular" id="rail-vincular" title="Vincular Instagram, Meta y Google">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5 a4 4 0 0 0 5.7 0 l3 -3 a4 4 0 0 0 -5.7 -5.7 l-1.2 1.2"/><path d="M14 10.5 a4 4 0 0 0 -5.7 0 l-3 3 a4 4 0 0 0 5.7 5.7 l1.2 -1.2"/></svg><span class="rail-label">Vincular cuentas</span><em class="rail-punto" id="rail-vincular-punto" hidden></em>
+      </button>
+      <button type="button" class="rail-grupo" data-grupo="ajustes" aria-expanded="true"><span>⚙ Configuración</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
+      <div class="rail-grupo-items" data-grupo-items="ajustes">
+      <a class="rail-btn" href="/admin" id="rail-admin" title="Administración" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 L19.5 6.5 V11.5 C19.5 16 16.3 19.3 12 20.5 C7.7 19.3 4.5 16 4.5 11.5 V6.5 Z"/><path d="M9 12 L11.2 14.2 L15.2 10"/></svg><span class="rail-label">Administración</span>
       </a>
-      <button class="rail-btn spacer" data-view="config" title="Conexiones y ajustes">
+      <button class="rail-btn" data-view="config" title="Conexiones y ajustes">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3 V5.5 M12 18.5 V21 M3 12 H5.5 M18.5 12 H21 M5.6 5.6 L7.3 7.3 M16.7 16.7 L18.4 18.4 M5.6 18.4 L7.3 16.7 M16.7 7.3 L18.4 5.6"/></svg><span class="rail-label">Conexiones y ajustes</span>
       </button>
       <button class="rail-btn" data-view="cuenta" title="Mi cuenta">
@@ -104,6 +110,8 @@
       <button class="rail-btn" data-view="soporte" title="Ayuda y soporte">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M6 6 L9.5 9.5 M18 6 L14.5 9.5 M6 18 L9.5 14.5 M18 18 L14.5 14.5"/></svg><span class="rail-label">Ayuda y soporte</span><em class="rail-num" id="rail-soporte" title="Respuestas nuevas" hidden></em>
       </button>
+      </div>
+      </div>
       <button type="button" class="rail-avance" id="rail-avance" title="Ver tu ruta en Inicio" hidden></button>
       <button type="button" class="rail-planactual" id="rail-planactual" title="Ver tu plan en Mi cuenta" hidden></button>
     </nav>
@@ -428,28 +436,28 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=32"></script>
-  <script src="/app/guias.js?v=32"></script>
-  <script src="/app/graficos.js?v=32"></script>
-  <script src="/app/plan.js?v=32"></script>
-  <script src="/app/prueba-form.js?v=32"></script>
-  <script src="/app/recargas.js?v=32"></script>
-  <script src="/app/diseno.js?v=32"></script>
-  <script src="/app/reels.js?v=32"></script>
-  <script src="/app/creditos.js?v=32"></script>
-  <script src="/app/imagen.js?v=32"></script>
-  <script src="/app/galeria.js?v=32"></script>
-  <script src="/app/cuenta.js?v=32"></script>
-  <script src="/app/soporte.js?v=32"></script>
-  <script src="/app/bienvenida.js?v=32"></script>
-  <script src="/app/inicio.js?v=32"></script>
-  <script src="/app/resultados.js?v=32"></script>
-  <script src="/app/estilo.js?v=32"></script>
-  <script src="/app/ads.js?v=32"></script>
-  <script src="/app/competencia.js?v=32"></script>
-  <script src="/app/contexto.js?v=32"></script>
-  <script src="/app/voz.js?v=32"></script>
-  <script src="/app/pwa.js?v=32"></script>
-  <script src="/app/app.js?v=32"></script>
+  <script src="/app/ayuda.js?v=33"></script>
+  <script src="/app/guias.js?v=33"></script>
+  <script src="/app/graficos.js?v=33"></script>
+  <script src="/app/plan.js?v=33"></script>
+  <script src="/app/prueba-form.js?v=33"></script>
+  <script src="/app/recargas.js?v=33"></script>
+  <script src="/app/diseno.js?v=33"></script>
+  <script src="/app/reels.js?v=33"></script>
+  <script src="/app/creditos.js?v=33"></script>
+  <script src="/app/imagen.js?v=33"></script>
+  <script src="/app/galeria.js?v=33"></script>
+  <script src="/app/cuenta.js?v=33"></script>
+  <script src="/app/soporte.js?v=33"></script>
+  <script src="/app/bienvenida.js?v=33"></script>
+  <script src="/app/inicio.js?v=33"></script>
+  <script src="/app/resultados.js?v=33"></script>
+  <script src="/app/estilo.js?v=33"></script>
+  <script src="/app/ads.js?v=33"></script>
+  <script src="/app/competencia.js?v=33"></script>
+  <script src="/app/contexto.js?v=33"></script>
+  <script src="/app/voz.js?v=33"></script>
+  <script src="/app/pwa.js?v=33"></script>
+  <script src="/app/app.js?v=33"></script>
 </body>
 </html>

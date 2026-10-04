@@ -438,6 +438,11 @@ navegador, `localStorage` `rubrofy-menu-cerrados`); si se navega a una
 pantalla de una etapa cerrada, esa etapa se abre sola. Con el menú de solo
 íconos (pantallas angostas) las etapas no se pliegan.
 
+Abajo, el botón destacado **Vincular cuentas** (lleva a Conexiones; un
+punto rojo si Instagram no está conectado o pide reconectar) y la sección
+plegable **Configuración** (Administración, Conexiones y ajustes, Mi cuenta,
+Ayuda y soporte).
+
 **Tu marca** reúne en pestañas Cómo hablas (voz.js), Tus ejemplos
 (estilo.js) y Cómo se ve (Kit de marca, diseno.js), con un resumen arriba de
 lo que falta. Los enlaces antiguos siguen sirviendo: `#voz`, `#estilo` y

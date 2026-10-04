@@ -1128,8 +1128,10 @@
     document.querySelectorAll('[data-plan-req]').forEach((el) => { el.hidden = !!plan[el.dataset.planReq] || !planesInfo.length; });
     const enlaceAdmin = $('#rail-admin');
     enlaceAdmin.hidden = !negocioActual.esAdmin;
-    // Con el enlace visible, "Conexiones y ajustes" deja de empujar hacia abajo.
-    document.querySelector('.rail-btn[data-view="config"]').classList.toggle('spacer', !negocioActual.esAdmin);
+    // "Vincular cuentas": un punto si Instagram no está conectado o pide reconectar.
+    const igFalta = !negocioActual.instagramConectado || negocioActual.instagramEstado === 'reconectar';
+    $('#rail-vincular-punto').hidden = !igFalta;
+    $('#rail-vincular').title = igFalta ? (negocioActual.instagramEstado === 'reconectar' ? 'Instagram pide reconectar' : 'Instagram no está conectado') : 'Vincular Instagram, Meta y Google';
     const actual = $('#rail-planactual');
     actual.hidden = !plan.nombre;
     actual.innerHTML = plan.nombre ? `Plan <b>${escapeHtml(plan.nombre)}</b>` : '';
@@ -1591,6 +1593,7 @@
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
     });
     pintarGrupos();
+    $('#rail-vincular').addEventListener('click', () => { if (negocioActual) irAVista('config', null, 'cfg-conexiones'); });
     document.querySelectorAll('.rail-grupo[data-grupo]').forEach((b) => b.addEventListener('click', () => alternarGrupo(b.dataset.grupo)));
     $('#view-marca').addEventListener('click', (e) => {
       const t = e.target.closest('[data-marca-tab]');
