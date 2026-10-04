@@ -271,7 +271,7 @@
             : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
             : faltaFoto
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🖼</div><b>Elige la foto de esta publicación</b><div class="card-vacia-acc"><button class="btn-ghost card-vacia-btn" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">▦ De mi galería</button><button class="btn-ia card-vacia-btn" data-action="elegir-foto" data-pest="ia" data-id="${item.id}">✨ Crear con IA</button><label class="btn-ghost card-vacia-btn">⬆ Subir foto<input type="file" accept="image/png,image/jpeg,image/webp" data-foto-item="${item.id}" hidden></label></div>${item.idea ? `<p class="card-vacia-idea">Idea: ${escapeHtml(item.idea)}</p>` : ''}</div>`
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🖼</div><b>Elige la foto de esta publicación</b><div class="card-vacia-acc"><button class="btn-ghost card-vacia-btn" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">▦ De mi galería</button><button class="btn-ia card-vacia-btn" data-action="elegir-foto" data-pest="ia" data-id="${item.id}">✨ Crear con IA</button><label class="btn-ghost card-vacia-btn">⬆ Subir foto<input type="file" accept="image/*" data-foto-item="${item.id}" hidden></label></div>${item.idea ? `<p class="card-vacia-idea">Idea: ${escapeHtml(item.idea)}</p>` : ''}</div>`
             : `<div class="card-texture"></div><div class="card-logo">${inicial}</div><div class="card-headline">${escapeHtml(item.headline)}</div>`}
           ${conVideo && item.video && !item.video.editado && !publicada && (negocioActual.edicionReels || {}).disponible && !(item.edicion && item.edicion.estado === 'editando') ? `<button class="card-editar-reel" data-action="editar-reel" data-id="${item.id}">✂ Editar video con Rubrofy</button>` : ''}
           <div class="card-network"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f3ede1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#f3ede1" stroke="none"/></svg></div>
@@ -1154,7 +1154,10 @@
     });
   }
 
-  async function subirFoto(categoria, file) {
+  // La foto se prepara en el navegador (imagen.js): JPEG de hasta 2048 px,
+  // derecha y en un formato que se ve en todos lados (las del iPhone vienen en HEIC).
+  async function subirFoto(categoria, original) {
+    const file = window.RubrofyImagen ? await window.RubrofyImagen.preparar(original) : original;
     const dataBase64 = await leerArchivoComoBase64(file);
     fotos = await api(`/api/negocios/${negocioActual.id}/fotos`, {
       method: 'POST',

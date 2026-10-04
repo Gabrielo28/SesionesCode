@@ -80,7 +80,7 @@
             <input name="nota" type="text" maxlength="300">
           </label>
           <label class="estilo-campo">Captura o imagen (opcional)
-            <input name="imagen" type="file" accept="image/png,image/jpeg,image/webp">
+            <input name="imagen" type="file" accept="image/*">
           </label>
           <div class="estilo-acciones"><button class="btn-approve estilo-btn" type="submit">Agregar ejemplo</button></div>
         </form>
@@ -157,8 +157,10 @@
       const archivo = form.imagen.files[0];
       const datos = { formato: form.formato.value, texto: form.texto.value, nota: form.nota.value };
       if (archivo) {
-        datos.imagenBase64 = await leerBase64(archivo);
-        datos.filename = archivo.name;
+        let lista = archivo;
+        try { if (window.RubrofyImagen) lista = await window.RubrofyImagen.preparar(archivo); } catch (err) { alert(err.mensaje || err.message); return; }
+        datos.imagenBase64 = await leerBase64(lista);
+        datos.filename = lista.name;
       }
       try {
         recargar(await api('/referencias', { method: 'POST', body: JSON.stringify(datos) }));

@@ -33,10 +33,10 @@
   // Sube varias fotos a una categoría. Devuelve los nombres nuevos.
   async function subir(categoria, archivos) {
     const antes = new Set(ctx.fotos()[categoria] || []);
-    for (const file of archivos) {
-      if (!/^image\//.test(file.type)) continue;
-      await ctx.subirFoto(categoria, file);
-    }
+    const esImagen = window.RubrofyImagen ? window.RubrofyImagen.esImagen : (f) => /^image\//.test(f.type);
+    const fotosElegidas = archivos.filter(esImagen);
+    if (archivos.length && !fotosElegidas.length) { const e = new Error('Ese archivo no es una foto.'); e.mensaje = 'Ese archivo no es una foto. Elige una imagen de tu galería.'; throw e; }
+    for (const file of fotosElegidas) await ctx.subirFoto(categoria, file);
     return (ctx.fotos()[categoria] || []).filter((a) => !antes.has(a));
   }
 
@@ -147,11 +147,11 @@
     const visibles = todas.filter((f) => filtro === 'todas' || (filtro === 'ia' ? f.ia : f.categoria === filtro));
     cont.innerHTML = `
       <div class="gl-acciones">
-        <label class="btn-approve gl-subir">⬆ Subir fotos<input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden data-gl-subir></label>
+        <label class="btn-approve gl-subir">⬆ Subir fotos<input type="file" accept="image/*" multiple hidden data-gl-subir></label>
         <button type="button" class="btn-ia" data-gl-abrir-ia>✨ Crear con IA</button>
       </div>
       <label class="gl-drop" data-gl-drop>
-        <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden data-gl-subir>
+        <input type="file" accept="image/*" multiple hidden data-gl-subir>
         <span class="gl-drop-ic">⇪</span>
         <span><b>Arrastra aquí tus fotos</b> o haz clic para elegirlas desde tu computador o celular</span>
         <span class="gl-drop-cat">Guardar en: <select data-gl-cat aria-label="Categoría">${cats.map((c) => `<option>${esc(c)}</option>`).join('')}</select></span>
@@ -161,6 +161,12 @@
       ${visibles.length
         ? `<div class="gl-grid">${visibles.map((f, i) => `<figure class="gl-foto gl-ver" data-gl-ver="${i}" tabindex="0" role="button" aria-label="Ver en grande: ${esc(f.categoria)}"><img src="${esc(f.url)}" alt="" loading="lazy">${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<figcaption>${esc(f.categoria)}</figcaption><button type="button" class="gl-borrar" data-gl-borrar-cat="${esc(f.categoria)}" data-gl-borrar="${esc(f.archivo)}" title="Eliminar foto" aria-label="Eliminar foto">×</button></figure>`).join('')}</div>`
         : `<div class="gl-vacia"><b>${todas.length ? 'No hay fotos en esta categoría' : 'Tu galería está vacía'}</b><p>Sube fotos reales de tu negocio (tu local, tus productos, tu equipo) o créalas con IA. Rubrofy las usa en tus publicaciones.</p></div>`}`;
+    // Una foto que el navegador no puede mostrar (por ejemplo, una HEIC
+    // subida antes del arreglo) dice qué hacer en vez de quedar en negro.
+    cont.querySelectorAll('.gl-grid img').forEach((img) => img.addEventListener('error', () => {
+      const fig = img.closest('.gl-foto');
+      if (fig) fig.classList.add('gl-rota');
+    }, { once: true }));
     const panel = cont.querySelector('[data-gl-panel-ia]');
     activarFormIA(panel, { alCrear: () => { filtro = 'todas'; } });
     cont.onclick = async (e) => {
@@ -188,6 +194,11 @@
     const subirArchivos = async (files) => {
       const cat = cont.querySelector('[data-gl-cat]').value;
       if (!files.length) return;
+      // En el celular, preparar y subir varias fotos toma unos segundos: se avisa.
+      const aviso = cont.querySelector('[data-gl-drop] b');
+      const boton = cont.querySelector('.gl-subir');
+      if (aviso) aviso.textContent = files.length > 1 ? `Subiendo ${files.length} fotos…` : 'Subiendo tu foto…';
+      if (boton) { boton.classList.add('subiendo'); boton.firstChild.textContent = 'Subiendo…'; }
       try { await subir(cat, files); } catch (err) { alert('No se pudo subir: ' + (err.mensaje || err.message)); }
       filtro = 'todas';
       renderVista(cont);
@@ -229,6 +240,7 @@
       <div class="gl-visor-cab"><span class="gl-visor-info" data-v-info></span><button type="button" class="gl-visor-x" data-v-cerrar aria-label="Cerrar">×</button></div>
       <div class="gl-visor-escena" data-v-escena>
         <img data-v-img alt="">
+        <p class="gl-visor-rota" data-v-rota hidden>No se puede mostrar esta foto. Bórrala y vuelve a subirla desde el panel.</p>
         <button type="button" class="gl-visor-nav gl-visor-ant" data-v-paso="-1" aria-label="Foto anterior">‹</button>
         <button type="button" class="gl-visor-nav gl-visor-sig" data-v-paso="1" aria-label="Foto siguiente">›</button>
       </div>
@@ -240,6 +252,9 @@
     const mostrar = () => {
       const f = fs[i];
       const varias = fs.length > 1;
+      el('[data-v-img]').hidden = false;
+      el('[data-v-rota]').hidden = true;
+      el('[data-v-img]').onerror = () => { el('[data-v-img]').hidden = true; el('[data-v-rota]').hidden = false; };
       el('[data-v-img]').src = f.url;
       el('[data-v-img]').alt = `Foto: ${f.categoria}`;
       el('[data-v-info]').innerHTML = `${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<b>${esc(f.categoria)}</b>${varias ? `<small>${i + 1} de ${fs.length}</small>` : ''}`;
@@ -298,7 +313,7 @@
           ? `<p class="gl-ayuda">Toca una foto para usarla en esta publicación.</p><div class="gl-grid gl-grid-chica">${fotos.map((f, i) => `<div class="gl-foto gl-elegible-caja"><button type="button" class="gl-elegible" data-gl-usar-cat="${esc(f.categoria)}" data-gl-usar="${esc(f.archivo)}" aria-label="Usar esta foto"><img src="${esc(f.url)}" alt="" loading="lazy"></button>${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<button type="button" class="gl-lupa" data-gl-lupa="${i}" title="Ver en grande" aria-label="Ver en grande">⤢</button></div>`).join('')}</div>`
           : `<div class="gl-vacia"><b>Tu galería está vacía</b><p>Sube una foto o créala con IA desde las otras pestañas.</p></div>`;
       } else if (pest === 'subir') {
-        cuerpo = `<label class="gl-drop gl-drop-grande"><input type="file" accept="image/png,image/jpeg,image/webp" hidden data-gl-subir-pieza><span class="gl-drop-ic">⇪</span><span><b>Elige una foto</b> desde tu computador o celular</span><span class="gl-drop-cat">Se guarda también en tu galería</span></label>`;
+        cuerpo = `<label class="gl-drop gl-drop-grande"><input type="file" accept="image/*" hidden data-gl-subir-pieza><span class="gl-drop-ic">⇪</span><span><b>Elige una foto</b> desde tu computador o celular</span><span class="gl-drop-cat">Se guarda también en tu galería</span></label>`;
       } else {
         cuerpo = formIAHTML(item.idea || '');
       }

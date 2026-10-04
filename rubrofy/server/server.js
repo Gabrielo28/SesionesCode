@@ -132,7 +132,17 @@ const MIME = {
   '.xml': 'application/xml; charset=utf-8',
 };
 
-const FOTO_EXTENSIONES = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+
+// Qué imagen es, mirando sus primeros bytes: '.jpg' | '.png' | '.webp',
+// 'heic' (fotos del iPhone, que la mayoría de los navegadores no muestra) o null.
+function tipoImagen(buf) {
+  if (!buf || buf.length < 12) return null;
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return '.jpg';
+  if (buf[0] === 0x89 && buf.slice(1, 4).toString('latin1') === 'PNG') return '.png';
+  if (buf.slice(0, 4).toString('latin1') === 'RIFF' && buf.slice(8, 12).toString('latin1') === 'WEBP') return '.webp';
+  if (buf.slice(4, 8).toString('latin1') === 'ftyp' && /^(heic|heix|hevc|hevx|heim|heis|mif1|msf1|avif)$/.test(buf.slice(8, 12).toString('latin1'))) return 'heic';
+  return null;
+}
 const MAX_VIDEO_BYTES = (Number(process.env.MAX_VIDEO_MB) || 100) * 1024 * 1024;
 
 // Formatos de publicación. Una pieza vieja sin `formato` se deduce de su
@@ -1911,13 +1921,17 @@ const server = http.createServer(async (req, res) => {
           if (!negocio.estrategia.categoriasFoto.includes(categoria)) {
             return sendJSON(res, 400, { error: 'Categoría de foto inválida' });
           }
-          const extOriginal = path.extname(body.filename || '').toLowerCase();
-          const ext = FOTO_EXTENSIONES.has(extOriginal) ? extOriginal : '.jpg';
-          const nombreArchivo = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
           const base64 = String(body.dataBase64 || '').replace(/^data:[^,]+,/, '');
           if (!base64) return sendJSON(res, 400, { error: 'Falta la imagen' });
+          const buffer = Buffer.from(base64, 'base64');
+          // El panel ya convierte las fotos a JPEG; esto ataja lo que no se
+          // podría mostrar (HEIC del iPhone, archivos que no son imágenes).
+          const ext = tipoImagen(buffer);
+          if (ext === 'heic') return sendJSON(res, 400, { error: 'Esta foto está en formato HEIC (iPhone) y no se puede mostrar. Súbela de nuevo desde el panel actualizado o como JPG.' });
+          if (!ext) return sendJSON(res, 400, { error: 'Ese archivo no es una foto JPG, PNG o WebP.' });
+          const nombreArchivo = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
 
-          store.addFoto(negocioId, categoria, nombreArchivo, Buffer.from(base64, 'base64'));
+          store.addFoto(negocioId, categoria, nombreArchivo, buffer);
           return sendJSON(res, 201, store.listFotos(negocioId));
         }
 
