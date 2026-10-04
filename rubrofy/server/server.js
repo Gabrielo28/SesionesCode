@@ -644,6 +644,31 @@ function recibirVideo(req, temporal) {
   });
 }
 
+// Pone un video de "Mis videos" en un reel o historia: el reel usa su propia
+// copia y empieza sin edición. No guarda: lo hace quien llama.
+function ponerVideoEnItem(negocioId, it, fila) {
+  const archivo = `${it.id}-${Date.now()}${videos.extDe(fila.archivo)}`;
+  const bytes = videos.copiarParaReel(negocioId, fila, archivo);
+  if (it.video) store.borrarVideo(negocioId, it.video.archivo);
+  if (it.videoOriginal) store.borrarVideo(negocioId, it.videoOriginal.archivo);
+  delete it.videoOriginal; delete it.edicion; delete it.videoIA; delete it.union;
+  it.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
+  descartarContenedor(it);
+}
+
+// Un reel nuevo (texto de la IA) para videos que el negocio ya tiene.
+async function reelNuevoParaVideo(negocio, descripcion) {
+  const usaIA = getPlan(negocio.plan).usaIA;
+  const existentes = store.getContenido(negocio.id);
+  const [nuevo] = await generarBanco(negocio, 1, existentes.length, {
+    usarIA: usaIA, formato: 'reel', diaInicio: diaSiguienteDeLaCola(existentes),
+    indicaciones: contextoIA.indicacion(`Este reel usa un video que el negocio ya grabó${descripcion ? `: ${descripcion}` : ''}. Escribe el gancho y el texto para ese video.`),
+  });
+  registrarUsoIA(negocio.id, 'usoTextosIA', nuevo.generadoConIA ? 1 : 0);
+  if (descripcion) nuevo.idea = descripcion;
+  return nuevo;
+}
+
 function escapeHtmlSrv(t) {
   return String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -990,6 +1015,28 @@ store.db.exec('DROP TABLE IF EXISTS canjes; DROP TABLE IF EXISTS codigos;');
 edicionReels.iniciar({
   alCosto: (negocioId, segundos) => costos.audio(negocioId, 'openai', process.env.OPENAI_TRANSCRIPCION_MODEL || 'whisper-1', segundos),
   alTerminar: async ({ negocioId, itemId, ok, archivoTemporal, info, error }) => {
+    // Clips unidos (itemId "unir-<reel>"): el resultado queda en Mis videos y en el reel.
+    if (String(itemId).startsWith('unir-')) {
+      const reelId = String(itemId).slice(5);
+      const items = store.getContenido(negocioId);
+      const it = encontrarItem(items, reelId);
+      if (!ok) {
+        if (archivoTemporal) fs.rmSync(archivoTemporal, { force: true });
+        if (it) { it.union = { estado: 'error', error: String(error || 'No se pudieron unir los clips').slice(0, 200) }; store.saveContenido(negocioId, items); }
+        notificar(negocioId, { titulo: 'No se pudieron unir tus clips', cuerpo: String(error || 'Intenta de nuevo.').slice(0, 140), url: '/app#reels', tag: 'union-' + reelId });
+        return;
+      }
+      const archivo = videos.nombreArchivo('.mp4');
+      fs.mkdirSync(store.videoDir(negocioId), { recursive: true });
+      fs.renameSync(archivoTemporal, store.videoAbsolutePath(negocioId, archivo));
+      const fila = videos.agregar(negocioId, archivo, { nombre: `Unión de ${info.clips} clips`, duracion: info.duracion, origen: 'unido' });
+      if (it && !(it.instagram && it.instagram.ok)) {
+        ponerVideoEnItem(negocioId, it, fila);
+        store.saveContenido(negocioId, items);
+      }
+      notificar(negocioId, { titulo: 'Tus clips ya están unidos', cuerpo: 'Ábrelo en Estudio de reels para editarlo.', url: '/app#reels', tag: 'union-' + reelId });
+      return;
+    }
     // Un video de "Mis videos" (itemId "lib-<id>"): la edición queda como un video nuevo.
     if (String(itemId).startsWith('lib-')) {
       const origen = videos.obtener(negocioId, String(itemId).slice(4));
@@ -2933,6 +2980,41 @@ const server = http.createServer(async (req, res) => {
             const fila = videos.agregar(negocioId, archivo, { nombre: nombreSubido(req) || 'Video', duracion: req.headers['x-duracion'] });
             return sendJSON(res, 201, { video: videos.publico(fila, []) });
           }
+          // POST /api/negocios/:id/videos/unir { ids, itemId } o { ids, nuevo: true, descripcion }
+          // Une 2 a 10 clips en el orden dado y pone el resultado en el reel. No descuenta ediciones.
+          if (parts.length === 5 && parts[4] === 'unir' && req.method === 'POST') {
+            if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para unir videos.', sinPlan: true });
+            if (!edicionReels.disponible()) return sendJSON(res, 503, { error: 'Unir videos todavía no está disponible. Intenta más tarde.' });
+            const body = await readBody(req);
+            const ids = Array.isArray(body.ids) ? body.ids.map(Number) : [];
+            if (ids.length < 2 || ids.length > edicionReels.MAX_CLIPS) return sendJSON(res, 400, { error: `Elige entre 2 y ${edicionReels.MAX_CLIPS} clips.` });
+            if (new Set(ids).size !== ids.length) return sendJSON(res, 400, { error: 'Un clip está repetido.' });
+            const filas = ids.map((id) => videos.obtener(negocioId, id));
+            if (filas.some((f) => !f)) return sendJSON(res, 404, { error: 'Uno de los clips ya no está en Mis videos.' });
+            const suma = filas.reduce((t, f) => t + (Number(f.duracion) || 0), 0);
+            if (suma > edicionReels.MAX_ENTRADA_SEG) return sendJSON(res, 400, { error: `Los clips suman más de ${edicionReels.MAX_ENTRADA_SEG / 60} minutos. Quita alguno.` });
+            if (videos.lleno(negocioId)) return sendJSON(res, 400, { error: `Llegaste al máximo de ${videos.MAX_VIDEOS} videos. Borra algunos que ya no uses.` });
+            let it;
+            let items = store.getContenido(negocioId);
+            if (body.nuevo) {
+              if (getPlan(negocio.plan).usaIA && textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
+              it = await reelNuevoParaVideo(negocio, String(body.descripcion || '').replace(/\s+/g, ' ').trim().slice(0, 300));
+              items = store.getContenido(negocioId);
+              items.push(it);
+            } else {
+              it = encontrarItem(items, String(body.itemId || ''));
+              if (!it) return sendJSON(res, 404, { error: 'Contenido no encontrado' });
+              if (!['reel', 'historia'].includes(formatoDe(it))) return sendJSON(res, 400, { error: 'Los videos son para Reels e historias' });
+              const pub = it.publicacion;
+              if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, it.id)) return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
+              if (edicionReels.enProceso(negocioId, it.id) || edicionReels.enProceso(negocioId, 'unir-' + it.id)) return sendJSON(res, 409, { error: 'Este reel se está editando. Espera a que termine.' });
+            }
+            const r = edicionReels.encolar({ negocioId, itemId: 'unir-' + it.id, entradas: filas.map((f) => f.archivo) });
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            it.union = { estado: 'uniendo', clips: filas.length, duracion: Math.round(suma) || null, iniciadoEl: new Date().toISOString() };
+            store.saveContenido(negocioId, items);
+            return sendJSON(res, body.nuevo ? 201 : 200, { item: it });
+          }
           const fila = videos.obtener(negocioId, parts[4]);
           if (!fila) return sendJSON(res, 404, { error: 'No encontramos ese video.' });
           if (parts.length === 5 && req.method === 'DELETE') {
@@ -2949,13 +3031,8 @@ const server = http.createServer(async (req, res) => {
             const pub = it.publicacion;
             if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, it.id)) return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
             if (edicionReels.enProceso(negocioId, it.id)) return sendJSON(res, 409, { error: 'Este reel se está editando. Espera a que termine.' });
-            const archivo = `${it.id}-${Date.now()}${videos.extDe(fila.archivo)}`;
-            const bytes = videos.copiarParaReel(negocioId, fila, archivo);
-            if (it.video) store.borrarVideo(negocioId, it.video.archivo);
-            if (it.videoOriginal) store.borrarVideo(negocioId, it.videoOriginal.archivo);
-            delete it.videoOriginal; delete it.edicion; delete it.videoIA;
-            it.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
-            descartarContenedor(it);
+            if (it.union && it.union.estado === 'uniendo') return sendJSON(res, 409, { error: 'Este reel está uniendo clips. Espera a que termine.' });
+            ponerVideoEnItem(negocioId, it, fila);
             store.saveContenido(negocioId, items);
             return sendJSON(res, 200, it);
           }
@@ -2965,16 +3042,8 @@ const server = http.createServer(async (req, res) => {
             if (usaIA && textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
             const body = await readBody(req);
             const descripcion = String(body.descripcion || '').replace(/\s+/g, ' ').trim().slice(0, 300);
-            const existentes = store.getContenido(negocioId);
-            const [nuevo] = await generarBanco(negocio, 1, existentes.length, {
-              usarIA: usaIA, formato: 'reel', diaInicio: diaSiguienteDeLaCola(existentes),
-              indicaciones: contextoIA.indicacion(`Este reel usa un video que el negocio ya grabó${descripcion ? `: ${descripcion}` : ''}. Escribe el gancho y el texto para ese video.`),
-            });
-            registrarUsoIA(negocioId, 'usoTextosIA', nuevo.generadoConIA ? 1 : 0);
-            const archivo = `${nuevo.id}-${Date.now()}${videos.extDe(fila.archivo)}`;
-            const bytes = videos.copiarParaReel(negocioId, fila, archivo);
-            nuevo.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
-            if (descripcion) nuevo.idea = descripcion;
+            const nuevo = await reelNuevoParaVideo(negocio, descripcion);
+            ponerVideoEnItem(negocioId, nuevo, fila);
             const items = store.getContenido(negocioId).concat([nuevo]);
             store.saveContenido(negocioId, items);
             return sendJSON(res, 201, { item: nuevo });
@@ -3006,6 +3075,7 @@ const server = http.createServer(async (req, res) => {
             return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
           }
           if (edicionReels.enProceso(negocioId, itemId)) return sendJSON(res, 409, { error: 'Este reel se está editando. Espera a que termine.' });
+          if (edicionReels.enProceso(negocioId, 'unir-' + itemId)) return sendJSON(res, 409, { error: 'Este reel está uniendo clips. Espera a que termine.' });
           if (parts[5] === 'video-original') {
             if (!item.videoOriginal) return sendJSON(res, 400, { error: 'Este video no tiene una edición que deshacer' });
             if (item.video) store.borrarVideo(negocioId, item.video.archivo);
@@ -3039,6 +3109,7 @@ const server = http.createServer(async (req, res) => {
           if ((pub && ['publicando', 'publicada'].includes(pub.estado)) || publicador.estaPublicando(negocioId, itemId)) {
             return sendJSON(res, 409, { error: 'Esta pieza ya se publicó o se está publicando' });
           }
+          if (edicionReels.enProceso(negocioId, 'unir-' + itemId)) return sendJSON(res, 409, { error: 'Este reel está uniendo clips. Espera a que termine.' });
 
           if (req.method === 'DELETE') {
             const items = store.getContenido(negocioId);

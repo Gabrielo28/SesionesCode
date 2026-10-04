@@ -1021,6 +1021,17 @@ Rutas: `GET|POST /api/negocios/:id/videos`, `DELETE …/videos/:vid`,
 `POST …/videos/:vid/usar { itemId }`, `POST …/videos/:vid/reel-nuevo
 { descripcion }`, `POST …/videos/:vid/editar { opciones, capas }`.
 
+**Unir clips:** en "Elegir video" de un reel se tocan varios clips en orden
+(barra con total; luego se reordenan con ↑ ↓ ×), y en Mis videos con
+"Seleccionar varios" (también para eliminar varios).
+`POST /api/negocios/:id/videos/unir { ids, itemId }` o `{ ids, nuevo: true,
+descripcion }` encola un trabajo en la misma cola de edición
+(`itemId` `unir-<reel>`): 2 a 10 clips, hasta 3 min, normalizados a
+1080×1920 a 30 fps (los clips sin audio llevan silencio). El resultado
+queda como "Unión de N clips" (origen `unido`) en Mis videos y en el reel,
+que mientras tanto tiene `union: { estado: 'uniendo' }` (no se edita ni se
+cambia su video). Unir **no descuenta** ediciones.
+
 El editor (`reels.js`) parte en **Automático** (cortes, subtítulos, gancho,
 logo y llamado a la acción); también **Solo subtítulos** y **Personalizado**
 (todas las opciones).

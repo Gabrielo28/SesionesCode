@@ -318,6 +318,48 @@ async function editar(trabajo, { alCosto } = {}) {
   return { archivo: salida, duracion, tramos: segs.length, silencios: silencios.length, subtitulos: conSubs };
 }
 
+// ---------- unir clips ----------
+// Varios videos de "Mis videos" en uno solo, 1080×1920 a 30 fps, en el
+// orden elegido. Los clips sin audio llevan silencio para que la unión no
+// pierda el sonido de los demás. No corta ni agrega nada: eso es el editor.
+const MAX_CLIPS = 10;
+async function unir(trabajo) {
+  const dir = path.join(TRABAJOS_DIR, trabajo.id);
+  fs.mkdirSync(dir, { recursive: true });
+  const archivos = JSON.parse(trabajo.entrada);
+  if (!Array.isArray(archivos) || archivos.length < 2 || archivos.length > MAX_CLIPS) throw new Error(`Elige entre 2 y ${MAX_CLIPS} clips`);
+  const clips = [];
+  for (const a of archivos) {
+    const ruta = store.videoAbsolutePath(trabajo.negocio_id, a);
+    if (!fs.existsSync(ruta)) throw new Error('Uno de los clips ya no está en Mis videos');
+    const info = await medir(ruta);
+    if (!info.duracion) throw new Error('No se pudo leer uno de los clips');
+    clips.push({ ruta, info });
+  }
+  const total = clips.reduce((t, c) => t + c.info.duracion, 0);
+  if (total > MAX_ENTRADA_SEG + 1) throw new Error(`Los clips suman más de ${MAX_ENTRADA_SEG / 60} minutos`);
+  const entradas = [];
+  clips.forEach((c) => entradas.push('-i', c.ruta));
+  const filtros = [];
+  let extra = clips.length;
+  const pares = clips.map((c, i) => {
+    filtros.push(`[${i}:v]scale=${ANCHO}:${ALTO}:force_original_aspect_ratio=increase,crop=${ANCHO}:${ALTO},setsar=1,fps=30,format=yuv420p[v${i}]`);
+    if (c.info.audio) {
+      filtros.push(`[${i}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`);
+    } else {
+      entradas.push('-f', 'lavfi', '-t', c.info.duracion.toFixed(3), '-i', 'anullsrc=r=48000:cl=stereo');
+      filtros.push(`[${extra}:a]aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`);
+      extra += 1;
+    }
+    return `[v${i}][a${i}]`;
+  });
+  filtros.push(`${pares.join('')}concat=n=${clips.length}:v=1:a=1[vo][ao]`);
+  const salida = path.join(dir, 'union.mp4');
+  await correr(FFMPEG, ['-y', '-hide_banner', ...entradas, '-filter_complex', filtros.join(';'), '-map', '[vo]', '-map', '[ao]',
+    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', salida]);
+  return { archivo: salida, duracion: total, clips: clips.length, tipo: 'unir' };
+}
+
 // ---------- cola ----------
 let alTerminar = null;
 let alCosto = null;
@@ -335,10 +377,17 @@ function enProceso(negocioId, itemId) {
 }
 
 // capas: { gancho, cta, logo } en base64 (PNG 1080×1920 transparente). Devuelve { id } o { error }.
-function encolar({ negocioId, itemId, entrada, opciones, capas }) {
+// Con entradas (lista de archivos) el trabajo une esos clips en vez de editar.
+function encolar({ negocioId, itemId, entrada, opciones, capas, entradas }) {
   if (!disponible()) return { error: 'La edición de reels no está disponible en este servidor' };
   if (enProceso(negocioId, itemId)) return { error: 'Este reel ya se está editando' };
   const id = 'ed_' + crypto.randomBytes(8).toString('hex');
+  if (entradas) {
+    if (!Array.isArray(entradas) || entradas.length < 2 || entradas.length > MAX_CLIPS) return { error: `Elige entre 2 y ${MAX_CLIPS} clips` };
+    sql.crear.run(id, negocioId, itemId, 'en_cola', JSON.stringify({ tipo: 'unir' }), JSON.stringify(entradas), new Date().toISOString());
+    setImmediate(siguiente);
+    return { id };
+  }
   const dir = path.join(TRABAJOS_DIR, id);
   fs.mkdirSync(dir, { recursive: true });
   for (const c of ['gancho', 'cta', 'logo']) {
@@ -363,7 +412,8 @@ async function siguiente() {
   activos += 1;
   sql.estado.run('procesando', null, null, t.id);
   try {
-    const r = await editar(t, { alCosto: (seg) => alCosto && alCosto(t.negocio_id, seg) });
+    const r = JSON.parse(t.opciones).tipo === 'unir' ? await unir(t)
+      : await editar(t, { alCosto: (seg) => alCosto && alCosto(t.negocio_id, seg) });
     sql.estado.run('lista', null, new Date().toISOString(), t.id);
     if (alTerminar) await alTerminar({ negocioId: t.negocio_id, itemId: t.item_id, ok: true, archivoTemporal: r.archivo, info: r });
   } catch (err) {
@@ -379,5 +429,5 @@ async function siguiente() {
 
 module.exports = {
   disponible, subtitulosAuto, iniciar, encolar, enProceso, normalizarOpciones, tramos, construirASS, palabrasManuales,
-  MAX_ENTRADA_SEG, MAX_SALIDA_SEG,
+  MAX_ENTRADA_SEG, MAX_SALIDA_SEG, MAX_CLIPS,
 };

@@ -267,7 +267,8 @@
     const disenoUrl = item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
     const puedeDisenar = !!fotoUrl && !publicada && (formato === 'post' || formato === 'carrusel' || (formato === 'historia' && !item.video));
     // Lo que le falta para publicarse, a la vista en la imagen de la tarjeta.
-    const faltaVideo = !publicada && formato === 'reel' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando');
+    const uniendoClips = !!(item.union && item.union.estado === 'uniendo');
+    const faltaVideo = !publicada && formato === 'reel' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando') && !uniendoClips;
     const faltaFoto = !publicada && !disenoUrl && !fotoUrl && !item.video && formato !== 'reel';
     const mediosIA = negocioActual.mediosIA || {};
     const videoIA = item.videoIA || null;
@@ -277,7 +278,9 @@
     return `
       <div class="card" id="card-${item.id}">
         <div class="card-media ${isPost ? 'post' : 'historia'}" ${fotoUrl ? '' : `style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
-          ${disenoUrl
+          ${uniendoClips
+            ? `<div class="card-vacia"><div class="card-vacia-ic">⧉</div><b>Uniendo ${item.union.clips || ''} clips…</b><p>Suele tardar menos de un minuto. Después lo puedes editar en Estudio de reels.</p></div>`
+            : disenoUrl
             ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
             : faltaVideo
             ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">🎬 Elegir video</button></div>`
@@ -1273,7 +1276,7 @@
   // Mientras haya videos con IA generándose, la cola se refresca sola.
   let vigilancia = null;
   function vigilarVideos() {
-    const hay = contenido.some((i) => (i.videoIA && i.videoIA.estado === 'generando') || (i.edicion && i.edicion.estado === 'editando'));
+    const hay = contenido.some((i) => (i.videoIA && i.videoIA.estado === 'generando') || (i.edicion && i.edicion.estado === 'editando') || (i.union && i.union.estado === 'uniendo'));
     if (hay && !vigilancia) {
       vigilancia = setInterval(() => {
         if ((vistaActual !== 'cola' && vistaActual !== 'reels') || document.hidden) return;

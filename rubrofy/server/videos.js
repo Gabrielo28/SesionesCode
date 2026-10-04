@@ -17,7 +17,7 @@ db.exec(`
     nombre TEXT,
     bytes INTEGER NOT NULL DEFAULT 0,
     duracion REAL,
-    origen TEXT NOT NULL,          -- subido | ia | editado
+    origen TEXT NOT NULL,          -- subido | ia | editado | unido
     editado_de INTEGER,
     creado_el TEXT NOT NULL
   );
@@ -34,7 +34,7 @@ const sql = {
 };
 
 const MAX_VIDEOS = 300;
-const ORIGENES = new Set(['subido', 'ia', 'editado']);
+const ORIGENES = new Set(['subido', 'ia', 'editado', 'unido']);
 const nombreArchivo = (ext) => `lib-${Date.now()}-${crypto.randomBytes(3).toString('hex')}${ext || '.mp4'}`;
 const extDe = (archivo) => (/\.mov$/i.test(archivo) ? '.mov' : '.mp4');
 

@@ -12,6 +12,10 @@
   let subidas = [];        // [{ nombre, pct }] mientras se suben
   let resaltar = null;     // id del reel recién tocado
   let sondeo = null;
+  let modoSel = false;     // Mis videos: seleccionando varios
+  let selMis = [];         // ids elegidos en Mis videos, en orden
+  const esperandoUnion = new Set(); // reels cuyos clips se están uniendo
+  const MAX_CLIPS = 10, MAX_SEG = 180;
 
   try { pestana = localStorage.getItem('rubrofy-reels-pestana') === 'videos' ? 'videos' : 'reels'; } catch (e) { /* sin almacenamiento */ }
 
@@ -31,6 +35,107 @@
     if (v.enReels.length) return ['reel', 'En un reel'];
     if (v.origen === 'editado') return ['editado', 'Editado'];
     return ['sin', 'Sin editar'];
+  }
+
+  // ---------- elegir varios clips ----------
+  const videoDe = (id) => datos && datos.videos.find((v) => String(v.id) === String(id));
+  const durTotal = (ids) => ids.reduce((t, id) => t + ((videoDe(id) || {}).duracion || 0), 0);
+
+  // Marca o desmarca un clip; devuelve un aviso si no se puede.
+  function alternar(sel, id) {
+    const i = sel.indexOf(String(id));
+    if (i >= 0) { sel.splice(i, 1); return null; }
+    if (sel.length >= MAX_CLIPS) return `Puedes unir hasta ${MAX_CLIPS} clips.`;
+    sel.push(String(id));
+    return null;
+  }
+
+  function gridSeleccion(lista, sel, chica) {
+    return `<div class="vd-grid${chica ? ' vd-grid-chica' : ''} vd-seleccionable">${lista.map((v) => {
+      const orden = sel.indexOf(String(v.id)) + 1;
+      return `<div class="vd-card${orden ? ' marcado' : ''}">
+        <button type="button" class="vd-thumb" data-vd-sel="${v.id}" aria-pressed="${!!orden}" aria-label="${orden ? 'Quitar' : 'Elegir'} ${esc(v.nombre)}">
+          <video ${chica ? 'src' : 'data-src'}="${esc(urlDe(v))}#t=0.5" muted playsinline preload="${chica ? 'metadata' : 'none'}"></video>
+          ${v.duracion ? `<span class="vd-dur">${fmtDur(v.duracion)}</span>` : ''}
+          ${v.origen === 'editado' ? '<span class="vd-estado vd-e-editado">Editado</span>' : ''}
+          <span class="vd-check">${orden || ''}</span>
+        </button>
+        <button type="button" class="vd-lupa" data-vd-lupa="${v.id}" title="Ver en grande" aria-label="Ver ${esc(v.nombre)} en grande">⤢</button>
+        <span class="vd-nombre" title="${esc(v.nombre)}">${esc(v.nombre)}</span>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // Al marcar un clip solo cambian las marcas y la barra (las miniaturas no se recargan).
+  function marcarEnSitio(root, sel, botones) {
+    root.querySelectorAll('[data-vd-sel]').forEach((b) => {
+      const orden = sel.indexOf(b.dataset.vdSel) + 1;
+      b.closest('.vd-card').classList.toggle('marcado', !!orden);
+      b.setAttribute('aria-pressed', String(!!orden));
+      b.querySelector('.vd-check').textContent = orden || '';
+    });
+    const barra = root.querySelector('[data-vd-barra]');
+    if (barra) barra.innerHTML = barraSeleccion(sel, botones);
+  }
+
+  function barraSeleccion(sel, botones) {
+    if (!sel.length) return '';
+    const total = durTotal(sel);
+    const largo = total > MAX_SEG;
+    return `<div class="vd-barra-sel">
+      <span class="vd-barra-txt"><b>${sel.length} ${sel.length === 1 ? 'clip' : 'clips'}</b>${total ? ` · ${fmtDur(total)} en total` : ''}${largo ? ' <em>· pasa de 3 min</em>' : ''}</span>
+      <span class="vd-barra-acc">${botones}</span>
+    </div>`;
+  }
+
+  function listaOrden(sel) {
+    return `<ol class="vd-orden">${sel.map((id, i) => {
+      const v = videoDe(id) || { nombre: 'Video', archivo: '' };
+      return `<li class="vd-orden-fila">
+        <span class="vd-orden-n">${i + 1}</span>
+        <video src="${esc(urlDe(v))}#t=0.5" muted playsinline preload="metadata"></video>
+        <span class="vd-orden-info"><b>${esc(v.nombre)}</b><small>${fmtDur(v.duracion) || ''}</small></span>
+        <span class="vd-orden-acc">
+          <button type="button" data-vd-mover="-1" data-id="${id}" aria-label="Mover antes" ${i === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" data-vd-mover="1" data-id="${id}" aria-label="Mover después" ${i === sel.length - 1 ? 'disabled' : ''}>↓</button>
+          <button type="button" data-vd-quitar="${id}" aria-label="Quitar">×</button>
+        </span>
+      </li>`;
+    }).join('')}</ol>
+    <p class="vd-orden-total">${sel.length} clips · ${fmtDur(durTotal(sel)) || '—'} en total. Unir no descuenta ediciones.</p>`;
+  }
+
+  // Botones ↑ ↓ × de la lista de orden. Devuelve true si tocó uno.
+  function clicOrden(e, sel) {
+    const m = e.target.closest('[data-vd-mover]');
+    if (m) {
+      const i = sel.indexOf(m.dataset.id), j = i + Number(m.dataset.vdMover);
+      if (i >= 0 && j >= 0 && j < sel.length) [sel[i], sel[j]] = [sel[j], sel[i]];
+      return true;
+    }
+    const q = e.target.closest('[data-vd-quitar]');
+    if (q) { const i = sel.indexOf(q.dataset.vdQuitar); if (i >= 0) sel.splice(i, 1); return true; }
+    return false;
+  }
+
+  async function unirEn(ids, destino) {
+    const r = await ctx.api(`/api/negocios/${n().id}/videos/unir`, { method: 'POST', body: JSON.stringify(Object.assign({ ids: ids.map(Number) }, destino)) });
+    if (r.item) { esperandoUnion.add(r.item.id); resaltar = r.item.id; }
+    return r;
+  }
+
+  // Cuando termina una unión que se pidió aquí, ofrece editar el reel.
+  function revisarUniones(cont) {
+    for (const id of [...esperandoUnion]) {
+      const it = ctx.contenido().find((x) => x.id === id);
+      if (!it || (it.union && it.union.estado === 'error')) { esperandoUnion.delete(id); continue; }
+      if (it.union || !it.video) continue;
+      esperandoUnion.delete(id);
+      cargar().then(() => { if (cont.isConnected && pestana === 'videos') renderEstudio(cont); }).catch(() => {});
+      if (edicionLista() && cont.isConnected && !cont.closest('[hidden]')) {
+        setTimeout(() => { if (confirm('Tus clips ya están unidos en el reel. ¿Lo editas ahora con Rubrofy (cortes, subtítulos, gancho y logo)?')) window.RubrofyReels.abrir(it); }, 50);
+      }
+    }
   }
 
   // Los reels que todavía se pueden cambiar (ni publicados ni publicándose).
@@ -154,6 +259,7 @@
     };
     if (!datos) cargar().then(() => { if (cont.isConnected) renderEstudio(cont); }).catch(() => {});
     vigilar(cont);
+    revisarUniones(cont);
   }
 
   // Mientras un video de la galería se edita, se vuelve a consultar.
@@ -179,7 +285,8 @@
     const v = it.video, ed = it.edicion || {};
     const aprobado = it.status === 'aprobado';
     const paso = (clase, texto) => `<li class="${clase}">${texto}</li>`;
-    const p1 = v ? paso('hecho', 'Video') : paso('actual', 'Video');
+    const uniendo = it.union && it.union.estado === 'uniendo';
+    const p1 = uniendo ? paso('actual en-curso', 'Video') : v ? paso('hecho', 'Video') : paso('actual', 'Video');
     let p2;
     if (ed.estado === 'editando') p2 = paso('actual en-curso', 'Edición');
     else if (v && v.editado) p2 = paso('hecho', 'Edición');
@@ -190,10 +297,12 @@
   }
 
   function filaReel(it) {
-    const v = it.video, ed = it.edicion || {}, ia = it.videoIA || {};
+    const v = it.video, ed = it.edicion || {}, ia = it.videoIA || {}, un = it.union || {};
     const aprobado = it.status === 'aprobado';
     let estado = '', principal = '', extras = [];
-    if (!v && ia.estado === 'generando') {
+    if (un.estado === 'uniendo') {
+      estado = `<span class="rs-estado rs-editando">Uniendo ${un.clips || ''} clips… suele tardar menos de un minuto</span>`;
+    } else if (!v && ia.estado === 'generando') {
       estado = '<span class="rs-estado rs-editando">Creando el video con IA… suele tardar 1 a 3 minutos</span>';
     } else if (!v) {
       estado = it.idea ? `<span class="rs-idea">Qué grabar: ${esc(it.idea)}</span>` : '<span class="rs-estado rs-falta">Falta el video</span>';
@@ -215,6 +324,7 @@
       extras.push(`<button type="button" class="btn-text" data-rs="elegir" data-id="${it.id}">Cambiar video</button>`);
     }
     if (ed.estado === 'error') estado += `<span class="rs-estado rs-falta">La edición falló: ${esc(ed.error || '')}</span>`;
+    if (un.estado === 'error') estado += `<span class="rs-estado rs-falta">No se pudieron unir los clips: ${esc(un.error || '')}</span>`;
     if (ia.estado === 'error' && !v) estado += `<span class="rs-estado rs-falta">El video con IA falló: ${esc(ia.error || '')}</span>`;
     const src = v ? urlDe(v) : null;
     return `<article class="rs-item${resaltar === it.id ? ' resaltado' : ''}" id="rs-${esc(it.id)}">
@@ -282,6 +392,8 @@
     return `<div class="vd-subidas">${subidas.map((s) => `<div class="vd-subida"><span>${esc(s.nombre)}</span><span class="vd-barra"><i style="width:${s.pct}%"></i></span><small>${s.listo ? 'Listo' : `${s.pct}%`}</small></div>`).join('')}<p class="sub">Subiendo ${Math.min(listos + 1, subidas.length)} de ${subidas.length}… no cierres esta pestaña.</p></div>`;
   }
 
+  const botonesMis = () => `${selMis.length > 1 ? '<button type="button" class="btn-approve" data-vd-accion="unir">⧉ Unir en un reel</button>' : ''}${selMis.length === 1 ? '<button type="button" class="btn-approve" data-vd-accion="usar">🎬 Usar en un reel</button>' : ''}<button type="button" class="btn-ghost" data-vd-accion="borrar">🗑 Eliminar</button>`;
+
   function pintarVideos(cuerpo) {
     const zona = `<label class="gl-drop vd-drop" data-vd-drop>
         <input type="file" accept="video/mp4,video/quicktime,.mov,.mp4,.m4v" multiple hidden data-vd-subir>
@@ -292,8 +404,13 @@
     const progreso = `<div data-vd-subidas>${htmlSubidas()}</div>`;
     if (!datos) { cuerpo.innerHTML = zona + progreso + '<p class="sub">Cargando tus videos…</p>'; return; }
     const lista = datos.videos;
+    selMis = selMis.filter((id) => videoDe(id));
+    const cabecera = modoSel
+      ? `<div class="vd-herr"><p class="gl-ayuda">Toca los clips en el orden en que quieres unirlos.</p><button type="button" class="btn-ghost" data-vd-modo="salir">Cancelar</button></div>`
+      : `<div class="vd-herr"><p class="gl-ayuda">Toca un video para verlo, editarlo o usarlo en un reel. ${lista.length} de ${datos.max}.</p>${lista.length > 1 ? '<button type="button" class="btn-ghost" data-vd-modo="sel">☑ Seleccionar varios</button>' : ''}</div>`;
+    const botones = botonesMis();
     cuerpo.innerHTML = zona + progreso + (lista.length
-      ? `<p class="gl-ayuda">Toca un video para verlo, editarlo o usarlo en un reel. ${lista.length} de ${datos.max}.</p><div class="vd-grid">${lista.map(tarjeta).join('')}</div>`
+      ? cabecera + (modoSel ? gridSeleccion(lista, selMis) + `<div data-vd-barra>${barraSeleccion(selMis, botones)}</div>` : `<div class="vd-grid">${lista.map(tarjeta).join('')}</div>`)
       : `<div class="gl-vacia"><b>Aún no tienes videos</b><p>Sube los videos que grabaste. Aquí también quedan los que crees con IA y los que edite Rubrofy.</p></div>`);
     // Las miniaturas se cargan solo cuando se ven.
     const vids = cuerpo.querySelectorAll('video[data-src]');
@@ -304,16 +421,45 @@
     } else vids.forEach(cargarMini);
   }
 
-  function clicVideos(e, cont) {
+  async function clicVideos(e, cont) {
+    const modo = e.target.closest('[data-vd-modo]');
+    if (modo) { modoSel = modo.dataset.vdModo === 'sel'; selMis = []; return renderEstudio(cont); }
+    const lupa = e.target.closest('[data-vd-lupa]');
+    if (lupa) { const v = videoDe(lupa.dataset.vdLupa); if (v) verVideo(v, cont, { soloVer: true }); return; }
+    const marca = e.target.closest('[data-vd-sel]');
+    if (marca) {
+      const aviso = alternar(selMis, marca.dataset.vdSel);
+      if (aviso) alert(aviso);
+      return marcarEnSitio(cont, selMis, botonesMis());
+    }
+    const acc = e.target.closest('[data-vd-accion]');
+    if (acc) {
+      const elegidos = selMis.map(videoDe).filter(Boolean);
+      if (acc.dataset.vdAccion === 'unir' || acc.dataset.vdAccion === 'usar') return usarEnReel(elegidos.length === 1 ? elegidos[0] : elegidos, cont);
+      if (acc.dataset.vdAccion === 'borrar') {
+        const enReels = elegidos.some((v) => v.enReels.length);
+        if (!confirm(`¿Eliminar ${elegidos.length === 1 ? `"${elegidos[0].nombre}"` : `estos ${elegidos.length} videos`} de Mis videos?${enReels ? '\n\nLos reels que ya los usan conservan su copia.' : ''}`)) return;
+        acc.disabled = true;
+        const errores = [];
+        for (const v of elegidos) {
+          try { await ctx.api(`/api/negocios/${n().id}/videos/${v.id}`, { method: 'DELETE' }); } catch (err) { errores.push(`"${v.nombre}": ${err.mensaje || 'no se pudo eliminar'}`); }
+        }
+        if (errores.length) alert(errores.join('\n'));
+        selMis = []; modoSel = false;
+        await cargar().catch(() => {});
+        return renderEstudio(cont);
+      }
+    }
     const ver = e.target.closest('[data-vd-ver]');
     if (ver) {
-      const v = datos && datos.videos.find((x) => String(x.id) === ver.dataset.vdVer);
+      const v = videoDe(ver.dataset.vdVer);
       if (v) verVideo(v, cont);
     }
   }
 
   // ---------- visor de un video ----------
-  function verVideo(v, cont) {
+  function verVideo(v, cont, opciones) {
+    const soloVer = !!(opciones && opciones.soloVer);
     let dlg = document.getElementById('dlg-video');
     if (!dlg) {
       dlg = document.createElement('dialog');
@@ -330,7 +476,7 @@
       <div class="gl-visor-cab"><span class="gl-visor-info"><b>${esc(v.nombre)}</b><small>${[fmtDur(v.duracion), v.bytes ? fmtMB(v.bytes) : '', fecha].filter(Boolean).join(' · ')}</small><span class="vd-estado vd-e-${clase}">${texto}</span></span><button type="button" class="gl-visor-x" data-v-cerrar aria-label="Cerrar">×</button></div>
       <div class="gl-visor-escena vd-escena"><video src="${esc(urlDe(v))}" controls playsinline autoplay></video></div>
       ${v.enReels.length ? `<p class="vd-en-reels">En: ${v.enReels.map((r) => esc(r.titulo) + (r.publicado ? ' (publicado)' : '')).join(' · ')}</p>` : ''}
-      <div class="gl-visor-pie vd-pie">
+      <div class="gl-visor-pie vd-pie"${soloVer ? ' hidden' : ''}>
         ${edicionLista() && !v.editando ? `<button type="button" class="gl-visor-btn gl-visor-ia" data-v-editar title="Te quedan ${quedan} ediciones este mes">✂ Editar</button>` : ''}
         ${v.editando ? '<span class="vd-editando">Editando… el resultado aparece como un video nuevo</span>' : ''}
         <button type="button" class="gl-visor-btn" data-v-usar>🎬 Usar en un reel</button>
@@ -379,15 +525,19 @@
     return dlg;
   }
 
-  // "Usar en un reel": en uno pendiente o en un reel nuevo.
+  // "Usar en un reel": en uno pendiente o en un reel nuevo. Con varios
+  // videos (una lista) primero se ordenan y después se unen en ese reel.
   function usarEnReel(v, cont) {
     const dlg = dialogo();
-    const reels = reelsAbiertos().filter((i) => !(i.edicion && i.edicion.estado === 'editando'));
+    const varios = Array.isArray(v) ? v.map((x) => String(x.id)) : null;
+    const reels = reelsAbiertos().filter((i) => !(i.edicion && i.edicion.estado === 'editando') && !(i.union && i.union.estado === 'uniendo'));
+    const pintar = () => {
     dlg.innerHTML = `<div class="dlg-caja gl-dlg">
-      <div class="gl-dlg-cab"><h2>Usar en un reel</h2><button type="button" class="gl-x" data-vd-cerrar aria-label="Cerrar">×</button></div>
+      <div class="gl-dlg-cab"><h2>${varios ? 'Unir en un reel' : 'Usar en un reel'}</h2><button type="button" class="gl-x" data-vd-cerrar aria-label="Cerrar">×</button></div>
       <div class="gl-dlg-cuerpo">
+        ${varios ? `<p class="gl-ayuda">1. Ordena los clips</p>${listaOrden(varios)}<p class="gl-ayuda vd-o">2. Elige dónde van</p>` : ''}
         <div class="vd-nuevo">
-          <b>✨ Crear un reel nuevo con este video</b>
+          <b>✨ Crear un reel nuevo con ${varios ? 'estos clips' : 'este video'}</b>
           <p class="sub">Rubrofy escribe el gancho, el texto y los hashtags. Usa 1 pieza con IA de tu plan.</p>
           <textarea data-vd-desc rows="2" maxlength="300" placeholder="¿De qué trata el video? (opcional) Ej: muestro cómo preparamos el pan de masa madre"></textarea>
           <button type="button" class="btn-approve" data-vd-nuevo>Crear reel</button>
@@ -395,8 +545,17 @@
         ${reels.length ? `<p class="gl-ayuda vd-o">o úsalo en un reel que ya tienes:</p><div class="vd-reels">${reels.map((it) => `<button type="button" class="vd-reel" data-vd-en="${esc(it.id)}"><b>${esc(titulo(it))}</b><small>${esc(it.date || '')}${it.video ? ' · ya tiene video, se reemplaza' : ' · falta el video'}</small></button>`).join('')}</div>` : ''}
         <p class="config-error" data-vd-error hidden></p>
       </div></div>`;
+    };
+    pintar();
     const error = (t) => { const el = dlg.querySelector('[data-vd-error]'); el.textContent = t; el.hidden = false; };
+    const listos = () => {
+      if (!varios) return true;
+      if (varios.length < 2) { error('Deja al menos 2 clips para unir.'); return false; }
+      if (durTotal(varios) > MAX_SEG) { error('Los clips suman más de 3 minutos. Quita alguno.'); return false; }
+      return true;
+    };
     const terminar = async (itemId) => {
+      if (varios) { modoSel = false; selMis = []; }
       dlg.close();
       await Promise.all([ctx.recargar(), cargar()]).catch(() => {});
       resaltar = itemId;
@@ -406,20 +565,29 @@
     };
     dlg.onclick = async (e) => {
       if (e.target === dlg || e.target.closest('[data-vd-cerrar]')) return dlg.close();
+      if (varios && clicOrden(e, varios)) { const desc = dlg.querySelector('[data-vd-desc]').value; pintar(); dlg.querySelector('[data-vd-desc]').value = desc; return; }
       const en = e.target.closest('[data-vd-en]');
       if (en) {
         const it = reels.find((x) => x.id === en.dataset.vdEn);
+        if (!listos()) return;
         if (it && it.video && !confirm('Este reel ya tiene un video. ¿Reemplazarlo?')) return;
         en.disabled = true;
-        try { await ctx.api(`/api/negocios/${n().id}/videos/${v.id}/usar`, { method: 'POST', body: JSON.stringify({ itemId: en.dataset.vdEn }) }); await terminar(en.dataset.vdEn); }
+        try {
+          if (varios) await unirEn(varios, { itemId: en.dataset.vdEn });
+          else await ctx.api(`/api/negocios/${n().id}/videos/${v.id}/usar`, { method: 'POST', body: JSON.stringify({ itemId: en.dataset.vdEn }) });
+          await terminar(en.dataset.vdEn);
+        }
         catch (err) { error(err.mensaje || 'No se pudo usar el video.'); en.disabled = false; }
         return;
       }
       const nuevo = e.target.closest('[data-vd-nuevo]');
       if (nuevo) {
+        if (!listos()) return;
         nuevo.disabled = true; nuevo.textContent = 'Escribiendo el reel…';
         try {
-          const r = await ctx.api(`/api/negocios/${n().id}/videos/${v.id}/reel-nuevo`, { method: 'POST', body: JSON.stringify({ descripcion: dlg.querySelector('[data-vd-desc]').value }) });
+          const descripcion = dlg.querySelector('[data-vd-desc]').value;
+          const r = varios ? await unirEn(varios, { nuevo: true, descripcion })
+            : await ctx.api(`/api/negocios/${n().id}/videos/${v.id}/reel-nuevo`, { method: 'POST', body: JSON.stringify({ descripcion }) });
           await terminar(r.item && r.item.id);
         } catch (err) { error(err.mensaje || 'No se pudo crear el reel.'); nuevo.disabled = false; nuevo.textContent = 'Crear reel'; }
       }
@@ -431,6 +599,8 @@
   async function elegirParaReel(item, inicial) {
     const dlg = dialogo();
     let pest = inicial || 'mis';
+    let paso = 'elegir'; // elegir | orden
+    const sel = [];
     const mediosIA = n().mediosIA || {};
     const conIA = !!mediosIA.video && !n().sinPlan;
     const usar = async (vid) => {
@@ -442,15 +612,21 @@
       const it = ctx.contenido().find((x) => x.id === item.id);
       if (it && it.video && !it.video.editado && edicionLista() && confirm('Listo, el video quedó en tu reel. ¿Lo editas ahora con Rubrofy (cortes, subtítulos, gancho y logo)?')) window.RubrofyReels.abrir(it);
     };
+    const botonesSel = () => (sel.length === 1 ? '<button type="button" class="btn-approve" data-vd-usar-sel>Usar este video</button>'
+      : '<button type="button" class="btn-approve" data-vd-paso="orden">Continuar →</button>');
     const pintar = () => {
       let cuerpo;
-      if (pest === 'mis') {
+      if (pest === 'mis' && paso === 'orden') {
+        cuerpo = `<p class="gl-ayuda">Ordena los clips: se unen de arriba hacia abajo.</p>${listaOrden(sel)}
+          <div class="vd-orden-pie"><button type="button" class="btn-ghost" data-vd-paso="elegir">← Volver</button><button type="button" class="btn-approve" data-vd-unir ${sel.length < 2 ? 'disabled' : ''}>⧉ Unir y usar en el reel</button></div>`;
+      } else if (pest === 'mis') {
         const lista = datos ? datos.videos : null;
+        const botones = botonesSel();
         cuerpo = !lista ? '<p class="sub">Cargando tus videos…</p>'
-          : lista.length ? `<p class="gl-ayuda">Toca un video para usarlo en este reel.</p><div class="vd-grid vd-grid-chica">${lista.map((v) => `<div class="vd-card"><button type="button" class="vd-thumb" data-vd-elegir="${v.id}" aria-label="Usar ${esc(v.nombre)}"><video src="${esc(urlDe(v))}#t=0.5" muted playsinline preload="metadata"></video>${v.duracion ? `<span class="vd-dur">${fmtDur(v.duracion)}</span>` : ''}${v.origen === 'editado' ? '<span class="vd-estado vd-e-editado">Editado</span>' : ''}</button><span class="vd-nombre">${esc(v.nombre)}</span></div>`).join('')}</div>`
-            : '<div class="gl-vacia"><b>Aún no tienes videos</b><p>Súbelo desde la pestaña <b>Subir</b>; queda guardado en Mis videos.</p></div>';
+          : lista.length ? `<p class="gl-ayuda">Toca uno o varios clips, en el orden en que quieres verlos. Con varios, Rubrofy los une en un solo video.</p>${gridSeleccion(lista, sel, true)}<div data-vd-barra>${barraSeleccion(sel, botones)}</div>`
+            : '<div class="gl-vacia"><b>Aún no tienes videos</b><p>Súbelos desde la pestaña <b>Subir</b>; quedan guardados en Mis videos.</p></div>';
       } else if (pest === 'subir') {
-        cuerpo = `<label class="gl-drop gl-drop-grande" data-vd-drop><input type="file" accept="video/mp4,video/quicktime,.mov,.mp4,.m4v" hidden data-vd-subir-uno><span class="gl-drop-ic">⇪</span><span><b>Elige un video</b> desde tu celular o computador</span><span class="gl-drop-cat">MP4 o MOV, hasta 100 MB. Se guarda también en Mis videos.</span></label>${item.idea ? `<p class="rs-idea">Qué grabar: ${esc(item.idea)}</p>` : ''}`;
+        cuerpo = `<label class="gl-drop gl-drop-grande" data-vd-drop><input type="file" accept="video/mp4,video/quicktime,.mov,.mp4,.m4v" multiple hidden data-vd-subir-uno><span class="gl-drop-ic">⇪</span><span><b>Elige uno o varios videos</b> desde tu celular o computador</span><span class="gl-drop-cat">MP4 o MOV, hasta 100 MB cada uno. Se guardan también en Mis videos.</span></label>${item.idea ? `<p class="rs-idea">Qué grabar: ${esc(item.idea)}</p>` : ''}`;
       } else {
         cuerpo = `<div class="vd-ia"><p>Rubrofy crea un video corto a partir de la idea de este reel${item.idea ? `: <i>${esc(item.idea)}</i>` : ''}.</p><p class="sub">Primero eliges calidad y duración, con su costo en créditos ⚡. Tarda 1 a 3 minutos.</p><button type="button" class="btn-approve" data-vd-ia>✨ Crear video con IA</button></div>`;
       }
@@ -465,11 +641,38 @@
     dlg.onclick = async (e) => {
       if (e.target === dlg || e.target.closest('[data-vd-cerrar]')) return dlg.close();
       const p = e.target.closest('[data-vd-p]');
-      if (p) { pest = p.dataset.vdP; return pintar(); }
-      const el = e.target.closest('[data-vd-elegir]');
-      if (el) {
-        el.disabled = true;
-        try { await usar(el.dataset.vdElegir); } catch (err) { error(err.mensaje || 'No se pudo usar ese video.'); el.disabled = false; }
+      if (p) { pest = p.dataset.vdP; paso = 'elegir'; return pintar(); }
+      const lupa = e.target.closest('[data-vd-lupa]');
+      if (lupa) { const v = videoDe(lupa.dataset.vdLupa); if (v) verVideo(v, null, { soloVer: true }); return; }
+      const marca = e.target.closest('[data-vd-sel]');
+      if (marca) {
+        const aviso = alternar(sel, marca.dataset.vdSel);
+        marcarEnSitio(dlg, sel, botonesSel());
+        const err = dlg.querySelector('[data-vd-error]');
+        if (aviso) error(aviso); else if (err) err.hidden = true;
+        return;
+      }
+      const ps = e.target.closest('[data-vd-paso]');
+      if (ps) {
+        if (ps.dataset.vdPaso === 'orden' && durTotal(sel) > MAX_SEG) return error('Los clips suman más de 3 minutos. Quita alguno.');
+        paso = ps.dataset.vdPaso; return pintar();
+      }
+      if (paso === 'orden' && clicOrden(e, sel)) { if (sel.length < 2) paso = 'elegir'; return pintar(); }
+      const us = e.target.closest('[data-vd-usar-sel]');
+      if (us) {
+        us.disabled = true;
+        try { await usar(sel[0]); } catch (err) { error(err.mensaje || 'No se pudo usar ese video.'); us.disabled = false; }
+        return;
+      }
+      const un = e.target.closest('[data-vd-unir]');
+      if (un) {
+        if (item.video && !confirm('Este reel ya tiene un video. ¿Reemplazarlo por la unión de los clips?')) return;
+        un.disabled = true; un.textContent = 'Enviando…';
+        try {
+          await unirEn(sel, { itemId: item.id });
+          dlg.close();
+          await ctx.recargar();
+        } catch (err) { error(err.mensaje || 'No se pudieron unir los clips.'); un.disabled = false; un.textContent = '⧉ Unir y usar en el reel'; }
         return;
       }
       const ia = e.target.closest('[data-vd-ia]');
@@ -485,17 +688,27 @@
         } catch (err) { if (!err.recargar) error(err.mensaje || 'No se pudo iniciar el video con IA.'); ia.disabled = false; ia.textContent = '✨ Crear video con IA'; }
       }
     };
-    const subirArchivo = async (file) => {
+    // Uno: va directo al reel. Varios: quedan elegidos en Mis videos para ordenarlos.
+    const subirArchivos = async (files) => {
       const b = dlg.querySelector('[data-vd-drop] b');
-      const hechos = await subir([file], () => { if (b && subidas[0]) b.textContent = `Subiendo… ${subidas[0].pct}%`; });
-      if (!hechos[0]) { if (b) b.textContent = 'Elige un video'; return; }
-      if (b) b.textContent = 'Poniéndolo en el reel…';
-      try { await usar(hechos[0].id); } catch (err) { error(err.mensaje || 'Se subió a Mis videos, pero no se pudo poner en el reel.'); }
+      const hechos = await subir(files, () => {
+        const actual = subidas.find((x) => !x.listo);
+        if (b && actual) b.textContent = subidas.length > 1 ? `Subiendo ${subidas.indexOf(actual) + 1} de ${subidas.length}… ${actual.pct}%` : `Subiendo… ${actual.pct}%`;
+      });
+      if (!hechos.length) { if (b) b.textContent = 'Elige uno o varios videos'; return; }
+      if (hechos.length === 1) {
+        if (b) b.textContent = 'Poniéndolo en el reel…';
+        try { await usar(hechos[0].id); } catch (err) { error(err.mensaje || 'Se subió a Mis videos, pero no se pudo poner en el reel.'); }
+        return;
+      }
+      hechos.forEach((v) => { if (sel.length < MAX_CLIPS && !sel.includes(String(v.id))) sel.push(String(v.id)); });
+      pest = 'mis'; paso = 'orden';
+      pintar();
     };
-    dlg.onchange = (e) => { const inp = e.target.closest('[data-vd-subir-uno]'); if (inp && inp.files[0]) subirArchivo(inp.files[0]); };
+    dlg.onchange = (e) => { const inp = e.target.closest('[data-vd-subir-uno]'); if (inp && inp.files.length) subirArchivos(Array.from(inp.files)); };
     dlg.ondragover = (e) => { const z = e.target.closest('[data-vd-drop]'); if (z) { e.preventDefault(); z.classList.add('sobre'); } };
     dlg.ondragleave = (e) => { const z = e.target.closest('[data-vd-drop]'); if (z) z.classList.remove('sobre'); };
-    dlg.ondrop = (e) => { const z = e.target.closest('[data-vd-drop]'); if (!z) return; e.preventDefault(); z.classList.remove('sobre'); if (e.dataTransfer.files[0]) subirArchivo(e.dataTransfer.files[0]); };
+    dlg.ondrop = (e) => { const z = e.target.closest('[data-vd-drop]'); if (!z) return; e.preventDefault(); z.classList.remove('sobre'); if (e.dataTransfer.files.length) subirArchivos(Array.from(e.dataTransfer.files)); };
     pintar();
     if (!dlg.open) dlg.showModal();
     if (!datos) { await cargar().catch(() => {}); if (dlg.open && pest === 'mis') pintar(); }

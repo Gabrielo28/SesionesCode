@@ -1603,3 +1603,40 @@ button.rs-thumb { position: relative; border: 0; padding: 0; cursor: pointer; tr
   .es-card:not(.es-resumen) .es-cab .es-ic { display: none; }
   .es-cab h2 { white-space: nowrap; }
 }
+
+/* Elegir varios clips y ordenarlos (videos.js) */
+.vd-herr { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.vd-herr .gl-ayuda { margin: 0; }
+.vd-herr .btn-ghost { flex: none; }
+.vd-seleccionable .vd-card { position: relative; }
+.vd-seleccionable .vd-thumb video { opacity: .9; }
+.vd-card.marcado .vd-thumb { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber); }
+.vd-card.marcado .vd-thumb video { opacity: 1; }
+.vd-check { position: absolute; top: 7px; right: 7px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 800; border: 2px solid rgba(255, 255, 255, .85); background: rgba(0, 0, 0, .35); color: #fff; }
+.vd-card.marcado .vd-check { background: var(--amber); border-color: var(--amber); color: #140a10; }
+.vd-lupa { position: absolute; top: 7px; left: 7px; width: 28px; height: 28px; border-radius: 8px; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 14px; cursor: pointer; }
+.vd-lupa:hover, .vd-lupa:focus-visible { background: rgba(0, 0, 0, .8); outline: 1px solid #fff; }
+.vd-barra-sel { position: sticky; bottom: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--amber); box-shadow: 0 -8px 24px rgba(0, 0, 0, .45); }
+.vd-barra-txt { font-size: 13px; color: var(--ink-dim); }
+.vd-barra-txt b { color: var(--ink); }
+.vd-barra-txt em { font-style: normal; color: #ffb3cf; }
+.vd-barra-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+.vd-barra-acc .btn-approve, .vd-barra-acc .btn-ghost { flex: none; padding: 8px 14px; }
+.vd-orden { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.vd-orden-fila { display: grid; grid-template-columns: 24px 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+.vd-orden-n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--amber); color: #140a10; }
+.vd-orden-fila video { width: 40px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 6px; background: #0b0a0d; }
+.vd-orden-info { display: flex; flex-direction: column; min-width: 0; }
+.vd-orden-info b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd-orden-info small { font-size: 11.5px; color: var(--ink-faint); }
+.vd-orden-acc { display: flex; gap: 4px; }
+.vd-orden-acc button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 14px; cursor: pointer; }
+.vd-orden-acc button:disabled { opacity: .3; cursor: default; }
+.vd-orden-acc button:not(:disabled):hover { border-color: var(--amber); }
+.vd-orden-total { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+.vd-orden-pie { display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.vd-orden-pie .btn-approve { flex: none; padding: 9px 16px; }
+@media (max-width: 640px) {
+  .vd-barra-sel { flex-direction: column; align-items: stretch; }
+  .vd-barra-acc > * { flex: 1 !important; }
+}
