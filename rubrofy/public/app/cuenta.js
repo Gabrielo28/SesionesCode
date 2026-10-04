@@ -20,6 +20,7 @@
   let cuenta = null;
   let creditos = null;
   let claveAbierta = false;
+  let correoAbierto = false;
 
   const n = () => ctx.negocio;
   const $ = (s) => document.querySelector(s);
@@ -60,8 +61,17 @@
         </div>
       </div>
       <div class="cta-fila">
-        <span><b>Correo para entrar</b><small>${esc(neg.email || '')}${contacto ? ` · Para cambiarlo, escríbenos a <a href="mailto:${esc(contacto)}">${esc(contacto)}</a>` : ''}</small></span>
+        <span><b>Correo para entrar ${neg.emailVerificado === false ? '<em class="cta-chip pend">Sin confirmar</em>' : '<em class="cta-chip ok">Confirmado</em>'}</b><small>${esc(neg.email || '')}${neg.emailVerificado === false ? ' · Te enviamos un enlace para confirmarlo.' : ''}</small></span>
+        <span class="cta-botones">${neg.emailVerificado === false ? '<button type="button" class="btn-ghost" data-cta-reenviar>Reenviar enlace</button>' : ''}<button type="button" class="btn-ghost" data-cta-correo aria-expanded="${correoAbierto}">Cambiar correo</button></span>
       </div>
+      <form class="cta-clave" data-cta-correo-form ${correoAbierto ? '' : 'hidden'}>
+        <label>Correo nuevo<input type="email" name="email" autocomplete="email" required></label>
+        <label>Tu clave actual <span class="opc">para confirmar que eres tú</span><input type="password" name="clave" autocomplete="current-password" required></label>
+        <p class="sub">Te enviaremos un enlace al correo nuevo para confirmarlo, y un aviso al anterior.</p>
+        <p class="config-error" data-cta-correo-error hidden></p>
+        <div class="config-actions"><button type="button" class="btn-ghost" data-cta-correo-cancelar>Cancelar</button><button type="submit" class="btn-approve">Cambiar correo</button></div>
+      </form>
+      <p class="config-ok" data-cta-correo-ok hidden></p>
       <div class="cta-fila">
         <span><b>Clave</b><small>Úsala con tu correo para entrar a Rubrofy.</small></span>
         <button type="button" class="btn-ghost" data-cta-clave aria-expanded="${claveAbierta}">Cambiar clave</button>
@@ -155,6 +165,14 @@
         return;
       }
       if (e.target.closest('[data-cta-clave-cancelar]')) { claveAbierta = false; return pintarPerfil(); }
+      if (e.target.closest('[data-cta-correo]')) { correoAbierto = !correoAbierto; pintarPerfil(); if (correoAbierto) vista.querySelector('[data-cta-correo-form] input').focus(); return; }
+      if (e.target.closest('[data-cta-correo-cancelar]')) { correoAbierto = false; return pintarPerfil(); }
+      const reenviar = e.target.closest('[data-cta-reenviar]');
+      if (reenviar) {
+        reenviar.disabled = true;
+        try { await ctx.api(`/api/negocios/${n().id}/cuenta/verificar`, { method: 'POST', body: '{}' }); reenviar.textContent = 'Enviado ✓'; } catch (err) { alert(err.mensaje || 'No se pudo enviar.'); reenviar.disabled = false; }
+        return;
+      }
       if (e.target.closest('[data-cta-comprar]') && window.RubrofyCreditos) return window.RubrofyCreditos.abrirComprar();
       const copiar = e.target.closest('[data-cta-copiar]');
       if (copiar) {
@@ -176,6 +194,30 @@
       }
     });
     vista.addEventListener('submit', async (e) => {
+      const fc = e.target.closest('[data-cta-correo-form]');
+      if (fc) {
+        e.preventDefault();
+        const err = fc.querySelector('[data-cta-correo-error]');
+        err.hidden = true;
+        const btn = fc.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+          const r = await ctx.api(`/api/negocios/${n().id}/cuenta/email`, { method: 'POST', body: JSON.stringify({ email: fc.email.value, clave: fc.clave.value }) });
+          ctx.negocio = r.negocio;
+          if (ctx.setNegocio) ctx.setNegocio(r.negocio);
+          correoAbierto = false;
+          pintarPerfil();
+          const ok = vista.querySelector('[data-cta-correo-ok]');
+          ok.textContent = `Listo. Te enviamos un enlace a ${r.negocio.email} para confirmarlo.`;
+          ok.hidden = false;
+          if (ctx.alCambiar) ctx.alCambiar();
+        } catch (e2) {
+          err.textContent = e2.mensaje || 'No se pudo cambiar el correo.';
+          err.hidden = false;
+          btn.disabled = false;
+        }
+        return;
+      }
       const form = e.target.closest('[data-cta-clave-form]');
       if (!form) return;
       e.preventDefault();
@@ -203,5 +245,12 @@
     });
   }
 
-  window.RubrofyCuenta = { render };
+  // Desde el aviso "Confirma tu correo" → "¿Está mal escrito?".
+  function abrirCambioCorreo() {
+    correoAbierto = true;
+    if (ctx) pintarPerfil();
+    setTimeout(() => { const i = document.querySelector('#view-cuenta [data-cta-correo-form] input'); if (i) i.focus(); }, 100);
+  }
+
+  window.RubrofyCuenta = { render, abrirCambioCorreo };
 })();

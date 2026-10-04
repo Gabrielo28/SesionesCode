@@ -145,9 +145,9 @@
     const filas = visibles();
     const ig = { ok: '<span class="adm-ok">Conectado</span>', reconectar: '<span class="adm-mal">Reconectar</span>', no: '<span class="adm-no">No</span>' };
     t.innerHTML = `<thead><tr><th>Negocio</th><th>Plan</th><th>Alta</th><th>Última actividad</th><th>Etapa</th><th>Instagram</th>
-      <th class="n">Pend.</th><th class="n">Aprob.</th><th class="n">Publ.</th><th class="n">Fallidas</th><th class="n">IA mes</th></tr></thead>
-      <tbody>${filas.map((n) => `<tr>
-        <td><b>${esc(n.nombre)}</b><small>${esc(n.email || '')}</small></td>
+      <th class="n">Pend.</th><th class="n">Aprob.</th><th class="n">Publ.</th><th class="n">Fallidas</th><th class="n">IA mes</th><th></th></tr></thead>
+      <tbody>${filas.map((n) => `<tr${n.suspendido ? ' class="adm-suspendida"' : ''}>
+        <td><b>${esc(n.nombre)}</b>${n.suspendido ? ' <span class="adm-mal">Suspendida</span>' : ''}<small>${esc(n.email || '')}${n.emailVerificado ? '' : ' · <span class="adm-no">sin confirmar</span>'}</small></td>
         <td><span class="adm-plan p-${esc(n.plan)}">${esc(PLANES[n.plan] || n.plan)}</span>${n.suscripcion && n.suscripcion !== 'active' ? `<small>${esc(n.suscripcion)}</small>` : ''}</td>
         <td>${esc(fecha(n.creadoEl))}</td>
         <td>${esc(hace(n.ultimoAcceso))}</td>
@@ -156,8 +156,74 @@
         <td class="n">${num(n.piezas.pendientes)}</td><td class="n">${num(n.piezas.aprobadas)}</td>
         <td class="n">${num(n.piezas.publicadas)}</td><td class="n ${n.piezas.fallidas ? 'adm-mal' : ''}">${num(n.piezas.fallidas)}</td>
         <td class="n">${num(n.iaMes.textos)}${n.iaMes.fotos ? ' + ' + num(n.iaMes.fotos) + ' fotos' : ''}</td>
-      </tr>`).join('') || '<tr><td colspan="11" class="adm-vacio">Sin resultados.</td></tr>'}</tbody>`;
+        <td><button type="button" class="btn-ghost adm-gestionar" data-gestionar="${esc(n.id)}">Gestionar</button></td>
+      </tr>`).join('') || '<tr><td colspan="12" class="adm-vacio">Sin resultados.</td></tr>'}</tbody>`;
   }
+
+  // Gestionar una cuenta (soporte): enlace de clave, cambiar correo, suspender
+  // o eliminar. Sin ver su contenido.
+  function gestionar(id) {
+    const n = negocios.find((x) => x.id === id);
+    if (!n) return;
+    let dlg = $('#dlg-adm-cuenta');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-adm-cuenta';
+      dlg.className = 'dlg dlg-adm-cuenta';
+      document.body.appendChild(dlg);
+    }
+    const protegida = n.esAdmin;
+    dlg.innerHTML = `<div class="dlg-caja adm-gest">
+      <div class="adm-gest-cab"><div><h2>${esc(n.nombre)}</h2><p class="sub">${esc(n.email || 'sin correo')}${n.emailVerificado ? ' · correo confirmado' : ' · correo sin confirmar'} · ${esc(PLANES[n.plan] || n.plan)}${n.suspendido ? ' · <b class="adm-mal">suspendida</b>' : ''}</p></div><button type="button" class="gl-x" data-cerrar aria-label="Cerrar">×</button></div>
+      <p class="adm-gest-msj" data-msj hidden></p>
+      <section><h3>Clave</h3><p class="sub">Le llega un enlace para elegir una clave nueva (vale 30 minutos).</p><button type="button" class="btn-ghost" data-accion="clave">Enviar enlace para cambiar la clave</button></section>
+      <section><h3>Correo</h3><p class="sub">Solo si el cliente te lo pidió. Le pedimos confirmar el correo nuevo y avisamos al anterior.</p>
+        <form class="adm-gest-fila" data-form="email"><input type="email" name="email" required placeholder="correo@nuevo.cl" aria-label="Correo nuevo"><button type="submit" class="btn-ghost">Cambiar correo</button></form></section>
+      ${protegida ? '<p class="sub">Es una cuenta administradora: no se suspende ni se elimina desde aquí.</p>' : `
+      <section><h3>Suspender</h3>${n.suspendido
+        ? `<p class="sub">Suspendida ${esc(hace(n.suspendido.desde))}${n.suspendido.motivo ? ` · ${esc(n.suspendido.motivo)}` : ''}. No puede entrar y no se publica nada.</p><button type="button" class="btn-approve" data-accion="reactivar">Reactivar la cuenta</button>`
+        : `<p class="sub">No puede entrar al panel y no se publica nada hasta que la reactives. Sus datos no se borran.</p>
+          <form class="adm-gest-fila" data-form="suspender"><input name="motivo" maxlength="200" placeholder="Motivo (opcional, solo lo ves tú)" aria-label="Motivo"><button type="submit" class="btn-ghost">Suspender</button></form>`}</section>
+      <section class="adm-gest-peligro"><h3>Eliminar la cuenta</h3><p class="sub">Solo a pedido del cliente. Se cancela su suscripción y se borra todo; no se puede deshacer. Escribe <b>${esc(n.nombre)}</b> para confirmar.</p>
+        <form class="adm-gest-fila" data-form="eliminar"><input name="confirmar" required autocomplete="off" aria-label="Nombre del negocio"><button type="submit" class="btn-danger">Eliminar</button></form></section>`}
+    </div>`;
+    const msj = (texto, error) => { const p = dlg.querySelector('[data-msj]'); p.textContent = texto; p.className = 'adm-gest-msj ' + (error ? 'error' : 'ok'); p.hidden = false; };
+    const hacer = async (accion, cuerpo, boton) => {
+      if (boton) boton.disabled = true;
+      try {
+        const r = await enviar(`/api/admin/negocios/${encodeURIComponent(n.id)}/${accion}`, cuerpo || {});
+        negocios = await api('/api/admin/negocios');
+        pintarTabla();
+        if (accion === 'eliminar') { dlg.close(); alert(r.mensaje); return; }
+        gestionar(n.id);
+        msj(r.mensaje || 'Listo.');
+      } catch (err) {
+        msj(err.message, true);
+        if (boton) boton.disabled = false;
+      }
+    };
+    dlg.onclick = (e) => {
+      if (e.target === dlg || e.target.closest('[data-cerrar]')) return dlg.close();
+      const b = e.target.closest('[data-accion]');
+      if (b) hacer(b.dataset.accion, {}, b);
+    };
+    dlg.onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const boton = f.querySelector('button');
+      if (f.dataset.form === 'email') hacer('email', { email: f.email.value }, boton);
+      if (f.dataset.form === 'suspender') hacer('suspender', { motivo: f.motivo.value }, boton);
+      if (f.dataset.form === 'eliminar') {
+        if (!confirm(`¿Eliminar ${n.nombre} y todos sus datos? No se puede deshacer.`)) return;
+        hacer('eliminar', { confirmar: f.confirmar.value }, boton);
+      }
+    };
+    if (!dlg.open) dlg.showModal();
+  }
+  document.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-gestionar]');
+    if (g) gestionar(g.dataset.gestionar);
+  });
 
   function descargarCSV() {
     const cab = ['nombre', 'email', 'plan', 'alta', 'ultima_actividad', 'bienvenida', 'etapa', 'instagram', 'publicidad', 'resumen_semanal', 'por_semana', 'pendientes', 'aprobadas', 'publicadas', 'fallidas', 'ia_textos_mes', 'ia_fotos_mes'];

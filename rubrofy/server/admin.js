@@ -96,6 +96,9 @@ function fila(n, contenido, rutaNegocio) {
     id: n.id,
     nombre: n.nombre,
     email: n.email || null,
+    emailVerificado: n.emailVerificado !== false,
+    suspendido: n.suspendido ? { desde: n.suspendido.desde, motivo: n.suspendido.motivo || null } : null,
+    esAdmin: esAdmin(n),
     plan: plan.id,
     precioClp: require('./pagos').pagoMensual(n), // lo que paga de verdad (sin pruebas, regalos ni cortesía; con descuento)
     suscripcion: require('./pagos').estado(n),

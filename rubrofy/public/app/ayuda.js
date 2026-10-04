@@ -203,7 +203,7 @@
     'adm-sistema': { t: 'Sistema', d: 'Qué integraciones están configuradas en Railway. "Falta configurar" = esa función está apagada para todos.',
       p: ['Agrega la variable que falta en Railway → Variables.', 'Railway redespliega solo.'] },
     'adm-negocios': { t: 'Negocios', d: 'Cada cuenta con su plan, fechas, etapa, Instagram y conteos. No muestra textos, fotos ni estrategias.',
-      p: ['Busca por nombre o email.', 'Ordena por más nuevos, última actividad, publicaciones o plan.', 'Pulsa "Descargar CSV" para abrirlo en Excel.'] },
+      p: ['Busca por nombre o email.', 'Ordena por más nuevos, última actividad, publicaciones o plan.', 'Pulsa "Descargar CSV" para abrirlo en Excel.', '"Gestionar" en cada fila: enviar el enlace para cambiar la clave, cambiar el correo, suspender o reactivar, y eliminar la cuenta a pedido del cliente.'], n: 'Suspender no borra nada: la cuenta no puede entrar y no se publica nada hasta reactivarla. Eliminar cancela la suscripción y borra todo; si Flow no responde, no se elimina para que no se siga cobrando.' },
 
     // ---------- Sitio ----------
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',

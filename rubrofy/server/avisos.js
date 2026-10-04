@@ -121,14 +121,38 @@ function correoClave({ negocio, enlace }) {
   return { para: negocio.email, asunto: 'Cambia tu clave de Rubrofy', html, texto };
 }
 
-function correoBienvenida({ negocio, urlPanel }) {
+// enlaceVerificar: confirma el correo y entra al panel (cuentas nuevas).
+function correoBienvenida({ negocio, urlPanel, enlaceVerificar }) {
   const { html, texto } = plantilla({
     titulo: `Bienvenido a Rubrofy, ${negocio.nombre}`,
-    parrafos: ['Tu cuenta está lista. Al entrar al panel, la bienvenida te pregunta tu objetivo, a quién le hablas y cuánto quieres publicar, y con eso arma tu estrategia y tu primera semana de contenido.',
-      'Después conecta Instagram: lo que apruebes se publica solo, en su fecha y hora. Nada sale sin tu visto bueno.'],
-    boton: { texto: 'Ir a mi panel', url: urlPanel },
+    parrafos: [...(enlaceVerificar ? ['Primero, confirma que este es tu correo con el botón de abajo: así puedes recuperar tu clave y te llegan los avisos importantes.'] : []),
+      'Tu cuenta está lista. Al entrar al panel, la bienvenida te pregunta tu objetivo, a quién le hablas y cuánto quieres publicar, y con eso arma tu estrategia y tu primera semana de contenido.',
+      'Después conecta Instagram: lo que apruebes se publica solo, en su fecha y hora. Nada sale sin tu visto bueno.',
+      ...(enlaceVerificar && urlPanel ? [`Tu panel: ${urlPanel}`] : [])],
+    boton: enlaceVerificar ? { texto: 'Confirmar mi correo', url: enlaceVerificar } : { texto: 'Ir a mi panel', url: urlPanel },
+    pie: enlaceVerificar ? 'El enlace vale 7 días. Si no creaste esta cuenta, ignora este correo.' : undefined,
   });
   return { para: negocio.email, asunto: 'Tu cuenta de Rubrofy está lista', html, texto };
+}
+
+function correoVerificar({ negocio, enlace }) {
+  const { html, texto } = plantilla({
+    titulo: 'Confirma tu correo',
+    parrafos: [`Confirma que ${negocio.email} es el correo de ${negocio.nombre} en Rubrofy. Así puedes recuperar tu clave y te llegan los avisos importantes (cobros, publicaciones que fallan).`],
+    boton: { texto: 'Confirmar mi correo', url: enlace },
+    pie: 'El enlace vale 7 días. Si no lo pediste, ignora este correo.',
+  });
+  return { para: negocio.email, asunto: 'Confirma tu correo en Rubrofy', html, texto };
+}
+
+// Al correo anterior, por seguridad, cuando la cuenta cambia de correo.
+function correoEmailCambiado({ negocio, anterior, nuevo, porEquipo }) {
+  const { html, texto } = plantilla({
+    titulo: 'Cambió el correo de tu cuenta',
+    parrafos: [`El correo para entrar a ${negocio.nombre} en Rubrofy cambió de ${anterior} a ${nuevo}${porEquipo ? ', a pedido tuyo, por el equipo de Rubrofy' : ''}.`, 'Si no fuiste tú, responde a soporte de inmediato para recuperar tu cuenta.'],
+    pie: 'Te escribimos a este correo porque era el de tu cuenta.',
+  });
+  return { para: anterior, asunto: 'Cambió el correo de tu cuenta de Rubrofy', html, texto };
 }
 
 function correoReconectar({ negocio, urlPanel, motivo }) {
@@ -281,5 +305,5 @@ function crearAvisador(deps) {
 
 module.exports = {
   construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar, plantilla,
-  correoPrueba, correoRegaloTermino, correoCobroFallido, correoRecibo, correoCancelacion, correoPublicacionFallida,
+  correoVerificar, correoEmailCambiado, correoPrueba, correoRegaloTermino, correoCobroFallido, correoRecibo, correoCancelacion, correoPublicacionFallida,
 };

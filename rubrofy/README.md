@@ -450,6 +450,30 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
 API: `GET /api/negocios/:id/cuenta`, `POST /api/negocios/:id/cuenta/clave`
 `{ actual, nueva }` y `POST /api/negocios/:id/cuenta/cerrar-sesiones`.
 
+## Confirmar el correo y gestionar cuentas desde /admin
+
+**Confirmar el correo**: las cuentas nuevas quedan con `emailVerificado:
+false` y el correo de bienvenida trae "Confirmar mi correo"
+(`GET /api/auth/verificar?n=&t=`, enlace de 7 días atado a ese correo; lleva
+a `/app?correo=verificado|vencido`). No bloquea el uso: el panel muestra un
+aviso con "Reenviar enlace" (`POST /api/negocios/:id/cuenta/verificar`, 3
+por hora) y "¿Está mal escrito?". Las cuentas anteriores se consideran
+confirmadas. En Mi cuenta → Perfil se cambia el correo con la clave actual
+(`POST /api/negocios/:id/cuenta/email { email, clave }`): pide confirmar el
+nuevo y avisa al anterior. Un correo de `ADMIN_EMAILS` no se puede asignar.
+
+**Gestionar** (botón en cada fila de Negocios en /admin), sin ver contenido:
+`POST /api/admin/negocios/:id/clave` (manda el enlace para elegir clave),
+`/email { email }`, `/suspender { motivo }` (no entra —el login dice que está
+suspendida—, se cierran sus sesiones, no se publica nada ni recibe el resumen),
+`/reactivar` y `/eliminar { confirmar: nombre exacto }`. Las cuentas
+administradoras no se suspenden ni se eliminan desde ahí.
+
+**Eliminar una cuenta** (el dueño o el admin) primero corta la suscripción:
+si Flow o Stripe no responden, no se elimina (responde 424) para que no se
+siga cobrando sin cuenta donde verlo; un rechazo de Flow (la suscripción ya
+no existe) no la frena.
+
 ## Correos de la cuenta y alertas al equipo (server/avisos.js, server/alertas.js)
 
 Además del push, por correo (llegan aunque el cliente no active las

@@ -299,6 +299,7 @@ function crearPublicador({ prepararPublicacion, intervaloMs = 30000, log = conso
     recorriendo = true;
     try {
       for (const negocio of store.listNegocios()) {
+        if (negocio.suspendido) continue; // cuenta suspendida desde /admin: no se publica nada
         if (!negocio.instagram || !negocio.instagram.accessToken) {
           // Sin Instagram, lo vencido se marca fallido (con motivo) en procesar.
           const vencidas = store.getContenido(negocio.id).filter((it) => estaVencida(it));

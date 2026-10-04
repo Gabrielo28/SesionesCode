@@ -68,6 +68,7 @@ const limiteRecuperar = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 const limiteCorreoPrueba = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
 // Regenerar la estrategia llama a Claude: tope por negocio.
 const limiteEstrategia = crearLimitador({ max: 10, ventanaMs: 60 * 60 * 1000 });
+const limiteVerificar = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
 
 // Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
 // cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
@@ -82,7 +83,53 @@ function sesionActual(req) {
   // Después de cambiar la clave, las sesiones abiertas antes dejan de valer.
   const n = store.getNegocio(negocioId);
   if (n && n.sesionesDesde && auth.emisionSesion(token) < Date.parse(n.sesionesDesde)) return null;
+  // Una cuenta suspendida desde /admin no entra (el login explica por qué).
+  if (n && n.suspendido) return null;
   return negocioId;
+}
+
+// Confirmar el correo: enlace de 7 días que vale solo para ese correo (si la
+// cuenta cambia de correo, el enlace anterior deja de servir).
+function enlaceVerificar(base, negocio) {
+  return `${base}/api/auth/verificar?n=${encodeURIComponent(negocio.id)}&t=${auth.crearTokenFoto(negocio.id, 'verificar', negocio.email, 7 * 24 * 60)}`;
+}
+
+// Cambia el correo de una cuenta (el dueño desde Mi cuenta o el equipo desde
+// /admin). Devuelve { negocio } o { error, status }.
+function cambiarEmail(negocio, nuevo, base, { porEquipo = false } = {}) {
+  const email = String(nuevo || '').trim().toLowerCase();
+  if (!EMAIL_RE.test(email)) return { error: 'Ese correo no es válido.', status: 400 };
+  if (email === negocio.email) return { error: 'Ese ya es el correo de la cuenta.', status: 400 };
+  if (buscarNegocioPorEmail(email)) return { error: 'Ya existe otra cuenta con ese correo.', status: 409 };
+  // Un correo de ADMIN_EMAILS no se asigna así: daría acceso a la administración.
+  if (admin.adminEmails().includes(email)) return { error: 'Ese correo no está disponible.', status: 409 };
+  const anterior = negocio.email;
+  negocio.email = email;
+  negocio.emailVerificado = false;
+  delete negocio.emailVerificadoEl;
+  store.saveNegocio(negocio);
+  if (correo.configurado()) {
+    correo.enviar(avisos.correoVerificar({ negocio, enlace: enlaceVerificar(base, negocio) }));
+    if (anterior) correo.enviar(avisos.correoEmailCambiado({ negocio, anterior, nuevo: email, porEquipo }));
+  }
+  return { negocio };
+}
+
+// Elimina la cuenta. Antes corta la suscripción: si Flow o Stripe no
+// responden, NO se elimina (si no, se le seguiría cobrando sin cuenta donde
+// verlo). Un rechazo de Flow (la suscripción ya no existe) no la frena.
+async function eliminarCuenta(negocio) {
+  if (negocio.stripe && negocio.stripe.subscriptionId) {
+    const s = await stripe.cancelarSuscripcion(negocio.stripe.subscriptionId);
+    if (s && s.error) return { error: 'No pudimos cancelar la suscripción en Stripe. Intenta de nuevo en un rato: la cuenta no se eliminó para que no se siga cobrando.' };
+  }
+  const f = await cobroFlow.cancelarYa(negocio);
+  if (f && f.error) {
+    if (!f.status || f.status >= 500 || f.status === 401) return { error: 'No pudimos cancelar la suscripción en Flow. Intenta de nuevo en un rato: la cuenta no se eliminó para que no se siga cobrando.' };
+    console.log(`Flow al eliminar ${negocio.id}: ${f.error} (se elimina igual)`);
+  }
+  store.deleteNegocio(negocio.id);
+  return { ok: true };
 }
 
 // Enlace para elegir una clave nueva: vale 30 minutos y una sola vez (va
@@ -237,7 +284,7 @@ function negocioPublico(negocio) {
     sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : {});
   resto.tieneSuscripcion = !!sus || !!(stripeInfo && stripeInfo.customerId);
   delete resto.planRegalado;
-  delete resto.creditosPlan; delete resto.referidoPor;
+  delete resto.creditosPlan; delete resto.referidoPor; delete resto.suspendido;
   resto.regalo = beneficios.regaloVigente(negocio) ? { plan: negocio.planRegalado.plan, hasta: negocio.planRegalado.hasta } : null;
   resto.creditos = creditos.publico(negocio);
   resto.soporteSinLeer = soporte.sinLeer(negocio.id);
@@ -863,7 +910,7 @@ async function recordatoriosSemanales(ahora = new Date()) {
   const semana = avisos.semanaISO(p);
   let n = 0;
   for (const negocio of store.listNegocios()) {
-    if ((negocio.avisos || {}).ultimaSemanaPush === semana || !push.dispositivos(negocio.id).length) continue;
+    if (negocio.suspendido || (negocio.avisos || {}).ultimaSemanaPush === semana || !push.dispositivos(negocio.id).length) continue;
     const fresco = store.getNegocio(negocio.id);
     fresco.avisos = Object.assign({}, fresco.avisos, { ultimaSemanaPush: semana });
     store.saveNegocio(fresco);
@@ -1006,7 +1053,7 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
 }, console.log, (id) => creditos.config().modelos.find((m) => m.id === id) || null);
 
 const avisador = avisos.crearAvisador({
-  listarNegocios: () => store.listNegocios(),
+  listarNegocios: () => store.listNegocios().filter((n) => !n.suspendido),
   datosDe: (negocio) => ({ negocioPublico: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocio.id) }),
   urlPublica: () => (process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null),
   enlaceBaja: enlaceBajaAvisos,
@@ -1314,6 +1361,7 @@ const server = http.createServer(async (req, res) => {
           estiloImagen: 'limpia',
           creadoEl: new Date().toISOString(),
           aceptoTerminosEl: new Date().toISOString(), // versión: la de /terminos.html y /privacidad.html a esa fecha
+          emailVerificado: false,
           ultimoAcceso: new Date().toISOString(),
           datos: {
             precioDesde: body.datos && body.datos.precioDesde ? String(body.datos.precioDesde).trim() : '',
@@ -1330,13 +1378,27 @@ const server = http.createServer(async (req, res) => {
           if (r.negocio) store.saveNegocio(r.negocio);
         }
         if (correo.configurado()) {
-          correo.enviar(avisos.correoBienvenida({ negocio, urlPanel: urlPublica(req) + '/app' }))
+          correo.enviar(avisos.correoBienvenida({ negocio, urlPanel: urlPublica(req) + '/app', enlaceVerificar: enlaceVerificar(urlPublica(req), negocio) }))
             .then((r) => { if (!r.ok) console.log(`Bienvenida de ${id} no enviada: ${r.error}`); });
         }
         // Sin contenido todavía: la bienvenida del panel pregunta objetivo,
         // público y cuánto publicar, y con eso genera la primera semana.
         const cookie = auth.cookieSesion(req, auth.crearSesion(id));
         return sendJSON(res, 201, negocioPublico(negocio), { 'Set-Cookie': cookie });
+      }
+
+      // GET /api/auth/verificar?n=&t= — el enlace del correo: confirma el correo y
+      // lleva al panel (/app?correo=verificado o =vencido).
+      if (parts[1] === 'auth' && parts[2] === 'verificar' && parts.length === 3 && req.method === 'GET') {
+        const negocio = store.getNegocio(String(url.searchParams.get('n') || ''));
+        const valido = !!(negocio && negocio.email && auth.verificarTokenFoto(url.searchParams.get('t'), negocio.id, 'verificar', negocio.email));
+        if (valido && negocio.emailVerificado !== true) {
+          negocio.emailVerificado = true;
+          negocio.emailVerificadoEl = new Date().toISOString();
+          store.saveNegocio(negocio);
+        }
+        res.writeHead(302, { Location: '/app?correo=' + (valido ? 'verificado' : 'vencido'), ...CABECERAS_SEGURIDAD });
+        return res.end();
       }
 
       // POST /api/auth/recuperar { email } — manda un enlace para elegir una
@@ -1386,6 +1448,10 @@ const server = http.createServer(async (req, res) => {
         if (!claveOk) {
           limiteLoginFallido.registrar(ip);
           return sendJSON(res, 401, { error: 'Email o clave incorrectos' });
+        }
+        if (negocio.suspendido) {
+          const contacto = emailContacto();
+          return sendJSON(res, 403, { error: `Tu cuenta está suspendida.${contacto ? ` Escríbenos a ${contacto} para resolverlo.` : ' Escríbenos para resolverlo.'}`, suspendida: true });
         }
         limiteLoginFallido.reiniciar(ip);
         planDeCortesia(negocio);
@@ -1517,6 +1583,50 @@ const server = http.createServer(async (req, res) => {
           if (parts[3] === 'codigo' && parts[4] === 'estado' && parts.length === 5) {
             if (!beneficios.activarCodigo(body.codigo, !!body.activo)) return sendJSON(res, 404, { error: 'Ese código no existe' });
             return sendJSON(res, 200, vista());
+          }
+          return sendJSON(res, 404, { error: 'No encontrado' });
+        }
+        // Acciones de soporte sobre una cuenta (sin ver su contenido):
+        //   POST /api/admin/negocios/:id/clave       manda el enlace para elegir clave
+        //   POST /api/admin/negocios/:id/email       { email } cambia el correo (pide confirmarlo)
+        //   POST /api/admin/negocios/:id/suspender   { motivo } no puede entrar ni se publica nada
+        //   POST /api/admin/negocios/:id/reactivar
+        //   POST /api/admin/negocios/:id/eliminar    { confirmar: nombre exacto del negocio }
+        if (parts[2] === 'negocios' && parts.length === 5 && req.method === 'POST') {
+          const n = store.getNegocio(parts[3]);
+          if (!n) return sendJSON(res, 404, { error: 'No encontramos esa cuenta.' });
+          const body = await readBody(req);
+          const esAdminCuenta = admin.esAdmin(n);
+          if (parts[4] === 'clave') {
+            if (!n.auth || !n.email || !correo.configurado()) return sendJSON(res, 400, { error: 'No se puede enviar: falta el correo de la cuenta o el envío de correos no está configurado.' });
+            const enlace = `${urlPublica(req)}/app/restablecer.html?n=${encodeURIComponent(n.id)}&t=${tokenClave(n)}`;
+            const r = await correo.enviar(avisos.correoClave({ negocio: n, enlace }));
+            if (!r.ok) return sendJSON(res, 424, { error: 'No se pudo enviar el correo: ' + r.error });
+            return sendJSON(res, 200, { ok: true, mensaje: `Le enviamos a ${n.email} un enlace para elegir una clave nueva (vale 30 minutos).` });
+          }
+          if (parts[4] === 'email') {
+            const r = cambiarEmail(n, body.email, urlPublica(req), { porEquipo: true });
+            if (r.error) return sendJSON(res, r.status, { error: r.error });
+            return sendJSON(res, 200, { ok: true, mensaje: `Listo. El correo ahora es ${r.negocio.email}; le enviamos un enlace para confirmarlo y avisamos al correo anterior.` });
+          }
+          if (parts[4] === 'suspender') {
+            if (esAdminCuenta) return sendJSON(res, 400, { error: 'No se puede suspender una cuenta administradora.' });
+            n.suspendido = { desde: new Date().toISOString(), motivo: String(body.motivo || '').trim().slice(0, 200) || null };
+            n.sesionesDesde = n.suspendido.desde; // cierra las sesiones abiertas
+            store.saveNegocio(n);
+            return sendJSON(res, 200, { ok: true, mensaje: `${n.nombre} quedó suspendida: no puede entrar y no se publica nada hasta reactivarla.` });
+          }
+          if (parts[4] === 'reactivar') {
+            delete n.suspendido;
+            store.saveNegocio(n);
+            return sendJSON(res, 200, { ok: true, mensaje: `${n.nombre} está activa de nuevo.` });
+          }
+          if (parts[4] === 'eliminar') {
+            if (esAdminCuenta) return sendJSON(res, 400, { error: 'Una cuenta administradora no se elimina desde aquí: sácala primero de ADMIN_EMAILS.' });
+            if (String(body.confirmar || '').trim() !== n.nombre) return sendJSON(res, 400, { error: 'Escribe el nombre exacto del negocio para confirmar.' });
+            const r = await eliminarCuenta(n);
+            if (r.error) return sendJSON(res, 424, { error: r.error });
+            return sendJSON(res, 200, { ok: true, mensaje: `${n.nombre} y todos sus datos quedaron eliminados.` });
           }
           return sendJSON(res, 404, { error: 'No encontrado' });
         }
@@ -1676,11 +1786,8 @@ const server = http.createServer(async (req, res) => {
 
         // DELETE /api/negocios/:id
         if (parts.length === 3 && req.method === 'DELETE') {
-          if (negocio.stripe && negocio.stripe.subscriptionId) {
-            await stripe.cancelarSuscripcion(negocio.stripe.subscriptionId);
-          }
-          await cobroFlow.cancelarYa(negocio);
-          store.deleteNegocio(negocioId);
+          const r = await eliminarCuenta(negocio);
+          if (r.error) return sendJSON(res, 424, { error: r.error });
           return sendJSON(res, 200, { ok: true }, { 'Set-Cookie': auth.cookieSesion(req, null) });
         }
 
@@ -1848,6 +1955,30 @@ const server = http.createServer(async (req, res) => {
               contacto: process.env.CONTACTO_EMAIL || null,
               pagos: lista.slice(0, 40),
             });
+          }
+          // POST /api/negocios/:id/cuenta/verificar — reenvía el enlace (3 por hora)
+          if (parts.length === 5 && req.method === 'POST' && parts[4] === 'verificar') {
+            if (negocio.emailVerificado !== false) return sendJSON(res, 200, { ok: true, yaVerificado: true });
+            if (!correo.configurado()) return sendJSON(res, 400, { error: 'El envío de correos no está configurado.' });
+            const espera = limiteVerificar.esperaSegundos('v:' + negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Ya te enviamos varios enlaces. Revisa tu correo (también la carpeta de spam) o espera un rato.' });
+            limiteVerificar.registrar('v:' + negocioId);
+            correo.enviar(avisos.correoVerificar({ negocio, enlace: enlaceVerificar(urlPublica(req), negocio) }));
+            return sendJSON(res, 200, { ok: true, email: negocio.email });
+          }
+          // POST /api/negocios/:id/cuenta/email { email, clave } — pide la clave actual
+          if (parts.length === 5 && req.method === 'POST' && parts[4] === 'email') {
+            const ip = ipCliente(req);
+            const espera = limiteLoginFallido.esperaSegundos(ip);
+            if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.' }, { 'Retry-After': String(espera) });
+            const body = await readBody(req);
+            if (!(negocio.auth && auth.verifyPassword(String(body.clave || ''), negocio.auth.salt, negocio.auth.hash))) {
+              limiteLoginFallido.registrar(ip);
+              return sendJSON(res, 400, { error: 'La clave no es correcta.' });
+            }
+            const r = cambiarEmail(negocio, body.email, urlPublica(req));
+            if (r.error) return sendJSON(res, r.status, { error: r.error });
+            return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
           }
           if (parts.length === 5 && req.method === 'POST' && (parts[4] === 'clave' || parts[4] === 'cerrar-sesiones')) {
             if (parts[4] === 'clave') {

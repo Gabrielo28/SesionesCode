@@ -764,6 +764,31 @@
   const nombrePlan = (id) => (planesInfo.find((p) => p.id === id) || {}).nombre || id;
 
   // Aviso bajo la barra: prueba gratis disponible, prueba en curso o sin plan.
+  // Cuenta nueva sin el correo confirmado: aviso chico con "Reenviar" y
+  // "Cambiar correo" (por si se escribió mal). Las cuentas antiguas no lo ven.
+  function renderAvisoCorreo() {
+    const cont = $('#aviso-correo');
+    if (!cont || !negocioActual) return;
+    cont.hidden = negocioActual.emailVerificado !== false;
+    if (cont.hidden) return;
+    cont.innerHTML = `<span class="aviso-correo-txt">📧 <b>Confirma tu correo:</b> te enviamos un enlace a <b>${escapeHtml(negocioActual.email || '')}</b>. Así puedes recuperar tu clave y te llegan los avisos de cobros y publicaciones.</span>
+      <span class="aviso-correo-acc"><button type="button" class="btn-ghost" data-correo-reenviar>Reenviar enlace</button><button type="button" class="btn-text" data-correo-cambiar>¿Está mal escrito?</button></span>`;
+  }
+
+  // Vuelta del enlace "Confirmar mi correo" (/app?correo=verificado|vencido).
+  async function avisarRetornoCorreo() {
+    const r = new URLSearchParams(window.location.search).get('correo');
+    if (!r) return;
+    history.replaceState(null, '', window.location.pathname + window.location.hash);
+    if (r === 'verificado') {
+      try { negocioActual = await api('/api/me'); } catch (e) { /* sigue */ }
+      render();
+      alert('¡Listo! Confirmaste tu correo.');
+    } else {
+      alert('Ese enlace venció o ya no es válido. Te podemos enviar uno nuevo desde el aviso de arriba o desde Mi cuenta.');
+    }
+  }
+
   function renderAvisoPlan() {
     const cont = $('#aviso-plan');
     if (!cont || !negocioActual) return;
@@ -1057,6 +1082,7 @@
     renderStats();
     renderMenu();
     renderAvisoPlan();
+    renderAvisoCorreo();
     mostrarGuias();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
@@ -1071,7 +1097,7 @@
     }
     else if (vistaActual === 'cuenta') {
       renderPlan();
-      window.RubrofyCuenta.render(ctxPanel()).catch(() => {});
+      window.RubrofyCuenta.render(Object.assign(ctxPanel(), { alCambiar: () => { renderAvisoCorreo(); actualizarSwitcher(); } })).catch(() => {});
     }
     else if (vistaActual === 'estilo') {
       window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
@@ -1394,6 +1420,7 @@
     irAVista(VISTAS.includes(destino) ? destino : 'inicio');
     if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
     const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
+    avisarRetornoCorreo();
     avisarRetornoCheckout();
     avisarRetornoRecarga();
     avisarRetornoGoogle();
@@ -1500,7 +1527,7 @@
         await iniciarSesion($('#login-email').value.trim(), $('#login-password').value);
       } catch (err) {
         mostrarLogin(err.status === 401 ? 'Email o clave incorrectos.'
-          : err.status === 429 ? err.mensaje
+          : err.status === 429 || err.status === 403 ? err.mensaje
           : 'No se pudo iniciar sesión.');
       } finally {
         btn.disabled = false;
@@ -1702,6 +1729,21 @@
     });
 
     $('#btn-generar').addEventListener('click', abrirGenerar);
+    $('#aviso-correo').addEventListener('click', async (e) => {
+      const re = e.target.closest('[data-correo-reenviar]');
+      if (re) {
+        re.disabled = true;
+        try {
+          await api(`/api/negocios/${negocioActual.id}/cuenta/verificar`, { method: 'POST', body: '{}' });
+          re.textContent = 'Enviado ✓ (revisa también spam)';
+        } catch (err) { alert(err.mensaje || 'No se pudo enviar.'); re.disabled = false; }
+        return;
+      }
+      if (e.target.closest('[data-correo-cambiar]')) {
+        irAVista('cuenta', null, 'cta-perfil');
+        if (window.RubrofyCuenta) window.RubrofyCuenta.abrirCambioCorreo();
+      }
+    });
     $('#aviso-plan').addEventListener('click', (e) => {
       if (e.target.closest('[data-ir-plan]')) return irAVista('cuenta', null, 'cta-plan');
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();

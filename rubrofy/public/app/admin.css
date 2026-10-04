@@ -73,12 +73,12 @@ body.adm { height: auto; min-height: 100%; }
 .adm-form label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-dim); }
 .adm-form label small { color: var(--ink-faint); font-size: 11px; }
 .adm-form .ancho { grid-column: 1 / -1; }
-.adm-form input, .adm-form select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13.5px; padding: 8px 10px; min-width: 0; }
+.adm-form input, .adm-form select { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13.5px; padding: 8px 10px; min-width: 0; max-width: 100%; }
 .adm-form-pie { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .adm-form-pie .config-error { margin: 0; }
 .adm-tabla-chica { min-width: 640px; }
 .adm-aviso { color: var(--amber, #e0a33b); margin-bottom: 8px; }
-@media (max-width: 640px) { .adm-form { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .adm-form { grid-template-columns: minmax(0, 1fr); } }
 .adm-form .adm-mayus:not(:placeholder-shown) { text-transform: uppercase; }
 
 /* Créditos y modelos de IA */
@@ -135,3 +135,25 @@ body.adm { height: auto; min-height: 100%; }
 .adm-alertas li { font-size: 12.5px; border-left: 3px solid var(--coral); padding: 4px 8px; }
 .adm-alertas em { color: var(--coral); font-style: normal; font-weight: 700; }
 .adm-alertas small { display: block; color: var(--ink-faint); font-size: 11.5px; overflow-wrap: anywhere; }
+
+/* Gestionar una cuenta */
+.adm-gestionar { padding: 5px 10px; font-size: 12px; white-space: nowrap; }
+.adm-tabla tr.adm-suspendida td { opacity: .7; }
+.dlg.dlg-adm-cuenta { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.adm-gest { gap: 14px; }
+.adm-gest-cab { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.adm-gest-cab h2 { overflow-wrap: anywhere; }
+.adm-gest section { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--border); }
+.adm-gest h3 { margin: 0; font-size: 13.5px; }
+.adm-gest .sub { margin: 0; }
+.adm-gest section > .btn-ghost, .adm-gest section > .btn-approve { justify-self: start; }
+.adm-gest-fila { display: flex; gap: 8px; flex-wrap: wrap; }
+.adm-gest-fila input { flex: 1 1 200px; min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--ink); font: inherit; font-size: 13px; }
+.adm-gest-peligro h3 { color: var(--coral); }
+.adm-gest-msj { margin: 0; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+.adm-gest-msj.ok { background: rgba(63, 191, 95, .12); color: var(--green); }
+.adm-gest-msj.error { background: rgba(255, 107, 90, .12); color: var(--coral); }
+
+/* Las tarjetas de una grilla no se estiran con sus tablas anchas: la tabla
+   se desplaza dentro de la tarjeta (en el celular la página se agrandaba). */
+.adm-grid > *, .adm-sop > * { min-width: 0; }
