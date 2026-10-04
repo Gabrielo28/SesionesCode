@@ -94,6 +94,8 @@
     form.addEventListener('click', (e) => {
       const idea = e.target.closest('[data-gl-idea]');
       if (idea) form.texto.value = idea.dataset.glIdea;
+      const nueva = e.target.closest('[data-gl-ver-nueva]');
+      if (nueva) verFotos([{ categoria: nueva.dataset.glVerNuevaCat, archivo: nueva.dataset.glVerNueva, url: url(nueva.dataset.glVerNuevaCat, nueva.dataset.glVerNueva), ia: true }], 0);
       if (e.target.closest('[data-gl-recargar]') && window.RubrofyRecargas) {
         const dlg = document.getElementById('dlg-galeria');
         if (dlg && dlg.open) dlg.close();
@@ -120,6 +122,10 @@
         ctx.setFotos(r.fotos);
         if (r.negocio) ctx.setNegocio(r.negocio);
         espera.className = 'gl-res';
+        espera.classList.add('gl-ver');
+        espera.dataset.glVerNuevaCat = r.categoria;
+        espera.dataset.glVerNueva = r.archivo;
+        espera.title = 'Ver en grande';
         espera.innerHTML = `<img src="${esc(url(r.categoria, r.archivo))}" alt="Foto creada con IA"><span class="gl-ia-tag">✨ IA</span>`;
         if (window.RubrofyCreditos) window.RubrofyCreditos.pintarChip();
         if (alCrear) await alCrear({ categoria: r.categoria, archivo: r.archivo });
@@ -153,7 +159,7 @@
       <div class="gl-panel-ia" data-gl-panel-ia hidden>${formIAHTML('')}</div>
       <div class="gl-filtros">${filtros.map(([id, t]) => `<button type="button" class="gl-chip${filtro === id ? ' on' : ''}" data-gl-filtro="${esc(id)}">${esc(t)}</button>`).join('')}<span class="gl-total">${todas.length} foto${todas.length === 1 ? '' : 's'}</span></div>
       ${visibles.length
-        ? `<div class="gl-grid">${visibles.map((f) => `<figure class="gl-foto"><img src="${esc(f.url)}" alt="" loading="lazy">${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<figcaption>${esc(f.categoria)}</figcaption><button type="button" class="gl-borrar" data-gl-borrar-cat="${esc(f.categoria)}" data-gl-borrar="${esc(f.archivo)}" title="Eliminar foto" aria-label="Eliminar foto">×</button></figure>`).join('')}</div>`
+        ? `<div class="gl-grid">${visibles.map((f, i) => `<figure class="gl-foto gl-ver" data-gl-ver="${i}" tabindex="0" role="button" aria-label="Ver en grande: ${esc(f.categoria)}"><img src="${esc(f.url)}" alt="" loading="lazy">${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<figcaption>${esc(f.categoria)}</figcaption><button type="button" class="gl-borrar" data-gl-borrar-cat="${esc(f.categoria)}" data-gl-borrar="${esc(f.archivo)}" title="Eliminar foto" aria-label="Eliminar foto">×</button></figure>`).join('')}</div>`
         : `<div class="gl-vacia"><b>${todas.length ? 'No hay fotos en esta categoría' : 'Tu galería está vacía'}</b><p>Sube fotos reales de tu negocio (tu local, tus productos, tu equipo) o créalas con IA. Rubrofy las usa en tus publicaciones.</p></div>`}`;
     const panel = cont.querySelector('[data-gl-panel-ia]');
     activarFormIA(panel, { alCrear: () => { filtro = 'todas'; } });
@@ -166,8 +172,18 @@
         if (!confirm('¿Eliminar esta foto de tu galería?')) return;
         await ctx.borrarFoto(b.dataset.glBorrarCat, b.dataset.glBorrar).catch((err) => alert('No se pudo borrar: ' + err.message));
         renderVista(cont);
+        return;
       }
+      const v = e.target.closest('[data-gl-ver]');
+      if (v) abrirEnGrande(Number(v.dataset.glVer));
       // Al cerrar el panel de IA con fotos nuevas, la cuadrícula se actualiza.
+    };
+    const abrirEnGrande = (i) => verFotos(visibles, i, {
+      alBorrar: async (f) => { await ctx.borrarFoto(f.categoria, f.archivo); renderVista(cont); },
+    });
+    cont.onkeydown = (e) => {
+      const v = (e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-gl-ver]') ? e.target : null;
+      if (v) { e.preventDefault(); abrirEnGrande(Number(v.dataset.glVer)); }
     };
     const subirArchivos = async (files) => {
       const cat = cont.querySelector('[data-gl-cat]').value;
@@ -186,6 +202,83 @@
     }));
   }
 
+  // --- Visor: la foto en grande, con flechas (o deslizando) para pasar a la
+  // siguiente. opciones.alBorrar(foto) agrega el botón Eliminar.
+  let pasoVisor = null;
+  function verFotos(fotos, inicio, opciones) {
+    const op = opciones || {};
+    const fs = fotos.slice();
+    if (!fs.length) return;
+    let i = Math.max(0, Math.min(Number(inicio) || 0, fs.length - 1));
+    let dlg = document.getElementById('dlg-visor');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-visor';
+      dlg.className = 'gl-visor';
+      dlg.setAttribute('aria-label', 'Foto en grande');
+      document.body.appendChild(dlg);
+      // Flechas del teclado, aunque el foco haya quedado fuera de un botón.
+      document.addEventListener('keydown', (e) => {
+        if (!dlg.open || !pasoVisor || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
+        e.preventDefault();
+        pasoVisor(e.key === 'ArrowRight' ? 1 : -1);
+      });
+      dlg.addEventListener('close', () => { dlg.querySelector('[data-v-img]')?.removeAttribute('src'); });
+    }
+    dlg.innerHTML = `<div class="gl-visor-caja">
+      <div class="gl-visor-cab"><span class="gl-visor-info" data-v-info></span><button type="button" class="gl-visor-x" data-v-cerrar aria-label="Cerrar">×</button></div>
+      <div class="gl-visor-escena" data-v-escena>
+        <img data-v-img alt="">
+        <button type="button" class="gl-visor-nav gl-visor-ant" data-v-paso="-1" aria-label="Foto anterior">‹</button>
+        <button type="button" class="gl-visor-nav gl-visor-sig" data-v-paso="1" aria-label="Foto siguiente">›</button>
+      </div>
+      <div class="gl-visor-pie">
+        <a class="gl-visor-btn" data-v-bajar>⬇ Descargar</a>
+        ${op.alBorrar ? '<button type="button" class="gl-visor-btn gl-visor-peligro" data-v-borrar>Eliminar</button>' : ''}
+      </div></div>`;
+    const el = (s) => dlg.querySelector(s);
+    const mostrar = () => {
+      const f = fs[i];
+      const varias = fs.length > 1;
+      el('[data-v-img]').src = f.url;
+      el('[data-v-img]').alt = `Foto: ${f.categoria}`;
+      el('[data-v-info]').innerHTML = `${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<b>${esc(f.categoria)}</b>${varias ? `<small>${i + 1} de ${fs.length}</small>` : ''}`;
+      el('[data-v-bajar]').href = f.url;
+      el('[data-v-bajar]').download = f.archivo;
+      dlg.querySelectorAll('[data-v-paso]').forEach((b) => { b.hidden = !varias; });
+      // Precarga las vecinas para que pasar de foto sea instantáneo.
+      if (varias) [1, -1].forEach((d) => { new Image().src = fs[(i + d + fs.length) % fs.length].url; });
+    };
+    pasoVisor = (d) => { if (fs.length > 1) { i = (i + d + fs.length) % fs.length; mostrar(); } };
+    dlg.onclick = async (e) => {
+      if (e.target === dlg || e.target.matches('[data-v-escena]') || e.target.closest('[data-v-cerrar]')) { dlg.close(); return; }
+      const p = e.target.closest('[data-v-paso]');
+      if (p) { pasoVisor(Number(p.dataset.vPaso)); return; }
+      const b = e.target.closest('[data-v-borrar]');
+      if (b) {
+        if (!confirm('¿Eliminar esta foto de tu galería?')) return;
+        b.disabled = true;
+        try { await op.alBorrar(fs[i]); } catch (err) { alert('No se pudo borrar: ' + (err.mensaje || err.message)); b.disabled = false; return; }
+        b.disabled = false;
+        fs.splice(i, 1);
+        if (!fs.length) { dlg.close(); return; }
+        i = Math.min(i, fs.length - 1);
+        mostrar();
+      }
+    };
+    // En el celular: deslizar hacia los lados para pasar de foto.
+    let x0 = null;
+    dlg.ontouchstart = (e) => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; };
+    dlg.ontouchend = (e) => {
+      if (x0 == null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 50) pasoVisor(dx < 0 ? 1 : -1);
+    };
+    mostrar();
+    if (!dlg.open) dlg.showModal();
+  }
+
   // --- Selector "Foto para la publicación" ---
   function abrirSelector(item, pestana) {
     let dlg = document.getElementById('dlg-galeria');
@@ -202,7 +295,7 @@
       let cuerpo;
       if (pest === 'galeria') {
         cuerpo = fotos.length
-          ? `<p class="gl-ayuda">Toca una foto para usarla en esta publicación.</p><div class="gl-grid gl-grid-chica">${fotos.map((f) => `<button type="button" class="gl-foto gl-elegible" data-gl-usar-cat="${esc(f.categoria)}" data-gl-usar="${esc(f.archivo)}"><img src="${esc(f.url)}" alt="" loading="lazy">${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}</button>`).join('')}</div>`
+          ? `<p class="gl-ayuda">Toca una foto para usarla en esta publicación.</p><div class="gl-grid gl-grid-chica">${fotos.map((f, i) => `<div class="gl-foto gl-elegible-caja"><button type="button" class="gl-elegible" data-gl-usar-cat="${esc(f.categoria)}" data-gl-usar="${esc(f.archivo)}" aria-label="Usar esta foto"><img src="${esc(f.url)}" alt="" loading="lazy"></button>${f.ia ? '<span class="gl-ia-tag">✨ IA</span>' : ''}<button type="button" class="gl-lupa" data-gl-lupa="${i}" title="Ver en grande" aria-label="Ver en grande">⤢</button></div>`).join('')}</div>`
           : `<div class="gl-vacia"><b>Tu galería está vacía</b><p>Sube una foto o créala con IA desde las otras pestañas.</p></div>`;
       } else if (pest === 'subir') {
         cuerpo = `<label class="gl-drop gl-drop-grande"><input type="file" accept="image/png,image/jpeg,image/webp" hidden data-gl-subir-pieza><span class="gl-drop-ic">⇪</span><span><b>Elige una foto</b> desde tu computador o celular</span><span class="gl-drop-cat">Se guarda también en tu galería</span></label>`;
@@ -219,6 +312,8 @@
       if (e.target === dlg || e.target.closest('[data-gl-cerrar]')) { dlg.close(); return; }
       const p = e.target.closest('[data-gl-pest]');
       if (p) { pest = p.dataset.glPest; pintar(); return; }
+      const l = e.target.closest('[data-gl-lupa]');
+      if (l) { verFotos(lista(), Number(l.dataset.glLupa)); return; }
       const u = e.target.closest('[data-gl-usar]');
       if (u) {
         u.disabled = true;
@@ -247,5 +342,5 @@
     if (nuevas[0]) await usarEnPieza(item, cat, nuevas[0]);
   }
 
-  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, subirParaPieza };
+  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, subirParaPieza, verFotos };
 })();
