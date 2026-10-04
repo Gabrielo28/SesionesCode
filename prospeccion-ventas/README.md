@@ -15,6 +15,7 @@
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
 | [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 54 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
 | [mensajes-frio-v2.md](mensajes-frio-v2.md) | **Los mensajes vigentes**: secuencia completa (invitación LinkedIn → mensaje 1 → día 4 → día 10) para las 20 de prioridad A, mensaje 1 para las 26 de B, y por qué no se escribe a las 8 de C |
+| [mensajes-por-canal.md](mensajes-por-canal.md) | **Por dónde escribirle a cada una**: las 46 (A+B) clasificadas en WhatsApp / email / llamada / LinkedIn según lo que la empresa publica como canal, con el mensaje ya en el formato de ese canal (WhatsApp corto, email con asunto, guion de llamada) |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
 | [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (54 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
