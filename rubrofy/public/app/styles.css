@@ -1640,3 +1640,11 @@ button.rs-thumb { position: relative; border: 0; padding: 0; cursor: pointer; tr
   .vd-barra-sel { flex-direction: column; align-items: stretch; }
   .vd-barra-acc > * { flex: 1 !important; }
 }
+
+/* Aviso de versión nueva (pwa.js) */
+.aviso-version { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 1000; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--amber); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); font-size: 13.5px; max-width: calc(100vw - 32px); }
+.aviso-version .btn-approve { flex: none; padding: 8px 14px; }
+.vd-seleccionable [data-vd-tarjeta] { cursor: pointer; }
+@media (max-width: 640px) {
+  .aviso-version { left: 12px; right: 12px; transform: none; max-width: none; justify-content: space-between; bottom: calc(76px + env(safe-area-inset-bottom)); }
+}

@@ -148,4 +148,34 @@
 
   window.RubrofyPWA = { iniciar, instalar, renderTarjeta, aviso, mostrarBotonInstalar };
   iniciar();
+
+  // Versión nueva: si se publicó una actualización mientras la app estaba
+  // abierta (o instalada en el celular), se ofrece recargar.
+  (function vigilarVersion() {
+    // Todos los archivos del panel llevan la misma versión (?v=N).
+    const propio = document.currentScript || document.querySelector('script[src*="/app/pwa.js?v="]');
+    const mia = propio && (/[?&]v=(\d+)/.exec(propio.getAttribute('src')) || [])[1];
+    if (!mia) return;
+    let ultima = 0;
+    const revisar = async () => {
+      if (document.hidden || Date.now() - ultima < 60 * 1000 || document.getElementById('aviso-version')) return;
+      ultima = Date.now();
+      try {
+        const html = await (await fetch('/app/', { cache: 'no-store' })).text();
+        const nueva = (/\/app\/app\.js\?v=(\d+)/.exec(html) || [])[1];
+        if (!nueva || nueva === mia) return;
+        const aviso = document.createElement('div');
+        aviso.id = 'aviso-version';
+        aviso.className = 'aviso-version';
+        aviso.setAttribute('role', 'status');
+        aviso.innerHTML = '<span>Hay una versión nueva de Rubrofy.</span><button type="button" class="btn-approve">Actualizar</button>';
+        aviso.querySelector('button').onclick = () => location.reload();
+        document.body.appendChild(aviso);
+      } catch (err) { /* sin conexión: se revisa después */ }
+    };
+    document.addEventListener('visibilitychange', revisar);
+    window.addEventListener('focus', revisar);
+    setInterval(revisar, 10 * 60 * 1000);
+    setTimeout(revisar, 5000);
+  })();
 })();

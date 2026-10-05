@@ -53,7 +53,7 @@
   function gridSeleccion(lista, sel, chica) {
     return `<div class="vd-grid${chica ? ' vd-grid-chica' : ''} vd-seleccionable">${lista.map((v) => {
       const orden = sel.indexOf(String(v.id)) + 1;
-      return `<div class="vd-card${orden ? ' marcado' : ''}">
+      return `<div class="vd-card${orden ? ' marcado' : ''}" data-vd-tarjeta>
         <button type="button" class="vd-thumb" data-vd-sel="${v.id}" aria-pressed="${!!orden}" aria-label="${orden ? 'Quitar' : 'Elegir'} ${esc(v.nombre)}">
           <video ${chica ? 'src' : 'data-src'}="${esc(urlDe(v))}#t=0.5" muted playsinline preload="${chica ? 'metadata' : 'none'}"></video>
           ${v.duracion ? `<span class="vd-dur">${fmtDur(v.duracion)}</span>` : ''}
@@ -65,6 +65,14 @@
       </div>`;
     }).join('')}</div>`;
   }
+
+  // El botón de marcar del clip tocado: en la miniatura o en cualquier parte de su tarjeta.
+  const marcaDe = (e) => {
+    const b = e.target.closest('[data-vd-sel]');
+    if (b) return b;
+    const t = e.target.closest('[data-vd-tarjeta]');
+    return t ? t.querySelector('[data-vd-sel]') : null;
+  };
 
   // Al marcar un clip solo cambian las marcas y la barra (las miniaturas no se recargan).
   function marcarEnSitio(root, sel, botones) {
@@ -426,7 +434,7 @@
     if (modo) { modoSel = modo.dataset.vdModo === 'sel'; selMis = []; return renderEstudio(cont); }
     const lupa = e.target.closest('[data-vd-lupa]');
     if (lupa) { const v = videoDe(lupa.dataset.vdLupa); if (v) verVideo(v, cont, { soloVer: true }); return; }
-    const marca = e.target.closest('[data-vd-sel]');
+    const marca = marcaDe(e);
     if (marca) {
       const aviso = alternar(selMis, marca.dataset.vdSel);
       if (aviso) alert(aviso);
@@ -644,7 +652,7 @@
       if (p) { pest = p.dataset.vdP; paso = 'elegir'; return pintar(); }
       const lupa = e.target.closest('[data-vd-lupa]');
       if (lupa) { const v = videoDe(lupa.dataset.vdLupa); if (v) verVideo(v, null, { soloVer: true }); return; }
-      const marca = e.target.closest('[data-vd-sel]');
+      const marca = marcaDe(e);
       if (marca) {
         const aviso = alternar(sel, marca.dataset.vdSel);
         marcarEnSitio(dlg, sel, botonesSel());
