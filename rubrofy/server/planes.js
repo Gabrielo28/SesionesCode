@@ -62,10 +62,13 @@ function getPlan(id) {
   return PLANES[id] || PLANES.gratis;
 }
 
-// Pagando el año: 2 meses gratis (10 cuotas).
+// Pagando el año: 2 meses gratis (10 cuotas), redondeado a terminar en 990
+// como los precios mensuales (Pro $199.990, Estudio $399.990).
 const MESES_GRATIS_ANUAL = 2;
 function precioAnual(plan) {
-  return plan.precioClp ? plan.precioClp * (12 - MESES_GRATIS_ANUAL) : 0;
+  if (!plan.precioClp) return 0;
+  const bruto = plan.precioClp * (12 - MESES_GRATIS_ANUAL);
+  return Math.round(bruto / 1000) * 1000 - 10;
 }
 
 // Precios y disponibilidad para mostrar en el sitio/panel — nunca incluye

@@ -1069,7 +1069,8 @@ aviso se manda una vez (marcas en `negocio.avisos`). `POST
   y 12 semanas, créditos ⚡ (`promo.racha`; `promo.aniversario` para los 3
   meses, ambos en /admin → Créditos).
 
-**Plan anual** (planes.js `precioAnual`: 12 meses por el precio de 10): en
+**Plan anual** (planes.js `precioAnual`: 12 meses por el precio de 10,
+redondeado a terminar en 990: Pro $199.990, Estudio $399.990): en
 Flow es otro plan (`rubrofy-<plan>-anual-<precio>`, interval 4); `checkout
 { periodo: 'anual' }`, sin códigos de descuento. `negocio.flow.periodo` y el
 MRR de /admin cuentan el cobro anual mes a mes.
