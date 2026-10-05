@@ -18,7 +18,7 @@
 | [mensajes-por-canal.md](mensajes-por-canal.md) | **Por dónde escribirle a cada una**: las 46 (A+B) clasificadas en WhatsApp / email / llamada / LinkedIn según lo que la empresa publica como canal, con el mensaje ya en el formato de ese canal (WhatsApp corto, email con asunto, guion de llamada) |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
-| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (54 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
+| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (64 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
 | [archivo/](archivo/) | Lotes 1-3 de mensajes anteriores, reemplazados por `mensajes-frio-v2.md`. Se guardan solo como historial |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
