@@ -295,7 +295,7 @@
         </div>
         <div class="card-body">
           <div class="card-meta">
-            <span class="card-tag">${escapeHtml(item.tag)}</span>
+            <span class="card-tag">${escapeHtml(item.tag)}</span>${item.briefPunto ? `<span class="card-tag card-tag-brief" title="Responde al brief de la semana">📝 ${escapeHtml(item.briefPunto)}</span>` : ''}
             ${fechaEditIds.has(item.id)
               ? `<input type="datetime-local" class="card-date-input" data-fecha-id="${item.id}" value="${item.publicarEl ? valorInputFecha(item.publicarEl) : ''}">`
               : (puedeCambiarFecha
@@ -365,6 +365,7 @@
       window.RubrofyContexto.editor($('#ctx-cola'), ctxPanel(), ['copys', 'post', 'carrusel', 'reel', 'historia'], 'textos y formatos');
     }
     vigilarVideos();
+    if (window.RubrofyBrief) window.RubrofyBrief.pintarCola($('#cola-brief'));
     const grid = $('#cola-grid');
     if (!contenido.length) {
       grid.innerHTML = '<p class="empty-state">Sin contenido todavía. Usa "Generar más contenido" para crear el primer lote.</p>';
@@ -1245,13 +1246,15 @@
     $('#dlg-generar-fechas').textContent = 'Siguen después de lo que ya tienes programado y llegan a Por aprobar.';
     $('#dlg-generar-error').hidden = true;
     $('#dlg-generar-indicaciones').value = '';
+    $('#dlg-generar-ok').textContent = 'Generar';
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    if (window.RubrofyBrief) window.RubrofyBrief.cargarParaGenerar($('#dlg-generar-brief'));
   }
 
-  async function generarSemana() {
+  async function generarSemana(brief) {
     contenido = await api(`/api/negocios/${negocioActual.id}/generar`, {
       method: 'POST',
-      body: JSON.stringify(Object.assign(negocioActual.planContenido ? { segunPlan: true } : { cantidad: 6 }, { indicaciones: ($('#dlg-generar-indicaciones') || {}).value || '' })),
+      body: JSON.stringify(Object.assign(negocioActual.planContenido ? { segunPlan: true } : { cantidad: 6 }, { indicaciones: ($('#dlg-generar-indicaciones') || {}).value || '', brief })),
     });
     render();
   }
@@ -1379,8 +1382,23 @@
     const btnTop = $('#btn-generar');
     btn.disabled = true; btnTop.disabled = true;
     btn.textContent = 'Generando…';
+    let revisar = false;
     try {
-      await generarSemana();
+      // Con brief escrito: primero se ordena y se muestra cómo lo entendió
+      // Rubrofy; el segundo clic genera con ese brief.
+      let brief;
+      if (window.RubrofyBrief) {
+        btn.textContent = 'Ordenando el brief…';
+        const r = await window.RubrofyBrief.antesDeGenerar($('#dlg-generar-brief'));
+        if (!r.listo) {
+          revisar = true;
+          if (r.total) $('#dlg-generar-texto').innerHTML = `Según tu brief se crearán <b>${r.total}</b> publicaciones esta semana.`;
+          return;
+        }
+        brief = r.brief;
+        btn.textContent = 'Generando…';
+      }
+      await generarSemana(brief);
       $('#dlg-generar').close();
       irAVista('cola');
     } catch (err) {
@@ -1393,7 +1411,7 @@
       $('#dlg-generar-error').hidden = false;
     } finally {
       btn.disabled = false; btnTop.disabled = false;
-      btn.textContent = 'Generar';
+      btn.textContent = revisar ? 'Generar con este brief' : 'Generar';
     }
   }
 
@@ -1433,6 +1451,22 @@
         contenido: () => contenido,
         formatoDe,
         irAVista,
+        recargar: async () => {
+          negocioActual = await api('/api/me');
+          contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
+          render();
+        },
+      });
+    }
+    if (window.RubrofyBrief) {
+      window.RubrofyBrief.iniciar({
+        api,
+        negocio: () => negocioActual,
+        contenido: () => contenido,
+        setContenido: (c) => { contenido = c; },
+        irAVista,
+        ayuda: (k) => (window.Ayuda ? window.Ayuda.boton(k) : ''),
+        cerrarGenerar: () => $('#dlg-generar').close(),
         recargar: async () => {
           negocioActual = await api('/api/me');
           contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
@@ -1551,6 +1585,7 @@
 
   async function avisarRetornoCheckout() {
     const params = new URLSearchParams(window.location.search);
+    if (params.get('brief')) { history.replaceState(null, '', window.location.pathname + window.location.hash); setTimeout(abrirGenerar, 400); }
     const resultado = params.get('checkout');
     if (!resultado) return;
     history.replaceState(null, '', window.location.pathname);

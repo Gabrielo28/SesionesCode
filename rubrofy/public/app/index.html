@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=39">
+  <link rel="stylesheet" href="/app/styles.css?v=40">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -157,6 +157,7 @@
           <p class="sub">Revisa lo que se publicará. Nada sale a Instagram sin tu visto bueno.</p>
         </div>
         <div id="push-aviso"></div>
+        <div id="cola-brief" hidden></div>
         <div id="ctx-cola"></div>
         <div class="grid" id="cola-grid"></div>
       </section>
@@ -419,14 +420,13 @@
     </form>
   </dialog>
 
-  <dialog id="dlg-generar" class="dlg">
+  <dialog id="dlg-generar" class="dlg dlg-generar">
     <form method="dialog" class="dlg-caja">
       <h2>Generar la próxima semana<button type="button" class="ay" data-ayuda="generar-semana" aria-label="Ayuda: Generar semana" aria-expanded="false">?</button></h2>
       <p class="sub" id="dlg-generar-texto"></p>
       <p class="sub" id="dlg-generar-fechas"></p>
-      <label class="estilo-campo dlg-indicaciones">Indicaciones para esta tanda (opcional)<button type="button" class="ay" data-ayuda="indicacion" aria-label="Ayuda: Indicaciones" aria-expanded="false">?</button>
-        <input id="dlg-generar-indicaciones" maxlength="500" placeholder="Ej: esta semana es nuestro aniversario, 20% en tortas">
-      </label>
+      <div id="dlg-generar-brief"></div>
+      <input id="dlg-generar-indicaciones" type="hidden" value="">
       <p class="config-error" id="dlg-generar-error" hidden></p>
       <div class="config-actions">
         <button type="button" class="btn-ghost" id="dlg-generar-plan">Cambiar mi plan</button>
@@ -436,29 +436,30 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=39"></script>
-  <script src="/app/guias.js?v=39"></script>
-  <script src="/app/graficos.js?v=39"></script>
-  <script src="/app/plan.js?v=39"></script>
-  <script src="/app/prueba-form.js?v=39"></script>
-  <script src="/app/recargas.js?v=39"></script>
-  <script src="/app/diseno.js?v=39"></script>
-  <script src="/app/reels.js?v=39"></script>
-  <script src="/app/videos.js?v=39"></script>
-  <script src="/app/creditos.js?v=39"></script>
-  <script src="/app/imagen.js?v=39"></script>
-  <script src="/app/galeria.js?v=39"></script>
-  <script src="/app/cuenta.js?v=39"></script>
-  <script src="/app/soporte.js?v=39"></script>
-  <script src="/app/bienvenida.js?v=39"></script>
-  <script src="/app/inicio.js?v=39"></script>
-  <script src="/app/resultados.js?v=39"></script>
-  <script src="/app/estilo.js?v=39"></script>
-  <script src="/app/ads.js?v=39"></script>
-  <script src="/app/competencia.js?v=39"></script>
-  <script src="/app/contexto.js?v=39"></script>
-  <script src="/app/voz.js?v=39"></script>
-  <script src="/app/pwa.js?v=39"></script>
-  <script src="/app/app.js?v=39"></script>
+  <script src="/app/ayuda.js?v=40"></script>
+  <script src="/app/guias.js?v=40"></script>
+  <script src="/app/graficos.js?v=40"></script>
+  <script src="/app/plan.js?v=40"></script>
+  <script src="/app/prueba-form.js?v=40"></script>
+  <script src="/app/recargas.js?v=40"></script>
+  <script src="/app/diseno.js?v=40"></script>
+  <script src="/app/reels.js?v=40"></script>
+  <script src="/app/videos.js?v=40"></script>
+  <script src="/app/brief.js?v=40"></script>
+  <script src="/app/creditos.js?v=40"></script>
+  <script src="/app/imagen.js?v=40"></script>
+  <script src="/app/galeria.js?v=40"></script>
+  <script src="/app/cuenta.js?v=40"></script>
+  <script src="/app/soporte.js?v=40"></script>
+  <script src="/app/bienvenida.js?v=40"></script>
+  <script src="/app/inicio.js?v=40"></script>
+  <script src="/app/resultados.js?v=40"></script>
+  <script src="/app/estilo.js?v=40"></script>
+  <script src="/app/ads.js?v=40"></script>
+  <script src="/app/competencia.js?v=40"></script>
+  <script src="/app/contexto.js?v=40"></script>
+  <script src="/app/voz.js?v=40"></script>
+  <script src="/app/pwa.js?v=40"></script>
+  <script src="/app/app.js?v=40"></script>
 </body>
 </html>

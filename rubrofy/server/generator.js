@@ -6,7 +6,8 @@
 // escribe los titulares y captions reales; en el plan gratis, o sin key,
 // usa plantillas genéricas con los datos del negocio.
 
-const { fechaProgramada, etiquetaFecha } = require('./programacion');
+const programacion = require('./programacion');
+const { fechaProgramada, etiquetaFecha } = programacion;
 const aprendizaje = require('./aprendizaje');
 const estilo = require('./estilo');
 const guardian = require('./guardian');
@@ -98,15 +99,18 @@ function extraerJSONArray(texto) {
 // Pide a Claude titulares + captions reales para un lote de piezas nuevas,
 // en una sola llamada. Devuelve null si no hay API key o si algo falla — el
 // llamador cae de vuelta a las plantillas genéricas.
-async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
+// opciones.brief: { brief, fechas } (server/brief.js) — el plan de marketing y
+// el brief de la semana van al prompt; las piezas obligatorias llevan su idea.
+async function generarLoteConClaude(negocio, piezas, ctx, indicaciones, opciones = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
   const estrategia = negocio.estrategia;
   const enfoquesDelLote = piezas;
   const lista = piezas
-    .map((p, i) => `${i + 1}. ${estilo.ETIQUETAS[p.formato]} — enfoque "${p.enfoque.label}": ${p.enfoque.pista}`)
+    .map((p, i) => `${i + 1}. ${estilo.ETIQUETAS[p.formato]} — enfoque "${p.enfoque.label}": ${p.enfoque.pista}${p.obligatoria ? ` — OBLIGATORIO según el brief: ${p.obligatoria}` : ''}`)
     .join('\n');
+  const conBrief = !!(opciones.brief && (opciones.brief.brief || (negocio.planMarketing && negocio.planMarketing.resumen)));
 
   const prompt =
     `Eres el redactor de contenido de "${negocio.nombre}" (rubro: ${estrategia.rubro}). ` +
@@ -116,10 +120,12 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones) {
     (ctx ? aprendizaje.textoParaPrompt(ctx) : '') +
     bloqueEstilo(negocio, piezas.map((p) => p.formato)) +
     voz.textoParaPrompt(negocio) +
-    contextoIA.bloque(negocio, ['general', 'voz', 'copys', ...new Set(piezas.map((p) => p.formato))], indicaciones) + '\n\n' +
+    contextoIA.bloque(negocio, ['general', 'voz', 'copys', ...new Set(piezas.map((p) => p.formato))], indicaciones) +
+    (opciones.brief ? require('./brief').textoParaPrompt(negocio, opciones.brief.brief, opciones.brief.fechas) : '') + '\n\n' +
     `Genera ${enfoquesDelLote.length} publicaciones para Instagram, una por línea, con el formato y enfoque indicados, en este orden:\n${lista}\n\n` +
+    (conBrief ? 'Cada publicación debe responder a un punto del brief o del plan (reparte los puntos entre las publicaciones; las obligatorias tratan exactamente lo que dice su idea).\n' : '') +
     `Responde SOLO con un JSON array de ${enfoquesDelLote.length} objetos en el mismo orden, sin texto fuera ` +
-    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "gancho": "...", "caption": "...", "hashtags": ["#uno", "#dos"], "idea": "qué mostrar"}]\n` +
+    `del array, con esta forma: [{"headline": "TITULAR CORTO\\nEN DOS LINEAS", "gancho": "...", "caption": "...", "hashtags": ["#uno", "#dos"], "idea": "qué mostrar"${conBrief ? ', "punto": "a qué punto del brief responde, máximo 60 caracteres"' : ''}}]\n` +
     `- "headline": titular tipo cartel para la imagen, máximo 4-5 palabras, en dos líneas separadas por \\n, en mayúsculas.\n` +
     `- "gancho": la frase que detiene el scroll (máximo 90 caracteres). En posts y carruseles es la primera línea del texto; ` +
     `en reels, lo que se dice o aparece en pantalla en los primeros 2 segundos; en historias, la frase del sticker o de la primera pantalla.\n` +
@@ -162,7 +168,10 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     ctx = null; // sin datos todavía: se genera como siempre
   }
   const enfoques = ordenarEnfoques(estrategia.enfoques, ctx);
-  const pc = negocio.planContenido || null;
+  // El brief de la semana puede cambiar cuántas piezas de cada formato (ritmo)
+  // y fijar publicaciones obligatorias (formato, día e idea).
+  const e = opciones.brief && opciones.brief.brief && opciones.brief.brief.estructurado;
+  const pc = e && e.ritmo ? Object.assign({}, negocio.planContenido || {}, { semanal: e.ritmo }) : (negocio.planContenido || null);
   // Hora de los posts: la que eligió el negocio, si no la que mejor le
   // funciona según sus resultados, si no las 9:00.
   const horaPost = (pc && pc.hora) || (ctx && ctx.horario && ctx.horario.hora) || '09:00';
@@ -196,7 +205,27 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
     });
   }
 
-  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan, ctx, opciones.indicaciones);
+  // Obligatorias del brief: toman piezas del mismo formato (o cambian el de
+  // una libre), con su idea y, si el brief fija el día, esa fecha.
+  if (e && e.obligatorias.length && !opciones.formato) {
+    const libres = plan.slice();
+    for (const ob of e.obligatorias) {
+      let p = libres.find((x) => x.formato === ob.formato) || libres[0];
+      if (!p) break;
+      libres.splice(libres.indexOf(p), 1);
+      if (p.formato !== ob.formato) { p.formato = ob.formato; p.esHistoria = ob.formato === 'historia'; }
+      p.obligatoria = ob.idea;
+      if (ob.dia != null && opciones.brief.fechas) {
+        const [a, m, d] = opciones.brief.fechas.desde.split('-').map(Number);
+        const hoy = programacion.partesEnZona(new Date());
+        const dias = Math.round((Date.UTC(a, m - 1, d + ob.dia) - Date.UTC(hoy.anio, hoy.mes - 1, hoy.dia)) / 86400000);
+        if (dias >= 0) p.publicarEl = fechaProgramada(dias, p.esHistoria ? '18:30' : horaPost);
+      }
+      p.dateLabel = etiquetaFecha(p.publicarEl, estilo.ETIQUETAS[p.formato]);
+    }
+  }
+
+  const lote = opciones.usarIA === false ? null : await generarLoteConClaude(negocio, plan, ctx, opciones.indicaciones, opciones);
 
   return plan.map((p, i) => {
     const generado = lote && lote[i];
@@ -211,8 +240,11 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       editing: false,
       aspect: ASPECTO[p.formato],
       formato: p.formato,
-      idea: generado && typeof generado.idea === 'string' && generado.idea.trim()
-        ? generado.idea.trim().slice(0, 300) : ideaGenerica(p.formato, p.enfoque),
+      // Una obligatoria del brief conserva la idea del dueño; el resto, la de la IA.
+      idea: p.obligatoria ? p.obligatoria : (generado && typeof generado.idea === 'string' && generado.idea.trim()
+        ? generado.idea.trim().slice(0, 300) : ideaGenerica(p.formato, p.enfoque)),
+      briefPunto: generado && typeof generado.punto === 'string' && generado.punto.trim() ? generado.punto.trim().slice(0, 80) : (p.obligatoria ? 'Pedido en el brief' : undefined),
+      briefSemana: opciones.brief && opciones.brief.brief ? opciones.brief.brief.semana : undefined,
       headline,
       tag: p.enfoque.label,
       enfoqueId: p.enfoque.id,
@@ -260,7 +292,7 @@ function ordenarEnfoques(enfoques, ctx) {
 // Pide a Claude una variante nueva para "Otra versión" cuando ya no quedan
 // variantes precalculadas. Devuelve null si no hay API key o si algo falla —
 // el llamador debe tener un plan B (rotar de nuevo desde el principio).
-async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = 'post', indicacion = '') {
+async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = 'post', indicacion = '', opciones = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey || negocio.plan === 'gratis') return null;
 
@@ -272,10 +304,12 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
     `Tono: ${estrategia.tono}. Escribe UNA sola publicación nueva para Instagram (${estilo.ETIQUETAS[formato] || 'Post'}) con enfoque "${enfoque.label}" ` +
     `(${enfoque.pista}). Usa estos datos reales si son útiles, nunca inventes precios que no aparecen aquí: ` +
     `${JSON.stringify(negocio.datos || {})}.` + (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') + aprendizajeSeguro(negocio) + bloqueEstilo(negocio, [formato]) + voz.textoParaPrompt(negocio) +
-    contextoIA.bloque(negocio, ['general', 'voz', 'copys', formato], indicacion) + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
+    contextoIA.bloque(negocio, ['general', 'voz', 'copys', formato], indicacion) +
+    (opciones.brief ? require('./brief').textoParaPrompt(negocio, opciones.brief.brief, opciones.brief.fechas) : '') +
+    (opciones.obligatoria ? `\n\nEsta publicación debe tratar exactamente sobre: ${opciones.obligatoria}.` : '') + `\n\nNo repitas estas versiones ya usadas: ${previas.join(' | ')}. ` +
     `Responde SOLO con un JSON: {"gancho": "frase que detiene el scroll, máximo 90 caracteres", ` +
     `"caption": "texto completo que empieza por el gancho y termina con un llamado a la acción, entre 250 y 600 caracteres (150 en historias), sin hashtags", ` +
-    `"hashtags": ["5 a 10 hashtags específicos del rubro, el tema y la zona"]}`;
+    `"hashtags": ["5 a 10 hashtags específicos del rubro, el tema y la zona"]${opciones.brief ? ', "punto": "a qué punto del brief responde, máximo 60 caracteres"' : ''}}`;
 
   try {
     const r = await claude.llamar({ maxTokens: 900, content: prompt, negocioId: negocio.id, uso: 'contenido' });
@@ -288,7 +322,7 @@ async function generarVarianteConClaude(negocio, enfoqueId, previas, formato = '
       try {
         const j = JSON.parse(text.slice(inicio, fin + 1));
         if (j && typeof j.caption === 'string' && j.caption.trim()) {
-          return { caption: j.caption.trim(), gancho: typeof j.gancho === 'string' ? j.gancho.trim().slice(0, 150) : '', hashtags: limpiarHashtags(j.hashtags) };
+          return { caption: j.caption.trim(), gancho: typeof j.gancho === 'string' ? j.gancho.trim().slice(0, 150) : '', hashtags: limpiarHashtags(j.hashtags), punto: typeof j.punto === 'string' ? j.punto.trim().slice(0, 80) : '' };
         }
       } catch (err) { /* texto plano */ }
     }

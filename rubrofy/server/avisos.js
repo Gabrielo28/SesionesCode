@@ -61,6 +61,7 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
     </td></tr></table></td></tr>` : '';
   const f = extra.faltan || {};
   const faltaHtml = f.reelsSinVideo ? `<tr><td style="padding:12px 28px 0;font:13.5px/1.5 Arial,sans-serif;color:#b3412a">🎬 ${f.reelsSinVideo === 1 ? '1 reel espera su video' : `${f.reelsSinVideo} reels esperan su video`}: súbelo desde el celular en Estudio de reels.</td></tr>` : '';
+  const briefHtml = extra.urlBrief ? `<tr><td style="padding:12px 28px 0;font:13.5px/1.5 Arial,sans-serif;color:#6f6152">📝 ¿Algo especial esta semana (una promo, un lanzamiento, un tema)? <a href="${esc(extra.urlBrief)}" style="color:#b3412a;font-weight:700">Cuéntaselo a Rubrofy</a> antes de generar y la semana sale así.</td></tr>` : '';
   const rachaHtml = extra.racha >= 2 ? `<tr><td style="padding:12px 28px 0;font:13.5px Arial,sans-serif;color:#6f6152">🔥 Llevas <b style="color:#2b2118">${extra.racha} semanas seguidas</b> publicando. Aprueba esta semana y la racha sigue.</td></tr>` : '';
   const aprobarHtml = pendientes && extra.urlAprobarTodo ? `<a href="${esc(extra.urlAprobarTodo)}" style="display:inline-block;margin-left:10px;color:#2b2118;font:700 14px Arial,sans-serif;text-decoration:underline;padding:12px 0">Aprobar todo sin entrar</a>` : '';
   const ref = extra.referido;
@@ -85,7 +86,7 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
     </td></tr>
     ${tareas.length ? `<tr><td style="padding:0 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${listaTareas}</table></td></tr>` : ''}
     <tr><td style="padding:18px 28px 6px"><a href="${esc(pendientes ? urlPanel + '#cola' : urlPanel)}" style="display:inline-block;background:#ffac2b;color:#17110a;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">${pendientes ? 'Revisar y aprobar' : 'Abrir mi panel'}</a>${aprobarHtml}</td></tr>
-    ${datoHtml}${faltaHtml}${rachaHtml}
+    ${datoHtml}${faltaHtml}${rachaHtml}${briefHtml}
     ${proximas.length ? `<tr><td style="padding:18px 28px 4px;font:700 14px Arial,sans-serif;color:#17110a">Se publica en los próximos 7 días (${proximas.length})</td></tr>
     <tr><td style="padding:0 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${listaProximas}</table></td></tr>` : ''}
     ${negocio.instagramConectado ? '' : '<tr><td style="padding:12px 28px 0;font:13px Arial,sans-serif;color:#b3412a">Instagram no está conectado: lo que apruebes no se publica hasta que lo conectes.</td></tr>'}

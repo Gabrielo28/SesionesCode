@@ -49,6 +49,7 @@ const alertas = require('./alertas');
 const respaldos = require('./respaldos');
 const videos = require('./videos');
 const fidelizacion = require('./fidelizacion');
+const brief = require('./brief');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -939,6 +940,7 @@ function extraFidelizacion(negocio, base) {
     dato: getPlan(negocio.plan).analitica ? fidelizacion.datoSemana(negocio.id) : null,
     faltan: fidelizacion.faltantes(contenido),
     urlAprobarTodo: base + enlaceAprobarTodo(negocio.id),
+    urlBrief: base + '/app?brief=1#cola',
     racha: fidelizacion.racha(contenido),
     referido: c.referido ? { enlace: `${base}/registro.html?ref=${creditos.codigoReferido(negocio)}`, creditos: c.referido } : null,
   };
@@ -2364,6 +2366,120 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, negocioPublico(negocio));
         }
 
+        // Brief de la semana y plan de marketing (server/brief.js):
+        //   GET  /api/negocios/:id/brief?semana=        el de esa semana (por omisión, la que sigue a la cola)
+        //   PUT  /api/negocios/:id/brief { semana, texto } ordena con la IA y guarda
+        //   POST /api/negocios/:id/brief/estructurar { texto } solo ordena (vista previa)
+        //   POST /api/negocios/:id/brief/proponer { semana } brief sugerido desde el plan
+        //   POST /api/negocios/:id/brief/rehacer { semana } reescribe las pendientes de esa semana con el brief
+        //   GET  /api/negocios/:id/brief/historial
+        //   PUT  /api/negocios/:id/plan-marketing { texto }   POST …/plan-marketing/archivo { nombre, dataBase64 } → { texto }
+        if (parts[3] === 'brief') {
+          const items = store.getContenido(negocioId);
+          const porOmision = brief.semanaDesde(diaSiguienteDeLaCola(items));
+          if (parts.length === 4 && req.method === 'GET') {
+            const semana = brief.semanaValida(url.searchParams.get('semana')) ? url.searchParams.get('semana') : porOmision.semana;
+            const actual = brief.obtener(negocioId, semana);
+            const pend = items.filter((i) => i.status === 'pendiente' && (i.briefSemana === semana || (i.publicarEl && brief.semanaDeFecha(i.publicarEl) === semana))).length;
+            return sendJSON(res, 200, Object.assign({ semana, pendientesEnSemana: pend, tienePlan: !!negocio.planMarketing }, brief.fechasDeSemana(semana), { brief: actual, anterior: brief.anterior(negocioId, semana) }));
+          }
+          if (parts.length === 4 && req.method === 'PUT') {
+            const body = await readBody(req);
+            const g = await brief.guardar(negocio, brief.semanaValida(body.semana) ? body.semana : porOmision.semana, body.texto);
+            if (g.error) return sendJSON(res, 400, { error: g.error });
+            return sendJSON(res, 200, g.brief);
+          }
+          if (parts[4] === 'estructurar' && parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req);
+            const e = await brief.estructurar(negocio, body.texto);
+            if (!e) return sendJSON(res, 400, { error: 'Escribe qué quieres comunicar esta semana' });
+            return sendJSON(res, 200, { estructurado: e });
+          }
+          if (parts[4] === 'proponer' && parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req);
+            const r = await brief.proponer(negocio, brief.semanaValida(body.semana) ? body.semana : porOmision.semana);
+            if (r.error) return sendJSON(res, r.status || 400, { error: r.error });
+            return sendJSON(res, 200, { texto: r.texto });
+          }
+          if (parts[4] === 'historial' && parts.length === 5 && req.method === 'GET') {
+            return sendJSON(res, 200, { briefs: brief.historial(negocioId) });
+          }
+          if (parts[4] === 'rehacer' && parts.length === 5 && req.method === 'POST') {
+            if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para crear contenido.', sinPlan: true });
+            const body = await readBody(req);
+            const semana = brief.semanaValida(body.semana) ? body.semana : porOmision.semana;
+            const b = brief.obtener(negocioId, semana);
+            if (!b) return sendJSON(res, 400, { error: 'Esa semana no tiene brief' });
+            const fechas = brief.fechasDeSemana(semana);
+            const usaIA = getPlan(negocio.plan).usaIA;
+            // La tanda de esa semana: lo generado con ese brief y lo que cae en sus fechas.
+            const enSemana = (i) => i.briefSemana === semana || (i.publicarEl && brief.semanaDeFecha(i.publicarEl) === semana);
+            const pendientes = items.filter((i) => i.status === 'pendiente' && enSemana(i) && !edicionReels.enProceso(negocioId, i.id));
+            let disponibles = usaIA ? textosIADisponibles(negocio) : 0;
+            if (usaIA && disponibles <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
+            // Las obligatorias del brief van a las pendientes del mismo formato.
+            const obligatorias = b.estructurado.obligatorias.slice();
+            let reescritas = 0;
+            for (const it of pendientes) {
+              if (usaIA && disponibles <= 0) break;
+              const ob = obligatorias.find((o) => o.formato === formatoDe(it));
+              if (ob) obligatorias.splice(obligatorias.indexOf(ob), 1);
+              const nueva = usaIA ? await generarVarianteConClaude(negocio, it.enfoqueId, it.variants, formatoDe(it), '', { brief: { brief: b, fechas }, obligatoria: ob && ob.idea }) : null;
+              if (!nueva) continue;
+              disponibles -= 1; reescritas += 1;
+              it.variants = [nueva.caption]; it.variantIndex = 0;
+              if (nueva.gancho) it.gancho = nueva.gancho;
+              if (nueva.hashtags.length) it.hashtags = nueva.hashtags;
+              if (ob) it.idea = ob.idea;
+              it.briefPunto = nueva.punto || (ob ? 'Pedido en el brief' : undefined);
+              it.briefSemana = semana;
+              it.alertas = guardian.revisar(nueva.caption, negocio);
+              it.voz = voz.puntuar(nueva.caption, negocio) || undefined;
+              delete it.correccion;
+            }
+            // Si el ritmo del brief pide más piezas de las que hay, se agregan.
+            let agregadas = [];
+            const ritmo = b.estructurado.ritmo;
+            if (ritmo) {
+              const hay = {};
+              for (const it of items) if (it.status !== 'rechazado' && enSemana(it)) hay[formatoDe(it)] = (hay[formatoDe(it)] || 0) + 1;
+              for (const f of brief.FORMATOS) {
+                const faltan = Math.max(0, (ritmo[f] || 0) - (hay[f] || 0));
+                if (!faltan || (usaIA && disponibles <= 0)) continue;
+                const n = Math.min(faltan, usaIA ? disponibles : faltan, MAX_PIEZAS_POR_GENERACION);
+                const hoy = programacion.partesEnZona(new Date());
+                const [a, m, d] = fechas.desde.split('-').map(Number);
+                const diaInicio = Math.max(1, Math.round((Date.UTC(a, m - 1, d) - Date.UTC(hoy.anio, hoy.mes - 1, hoy.dia)) / 86400000));
+                const nuevas = await generarBanco(negocio, n, items.length + agregadas.length, { usarIA: usaIA, formato: f, diaInicio, brief: { brief: b, fechas } });
+                disponibles -= nuevas.filter((x) => x.generadoConIA).length;
+                agregadas = agregadas.concat(nuevas);
+              }
+            }
+            registrarUsoIA(negocioId, 'usoTextosIA', reescritas + agregadas.filter((x) => x.generadoConIA).length);
+            const frescos = store.getContenido(negocioId);
+            for (const it of pendientes) { const f = frescos.find((x) => x.id === it.id); if (f && f.status === 'pendiente') Object.assign(f, it); }
+            const todos = frescos.concat(agregadas);
+            store.saveContenido(negocioId, todos);
+            return sendJSON(res, 200, { reescritas, agregadas: agregadas.length, contenido: todos });
+          }
+          return notFound(res);
+        }
+        if (parts[3] === 'plan-marketing') {
+          if (parts.length === 4 && req.method === 'PUT') {
+            if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Elige un plan para usar el plan de marketing.', sinPlan: true });
+            const body = await readBody(req, 2e6);
+            const r = await brief.guardarPlan(negocio, body.texto, body.nombreArchivo);
+            return sendJSON(res, 200, negocioPublico(r.negocio));
+          }
+          if (parts[4] === 'archivo' && parts.length === 5 && req.method === 'POST') {
+            const body = await readBody(req, 12e6);
+            const r = brief.textoDeArchivo(body);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            return sendJSON(res, 200, r);
+          }
+          return notFound(res);
+        }
+
         // GET /api/negocios/:id/logros — "Lo que lograste este mes" (Inicio) y la racha
         if (parts[3] === 'logros' && parts.length === 4 && req.method === 'GET') {
           const l = fidelizacion.logros(negocio, store.getContenido(negocioId));
@@ -2562,8 +2678,22 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'generar' && parts.length === 4 && req.method === 'POST') {
           if ((negocio.plan || 'gratis') === 'gratis') return sendJSON(res, 402, { error: 'Tu cuenta no tiene un plan activo. Elige un plan (o activa tu prueba gratis) para crear contenido.', sinPlan: true });
           const body = await readBody(req);
+          const existentes = store.getContenido(negocioId);
+          const diaInicio = diaSiguienteDeLaCola(existentes);
+          // Brief de la semana (server/brief.js): si viene texto se ordena y se
+          // guarda para la semana que parte en diaInicio; si no, se usa el que
+          // ya exista para esa semana. Su ritmo manda sobre el plan.
+          const sem = brief.semanaDesde(diaInicio);
+          let briefSemana = null;
+          if (typeof body.brief === 'string' && body.brief.trim()) {
+            const g = await brief.guardar(negocio, sem.semana, body.brief);
+            if (g.error) return sendJSON(res, 400, { error: g.error });
+            briefSemana = g.brief;
+          } else if (body.brief !== null) briefSemana = brief.obtener(negocioId, sem.semana);
+          const ritmoBrief = briefSemana && briefSemana.estructurado.ritmo;
           // segunPlan: una semana del plan de contenido del negocio.
-          const porPlan = body.segunPlan && negocio.planContenido ? planContenido.totalSemanal(negocio.planContenido) : 0;
+          const porPlan = ritmoBrief ? Object.values(ritmoBrief).reduce((a, b) => a + b, 0)
+            : (body.segunPlan && negocio.planContenido ? planContenido.totalSemanal(negocio.planContenido) : 0);
           let cantidad = Math.min(Math.max(Math.floor(Number(porPlan || body.cantidad)) || 6, 1), MAX_PIEZAS_POR_GENERACION);
           const usaIA = getPlan(negocio.plan).usaIA;
           if (usaIA) {
@@ -2573,9 +2703,9 @@ const server = http.createServer(async (req, res) => {
             }
             cantidad = Math.min(cantidad, disponibles);
           }
-          const existentes = store.getContenido(negocioId);
           const nuevos = await generarBanco(negocio, cantidad, existentes.length, {
-            usarIA: usaIA, diaInicio: diaSiguienteDeLaCola(existentes), indicaciones: contextoIA.indicacion(body.indicaciones),
+            usarIA: usaIA, diaInicio, indicaciones: contextoIA.indicacion(body.indicaciones),
+            brief: { brief: briefSemana, fechas: sem },
           });
           registrarUsoIA(negocioId, 'usoTextosIA', nuevos.filter((n) => n.generadoConIA).length);
           nuevos.sort((a, b) => Date.parse(a.publicarEl) - Date.parse(b.publicarEl)); // en la cola, por fecha

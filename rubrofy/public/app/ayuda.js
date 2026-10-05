@@ -24,6 +24,10 @@
       p: ['Pulsa "Cambiar" para editarlo en Estrategia.'] },
     'contadores': { t: 'Pendientes, aprobados y en cola', d: 'Pendientes: esperan tu revisión. Aprobados: ya tienen tu OK y se publicarán en su fecha. En cola: el total de publicaciones que tienes.',
       p: ['Pulsa "Por aprobar" en el menú para revisar las pendientes.'] },
+    'brief': { t: 'El brief de la semana', d: 'Lo que le dices a Rubrofy antes de generar: qué pasa esta semana, qué publicaciones no pueden faltar, cuántas quieres de cada tipo y qué evitar. Rubrofy lo ordena y te muestra cómo lo entendió antes de escribir.',
+      p: ['Puedes pegar un texto largo (hasta 5.000 caracteres): una campaña, una lista de publicaciones, el tono de la semana.', 'Si dices "3 reels y 2 historias", esa semana sale así aunque tu plan diga otra cosa.', 'Con un plan de marketing guardado en Estrategia, "Proponer desde mi plan" te sugiere el brief de la semana.', 'En Por aprobar ves el brief y puedes rehacer las publicaciones pendientes si lo cambias.'] },
+    'plan-marketing': { t: 'Plan de marketing', d: 'Tu estrategia completa: promesa de marca, cómo hablas, campañas con fechas, pilares de contenido. Rubrofy la resume en una ficha y la sigue cada semana.',
+      p: ['Pega el texto o sube un .docx, .pdf o .txt (hasta 20.000 caracteres).', 'Las campañas con fechas se activan solas: en esas semanas el contenido gira en torno a ellas.', 'El brief de cada semana manda si se contradice con el plan.', 'Vuelve a subirlo cuando cambie tu estrategia.'] },
     'generar-semana': { t: 'Generar semana', d: 'Crea las publicaciones de la próxima semana con la mezcla de tu plan (cuántos posts, carruseles, reels e historias).',
       p: ['Pulsa "+ Generar semana".', 'Revisa cuántas se van a crear y pulsa "Generar".', 'Llegan a Por aprobar con fecha, después de lo que ya tienes programado.'], n: 'Se crean hasta 12 por vez. Para cambiar la mezcla, usa "Cambiar mi plan".' },
 

@@ -1036,6 +1036,36 @@ El editor (`reels.js`) parte en **Automático** (cortes, subtítulos, gancho,
 logo y llamado a la acción); también **Solo subtítulos** y **Personalizado**
 (todas las opciones).
 
+## Brief de la semana y plan de marketing (server/brief.js, public/app/brief.js)
+
+Lo que el dueño le dice a Rubrofy para que la semana salga como quiere:
+
+- **Brief de la semana** (tabla `briefs`, por semana ISO): texto libre de
+  hasta 5.000 caracteres en el diálogo "Generar semana". La IA lo ordena en
+  `{ resumen, comunicar[], obligatorias[{formato, dia, idea}], evitar[],
+  ritmo }` y el panel muestra cómo lo entendió antes de generar (segundo
+  clic genera). El ritmo del brief manda sobre el plan de contenido esa
+  semana; las obligatorias toman piezas de su formato con su idea y, si
+  fija el día, esa fecha. Cada pieza queda con `briefSemana` y `briefPunto`
+  (etiqueta 📝 en la tarjeta). Por aprobar muestra "Esta semana…" con
+  "Cambiar el brief" → `POST /brief/rehacer` reescribe las pendientes de la
+  tanda (las aprobadas no se tocan) y agrega piezas si el ritmo pide más.
+  "Usar el de la semana pasada" y "Proponer desde mi plan" rellenan el
+  cuadro. Sin Claude, reglas simples (`estructurarSimple`).
+- **Plan de marketing** (`negocio.planMarketing`): tarjeta en Estrategia,
+  texto de hasta 20.000 caracteres o archivo .docx/.pdf/.txt
+  (`POST /plan-marketing/archivo` lo lee sin dependencias: ZIP + XML del
+  Word, streams Flate del PDF). La IA lo resume en `resumen = { promesa,
+  voz, evitar, pilares, campanas[{nombre, desde, hasta, objetivo,
+  mensajes}] }`; a los prompts de contenido va la ficha más las campañas
+  activas en las fechas de la tanda (`textoParaPrompt`), nunca el documento
+  entero. El brief manda si se contradicen.
+- Rutas: `GET|PUT /api/negocios/:id/brief`, `POST …/brief/estructurar`,
+  `POST …/brief/proponer`, `POST …/brief/rehacer`, `GET …/brief/historial`,
+  `PUT …/plan-marketing`, `POST …/plan-marketing/archivo`. `POST …/generar`
+  acepta `brief` (texto) y usa el de la semana si ya existe. El correo del
+  lunes enlaza a `/app?brief=1#cola`, que abre el diálogo.
+
 ## Fidelización (server/fidelizacion.js)
 
 Lo que hace que el dueño vuelva cada semana y vea que Rubrofy le sirve.

@@ -467,10 +467,20 @@
       ? tarjetaEdicion('negocio', '🏪', 'Tu negocio', 'negocio-objetivo', `<p class="sub">Datos reales que Rubrofy usa en tus textos.</p>${camposNegocio(n)}`)
       : tarjetaVista('negocio', '🏪', 'Tu negocio', 'negocio-objetivo', `${datos.length ? `<div class="es-datos">${datos.join('')}</div>` : ''}${faltan.length ? `<div class="es-faltan">${faltan.join('')}</div>` : ''}`);
 
+    const B = window.RubrofyBrief;
+    const planMk = !B ? '' : editando === 'planmk'
+      ? tarjetaEdicion('planmk', '📄', 'Plan de marketing', 'plan-marketing', B.tarjetaPlanHTML(true))
+      : `<section class="es-card es-planmk" data-seccion="planmk">
+          <div class="es-cab"><span class="es-ic" aria-hidden="true">📄</span><h2>Plan de marketing${AY('plan-marketing')}</h2>
+            ${guardadoEn === 'planmk' ? '<span class="es-ok">✓ Guardado</span>' : ''}
+            <button type="button" class="es-editar" data-es-editar="planmk">${n.planMarketing ? 'Editar' : 'Agregar'}</button></div>
+          ${B.tarjetaPlanHTML(false)}
+        </section>`;
+
     return `<div class="es">
       ${resumen}
       <p class="config-error" data-es-error-general hidden></p>
-      <div class="es-grid${editando && editando !== 'resumen' ? ' con-edicion' : ''}">${objetivo}${ritmo}${temas}${negocio}</div>
+      <div class="es-grid${editando && editando !== 'resumen' ? ' con-edicion' : ''}">${objetivo}${ritmo}${temas}${negocio}${planMk}</div>
       <p class="es-bienvenida"><button type="button" class="btn-text" data-est-accion="repetir-bienvenida">Repetir la bienvenida</button></p>
     </div>`;
   }
@@ -486,6 +496,7 @@
       activar(cont, cat.maxPorFormato);
       activarEstrategia(cont);
       const abierta = cont.querySelector('.es-card.editando');
+      if (abierta && editando === 'planmk' && window.RubrofyBrief) window.RubrofyBrief.activarPlan(abierta);
       if (abierta) {
         abierta.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         const campo = (foco && abierta.querySelector(`[data-pc="${foco}"]`)) || abierta.querySelector('textarea, input:not([type=time])');
@@ -537,6 +548,9 @@
           } else if (clave === 'negocio') {
             await ctx.guardarDatos(leerDatos(card, n));
             await guardarPlan(card);
+          } else if (clave === 'planmk') {
+            n = await window.RubrofyBrief.guardarPlan(card);
+            ctx.setNegocio(n);
           }
           return guardado(clave);
         }
