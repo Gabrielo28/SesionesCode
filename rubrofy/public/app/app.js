@@ -850,14 +850,14 @@
       const destino = planesInfo.find((p) => p.id === planId);
       const nombre = destino ? destino.nombre : 'el nuevo plan';
       if (!confirm(conFlow()
-        ? `Tu suscripción pasará a ${nombre} desde hoy. Flow ajusta el cobro según los días que quedan del mes.`
+        ? (periodoPlan === 'anual' ? `Tu suscripción pasará a ${nombre} con pago anual desde hoy (12 meses por el precio de 10). Flow ajusta el cobro según lo que ya pagaste.` : `Tu suscripción pasará a ${nombre} desde hoy. Flow ajusta el cobro según los días que quedan del mes.`)
         : `Tu suscripción pasará a ${nombre} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
     }
     if (errorEl) errorEl.hidden = true;
     btn.disabled = true;
     try {
       const codigo = codigoDescuento && codigoDescuento.planes.includes(planId) ? codigoDescuento.codigo : undefined;
-      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId, codigo }) });
+      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId, codigo, periodo: periodoPlan || 'mensual' }) });
       if (codigo) codigoDescuento = null;
       if (resultado.url) {
         window.location.href = resultado.url;
@@ -875,6 +875,34 @@
     }
   }
 
+  // Diálogo al tocar "Cancelar": pausar un mes (recomendado) o cancelar.
+  // Resuelve 'pausar', 'cancelar' o null.
+  function preguntarPausa() {
+    return new Promise((resolve) => {
+      let dlg = document.getElementById('dlg-pausa');
+      if (!dlg) {
+        dlg = document.createElement('dialog');
+        dlg.id = 'dlg-pausa';
+        dlg.className = 'dlg';
+        document.body.appendChild(dlg);
+      }
+      const fin = negocioActual.pagos && negocioActual.pagos.periodoFin ? fechaLarga(negocioActual.pagos.periodoFin) : 'el fin del período que pagaste';
+      dlg.innerHTML = `<div class="dlg-caja">
+        <h2>¿Prefieres pausar un mes?</h2>
+        <p class="sub">Tu plan sigue hasta ${escapeHtml(fin)}. Después, <b>un mes sin cobro</b>: tu estrategia, tus fotos, tus videos y tu contenido quedan guardados tal cual. Se reanuda solo y te avisamos 3 días antes.</p>
+        <div class="pausa-opciones">
+          <button type="button" class="pausa-op recomendada" data-pausa="pausar"><b>⏸ Pausar 1 mes</b><span>Sin cobro, sin perder nada. Vuelves cuando quieras.</span><em>Recomendado</em></button>
+          <button type="button" class="pausa-op" data-pausa="cancelar"><b>Cancelar de todos modos</b><span>Tu plan termina ${escapeHtml(fin)} y no se vuelve a cobrar.</span></button>
+        </div>
+        <div class="dlg-acciones"><button type="button" class="btn-ghost" data-pausa="">Volver</button></div>
+      </div>`;
+      const cerrar = (valor) => { dlg.close(); resolve(valor || null); };
+      dlg.onclick = (e) => { const b = e.target.closest('[data-pausa]'); if (b) cerrar(b.dataset.pausa); else if (e.target === dlg) cerrar(null); };
+      dlg.addEventListener('cancel', () => resolve(null), { once: true });
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    });
+  }
+
   // Estado de la suscripción y lo que se puede hacer con ella.
   function gestionSuscripcion() {
     const pg = negocioActual.pagos || {};
@@ -886,27 +914,40 @@
     let linea = '';
     if (pg.estado === 'past_due') linea = `No pudimos cobrar con ${tarjeta}. Cambia la tarjeta para seguir con tu plan.`;
     else if (pg.estado === 'canceled') linea = 'Tu suscripción está cancelada. Elige un plan para volver.';
+    else if (negocioActual.pausa && negocioActual.pausa.reanudadaPorDueno) linea = `Tu plan se reanuda solo el ${fechaLarga(negocioActual.pausa.hasta)}, cuando termina lo que ya pagaste. No se cobra antes.`;
+    else if (negocioActual.pausa && negocioActual.pausa.hasta) linea = `Tu plan está en pausa: sigue ${fin ? `hasta el ${fin}` : 'hasta el fin del período pagado'}, después no se cobra, y se reanuda solo el ${fechaLarga(negocioActual.pausa.hasta)}. Todo queda guardado.`;
     else if (pg.cancelaAlFinal) linea = `Cancelaste tu suscripción: tu plan sigue ${fin ? `hasta el ${fin}` : 'hasta el fin del período pagado'} y no se vuelve a cobrar.`;
-    else if (pg.suscripcion) linea = `Se cobra cada mes con ${tarjeta}${fin ? `. Próximo cobro: ${fin}` : ''}.`;
+    else if (pg.suscripcion) linea = `Se cobra cada ${pg.periodo === 'anual' ? 'año' : 'mes'} con ${tarjeta}${fin ? `. Próximo cobro: ${fin}` : ''}.`;
+    const enPausa = !!(negocioActual.pausa && negocioActual.pausa.hasta && !negocioActual.pausa.reanudadaPorDueno);
     const vigente = pg.suscripcion && !['canceled', 'incomplete'].includes(pg.estado) && !pg.cancelaAlFinal;
     return `${linea ? `<p class="plan-estado">${linea}</p>` : ''}
       <div class="plan-acciones">
         <button type="button" class="btn-ghost" data-action="flow-tarjeta">Cambiar tarjeta</button>
+        ${enPausa ? '<button type="button" class="btn-approve" data-action="flow-reanudar">Reanudar mi plan</button>' : ''}
         ${vigente ? '<button type="button" class="btn-ghost" data-action="flow-cancelar">Cancelar suscripción</button>' : ''}
       </div>`;
   }
 
+  // Mensual o anual (2 meses gratis). Parte en lo que ya paga el negocio.
+  let periodoPlan = null;
   function renderPlan() {
     const cont = $('#plan-card');
     if (!cont || !negocioActual) return;
     const planActualId = negocioActual.plan || 'gratis';
     const indiceActual = planesInfo.findIndex((p) => p.id === planActualId);
+    const pgPeriodo = (negocioActual.pagos && negocioActual.pagos.periodo) || 'mensual';
+    if (!periodoPlan) periodoPlan = pgPeriodo;
+    const anual = periodoPlan === 'anual';
+    const conAnual = conFlow() && planesInfo.some((p) => p.precioAnualClp);
+    const mesesGratis = (planesInfo.find((p) => p.mesesGratisAnual) || {}).mesesGratisAnual || 2;
 
     const filas = planesInfo.map((p, i) => {
       const esActual = p.id === planActualId;
       let boton = '';
-      if (esActual) {
-        boton = '<span class="ig-estado conectado">Plan actual</span>';
+      if (esActual && conAnual && negocioActual.tieneSuscripcion && !negocioActual.sinPlan && pgPeriodo !== periodoPlan) {
+        boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">Pasar a ${anual ? 'anual' : 'mensual'}</button>`;
+      } else if (esActual) {
+        boton = `<span class="ig-estado conectado">Plan actual${negocioActual.tieneSuscripcion && pgPeriodo === 'anual' ? ' · anual' : ''}</span>`;
       } else if (i < indiceActual && !(conFlow() && negocioActual.tieneSuscripcion && !negocioActual.sinPlan)) {
         // Con Stripe, bajar de plan se hace desde "Gestionar suscripción" (Billing Portal).
         boton = '';
@@ -922,17 +963,25 @@
         p.creditosMes ? `${p.creditosMes} créditos ⚡ para fotos y videos` : '',
         p.cuotaReelsEditados ? `${p.cuotaReelsEditados} reels editados` : '',
       ].filter(Boolean).join(' · ') + ' al mes';
+      const clp = (m) => '$' + Number(m).toLocaleString('es-CL');
+      const precio = anual && p.precioAnualClp
+        ? `<b class="plan-precio-desc">${clp(p.precioAnualClp)} al año</b> · equivale a ${clp(Math.round(p.precioAnualClp / 12))}/mes`
+        : (codigoDescuento && codigoDescuento.precios[p.id] ? `<s>${formatoCLP(p.precioClp)}</s> <b class="plan-precio-desc">${formatoCLP(codigoDescuento.precios[p.id].ahora)}</b>` : formatoCLP(p.precioClp));
       return `
         <div class="plan-row${esActual ? ' plan-row-actual' : ''}">
           <div>
             <strong>${escapeHtml(p.nombre)}</strong>
-            <span class="sub">${detalle} · ${codigoDescuento && codigoDescuento.precios[p.id] ? `<s>${formatoCLP(p.precioClp)}</s> <b class="plan-precio-desc">${formatoCLP(codigoDescuento.precios[p.id].ahora)}</b>` : formatoCLP(p.precioClp)}</span>
+            <span class="sub">${detalle} · ${precio}</span>
           </div>
           ${boton}
         </div>
       `;
     }).join('');
-
+    const selectorPeriodo = conAnual && !negocioActual.regalo && !negocioActual.cortesia
+      ? `<div class="plan-periodo" role="radiogroup" aria-label="Cómo pagar">
+          <button type="button" class="${anual ? '' : 'on'}" data-periodo="mensual" aria-checked="${!anual}" role="radio">Mensual</button>
+          <button type="button" class="${anual ? 'on' : ''}" data-periodo="anual" aria-checked="${anual}" role="radio">Anual <em>${mesesGratis} meses gratis</em></button>
+        </div>` : '';
 
     const pr = negocioActual.prueba || {};
     const estadoPlan = negocioActual.sinPlan && pr.disponible
@@ -960,7 +1009,7 @@
     cont.innerHTML = `
       <div class="ig-card-head"><h2>Plan</h2></div>
       ${estadoPlan}
-      ${filas}
+      ${selectorPeriodo}${filas}
       ${cajaCodigo}
       <div class="rc-uso-caja" id="plan-uso"></div>
       <p class="config-error" id="plan-error" hidden></p>
@@ -1700,17 +1749,25 @@
 
     $('#plan-card').addEventListener('click', async (e) => {
       if (e.target.closest('[data-abrir-prueba]')) return abrirPrueba();
+      const per = e.target.closest('[data-periodo]');
+      if (per) { periodoPlan = per.dataset.periodo; return renderPlan(); }
       const btnCheckout = e.target.closest('[data-checkout-plan]');
       if (btnCheckout) return pagarPlan(btnCheckout, $('#plan-error'));
-      const btnFlow = e.target.closest('[data-action="flow-tarjeta"], [data-action="flow-cancelar"]');
+      const btnFlow = e.target.closest('[data-action="flow-tarjeta"], [data-action="flow-cancelar"], [data-action="flow-reanudar"]');
       if (btnFlow) {
-        const cancelar = btnFlow.dataset.action === 'flow-cancelar';
-        if (cancelar && !confirm('¿Cancelar tu suscripción? Tu plan sigue hasta el fin del período que ya pagaste y después no se vuelve a cobrar.')) return;
+        let accion = btnFlow.dataset.action.replace('flow-', '');
+        if (accion === 'cancelar') {
+          // Antes de cancelar: pausar un mes sin cobro.
+          const eleccion = await preguntarPausa();
+          if (!eleccion) return;
+          accion = eleccion;
+        }
+        if (accion === 'reanudar' && !confirm('¿Reanudar tu plan ahora? Si el período que pagaste todavía no termina, se reanuda justo cuando termine; si ya terminó, se cobra ahora con tu tarjeta.')) return;
         const errorEl = $('#plan-error');
         errorEl.hidden = true;
         btnFlow.disabled = true;
         try {
-          const r = await api(`/api/negocios/${negocioActual.id}/suscripcion/${cancelar ? 'cancelar' : 'tarjeta'}`, { method: 'POST' });
+          const r = await api(`/api/negocios/${negocioActual.id}/suscripcion/${accion}`, { method: 'POST', body: accion === 'pausar' ? JSON.stringify({ meses: 1 }) : undefined });
           if (r.url) { window.location.href = r.url; return; }
           negocioActual = r.negocio;
           render();

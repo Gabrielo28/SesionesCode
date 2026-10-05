@@ -1036,6 +1036,44 @@ El editor (`reels.js`) parte en **Automático** (cortes, subtítulos, gancho,
 logo y llamado a la acción); también **Solo subtítulos** y **Personalizado**
 (todas las opciones).
 
+## Fidelización (server/fidelizacion.js)
+
+Lo que hace que el dueño vuelva cada semana y vea que Rubrofy le sirve.
+Corre en el reloj de recordatorios (`RECORDATORIOS_INTERVALO_SEG`) y cada
+aviso se manda una vez (marcas en `negocio.avisos`). `POST
+/api/admin/fidelizacion` lo corre ahora.
+
+- **Correo del lunes** (avisos.js `construir`, `extra`): "Tu semana está
+  lista", botón "Revisar y aprobar" y **"Aprobar todo sin entrar"** (enlace
+  firmado 7 días, `GET /api/acciones/aprobar-todo?n&t`: aprueba lo pendiente
+  que ya tiene material; los reels sin video quedan), la publicación que
+  mejor anduvo la semana pasada (`datoSemana`, de `ig_posts`), los reels sin
+  video, la racha y el enlace de referido.
+- **Rescate:** con plan y 10 días sin entrar (`ultimoAcceso`) y pendientes,
+  correo + push con "Aprobar todo"; a los 25 días, correo personal que
+  responde a `CONTACTO_EMAIL` (reply_to). Se repite solo si volvió a entrar
+  después del aviso. `/admin` → "En riesgo" lista esos negocios.
+- **Pausa** (`POST /suscripcion/pausar { meses }`, `/reanudar`): Flow
+  cancela al fin del período pagado y `negocio.pausa = { finPagado, hasta,
+  plan, periodo }`; 3 días antes avisa y al llegar `hasta` vuelve a crear la
+  suscripción con la tarjeta inscrita (si falla, correo para elegir plan).
+  Reanudar antes de `finPagado` deja la reanudación para esa fecha (no se
+  cobra dos veces). El panel ofrece la pausa al tocar "Cancelar".
+- **Celebraciones:** push cuando una publicación de los últimos 3 días
+  supera en 50 % el promedio de los 30 anteriores (mín. 5 publicaciones y
+  10 interacciones); tarjeta "Lo que lograste este mes" en Inicio (`GET
+  /api/negocios/:id/logros`: publicaciones, alcance, horas a 20 min por
+  publicación, racha, referido); correo a los 3 meses con resumen y
+  créditos de regalo.
+- **Racha:** semanas ISO seguidas con una publicación en Instagram; a las 4
+  y 12 semanas, créditos ⚡ (`promo.racha`; `promo.aniversario` para los 3
+  meses, ambos en /admin → Créditos).
+
+**Plan anual** (planes.js `precioAnual`: 12 meses por el precio de 10): en
+Flow es otro plan (`rubrofy-<plan>-anual-<precio>`, interval 4); `checkout
+{ periodo: 'anual' }`, sin códigos de descuento. `negocio.flow.periodo` y el
+MRR de /admin cuentan el cobro anual mes a mes.
+
 ## Beneficios: planes de regalo y códigos de descuento (/admin)
 
 `server/beneficios.js`. Solo quien administra (ADMIN_EMAILS) los otorga,

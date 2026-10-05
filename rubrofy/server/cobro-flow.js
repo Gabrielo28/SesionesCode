@@ -27,8 +27,12 @@ const ACTIVAS = new Set(['active', 'trialing']);
 
 // El plan de Rubrofy que corresponde a un plan de Flow (rubrofy-pro-19990).
 function planDesdeFlow(planFlow) {
-  const m = /^rubrofy-([a-z]+)-\d+$/.exec(String(planFlow || ''));
+  const m = /^rubrofy-([a-z]+)(?:-anual)?-\d+$/.exec(String(planFlow || ''));
   return m && PLANES[m[1]] && m[1] !== 'gratis' ? m[1] : null;
+}
+// 'anual' o 'mensual' según el plan de Flow.
+function periodoDesdeFlow(planFlow) {
+  return /-anual-\d+$/.test(String(planFlow || '')) ? 'anual' : 'mensual';
 }
 
 function buscarPor(campo, valor) {
@@ -66,6 +70,7 @@ function aplicarSuscripcion(negocioId, sub) {
     customerId: sub.customerId || (negocio.flow && negocio.flow.customerId),
     estado,
     planFlow: sub.planId,
+    periodo: periodoDesdeFlow(sub.planId),
     cancelaAlFinal: Number(sub.cancel_at_period_end) === 1,
     periodoFin: sub.period_end || null,
   });
@@ -77,6 +82,7 @@ function aplicarSuscripcion(negocioId, sub) {
   const pagados = (negocio.flow.cobros || []).filter((c) => c.estado === 'pagado' && antes.get(c.id) !== 'pagado' && c.fecha && Date.parse(c.fecha) >= recientes);
   delete negocio.flow.planPendiente;
   delete negocio.flow.codigoPendiente;
+  delete negocio.flow.periodoPendiente;
   const enPrueba = pruebaGratis.vigente(negocio);
   if (ACTIVAS.has(estado)) {
     // Si paga durante la prueba gratis, la prueba termina y manda el plan pagado.
@@ -155,14 +161,14 @@ async function prepararCodigo(negocioId, planId, codigo) {
   return { cupon: c.data, codigo: v.fila.codigo };
 }
 
-async function suscribir(negocioId, planId, base, codigo) {
+async function suscribir(negocioId, planId, base, codigo, periodo) {
   const plan = getPlan(planId);
-  const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`);
+  const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`, periodo);
   if (listo.error) return listo;
   const d = await prepararCodigo(negocioId, planId, codigo);
   if (d.error) return d;
   const negocio = store.getNegocio(negocioId);
-  const r = await flow.crearSuscripcion({ planId: flow.idPlan(plan), customerId: negocio.flow.customerId, couponId: d.cupon });
+  const r = await flow.crearSuscripcion({ planId: flow.idPlan(plan, periodo), customerId: negocio.flow.customerId, couponId: d.cupon });
   if (r.error) return r;
   if (d.codigo) beneficios.registrarCanje(d.codigo, negocioId, planId);
   // La suscripción nueva pasa a ser la que se sigue.
@@ -179,18 +185,20 @@ function suscripcionVigente(negocio) {
 // Elegir o cambiar de plan. Devuelve { url } (hay que inscribir la tarjeta
 // en Flow), { negocio } (listo) o { error, status }.
 // codigo: código de descuento opcional (se valida para ese plan).
-async function elegirPlan(negocio, planId, base, codigo) {
+// periodo: 'mensual' o 'anual' (2 meses gratis; sin códigos de descuento).
+async function elegirPlan(negocio, planId, base, codigo, periodo = 'mensual') {
   const plan = PLANES[planId];
   if (!plan || planId === 'gratis') return { error: 'Ese plan no está disponible', status: 400 };
+  if (codigo && periodo === 'anual') return { error: 'Los códigos de descuento son para el pago mensual. El plan anual ya trae 2 meses gratis.', status: 400 };
   if (codigo) {
     const v = beneficios.validarCodigo(codigo, negocio.id, planId);
     if (v.error) return { error: v.error, status: 400 };
   }
   if (suscripcionVigente(negocio)) {
-    if (planDesdeFlow(negocio.flow.planFlow) === planId && !negocio.flow.cancelaAlFinal) return { error: 'Ya tienes ese plan', status: 409 };
-    const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`);
+    if (planDesdeFlow(negocio.flow.planFlow) === planId && periodoDesdeFlow(negocio.flow.planFlow) === periodo && !negocio.flow.cancelaAlFinal) return { error: 'Ya tienes ese plan', status: 409 };
+    const listo = await flow.asegurarPlan(plan, `${base}/api/flow/plan`, periodo);
     if (listo.error) return listo;
-    const r = await flow.cambiarPlan({ subscriptionId: negocio.flow.subscriptionId, planId: flow.idPlan(plan) });
+    const r = await flow.cambiarPlan({ subscriptionId: negocio.flow.subscriptionId, planId: flow.idPlan(plan, periodo) });
     if (r.error) return r;
     if (codigo) {
       const a = await aplicarCodigo(store.getNegocio(negocio.id), codigo, planId);
@@ -205,8 +213,9 @@ async function elegirPlan(negocio, planId, base, codigo) {
   const cliente = await asegurarCliente(negocio);
   if (cliente.error) return cliente;
   const fresco = store.getNegocio(negocio.id);
-  if (fresco.flow.tarjeta) return suscribir(negocio.id, planId, base, codigo);
+  if (fresco.flow.tarjeta) return suscribir(negocio.id, planId, base, codigo, periodo);
   fresco.flow.planPendiente = planId;
+  fresco.flow.periodoPendiente = periodo;
   if (codigo) fresco.flow.codigoPendiente = beneficios.normalizarCodigo(codigo);
   else delete fresco.flow.codigoPendiente;
   store.saveNegocio(fresco);
@@ -232,12 +241,13 @@ async function retornoTarjeta(token, base) {
   negocio.flow.tarjeta = { tipo: r.data.creditCardType || '', ultimos4: r.data.last4CardDigits || '' };
   const pendiente = negocio.flow.planPendiente;
   const codigo = negocio.flow.codigoPendiente;
+  const periodo = negocio.flow.periodoPendiente;
   store.saveNegocio(negocio);
   // Solo cambió la tarjeta, o ya tiene una suscripción vigente: no se crea otra.
   if (!pendiente || suscripcionVigente(negocio)) return { resultado: pendiente ? 'exito' : 'tarjeta-ok', negocioId: negocio.id };
-  let s = await suscribir(negocio.id, pendiente, base, codigo);
+  let s = await suscribir(negocio.id, pendiente, base, codigo, periodo);
   // Si el código dejó de valer entre medio (se agotó), se suscribe igual sin él.
-  if (s.error && codigo && s.status === 400) s = await suscribir(negocio.id, pendiente, base);
+  if (s.error && codigo && s.status === 400) s = await suscribir(negocio.id, pendiente, base, null, periodo);
   return { resultado: s.error ? 'error' : 'exito', negocioId: negocio.id };
 }
 
@@ -309,11 +319,12 @@ function publico(negocio) {
     tarjeta: f.tarjeta || null,
     cancelaAlFinal: !!f.cancelaAlFinal,
     periodoFin: f.periodoFin || null,
+    periodo: f.periodo || 'mensual',
   };
 }
 
 module.exports = {
-  configurar, planDesdeFlow, aplicarSuscripcion, sincronizar, sincronizarTodas,
-  elegirPlan, aplicarCodigo, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente,
+  configurar, planDesdeFlow, periodoDesdeFlow, aplicarSuscripcion, sincronizar, sincronizarTodas,
+  elegirPlan, aplicarCodigo, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente, suscribir,
   pagarRecarga, confirmarPago, publico, cobroDeFlow,
 };

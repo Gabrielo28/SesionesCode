@@ -8,13 +8,13 @@ function configurado() {
 }
 
 // Devuelve { ok, id } o { ok: false, error }.
-async function enviar({ para, asunto, html, texto, encabezados }) {
+async function enviar({ para, asunto, html, texto, encabezados, responderA }) {
   if (!configurado()) return { ok: false, error: 'El correo no está configurado en este servidor' };
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [para], subject: asunto, html, text: texto, headers: encabezados }),
+      body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [para], subject: asunto, html, text: texto, headers: encabezados, reply_to: responderA || undefined }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {

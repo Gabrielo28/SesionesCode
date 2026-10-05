@@ -46,7 +46,8 @@ const CONFIG_BASE = {
     { creditos: 400, precioClp: 32990 },
   ],
   planes: { pro: 30, estudio: 120 },
-  promo: { bono: 30, prueba: 20, referido: 25 },
+  // racha: a las 4 y 12 semanas seguidas publicando; aniversario: a los 3 meses.
+  promo: { bono: 30, prueba: 20, referido: 25, racha: 10, aniversario: 20 },
 };
 
 const CALIDADES = {

@@ -48,6 +48,7 @@ const soporte = require('./soporte');
 const alertas = require('./alertas');
 const respaldos = require('./respaldos');
 const videos = require('./videos');
+const fidelizacion = require('./fidelizacion');
 const { crearLimitador, ipCliente } = require('./limites');
 
 const PORT = process.env.PORT || 5180;
@@ -908,6 +909,41 @@ function calcularRuta(negocio) {
   });
 }
 
+// Enlace firmado "Aprobar todo" de los correos (vale 7 días): aprueba lo
+// pendiente que ya tiene su material, sin entrar al panel.
+function enlaceAprobarTodo(negocioId) {
+  return `/api/acciones/aprobar-todo?n=${encodeURIComponent(negocioId)}&t=${auth.crearTokenFoto(negocioId, 'accion', 'aprobar-todo', 7 * 24 * 60)}`;
+}
+function aprobarPendientes(negocioId, req) {
+  const negocio = store.getNegocio(negocioId);
+  const items = store.getContenido(negocioId);
+  const { listas, faltan } = fidelizacion.aprobables(items);
+  const igConectado = !!(negocio.instagram && negocio.instagram.accessToken);
+  for (const it of listas) {
+    const cuando = programacion.asegurarPublicarEl(it);
+    it.status = 'aprobado';
+    it.decididoEl = new Date().toISOString();
+    const yaEnCola = it.publicacion && ['programada', 'publicando'].includes(it.publicacion.estado);
+    if (igConectado && !yaEnCola) programar(it, maxISO(cuando, new Date().toISOString()), req);
+  }
+  if (listas.length) store.saveContenido(negocioId, items);
+  return { aprobadas: listas.length, faltan: faltan.length, igConectado };
+}
+
+// Lo que el correo del lunes agrega (fidelizacion.js): el dato de la semana
+// pasada, lo que falta, "Aprobar todo" sin entrar, la racha y el enlace de referido.
+function extraFidelizacion(negocio, base) {
+  const contenido = store.getContenido(negocio.id);
+  const c = creditos.config().promo;
+  return {
+    dato: getPlan(negocio.plan).analitica ? fidelizacion.datoSemana(negocio.id) : null,
+    faltan: fidelizacion.faltantes(contenido),
+    urlAprobarTodo: base + enlaceAprobarTodo(negocio.id),
+    racha: fidelizacion.racha(contenido),
+    referido: c.referido ? { enlace: `${base}/registro.html?ref=${creditos.codigoReferido(negocio)}`, creditos: c.referido } : null,
+  };
+}
+
 // Enlace firmado para darse de baja del resumen semanal (vale 60 días).
 function enlaceBajaAvisos(negocioId) {
   return `/api/avisos/baja?n=${encodeURIComponent(negocioId)}&t=${auth.crearTokenFoto(negocioId, 'avisos', 'baja', 60 * 24 * 60)}`;
@@ -934,7 +970,8 @@ function correoCliente(negocioId, armar) {
   const negocio = store.getNegocio(negocioId);
   if (!negocio || !negocio.email || !correo.configurado()) return;
   const base = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
-  correo.enviar(armar(negocio, (hash) => (base ? `${base}/app${hash || ''}` : null)));
+  const mail = armar(negocio, (hash) => (base ? `${base}/app${hash || ''}` : null));
+  if (mail) correo.enviar(mail);
 }
 // Una publicación fallida avisa por correo como mucho cada 6 horas por negocio
 // (si Instagram falla para todos, no se llena la bandeja del cliente).
@@ -1116,7 +1153,34 @@ const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincroni
 setTimeout(revisarFlow, 60 * 1000).unref();
 setInterval(revisarFlow, (Number(process.env.FLOW_REVISION_SEG) || 6 * 3600) * 1000).unref();
 respaldos.iniciar(); // respaldo externo diario (si están las variables RESPALDO_S3_*)
-const timerRecordatorios = setInterval(() => { recordatoriosSemanales().catch(() => {}); revisarPruebas(); }, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
+// Fidelización (server/fidelizacion.js): rescates, pausas, celebraciones,
+// rachas y aniversarios, en el mismo reloj de los recordatorios.
+fidelizacion.configurar({
+  negocios: () => store.listNegocios().filter((n) => !n.suspendido),
+  notificar,
+  log: console.log,
+  creadoEl: admin.creadoEl,
+  cancelarAlFinal: (negocio) => cobroFlow.cancelar(negocio),
+  suscribir: (negocioId, planId, base, periodo) => cobroFlow.suscribir(negocioId, planId, base || (process.env.PUBLIC_URL || '').replace(/\/$/, ''), null, periodo),
+  correo: (negocioId, tipo, datos) => correoCliente(negocioId, (negocio, url) => {
+    const base = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+    const c = creditos.config().promo;
+    const referido = c.referido && base ? { enlace: `${base}/registro.html?ref=${creditos.codigoReferido(negocio)}`, creditos: c.referido } : null;
+    if (tipo === 'rescate') return avisos.correoRescate({ negocio, urlPanel: url('#cola'), urlAprobarTodo: base + enlaceAprobarTodo(negocio.id), dias: datos.dias, pendientes: datos.pendientes });
+    if (tipo === 'riesgo') return avisos.correoRiesgo({ negocio, urlPanel: url(''), urlPausa: url('#cuenta'), dias: datos.dias, contacto: emailContacto() });
+    if (tipo === 'pausa') return avisos.correoPausa({ negocio, urlPanel: url('#cuenta'), finPagado: datos.finPagado, hasta: datos.hasta });
+    if (tipo === 'pausa-termina') return avisos.correoPausaTermina({ negocio, urlPanel: url('#cuenta'), hasta: datos.hasta });
+    if (tipo === 'pausa-fallo') return avisos.correoPausaFallo({ negocio, urlPanel: url('#cuenta'), error: datos.error });
+    if (tipo === 'reanudada') return avisos.correoReanudada({ negocio, urlPanel: url('#cola') });
+    if (tipo === 'aniversario') return avisos.correoAniversario({ negocio, urlPanel: url('#resultados'), logros: datos.logros, premio: datos.premio, referido });
+    return null;
+  }),
+});
+const timerRecordatorios = setInterval(() => {
+  recordatoriosSemanales().catch(() => {});
+  revisarPruebas();
+  fidelizacion.vuelta(new Date(), (process.env.PUBLIC_URL || '').replace(/\/$/, '')).catch((err) => console.log('fidelización: ' + err.message));
+}, (Number(process.env.RECORDATORIOS_INTERVALO_SEG) || 30 * 60) * 1000);
 timerRecordatorios.unref();
 
 // Videos con IA: cuando uno termina, queda como el video de la pieza.
@@ -1155,6 +1219,7 @@ const avisador = avisos.crearAvisador({
   datosDe: (negocio) => ({ negocioPublico: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocio.id) }),
   urlPublica: () => (process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : null),
   enlaceBaja: enlaceBajaAvisos,
+  extraDe: extraFidelizacion,
   guardarAvisoReconectar: (negocioId) => {
     const n = store.getNegocio(negocioId);
     if (!n || !n.instagram) return;
@@ -1684,6 +1749,11 @@ const server = http.createServer(async (req, res) => {
           }
           return sendJSON(res, 404, { error: 'No encontrado' });
         }
+        // POST /api/admin/fidelizacion — corre ahora los rescates, pausas, celebraciones, rachas y aniversarios.
+        if (parts[2] === 'fidelizacion' && parts.length === 3 && req.method === 'POST') {
+          const r = await fidelizacion.vuelta(new Date(), urlPublica(req));
+          return sendJSON(res, 200, Object.assign(r, { enRiesgo: fidelizacion.enRiesgo() }));
+        }
         // POST /api/admin/respaldo — respaldo externo ahora (base + archivos nuevos).
         if (parts[2] === 'respaldo' && parts.length === 3 && req.method === 'POST') {
           if (!respaldos.configurado()) return sendJSON(res, 400, { error: 'Faltan las variables RESPALDO_S3_* (ver DEPLOY-RAILWAY.md).' });
@@ -1737,7 +1807,7 @@ const server = http.createServer(async (req, res) => {
         if (req.method !== 'GET') return sendJSON(res, 404, { error: 'No encontrado' });
         if (parts[2] === 'resumen' && parts.length === 3) {
           const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
-          return sendJSON(res, 200, admin.resumen({ dias, calcularRuta, inicio: INICIO, version: VERSION }));
+          return sendJSON(res, 200, Object.assign(admin.resumen({ dias, calcularRuta, inicio: INICIO, version: VERSION }), { enRiesgo: fidelizacion.enRiesgo() }));
         }
         if (parts[2] === 'negocios' && parts.length === 3) {
           return sendJSON(res, 200, admin.negocios({ calcularRuta }));
@@ -1785,6 +1855,30 @@ const server = http.createServer(async (req, res) => {
       // GET /api/push/clave — clave pública VAPID para suscribirse (no es secreta)
       if (parts[1] === 'push' && parts[2] === 'clave' && parts.length === 3 && req.method === 'GET') {
         return sendJSON(res, 200, { clave: push.clavePublica() });
+      }
+
+      // GET /api/acciones/aprobar-todo?n&t — "Aprobar todo" desde el correo (enlace firmado, 7 días)
+      if (parts[1] === 'acciones' && parts[2] === 'aprobar-todo' && parts.length === 3 && req.method === 'GET') {
+        const id = url.searchParams.get('n');
+        const n = id && store.getNegocio(id);
+        const valido = n && !n.suspendido && auth.verificarTokenFoto(url.searchParams.get('t'), id, 'accion', 'aprobar-todo');
+        let r = null;
+        if (valido) {
+          r = aprobarPendientes(id, req);
+          if (r.aprobadas) Promise.resolve(publicador.recorrer()).catch(() => {});
+        }
+        const titulo = !valido ? 'El enlace no es válido o ya venció'
+          : r.aprobadas ? `Listo: ${r.aprobadas === 1 ? 'aprobamos 1 publicación' : `aprobamos ${r.aprobadas} publicaciones`}`
+          : r.faltan ? 'Nada que aprobar todavía' : 'No había publicaciones pendientes';
+        const detalle = !valido ? 'Entra al panel y apruébalas desde Por aprobar.'
+          : [r.aprobadas ? (r.igConectado ? 'Se publican solas en su fecha.' : 'Conecta Instagram en el panel para que se publiquen solas.') : '',
+            r.faltan ? `${r.faltan === 1 ? '1 reel espera su video' : `${r.faltan} reels esperan su video`}: súbelo en Estudio de reels.` : ''].filter(Boolean).join(' ');
+        res.writeHead(valido ? 200 : 400, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...CABECERAS_SEGURIDAD });
+        return res.end(`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rubrofy</title>
+          <body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#140f0a;color:#f5efe4;font-family:Arial,sans-serif;padding:24px">
+          <div style="max-width:420px;text-align:center"><h1 style="font-size:22px">${escapeHtmlSrv(titulo)}</h1>
+          <p style="color:#b9a892">${escapeHtmlSrv(detalle)}</p>
+          <p><a href="/app#cola" style="color:#ffac2b">Ir a mi panel</a></p></div></body></html>`);
       }
 
       if (parts[1] === 'avisos' && parts[2] === 'baja' && parts.length === 3 && req.method === 'GET') {
@@ -1942,7 +2036,7 @@ const server = http.createServer(async (req, res) => {
             const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('cobro:' + negocioId);
-            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req), body.codigo ? String(body.codigo) : null);
+            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req), body.codigo ? String(body.codigo) : null, body.periodo === 'anual' ? 'anual' : 'mensual');
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
             if (r.url) return sendJSON(res, 200, { url: r.url });
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio || store.getNegocio(negocioId)) });
@@ -2178,12 +2272,26 @@ const server = http.createServer(async (req, res) => {
             correoCliente(negocioId, (n, url) => avisos.correoCancelacion({ negocio: n, urlPanel: url('#cuenta'), hasta: n.flow && n.flow.periodoFin }));
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
           }
+          // Pausa (server/fidelizacion.js): sin cobro durante 1 a 3 meses; se reanuda sola.
+          if (parts[4] === 'pausar') {
+            const body = await readBody(req).catch(() => ({}));
+            const r = await fidelizacion.pausar(negocio, Number(body.meses) || 1);
+            if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
+          }
+          if (parts[4] === 'reanudar') {
+            const r = await fidelizacion.reanudar(negocio, urlBase(req));
+            if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
+            correoCliente(negocioId, (n, url) => (n.pausa ? null : avisos.correoReanudada({ negocio: n, urlPanel: url('#cola') })));
+            return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
+          }
           if (parts[4] === 'tarjeta') {
             const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('cobro:' + negocioId);
             const fresco = store.getNegocio(negocioId);
             delete fresco.flow.planPendiente;
+            delete fresco.flow.periodoPendiente;
             store.saveNegocio(fresco);
             const r = await cobroFlow.inscribirTarjeta(fresco, urlBase(req));
             if (r.error) return sendJSON(res, 424, { error: r.error });
@@ -2256,6 +2364,14 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, negocioPublico(negocio));
         }
 
+        // GET /api/negocios/:id/logros — "Lo que lograste este mes" (Inicio) y la racha
+        if (parts[3] === 'logros' && parts.length === 4 && req.method === 'GET') {
+          const l = fidelizacion.logros(negocio, store.getContenido(negocioId));
+          const c = creditos.config().promo;
+          const base = urlPublica(req);
+          return sendJSON(res, 200, Object.assign(l, { referido: c.referido ? { enlace: `${base}/registro.html?ref=${creditos.codigoReferido(negocio)}`, creditos: c.referido } : null }));
+        }
+
         // GET /api/negocios/:id/ruta — en qué etapa va y qué le toca ahora (ver server/ruta.js)
         if (parts[3] === 'ruta' && parts.length === 4 && req.method === 'GET') {
           return sendJSON(res, 200, calcularRuta(negocio));
@@ -2278,7 +2394,7 @@ const server = http.createServer(async (req, res) => {
           const base = urlPublica(req);
           const mail = avisos.construir({
             negocio: negocioPublico(negocio), ruta: calcularRuta(negocio), contenido: store.getContenido(negocioId),
-            urlPanel: base + '/app', urlBaja: base + enlaceBajaAvisos(negocioId), forzar: true,
+            urlPanel: base + '/app', urlBaja: base + enlaceBajaAvisos(negocioId), forzar: true, extra: extraFidelizacion(negocio, base),
           });
           const r = await correo.enviar({ para: negocio.email, asunto: mail.asunto, html: mail.html, texto: mail.texto });
           if (!r.ok) return sendJSON(res, 424, { error: r.error });

@@ -43,14 +43,28 @@ function proximasDeLaSemana(contenido, ahora) {
 }
 
 // Arma el correo. Devuelve null si no hay nada que contar.
-function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.now(), forzar = false }) {
+// extra (opcional): { dato, faltan, urlAprobarTodo, racha, referido: { enlace, creditos } }
+// (server/fidelizacion.js): el dato de la semana pasada, lo que falta,
+// "Aprobar todo" sin entrar al panel y la racha.
+function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.now(), forzar = false, extra = {} }) {
   const tareas = ruta.siguientes || [];
   const proximas = proximasDeLaSemana(contenido, ahora);
   if (!tareas.length && !proximas.length && !forzar) return null;
   const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
   const asunto = pendientes
-    ? `Tu semana en Rubrofy: ${pendientes} ${pendientes === 1 ? 'publicación espera' : 'publicaciones esperan'} tu aprobación`
+    ? `Tu semana en Rubrofy está lista: ${pendientes} ${pendientes === 1 ? 'publicación espera' : 'publicaciones esperan'} tu aprobación`
     : tareas.length ? `Tu semana en Rubrofy: ${tareas[0].titulo.charAt(0).toLowerCase() + tareas[0].titulo.slice(1)}` : 'Tu semana en Rubrofy';
+  const d = extra.dato;
+  const datoHtml = d ? `<tr><td style="padding:14px 28px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff4f8;border:1px solid #ffd0e2;border-radius:10px"><tr><td style="padding:12px 14px;font:14px/1.5 Arial,sans-serif;color:#2b2118">
+      <b>📈 Tu ${esc(d.formato)} que mejor anduvo la semana pasada</b><br>${d.texto ? `<span style="color:#6f6152">“${esc(d.texto)}”</span><br>` : ''}
+      <b>${d.alcance.toLocaleString('es-CL')}</b> personas la vieron${d.interacciones ? ` · <b>${d.interacciones.toLocaleString('es-CL')}</b> interacciones` : ''}${d.permalink ? ` · <a href="${esc(d.permalink)}" style="color:#b3412a">verla</a>` : ''}
+    </td></tr></table></td></tr>` : '';
+  const f = extra.faltan || {};
+  const faltaHtml = f.reelsSinVideo ? `<tr><td style="padding:12px 28px 0;font:13.5px/1.5 Arial,sans-serif;color:#b3412a">🎬 ${f.reelsSinVideo === 1 ? '1 reel espera su video' : `${f.reelsSinVideo} reels esperan su video`}: súbelo desde el celular en Estudio de reels.</td></tr>` : '';
+  const rachaHtml = extra.racha >= 2 ? `<tr><td style="padding:12px 28px 0;font:13.5px Arial,sans-serif;color:#6f6152">🔥 Llevas <b style="color:#2b2118">${extra.racha} semanas seguidas</b> publicando. Aprueba esta semana y la racha sigue.</td></tr>` : '';
+  const aprobarHtml = pendientes && extra.urlAprobarTodo ? `<a href="${esc(extra.urlAprobarTodo)}" style="display:inline-block;margin-left:10px;color:#2b2118;font:700 14px Arial,sans-serif;text-decoration:underline;padding:12px 0">Aprobar todo sin entrar</a>` : '';
+  const ref = extra.referido;
+  const refHtml = ref && ref.enlace && d ? `<tr><td style="padding:14px 28px 0;font:12.5px/1.5 Arial,sans-serif;color:#6f6152">¿Conoces otro negocio al que le serviría? Si se suscribe con tu enlace, <b>ustedes dos ganan ${ref.creditos} créditos ⚡</b>: <a href="${esc(ref.enlace)}" style="color:#b3412a">${esc(ref.enlace)}</a></td></tr>` : '';
 
   const listaTareas = tareas.map((t, i) => `
     <tr><td style="padding:10px 0;border-top:1px solid #eee3d3;vertical-align:top;width:28px">
@@ -67,13 +81,15 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
     <tr><td style="padding:24px 28px 8px;font:700 18px Arial,sans-serif;color:#17110a">Rubrofy</td></tr>
     <tr><td style="padding:0 28px;font:15px/1.5 Arial,sans-serif;color:#2b2118">
       <p style="margin:8px 0 4px;font-size:20px;font-weight:700">Hola, ${esc(negocio.nombre)}</p>
-      <p style="margin:0 0 14px;color:#6f6152">${tareas.length ? 'Esto es lo que te toca esta semana:' : 'Estás al día. Esto es lo que se publica esta semana.'}</p>
+      <p style="margin:0 0 14px;color:#6f6152">${pendientes ? `Rubrofy te preparó ${pendientes === 1 ? '1 publicación' : `${pendientes} publicaciones`}. Aprobarlas te toma unos 5 minutos.` : tareas.length ? 'Esto es lo que te toca esta semana:' : 'Estás al día. Esto es lo que se publica esta semana.'}</p>
     </td></tr>
     ${tareas.length ? `<tr><td style="padding:0 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${listaTareas}</table></td></tr>` : ''}
-    <tr><td style="padding:18px 28px 6px"><a href="${esc(urlPanel)}" style="display:inline-block;background:#ffac2b;color:#17110a;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">Abrir mi panel</a></td></tr>
+    <tr><td style="padding:18px 28px 6px"><a href="${esc(pendientes ? urlPanel + '#cola' : urlPanel)}" style="display:inline-block;background:#ffac2b;color:#17110a;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">${pendientes ? 'Revisar y aprobar' : 'Abrir mi panel'}</a>${aprobarHtml}</td></tr>
+    ${datoHtml}${faltaHtml}${rachaHtml}
     ${proximas.length ? `<tr><td style="padding:18px 28px 4px;font:700 14px Arial,sans-serif;color:#17110a">Se publica en los próximos 7 días (${proximas.length})</td></tr>
     <tr><td style="padding:0 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${listaProximas}</table></td></tr>` : ''}
     ${negocio.instagramConectado ? '' : '<tr><td style="padding:12px 28px 0;font:13px Arial,sans-serif;color:#b3412a">Instagram no está conectado: lo que apruebes no se publica hasta que lo conectes.</td></tr>'}
+    ${refHtml}
     <tr><td style="padding:22px 28px 24px;font:11.5px/1.5 Arial,sans-serif;color:#8f8578">Recibes este resumen los lunes porque tienes una cuenta en Rubrofy.
       <a href="${esc(urlBaja)}" style="color:#8f8578">No quiero recibirlo más</a>.</td></tr>
   </table></body></html>`;
@@ -86,7 +102,11 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
     proximas.length ? `Se publica en los próximos 7 días (${proximas.length}):` : '',
     ...proximas.slice(0, 8).map((i) => `- ${fechaCorta(i.publicarEl)} · ${SINGULAR[i.formato] || 'Post'}`),
     '',
+    d ? `Tu ${d.formato} que mejor anduvo: ${d.alcance} personas la vieron${d.interacciones ? `, ${d.interacciones} interacciones` : ''}.` : '',
+    f.reelsSinVideo ? `${f.reelsSinVideo} reel(s) esperan su video.` : '',
+    extra.racha >= 2 ? `Llevas ${extra.racha} semanas seguidas publicando.` : '',
     `Abrir mi panel: ${urlPanel}`,
+    pendientes && extra.urlAprobarTodo ? `Aprobar todo sin entrar: ${extra.urlAprobarTodo}` : '',
     `No quiero recibirlo más: ${urlBaja}`,
   ].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
 
@@ -95,7 +115,7 @@ function construir({ negocio, ruta, contenido, urlPanel, urlBaja, ahora = Date.n
 
 // --- correos puntuales (mismo diseño que el resumen) ---
 
-function plantilla({ titulo, parrafos, boton, pie }) {
+function plantilla({ titulo, parrafos, boton, pie, enlace }) {
   const html = `<!doctype html><html lang="es"><body style="margin:0;background:#f7f1e8;padding:24px 12px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;border:1px solid #eee3d3">
     <tr><td style="padding:24px 28px 8px;font:700 18px Arial,sans-serif;color:#111014">Rubrofy</td></tr>
@@ -103,10 +123,10 @@ function plantilla({ titulo, parrafos, boton, pie }) {
       <p style="margin:8px 0 12px;font-size:20px;font-weight:700">${esc(titulo)}</p>
       ${parrafos.map((p) => `<p style="margin:0 0 12px;color:#4a4050">${esc(p)}</p>`).join('')}
     </td></tr>
-    ${boton ? `<tr><td style="padding:10px 28px 6px"><a href="${esc(boton.url)}" style="display:inline-block;background:#111014;color:#ff4d94;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">${esc(boton.texto)}</a></td></tr>` : ''}
+    ${boton ? `<tr><td style="padding:10px 28px 6px"><a href="${esc(boton.url)}" style="display:inline-block;background:#111014;color:#ff4d94;font:700 14px Arial,sans-serif;text-decoration:none;padding:12px 22px;border-radius:9px">${esc(boton.texto)}</a>${enlace ? `<a href="${esc(enlace.url)}" style="display:inline-block;margin-left:12px;color:#2b2118;font:700 14px Arial,sans-serif;text-decoration:underline;padding:12px 0">${esc(enlace.texto)}</a>` : ''}</td></tr>` : ''}
     <tr><td style="padding:22px 28px 24px;font:11.5px/1.5 Arial,sans-serif;color:#8f8578">${esc(pie || 'Recibes este correo porque tienes una cuenta en Rubrofy.')}</td></tr>
   </table></body></html>`;
-  const texto = [titulo, '', ...parrafos, '', boton ? `${boton.texto}: ${boton.url}` : '', '', pie || ''].join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  const texto = [titulo, '', ...parrafos, '', boton ? `${boton.texto}: ${boton.url}` : '', enlace ? `${enlace.texto}: ${enlace.url}` : '', '', pie || ''].join('\n').replace(/\n{3,}/g, '\n\n').trim();
   return { html, texto };
 }
 
@@ -231,6 +251,85 @@ function correoPublicacionFallida({ negocio, urlPanel, formato, motivo }) {
   return { para: negocio.email, asunto: `No se pudo publicar tu ${formato} en Instagram`, html, texto };
 }
 
+// --- fidelización (server/fidelizacion.js) ---
+
+function correoRescate({ negocio, urlPanel, urlAprobarTodo, dias, pendientes }) {
+  const { html, texto } = plantilla({
+    titulo: `${pendientes === 1 ? 'Tienes 1 publicación esperando' : `Tienes ${pendientes} publicaciones esperando`}`,
+    parrafos: [`Hace ${dias} días que no entras a Rubrofy y ${negocio.nombre} tiene contenido listo que no se publica hasta que lo apruebes.`,
+      'Si te parece bien como está, apruébalo todo con un clic y se publica solo en su fecha. Si prefieres revisarlo, entra al panel: te toma unos 5 minutos.'],
+    boton: boton('Aprobar todo ahora', urlAprobarTodo),
+    enlace: boton('Revisarlo en el panel', urlPanel),
+    pie: 'Te escribimos porque tienes contenido esperando. Si ya no quieres publicar, puedes pausar tu plan desde Mi cuenta.',
+  });
+  return { para: negocio.email, asunto: `${negocio.nombre}: ${pendientes === 1 ? 'una publicación' : `${pendientes} publicaciones`} esperan tu visto bueno`, html, texto };
+}
+
+// Personal, desde el equipo (responder llega a CONTACTO_EMAIL).
+function correoRiesgo({ negocio, urlPanel, urlPausa, dias, contacto }) {
+  const { html, texto } = plantilla({
+    titulo: `¿Cómo va ${negocio.nombre}?`,
+    parrafos: [`Vi que hace ${dias} días que no entras a Rubrofy y quería preguntarte directamente: ¿pasó algo? ¿Hay algo que no te esté funcionando o que te esté costando?`,
+      'Responde a este correo y te leo yo. Si es un mes complicado, puedes pausar tu plan sin costo y volver cuando quieras; todo queda guardado.',
+      'Y si ya no lo necesitas, también sirve saberlo: me ayuda a mejorar Rubrofy.'],
+    boton: boton('Abrir Rubrofy', urlPanel),
+    enlace: boton('Pausar mi plan un mes', urlPausa),
+    pie: contacto ? `Puedes responder a este correo o escribir a ${contacto}.` : 'Puedes responder a este correo.',
+  });
+  return { para: negocio.email, asunto: `¿Cómo va ${negocio.nombre}?`, html, texto, responderA: contacto || undefined };
+}
+
+function correoPausa({ negocio, urlPanel, finPagado, hasta }) {
+  const { html, texto } = plantilla({
+    titulo: 'Tu plan queda en pausa',
+    parrafos: [`${negocio.nombre} sigue con todo hasta el ${fechaLarga(finPagado)} (lo que ya pagaste). Después no se cobra nada durante la pausa.`,
+      `El ${fechaLarga(hasta)} tu plan se reanuda solo con la misma tarjeta y te avisamos 3 días antes. Si quieres volver antes, en Mi cuenta hay un botón para reanudar.`,
+      'Tu estrategia, tus fotos, tus videos y tu contenido quedan guardados tal cual.'],
+    boton: boton('Ir a mi cuenta', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'Tu plan de Rubrofy queda en pausa', html, texto };
+}
+
+function correoPausaTermina({ negocio, urlPanel, hasta }) {
+  const { html, texto } = plantilla({
+    titulo: 'Tu pausa termina en 3 días',
+    parrafos: [`El ${fechaLarga(hasta)} se reanuda el plan de ${negocio.nombre} y se cobra con la tarjeta que tienes inscrita.`,
+      'Si necesitas más tiempo, en Mi cuenta puedes cancelar antes de esa fecha y no se cobra nada.'],
+    boton: boton('Ir a mi cuenta', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'Tu pausa en Rubrofy termina en 3 días', html, texto };
+}
+
+function correoPausaFallo({ negocio, urlPanel, error }) {
+  const { html, texto } = plantilla({
+    titulo: 'No pudimos reanudar tu plan',
+    parrafos: [`Terminó la pausa de ${negocio.nombre}, pero no se pudo volver a activar el plan${error ? `: ${error}` : '.'}`, 'Entra a Mi cuenta y elige tu plan de nuevo; todo lo tuyo sigue guardado.'],
+    boton: boton('Elegir mi plan', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'No pudimos reanudar tu plan de Rubrofy', html, texto };
+}
+
+function correoReanudada({ negocio, urlPanel }) {
+  const { html, texto } = plantilla({
+    titulo: 'Tu plan se reanudó',
+    parrafos: [`Bienvenido de vuelta. ${negocio.nombre} ya tiene su plan activo otra vez: genera tu semana cuando quieras y Rubrofy la deja lista para aprobar.`],
+    boton: boton('Generar mi semana', urlPanel),
+  });
+  return { para: negocio.email, asunto: 'Tu plan de Rubrofy se reanudó', html, texto };
+}
+
+function correoAniversario({ negocio, urlPanel, logros, premio, referido }) {
+  const l = logros || {};
+  const parrafos = [`Hace 3 meses que ${negocio.nombre} publica con Rubrofy. Un resumen de lo que lograste:`,
+    `· ${l.publicacionesTotal || 0} publicaciones en Instagram sin tener que sentarte a escribirlas.`,
+    l.alcance ? `· Solo este mes, ${Number(l.alcance).toLocaleString('es-CL')} personas vieron tu contenido.` : '· Conecta Instagram y en el próximo resumen te contamos a cuánta gente llegas.',
+    l.racha >= 2 ? `· Llevas ${l.racha} semanas seguidas publicando.` : '',
+    premio ? `Para celebrarlo te regalamos ${premio} créditos ⚡: úsalos en fotos o videos con IA.` : '',
+    referido && referido.enlace ? `Y si conoces otro negocio al que le serviría, con tu enlace ustedes dos ganan ${referido.creditos} créditos: ${referido.enlace}` : ''].filter(Boolean);
+  const { html, texto } = plantilla({ titulo: '3 meses con Rubrofy 🎉', parrafos, boton: boton('Ver mis resultados', urlPanel) });
+  return { para: negocio.email, asunto: `3 meses con Rubrofy: lo que logró ${negocio.nombre}`, html, texto };
+}
+
 // deps: { listarNegocios(), datosDe(negocio) → { negocioPublico, ruta, contenido },
 //         urlPublica() → string|null, enlaceBaja(negocioId) → path, guardarEnvio(negocioId, semana), log }
 function crearAvisador(deps) {
@@ -278,7 +377,7 @@ function crearAvisador(deps) {
         // Se marca antes de enviar: si el envío falla no se reintenta en bucle esa semana.
         deps.guardarEnvio(negocio.id, semana);
         const d = deps.datosDe(negocio);
-        const mail = construir({ negocio: d.negocioPublico, ruta: d.ruta, contenido: d.contenido, urlPanel: base + '/app', urlBaja: base + deps.enlaceBaja(negocio.id), ahora: ahoraDate.getTime() });
+        const mail = construir({ negocio: d.negocioPublico, ruta: d.ruta, contenido: d.contenido, urlPanel: base + '/app', urlBaja: base + deps.enlaceBaja(negocio.id), ahora: ahoraDate.getTime(), extra: deps.extraDe ? deps.extraDe(negocio, base) : {} });
         if (!mail) continue;
         const r = await correo.enviar({ para: negocio.email, asunto: mail.asunto, html: mail.html, texto: mail.texto, encabezados: { 'List-Unsubscribe': `<${base + deps.enlaceBaja(negocio.id)}>` } });
         if (r.ok) enviados += 1;
@@ -306,4 +405,5 @@ function crearAvisador(deps) {
 module.exports = {
   construir, crearAvisador, semanaISO, correoClave, correoBienvenida, correoReconectar, plantilla,
   correoVerificar, correoEmailCambiado, correoPrueba, correoRegaloTermino, correoCobroFallido, correoRecibo, correoCancelacion, correoPublicacionFallida,
+  correoRescate, correoRiesgo, correoPausa, correoPausaTermina, correoPausaFallo, correoReanudada, correoAniversario,
 };

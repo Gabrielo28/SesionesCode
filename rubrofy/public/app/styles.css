@@ -1648,3 +1648,33 @@ button.rs-thumb { position: relative; border: 0; padding: 0; cursor: pointer; tr
 @media (max-width: 640px) {
   .aviso-version { left: 12px; right: 12px; transform: none; max-width: none; justify-content: space-between; bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
+
+/* Lo que lograste este mes (inicio.js) */
+.ini-logros { margin-bottom: 16px; }
+.ini-logros-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ini-logro { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ini-logro b { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; }
+.ini-logro span { font-size: 13px; color: var(--ink); }
+.ini-logro small { font-size: 11.5px; color: var(--ink-faint); }
+.ini-logro.apagado { opacity: .6; }
+.ini-racha { display: inline-block; margin-top: 12px; padding: 7px 12px; border-radius: 99px; background: rgba(255, 77, 148, .1); border: 1px solid rgba(255, 77, 148, .4); font-size: 13px; }
+.ini-racha.apagada { background: transparent; border-style: dashed; color: var(--ink-dim); }
+.ini-ref { margin: 12px 0 0; font-size: 13px; color: var(--ink-dim); }
+@media (max-width: 640px) { .ini-logros-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Pausar antes de cancelar (app.js) */
+#dlg-pausa .dlg-caja { max-width: 520px; }
+.pausa-opciones { display: flex; flex-direction: column; gap: 10px; margin: 14px 0 6px; }
+.pausa-op { position: relative; text-align: left; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.pausa-op b { font-size: 15px; }
+.pausa-op span { font-size: 13px; color: var(--ink-dim); }
+.pausa-op em { position: absolute; top: -9px; right: 12px; font-style: normal; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--amber); color: #140a10; }
+.pausa-op.recomendada { border-color: var(--amber); background: rgba(255, 77, 148, .08); }
+.pausa-op:hover, .pausa-op:focus-visible { border-color: var(--amber); outline: none; }
+
+/* Mensual o anual (app.js, Mi cuenta) */
+.plan-periodo { display: inline-flex; gap: 4px; padding: 4px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); margin: 4px 0 10px; }
+.plan-periodo button { background: transparent; border: 0; color: var(--ink-dim); font: inherit; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.plan-periodo button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
+.plan-periodo em { font-style: normal; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 99px; background: rgba(255, 77, 148, .18); color: #ffd0e2; }
+.plan-row .btn-approve, .plan-row .btn-ghost { white-space: nowrap; flex: none; }

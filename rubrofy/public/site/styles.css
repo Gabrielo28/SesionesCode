@@ -415,3 +415,4 @@ mark { background: var(--rosa); color: var(--negro); padding: 0 .12em; border-ra
   .dif-grande { grid-column: auto; }
   .tarjeta h3 { font-size: 24px; }
 }
+.plan-anual { display: block; font-size: 13px; font-weight: 500; letter-spacing: 0; color: #9a94a0; margin-top: 4px; }

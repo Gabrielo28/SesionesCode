@@ -159,3 +159,6 @@ body.adm { height: auto; min-height: 100%; }
 .adm-grid > *, .adm-sop > * { min-width: 0; }
 
 .adm-respaldar { margin-top: 6px; padding: 6px 12px; font-size: 12.5px; align-self: flex-start; }
+.adm-riesgo { margin-bottom: 18px; }
+.adm-riesgo tr.alerta td { color: #ffb3cf; }
+.adm-riesgo td em { font-style: normal; font-size: 11px; color: var(--ink-faint); }

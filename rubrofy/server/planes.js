@@ -62,6 +62,12 @@ function getPlan(id) {
   return PLANES[id] || PLANES.gratis;
 }
 
+// Pagando el año: 2 meses gratis (10 cuotas).
+const MESES_GRATIS_ANUAL = 2;
+function precioAnual(plan) {
+  return plan.precioClp ? plan.precioClp * (12 - MESES_GRATIS_ANUAL) : 0;
+}
+
 // Precios y disponibilidad para mostrar en el sitio/panel — nunca incluye
 // nada de Stripe (IDs de producto, claves) del lado del cliente.
 function listPlanesPublico() {
@@ -69,6 +75,8 @@ function listPlanesPublico() {
     id: p.id,
     nombre: p.nombre,
     precioClp: p.precioClp,
+    precioAnualClp: precioAnual(p),
+    mesesGratisAnual: MESES_GRATIS_ANUAL,
     usaIA: p.usaIA,
     cuotaTextosIA: p.cuotaTextosIA,
     creditosMes: require('./creditos').config().planes[p.id] || 0,
@@ -96,4 +104,4 @@ function planIdDesdePriceId(priceId) {
   return null;
 }
 
-module.exports = { PLANES, getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId };
+module.exports = { PLANES, getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId, precioAnual, MESES_GRATIS_ANUAL };

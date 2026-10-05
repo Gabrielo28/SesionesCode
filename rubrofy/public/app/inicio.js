@@ -35,11 +35,31 @@
     return `<button type="button" class="btn-ghost ${clase || ''}" data-accion='${esc(JSON.stringify(p.accion))}'>${esc(p.boton)}</button>`;
   }
 
+  // "Lo que lograste este mes": publicaciones, alcance, horas ahorradas, racha y referidos.
+  function logrosHTML(l, n) {
+    const num = (x) => Number(x || 0).toLocaleString('es-CL');
+    const horas = l.horasAhorradas >= 1 ? `${String(l.horasAhorradas).replace('.', ',')} h` : `${Math.round(l.horasAhorradas * 60)} min`;
+    const racha = l.racha >= 2
+      ? `<span class="ini-racha">🔥 ${l.racha} semanas seguidas publicando${l.proximoHito && l.premioRacha ? ` · a las ${l.proximoHito}, ${l.premioRacha} créditos ⚡ de regalo` : ''}</span>`
+      : (l.premioRacha ? `<span class="ini-racha apagada">🔥 Publica 2 semanas seguidas y empieza tu racha${l.premioRacha ? ` (a las 4, ${l.premioRacha} créditos ⚡)` : ''}</span>` : '');
+    return `<section class="ig-card ini-logros">
+      <div class="ig-card-head"><h2>Lo que lograste este mes con Rubrofy${AY('logros')}</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"resultados"}'>Ver resultados</button></div>
+      <div class="ini-logros-grid">
+        <div class="ini-logro"><b>${num(l.publicacionesMes)}</b><span>publicaciones este mes</span><small>${num(l.publicacionesTotal)} desde que empezaste</small></div>
+        ${l.alcance ? `<div class="ini-logro"><b>${num(l.alcance)}</b><span>personas vieron tu contenido</span><small>${num(l.interacciones)} interacciones</small></div>` : (n.instagramConectado ? '' : `<div class="ini-logro apagado"><b>—</b><span>alcance en Instagram</span><small>conecta Instagram para verlo</small></div>`)}
+        <div class="ini-logro"><b>${horas}</b><span>que no pasaste escribiendo</span><small>a 20 min por publicación</small></div>
+      </div>
+      ${racha}
+      ${l.referido && l.referido.enlace ? `<p class="ini-ref">🤝 ¿Conoces otro negocio al que le serviría? Si se suscribe con tu enlace, <b>ustedes dos ganan ${l.referido.creditos} créditos ⚡</b>. <button type="button" class="ini-link" data-copiar-ref="${esc(l.referido.enlace)}">Copiar mi enlace</button></p>` : ''}
+    </section>`;
+  }
+
   async function render(cont, ctx) {
     const n = ctx.negocio;
-    const [r, cat] = await Promise.all([
+    const [r, cat, lg] = await Promise.all([
       ctx.api(`/api/negocios/${n.id}/ruta`),
       window.RubrofyPlan.catalogo(ctx.api),
+      ctx.api(`/api/negocios/${n.id}/logros`).catch(() => null),
     ]);
     const plan = ctx.planActual;
     const pc = window.RubrofyPlan.resumenPlan(plan, cat);
@@ -104,6 +124,8 @@
         </div>
       </section>
 
+      ${lg && (lg.publicacionesTotal || lg.racha) ? logrosHTML(lg, n) : ''}
+
       <div class="ini-grid">
         <section class="ig-card">
           <div class="ig-card-head"><h2>Próximas publicaciones${AY('proximas')}</h2><button type="button" class="ini-link" data-accion='{"tipo":"vista","vista":"calendario"}'>Ver calendario</button></div>
@@ -126,6 +148,12 @@
       </div>`;
 
     cont.onclick = async (e) => {
+      const ref = e.target.closest('[data-copiar-ref]');
+      if (ref) {
+        try { await navigator.clipboard.writeText(ref.dataset.copiarRef); ref.textContent = '¡Copiado!'; setTimeout(() => { ref.textContent = 'Copiar mi enlace'; }, 2000); }
+        catch (err) { prompt('Copia tu enlace:', ref.dataset.copiarRef); }
+        return;
+      }
       const etapa = e.target.closest('[data-etapa]');
       if (etapa) {
         etapaAbierta = etapa.dataset.etapa;

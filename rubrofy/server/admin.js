@@ -235,4 +235,4 @@ function negocios({ calcularRuta }) {
   }).sort((a, b) => String(b.creadoEl || '').localeCompare(String(a.creadoEl || '')));
 }
 
-module.exports = { activo, esAdmin, registrarVisita, resumen, negocios, adminEmails };
+module.exports = { activo, esAdmin, registrarVisita, resumen, negocios, adminEmails, creadoEl };

@@ -64,13 +64,16 @@ async function llamar(metodo, ruta, datos) {
 
 // --- Planes ---
 // El plan de Flow que corresponde a un plan de Rubrofy a su precio actual.
-function idPlan(plan) {
+// periodo: 'mensual' (por omisión) o 'anual' (12 meses por el precio de 10).
+function idPlan(plan, periodo) {
+  if (periodo === 'anual') return `rubrofy-${plan.id}-anual-${require('./planes').precioAnual(plan)}`;
   return `rubrofy-${plan.id}-${plan.precioClp}`;
 }
 
 const planesListos = new Map();
-async function asegurarPlan(plan, urlCallback) {
-  const id = idPlan(plan);
+async function asegurarPlan(plan, urlCallback, periodo) {
+  const id = idPlan(plan, periodo);
+  const anual = periodo === 'anual';
   if (planesListos.has(id)) return { data: { planId: id } };
   const existe = await llamar('GET', '/plans/get', { planId: id });
   if (!existe.error && Number(existe.data.status) !== 0) {
@@ -78,8 +81,8 @@ async function asegurarPlan(plan, urlCallback) {
     return { data: existe.data };
   }
   const creado = await llamar('POST', '/plans/create', {
-    planId: id, name: `Rubrofy ${plan.nombre}`, currency: 'CLP', amount: plan.precioClp,
-    interval: 3, interval_count: 1, urlCallback,
+    planId: id, name: `Rubrofy ${plan.nombre}${anual ? ' anual' : ''}`, currency: 'CLP', amount: anual ? require('./planes').precioAnual(plan) : plan.precioClp,
+    interval: anual ? 4 : 3, interval_count: 1, urlCallback,
   });
   if (creado.error) return creado;
   planesListos.set(id, true);

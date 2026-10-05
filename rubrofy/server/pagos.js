@@ -42,8 +42,12 @@ function pagoMensual(negocio, ahora = Date.now()) {
   if (negocio.cortesia || beneficios.regaloVigente(negocio, ahora) || !activa(negocio)) return 0;
   const pagados = ((negocio.flow && negocio.flow.cobros) || []).filter((c) => c.estado === 'pagado' && c.monto > 0)
     .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
-  if (pagados.length) return pagados[pagados.length - 1].monto;
-  const plan = require('./planes').getPlan(negocio.plan);
+  // Con pago anual, lo que corresponde a un mes.
+  const anual = negocio.flow && negocio.flow.periodo === 'anual';
+  if (pagados.length) return anual ? Math.round(pagados[pagados.length - 1].monto / 12) : pagados[pagados.length - 1].monto;
+  const planes = require('./planes');
+  const plan = planes.getPlan(negocio.plan);
+  if (anual) return Math.round(planes.precioAnual(plan) / 12);
   return beneficios.precioConDescuento(plan.precioClp || 0, beneficios.descuentoVigente(negocio.id, plan.id, ahora));
 }
 

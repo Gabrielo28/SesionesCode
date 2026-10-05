@@ -99,6 +99,15 @@
         <div class="ig-card"><div class="ig-card-head"><h2>Planes${AY('adm-planes')}</h2></div><div data-g="planes"></div></div>
       </section>
 
+      ${(r.enRiesgo || []).length ? `<section class="ig-card adm-riesgo">
+        <div class="ig-card-head"><h2>En riesgo${AY('adm-riesgo')}</h2><span class="adm-ayuda">con plan, 10 o más días sin entrar</span></div>
+        <table class="adm-tabla"><thead><tr><th>Negocio</th><th>Plan</th><th class="n">Días sin entrar</th><th class="n">Pendientes</th><th>Aviso enviado</th><th></th></tr></thead>
+        <tbody>${r.enRiesgo.map((n) => `<tr class="${n.dias >= 25 ? 'alerta' : ''}"><td><b>${esc(n.nombre)}</b>${n.pausa ? ' <em>en pausa</em>' : ''}</td><td>${esc(n.plan)}</td><td class="n">${num(n.dias)}</td><td class="n">${num(n.pendientes)}</td>
+          <td>${n.avisado === 'personal' ? 'Correo personal (25 días)' : n.avisado === 'rescate' ? 'Rescate con "Aprobar todo" (10 días)' : 'Todavía no'}</td>
+          <td>${n.email ? `<a class="btn-text" href="mailto:${esc(n.email)}?subject=${encodeURIComponent('¿Cómo va ' + n.nombre + '?')}">Escribirle</a>` : ''}</td></tr>`).join('')}</tbody></table>
+        <p class="adm-nota">A los 10 días sin entrar (con publicaciones esperando) reciben un correo con "Aprobar todo"; a los 25, un correo personal del equipo que responde a tu correo de contacto.</p>
+      </section>` : ''}
+
       <section class="adm-grid tres">
         <div class="ig-card"><div class="ig-card-head"><h2>De dónde llegan${AY('adm-referentes')}</h2></div>
           ${r.referentes.length ? `<ul class="adm-lista">${r.referentes.map((x) => `<li><span>${esc(x.dominio)}</span><b>${num(x.n)}</b></li>`).join('')}</ul>`
@@ -574,6 +583,8 @@
               <label>Bono primera compra (%)<input name="bono" type="number" min="0" max="200" step="5" value="${c.promo.bono}"></label>
               <label>Créditos en la prueba gratis<input name="prueba" type="number" min="0" step="5" value="${c.promo.prueba}"><small>Reemplazan a los del plan mientras dura</small></label>
               <label>Por invitación, a cada uno<input name="referido" type="number" min="0" step="5" value="${c.promo.referido}"><small>Cuando el invitado paga su plan</small></label>
+              <label>Racha de 4 y 12 semanas<input name="racha" type="number" min="0" step="5" value="${c.promo.racha || 0}"><small>Semanas seguidas publicando</small></label>
+              <label>Regalo a los 3 meses<input name="aniversario" type="number" min="0" step="5" value="${c.promo.aniversario || 0}"><small>Con el correo de aniversario</small></label>
             </div></div>
         </div>
         <div class="adm-form-pie"><button type="submit" class="btn-approve">Guardar créditos</button><span class="config-ok" hidden>Guardado.</span><p class="config-error" hidden></p></div>
@@ -595,7 +606,7 @@
         })),
         packs: d.packs.map((x, i) => ({ creditos: Number(f.querySelector(`[data-p-creditos="${i}"]`).value), precioClp: Number(f.querySelector(`[data-p-precio="${i}"]`).value), destacado: String(i) === destacado })),
         planes: { pro: v('plan_pro'), estudio: v('plan_estudio') },
-        promo: { bono: v('bono'), prueba: v('prueba'), referido: v('referido') },
+        promo: { bono: v('bono'), prueba: v('prueba'), referido: v('referido'), racha: v('racha'), aniversario: v('aniversario') },
       };
       const btn = f.querySelector('button[type="submit"]');
       btn.disabled = true;

@@ -384,6 +384,7 @@ function resumen(negocioId, desde, hasta, estrategia) {
     alcance, interacciones,
     tasaInteraccion: alcance ? interacciones / alcance : null,
     publicaciones: posts.length,
+    interaccionesPosts: posts.reduce((s, p) => s + num(p.interacciones), 0), // de las publicaciones (la cuenta puede no tener serie)
     serie,
     topPosts: posts.slice().sort((a, b) => num(b.interacciones) - num(a.interacciones)).slice(0, 5),
     porEnfoque,
