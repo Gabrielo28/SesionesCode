@@ -27,16 +27,22 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 
 ---
 
-## Lo que tienes que confirmarme antes de enviar (marcado `[CONFIRMAR]` en el texto)
+## Decisiones tomadas (6-oct-2026) — ya no queda nada por confirmar
+
+- Jornada de grabación opcional: $90.000 netos / 3 h en Santiago. **Confirmado.**
+- Ejemplo: se presenta como "un asesor previsional independiente", **sin nombre**, enlazando su
+  sitio (luisnunez.cl) y los cuatro reels. **Confirmado.**
+- Reunión: a disposición de ellos, sin proponer horarios. **Confirmado.**
+
+Historial de lo que se fue resolviendo:
 
 1. **Grabación: resuelto el 6-oct.** No va incluida, y se le dice a Situ que no es imprescindible:
    depende del contenido que quieran. El plan funciona con material que graba su equipo con el
    celular siguiendo nuestra pauta (guion, encuadre, luz) más fotos existentes y piezas de diseño.
-   Si quieren jornada presencial, se cotiza aparte por jornada. **Falta solo el precio referencial
-   que ponemos en la propuesta** — el texto de abajo usa $90.000 netos por jornada de 3 horas en
-   Santiago `[CONFIRMAR precio]`; cámbialo si quieres otro.
+   Si quieren jornada presencial, se cotiza aparte por jornada: $90.000 netos por jornada de 3
+   horas en Santiago (confirmado por Gabriel el 6-oct).
 2. Ejemplos: **resuelto.** Cuatro reels de Luis Núñez (@luisnunez.cl) ya están en la sección de
-   ejemplos con su línea de contexto; solo falta **su OK para citarlo con nombre**. Las otras
+   ejemplos con su línea de contexto; se presenta **sin nombre** (decisión de Gabriel). Las otras
    marcas de la web quedan fuera: ninguna de las 10 piezas es persona a cámara o carrusel
    educativo que sume acá, y mezclar una bebida energética con cuidado de adultos mayores resta.
    *Nota interna (no va a Situ):* los cuatro reels tienen entre 5 y 21 likes y casi sin
@@ -54,7 +60,7 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — **resuelto: sí.**
 4. Permanencia — **resuelto:** sin permanencia mínima, con **aviso de término con un mes de
    anticipación**. Evaluación a 90 días e inicio en 10 días hábiles quedan como estaban.
-5. Las dos fechas de reunión que ofrecemos — **pendiente.**
+5. Reunión — **resuelto:** sin proponer horarios; el día y la hora los ponen ellos.
 
 ---
 
@@ -85,10 +91,10 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 >
 > Sobre ejemplos: no tenemos todavía un cliente de salud, y prefiero decirlo antes que estirar
 > el portafolio. Lo más cercano — y creo que es más cercano de lo que parece — es el contenido
-> que hacemos para **un asesor previsional** (Luis Núñez, @luisnunez.cl) `[CONFIRMAR permiso de Luis]`: un servicio donde
-> la persona mayor y sus hijos toman una decisión importante y necesitan confiar en quien los
-> asesora. Mismo comprador, misma exigencia de seriedad, mismo cuidado con lo que se puede
-> prometer. En la propuesta van los links.
+> que hacemos para **un asesor previsional independiente**: un servicio donde la persona mayor y
+> sus hijos toman una decisión importante y necesitan confiar en quien los asesora. Mismo
+> comprador, misma exigencia de seriedad, mismo cuidado con lo que se puede prometer. En la
+> propuesta van su sitio y cuatro piezas.
 >
 > Y como entiendo que lo que quieren ver es criterio, no portafolio, les propongo algo concreto:
 > antes de que decidan, les hacemos **una pieza de muestra para Situ** — un carrusel sobre "cómo
@@ -96,8 +102,9 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 > ustedes manejan. Sin costo, sin compromiso. Si la pieza no les convence, no tiene sentido que
 > sigamos conversando; si les convence, ya vieron exactamente cómo trabajaríamos con ustedes.
 >
-> ¿Les acomoda una reunión de 30 minutos el `[CONFIRMAR día/hora 1]` o el `[CONFIRMAR día/hora
-> 2]`? Si prefieren revisar la propuesta primero y después agendar, también está bien.
+> Si les hace sentido, coordinemos una reunión de 30 minutos: díganme el día y la hora que les
+> acomode y me ajusto. Si prefieren revisar la propuesta primero y después agendar, también está
+> bien.
 >
 > Gabriel Meza · Influence Chile
 > influencechile.cl · +56 9 6545 0723
@@ -135,7 +142,7 @@ Hay un pilar que **no** proponemos: tendencias, audios virales y humor. En esta 
 ### 2. Cantidad y tipo de piezas (Plan Crecimiento, mezcla ajustada a Situ)
 
 El plan Crecimiento trae 8 reels, 8 publicaciones y 12 historias al mes. Para Situ proponemos
-usar esa capacidad así `[CONFIRMAR mezcla]`:
+usar esa capacidad así:
 
 | Formato | Cantidad / mes | Qué son |
 |---|---|---|
@@ -170,7 +177,7 @@ contenido que se quiera generar, y en el caso de Situ la mayor parte no la neces
 
 Si en algún mes quieren una **jornada presencial con nosotros** (lanzamiento de un servicio,
 sesión de fotos del equipo completo, material para una temporada), se cotiza aparte por jornada:
-referencia **$90.000 netos por 3 horas en Santiago** `[CONFIRMAR precio]`, con fotos y video para
+**$90.000 netos por jornada de 3 horas en Santiago**, con fotos y video para
 alimentar varios meses. La frecuencia la deciden ustedes — para una marca como Situ, una o dos al
 año suelen bastar.
 
@@ -226,7 +233,7 @@ vanidad ni 20 páginas de gráficos.
 |---|---|---|
 | Plan Crecimiento: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición, pauta de grabación para su equipo, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual, gestión de Meta Ads si la activan | $450.000 | $535.500 |
 | **Total mensual** | **$450.000** | **$535.500** |
-| *Opcional, solo si la piden:* jornada de grabación presencial en Santiago (3 h) `[CONFIRMAR precio]` | $90.000 por jornada | $107.100 |
+| *Opcional, solo si la piden:* jornada de grabación presencial en Santiago (3 h) | $90.000 por jornada | $107.100 |
 
 Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 550 con IVA** el plan mensual.
 La facturación es en pesos chilenos.
@@ -245,10 +252,11 @@ del calendario (se cotizan aparte).
   jornada con nosotros cada tres meses para renovar el banco de fotos y grabar al equipo completo.
   Es la opción si prefieren que nadie de Situ tenga que grabar nunca.
 
-### Ejemplos de trabajo `[CONFIRMAR permiso de Luis para citarlo]`
+### Ejemplos de trabajo
 
-**Primero y con nombre: Luis Núñez, asesor previsional — instagram.com/luisnunez.cl · luisnunez.cl.**
-Se presenta así: *"Nuestro cliente activo de contenido es un asesor previsional independiente,
+**Sin nombrarlo (decisión de Gabriel): se presenta como "un asesor previsional independiente" y se
+enlazan su sitio (luisnunez.cl) y los reels.** Se presenta así: *"Nuestro cliente activo de
+contenido es un asesor previsional independiente,
 registrado en la Superintendencia de Pensiones y fiscalizado por la SP y la CMF. Es el rubro más
 parecido al de Situ que hemos trabajado: una persona mayor y su familia tomando una decisión que
 no se deshace — en sus palabras, 'una decisión mal tomada puede significar una pensión menor de
@@ -257,7 +265,7 @@ claro de lo que se puede prometer. Así se ve ese trabajo:"* — y debajo estas 
 de contexto:
 
 1. **Pensión de sobrevivencia** (26-sep-2026) — https://www.instagram.com/reel/DdwOtBeOSvd/
-   *"La pensión de sobrevivencia no es automática para toda la familia."* Luis a cámara explica
+   *"La pensión de sobrevivencia no es automática para toda la familia."* El asesor a cámara explica
    quién califica (cónyuge, conviviente civil, hijos menores, a veces los padres) y los plazos que
    las familias descubren demasiado tarde. **Es la pieza más parecida a lo que haría Situ:** le
    habla a la familia, no al afiliado, y convierte un trámite que asusta en algo que se entiende.
@@ -273,7 +281,7 @@ de contexto:
    Formato "mito vs. realidad", que en Situ sería "no, llevar a mi papá a un hogar no es la única
    opción".
 
-Las cuatro son de Luis hablando a cámara con subtítulos: exactamente el formato de los 3 reels
+Las cuatro son del asesor hablando a cámara con subtítulos: exactamente el formato de los 3 reels
 mensuales del equipo clínico que propone el punto 2. **No se muestran cifras de alcance ni likes**
 — la sección es para que vean tono, claridad y constancia, no métricas.
 

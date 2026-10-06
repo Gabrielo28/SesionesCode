@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Propuesta Situ · Influence Chile</title>
+<style>
+  @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400 800; src: url('fonts/montserrat.woff2') format('woff2'); }
+  @page { size: A4; margin: 14mm 16mm 15mm; }
+  @page portada { margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; }
+  body { font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif; color: #123638; font-size: 9.7pt; line-height: 1.45;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: #12959C; text-decoration: none; }
+
+  /* Portada */
+  .portada { page: portada; width: 210mm; height: 297mm; padding: 22mm 20mm; background: linear-gradient(155deg, #123638 0%, #12959C 100%);
+             color: #fff; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .marca { display: flex; align-items: center; gap: 4mm; }
+  .marca .ic { width: 14mm; height: 14mm; border-radius: 3mm; background: #3cc8cf; border: 1.2mm solid #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-style: italic; font-size: 16pt; color: #fff; }
+  .marca .nombre { font-weight: 800; font-size: 17pt; letter-spacing: -.02em; }
+  .marca .nombre span { font-weight: 500; opacity: .85; }
+  .portada .kicker { font-size: 9.5pt; letter-spacing: .18em; text-transform: uppercase; opacity: .8; margin-bottom: 5mm; }
+  .portada h1 { font-size: 30pt; line-height: 1.12; font-weight: 800; margin-bottom: 7mm; max-width: 150mm; }
+  .portada .sub { font-size: 12.5pt; font-weight: 500; opacity: .92; max-width: 140mm; line-height: 1.45; }
+  .portada .para { border-top: 1px solid rgba(255,255,255,.35); padding-top: 6mm; display: flex; justify-content: space-between; font-size: 9.5pt; line-height: 1.6; }
+  .portada .para strong { display: block; font-size: 10.5pt; }
+
+  /* Secciones */
+  .seccion { page-break-before: always; }
+  .seccion.primera { page-break-before: auto; }
+  h2 { font-size: 19pt; color: #12959C; font-weight: 800; line-height: 1.2; margin-bottom: 2.5mm; }
+  h2 .num { display: inline-block; color: #FF7B7B; margin-right: 2mm; }
+  .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 6mm; }
+  h3 { font-size: 12pt; color: #12959C; font-weight: 700; margin: 6mm 0 2mm; }
+  p { margin-bottom: 3.2mm; }
+  ul { margin: 0 0 3.5mm 0; list-style: none; }
+  li { padding-left: 5mm; position: relative; margin-bottom: 1.8mm; }
+  li::before { content: '▪'; color: #12959C; position: absolute; left: 0; }
+  strong { font-weight: 700; }
+  .bloque { margin-bottom: 7mm; page-break-inside: avoid; }
+
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 9.4pt; page-break-inside: avoid; }
+  th { background: #12959C; color: #fff; padding: 2.6mm 3mm; text-align: left; font-weight: 600; font-size: 9pt; }
+  td { padding: 2.6mm 3mm; border-bottom: 1px solid #e3eeee; vertical-align: top; }
+  tr:nth-child(even) td { background: #f6fbfb; }
+  td.n { white-space: nowrap; text-align: right; }
+
+  .nota { background: #f3f9f9; border-left: 3px solid #12959C; padding: 4mm 5mm; border-radius: 0 4px 4px 0; margin: 4mm 0 6mm; page-break-inside: avoid; }
+  .nota.coral { border-left-color: #FF7B7B; background: #fff7f7; }
+  .nota strong { color: #12959C; }
+  .nota.coral strong { color: #e05c5c; }
+
+  .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 5mm 0 7mm; page-break-inside: avoid; }
+  .resumen > div { border: 1.5px solid #d7eaea; border-radius: 6px; padding: 4mm; }
+  .resumen .k { font-size: 8pt; text-transform: uppercase; letter-spacing: .12em; color: #12959C; font-weight: 700; margin-bottom: 1.5mm; }
+  .resumen .v { font-size: 15pt; font-weight: 800; line-height: 1.15; }
+  .resumen .s { font-size: 8.6pt; color: #4a6a6a; margin-top: 1mm; }
+
+  .total { background: linear-gradient(135deg, #123638, #12959C); color: #fff; border-radius: 6px; padding: 6mm 7mm; margin: 4mm 0 6mm; display: flex; justify-content: space-between; align-items: center; page-break-inside: avoid; }
+  .total .l { font-size: 9.5pt; opacity: .9; }
+  .total .l strong { display: block; font-size: 13pt; color: #fff; }
+  .total .r { text-align: right; }
+  .total .r .neto { font-size: 22pt; font-weight: 800; line-height: 1; }
+  .total .r .iva { font-size: 9.5pt; opacity: .9; margin-top: 1.5mm; }
+
+  .alt { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; page-break-inside: avoid; }
+  .alt > div { border: 1.5px solid #d7eaea; border-radius: 6px; padding: 4mm 5mm; font-size: 9.4pt; }
+  .alt h4 { color: #12959C; font-size: 11pt; margin-bottom: 1.5mm; }
+  .alt .precio { font-weight: 700; margin-bottom: 1.5mm; }
+
+  .ejemplo { border-left: 3px solid #FF7B7B; padding: 0 0 0 5mm; margin-bottom: 5mm; page-break-inside: avoid; }
+  .ejemplo h4 { font-size: 10.5pt; color: #123638; }
+  .ejemplo .meta { font-size: 8.6pt; color: #4a6a6a; margin-bottom: 1mm; }
+  .ejemplo .meta a { word-break: break-all; }
+  .ejemplo em { color: #12959C; }
+
+  .cta { text-align: center; padding: 14mm 8mm; }
+  .cta h2 { font-size: 26pt; margin-bottom: 4mm; }
+  .cta p { max-width: 140mm; margin: 0 auto 4mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 11.5pt; font-weight: 700; margin: 4mm 0 10mm; }
+  .firma { border-top: 1px solid #d7eaea; padding-top: 6mm; font-size: 9.6pt; line-height: 1.7; }
+  .firma strong { font-size: 11pt; }
+  .pie { font-size: 8.2pt; color: #6b8585; margin-top: 8mm; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<section class="portada">
+  <div class="marca"><div class="ic">IC</div><div class="nombre">influence <span>chile</span></div></div>
+  <div>
+    <div class="kicker">Propuesta · 6 de octubre de 2026</div>
+    <h1>Contenido y gestión de redes para Situ</h1>
+    <p class="sub">Una presencia profesional, consistente y confiable en Instagram, Facebook y LinkedIn, pensada para el hijo o la hija que está decidiendo quién cuida a su mamá o a su papá.</p>
+  </div>
+  <div class="para">
+    <div><strong>Para</strong>Jorge Emilio Baeza Barrera y el equipo Situ<br>situ.care · Las Condes, Santiago</div>
+    <div style="text-align:right"><strong>De</strong>Gabriel Meza · Influence Chile<br>influencechile.cl · @influence.chile</div>
+  </div>
+</section>
+
+<!-- 0. QUÉ ENTENDIMOS -->
+<section class="seccion primera">
+  <h2>Qué entendimos de Situ</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Venden tranquilidad a hijos e hijas, no servicios a adultos mayores.</strong> El contenido le habla al que decide y paga, con respeto por el que recibe el cuidado.</li>
+    <li><strong>Las redes no son su canal principal de adquisición.</strong> Su trabajo es sostener la confianza de quien ya los conoció por recomendación, Google o el médico tratante, y que al revisar Instagram o LinkedIn encuentre una marca seria, activa y con respaldo clínico visible.</li>
+    <li><strong>El riesgo en salud es prometer de más.</strong> Cada pieza pasa por un filtro de lo que sí se puede decir, que definimos con ustedes en la semana 1.</li>
+  </ul>
+  <p>Por eso esta propuesta prioriza calidad sobre volumen: pocas piezas, educativas, con el equipo clínico real al frente. Y recomienda que el primer contacto con una familia lo sigan dando ustedes, no una agencia.</p>
+
+  <h3>La propuesta en una mirada</h3>
+  <div class="resumen">
+    <div><div class="k">Plan</div><div class="v">Crecimiento</div><div class="s">mezcla ajustada a Situ</div></div>
+    <div><div class="k">Inversión mensual</div><div class="v">$450.000</div><div class="s">neto + IVA · $535.500 con IVA · ≈ USD 550</div></div>
+    <div><div class="k">Compromiso</div><div class="v">Sin permanencia</div><div class="s">aviso de término con un mes · inicio en 10 días hábiles</div></div>
+  </div>
+  <p>Las páginas siguientes responden, en el mismo orden, los diez puntos de su correo.</p>
+</section>
+
+<!-- 1. PLANIFICACIÓN -->
+<section class="seccion">
+  <h2><span class="num">1.</span>Planificación y calendario mensual</h2>
+  <div class="linea"></div>
+  <p>Un calendario mensual, entregado el día 20 del mes anterior, con cada pieza definida: objetivo, formato, gancho, texto en pantalla, copy y fecha. Ustedes lo aprueban en 48 horas, con una ronda de cambios incluida. Trabajamos sobre <strong>cuatro pilares fijos</strong>, para que la cuenta se entienda de un vistazo:</p>
+  <table>
+    <tr><th style="width:26%">Pilar</th><th style="width:30%">Para qué sirve</th><th>Ejemplo de pieza</th></tr>
+    <tr><td><strong>Decidir</strong> (para el hijo/a)</td><td>Bajar la ansiedad de la decisión</td><td>"5 señales de que tu papá ya necesita apoyo en casa"</td></tr>
+    <tr><td><strong>El equipo</strong></td><td>Mostrar quién entra a la casa</td><td>La geriatra explica en 40 segundos qué es un plan de cuidado</td></tr>
+    <tr><td><strong>Cómo funciona Situ</strong></td><td>Quitar la incertidumbre del servicio</td><td>"Qué pasa en la primera visita, paso a paso"</td></tr>
+    <tr><td><strong>Familias</strong></td><td>Prueba social con cuidado</td><td>Testimonio de una hija, con autorización, sin exponer al adulto mayor</td></tr>
+  </table>
+  <p>Hay un pilar que <strong>no</strong> proponemos: tendencias, audios virales y humor. En esta categoría restan.</p>
+
+  <h2 style="margin-top:9mm"><span class="num">2.</span>Cantidad y tipo de piezas</h2>
+  <div class="linea"></div>
+  <p>El Plan Crecimiento trae 8 reels, 8 publicaciones y 12 historias al mes. Para Situ proponemos usar esa capacidad así:</p>
+  <table>
+    <tr><th style="width:24%">Formato</th><th style="width:14%">Al mes</th><th>Qué son</th></tr>
+    <tr><td><strong>Carruseles educativos</strong></td><td>6</td><td>Las piezas de "Decidir" y "Cómo funciona". Son las que se guardan y se reenvían entre hermanos: en esta categoría, el formato que más confianza construye.</td></tr>
+    <tr><td><strong>Reels</strong></td><td>6</td><td>3 con el equipo clínico hablando a cámara (grabados por ustedes con el celular siguiendo nuestra pauta de guion, encuadre y luz; nosotros editamos), 2 de proceso o día a día del cuidado, 1 testimonio o historia de familia. Nada de bailes.</td></tr>
+    <tr><td><strong>Posts estáticos</strong></td><td>2</td><td>Datos, frases del equipo, avisos de talleres y charlas.</td></tr>
+    <tr><td><strong>Historias</strong></td><td>12</td><td>Reutilización de lo anterior en formato corto, preguntas frecuentes, agenda de talleres, encuestas simples.</td></tr>
+  </table>
+  <p>Son 14 piezas de feed al mes, menos de las 16 que trae el plan, a propósito: cambiamos dos reels por más tiempo de producción en cada carrusel. Si prefieren el conteo estándar, se mantiene.</p>
+</section>
+
+<!-- 3 y 4 -->
+<section class="seccion">
+  <h2><span class="num">3.</span>Diseño, copy y edición</h2>
+  <div class="linea"></div>
+  <p>Todo incluido en el plan: diseño gráfico con la identidad de Situ (colores, tipografías y plantillas que definimos en la semana 1 para que todo se vea de la misma casa), copy de cada pieza y de cada caption, edición de video con subtítulos quemados (el 85% de los reels se ve sin sonido) y portadas uniformes. Una ronda de ajustes por pieza.</p>
+
+  <h2 style="margin-top:9mm"><span class="num">4.</span>Grabación presencial en Santiago</h2>
+  <div class="linea"></div>
+  <p><strong>No está incluida en el plan, y no es imprescindible.</strong> Lo decimos de frente porque depende del contenido que se quiera generar, y en el caso de Situ la mayor parte no la necesita:</p>
+  <ul>
+    <li>Los <strong>carruseles y posts</strong> son diseño: se hacen con fotos que ya tienen, fotos de archivo profesional y la identidad gráfica que definimos en la semana 1.</li>
+    <li>Los <strong>reels del equipo clínico</strong> se graban con el celular de alguien de Situ, siguiendo una pauta nuestra por pieza: qué decir en 40 segundos, dónde pararse, cómo encuadrar, con qué luz. Son 60 a 90 minutos al mes de una persona del equipo. Nosotros editamos, subtitulamos y ponemos las portadas. El resultado se ve profesional porque la edición lo es, no por la cámara.</li>
+    <li>Los <strong>testimonios de familias</strong> se graban igual, o por videollamada grabada cuando la familia prefiere no recibir a nadie en la casa.</li>
+  </ul>
+  <div class="nota">
+    <strong>Si en algún mes quieren una jornada presencial con nosotros</strong> (lanzamiento de un servicio, sesión de fotos del equipo completo, material para una temporada), se cotiza aparte: <strong>$90.000 netos por jornada de 3 horas en Santiago</strong>, con fotos y video para alimentar varios meses. La frecuencia la deciden ustedes; para una marca como Situ, una o dos al año suelen bastar.
+  </div>
+
+</section>
+
+<section class="seccion">
+  <h2><span class="num">5.</span>Programación, publicación y community management</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Programación y publicación: sí</strong>, incluidas. Nosotros publicamos en el horario definido.</li>
+    <li><strong>Respuesta a comentarios públicos: sí</strong>, incluida en Crecimiento. Respondemos lo que se puede responder (gracias, dónde atienden, link al sitio) y les derivamos de inmediato cualquier comentario que hable de un caso.</li>
+    <li><strong>Mensajes directos y consultas de familias: no recomendamos externalizarlos.</strong> Cuando una hija escribe "mi mamá se cayó y no sé qué hacer", quien contesta tiene que ser Situ. Lo que sí podemos hacer más adelante, y es nuestra otra especialidad, es que esa primera respuesta salga al instante y ordenada (qué comuna, qué necesita, cuándo la pueden llamar) antes de que llegue a su equipo. No va en esta propuesta; lo conversamos cuando tenga sentido.</li>
+  </ul>
+
+<!-- 6, 7 -->
+  <h2 style="margin-top:8mm"><span class="num">6.</span>Reutilización entre Instagram, Facebook y LinkedIn</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Facebook:</strong> todo lo de Instagram se publica también en Facebook (misma pieza, mismo calendario). Su comprador de 45 a 60 años está ahí más que en Instagram.</li>
+    <li><strong>LinkedIn:</strong> 4 piezas al mes adaptadas, los carruseles educativos y una del equipo, con el copy reescrito para LinkedIn (más institucional, sin emojis, con la mirada de "cómo se organiza el cuidado en Chile"). Incluido en el plan, sin costo adicional.</li>
+  </ul>
+
+  <h2 style="margin-top:8mm"><span class="num">7.</span>Reporte básico de resultados</h2>
+  <div class="linea"></div>
+  <p>Un reporte mensual de una página, los primeros 5 días del mes: alcance, seguidores, piezas guardadas y compartidas (la métrica que importa acá), comentarios, y las 3 piezas que mejor funcionaron con el porqué. Más una recomendación concreta para el mes siguiente. Sin métricas de vanidad ni 20 páginas de gráficos.</p>
+
+</section>
+
+<section class="seccion">
+  <h2><span class="num">8.</span>Qué necesitamos de Situ</h2>
+  <div class="linea"></div>
+  <table>
+    <tr><th style="width:50%">Una sola vez</th><th>Cada mes</th></tr>
+    <tr><td>Acceso como colaboradores a Instagram, Facebook y LinkedIn (no pedimos contraseñas)</td><td>Aprobar el calendario en 48 horas (una persona decide)</td></tr>
+    <tr><td>Logo, colores, tipografías y fotos que ya tengan</td><td>60 a 90 minutos de una persona del equipo clínico para grabar los reels del mes con el celular, siguiendo nuestra pauta</td></tr>
+    <tr><td>Una reunión de 60 minutos para definir pilares, tono y <strong>qué no se puede decir</strong></td><td>Avisarnos talleres, charlas o novedades con una semana de anticipación</td></tr>
+    <tr><td>3 a 5 familias dispuestas a dar testimonio con autorización escrita (las conseguimos juntos)</td><td>Derivarnos cualquier consulta de prensa o comentario sensible que vean</td></tr>
+  </table>
+
+  <h2 style="margin-top:8mm"><span class="num">9.</span>Plazo mínimo y tiempo de inicio</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Sin permanencia mínima.</strong> Facturación mensual. Lo único que pedimos es <strong>aviso de término con un mes de anticipación</strong>, para cerrar el calendario en curso y entregar todo el material producido ordenado. Recomendamos evaluar a los 90 días porque antes de eso el contenido no alcanza a madurar, pero la decisión de seguir es de ustedes cada mes.</li>
+    <li><strong>Inicio: 10 días hábiles después de la confirmación.</strong> Semana 1: reunión de pilares, identidad gráfica y pauta de grabación para el equipo. Semana 2: primer calendario aprobado y primeras publicaciones.</li>
+  </ul>
+</section>
+
+<!-- 10. INVERSIÓN -->
+<section class="seccion">
+  <h2><span class="num">10.</span>Inversión</h2>
+  <div class="linea"></div>
+  <table>
+    <tr><th>Concepto</th><th style="width:19%">Mensual neto</th><th style="width:19%">Con IVA (19%)</th></tr>
+    <tr><td><strong>Plan Crecimiento, mezcla Situ.</strong> Estrategia y calendario mensual, 14 piezas de feed + 12 historias, diseño, copy y edición, pauta de grabación para su equipo, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual y gestión de Meta Ads si algún día la activan.</td><td class="n">$450.000</td><td class="n">$535.500</td></tr>
+    <tr><td><em>Opcional, solo si la piden:</em> jornada de grabación presencial en Santiago (3 horas)</td><td class="n">$90.000 por jornada</td><td class="n">$107.100</td></tr>
+  </table>
+  <div class="total">
+    <div class="l">Total mensual<strong>Plan Crecimiento · mezcla Situ</strong></div>
+    <div class="r"><div class="neto">$450.000</div><div class="iva">netos · $535.500 con IVA · ≈ USD 550</div></div>
+  </div>
+  <p style="font-size:9pt;color:#4a6a6a">Referencia en dólares al observado del 6 de octubre de 2026 (~$975 por dólar). Todos los valores están en pesos chilenos, netos, con el IVA indicado aparte; la facturación es en pesos.</p>
+
+  <div class="nota coral">
+    <strong>Lo que no está incluido, para que no haya sorpresas:</strong> inversión en pauta de Meta (si alguna vez la quieren, la gestión ya está incluida y el presupuesto se paga directo a Meta; recomendamos desde $200.000 al mes solo si el objetivo es visibilidad local en el sector oriente), Google Ads, y producción de piezas fuera del calendario, que se cotizan aparte.
+  </div>
+
+  <h3>Alternativas, para que la decisión sea suya</h3>
+  <div class="alt">
+    <div>
+      <h4>Plan Presencia</h4>
+      <div class="precio">$350.000 neto · $416.500 con IVA · ≈ USD 427</div>
+      4 reels + 4 publicaciones + 8 historias al mes, sin respuesta a comentarios. Alcanza para una presencia correcta y constante; se queda corto en video del equipo, que es lo que más confianza da en esta categoría.
+    </div>
+    <div>
+      <h4>Crecimiento + jornada trimestral</h4>
+      <div class="precio">~$480.000 neto promedio mensual</div>
+      El plan más una jornada presencial con nosotros cada tres meses para renovar el banco de fotos y grabar al equipo completo. Es la opción si prefieren que nadie de Situ tenga que grabar nunca.
+    </div>
+  </div>
+</section>
+
+<!-- EJEMPLOS -->
+<section class="seccion">
+  <h2>Ejemplos de trabajo</h2>
+  <div class="linea"></div>
+  <p>No tenemos todavía un cliente de salud, y preferimos decirlo antes que estirar el portafolio. Lo más cercano, y creemos que es más cercano de lo que parece, es nuestro cliente activo de contenido: <strong>un asesor previsional independiente</strong>, registrado en la Superintendencia de Pensiones y fiscalizado por la SP y la CMF.</p>
+  <p>Es el rubro más parecido al de Situ que hemos trabajado: una persona mayor y su familia tomando una decisión que no se deshace (en sus palabras, "una decisión mal tomada puede significar una pensión menor de por vida"), un profesional regulado que tiene que transmitir seriedad y respaldo, y un límite claro de lo que se puede prometer. Su sitio: <a href="https://luisnunez.cl">luisnunez.cl</a>. Así se ve ese trabajo:</p>
+
+  <div class="ejemplo">
+    <h4>Pensión de sobrevivencia</h4>
+    <div class="meta">26 de septiembre de 2026 · <a href="https://www.instagram.com/reel/DdwOtBeOSvd/">instagram.com/reel/DdwOtBeOSvd</a></div>
+    <p><em>"La pensión de sobrevivencia no es automática para toda la familia."</em> El asesor a cámara explica quién califica y los plazos que las familias descubren demasiado tarde. <strong>Es la pieza más parecida a lo que haría Situ:</strong> le habla a la familia, no al afiliado, y convierte un trámite que asusta en algo que se entiende.</p>
+  </div>
+  <div class="ejemplo">
+    <h4>El SCOMP no es un trámite más</h4>
+    <div class="meta">6 de julio de 2026 · <a href="https://www.instagram.com/reel/Dad4hC7BPMb/">instagram.com/reel/Dad4hC7BPMb</a></div>
+    <p><em>"El SCOMP puede marcar una gran diferencia en el monto de tu pensión."</em> Toma una etapa del proceso que la gente firma sin leer y explica por qué importa. Su equivalente en Situ: "qué pasa en la primera visita" o "cómo se arma un plan de cuidado".</p>
+  </div>
+  <div class="ejemplo">
+    <h4>Cada caso previsional es un mundo</h4>
+    <div class="meta">13 de julio de 2026 · <a href="https://www.instagram.com/reel/DawXrf_OQSg/">instagram.com/reel/DawXrf_OQSg</a></div>
+    <p>Por qué no copiar la decisión del vecino: salud, edad del cónyuge, ahorros. Es el argumento de la asesoría personalizada, el mismo que Situ usa con sus planes a medida.</p>
+  </div>
+  <div class="ejemplo">
+    <h4>Jubilarte a los 60 o 65 no siempre conviene</h4>
+    <div class="meta">26 de junio de 2026 · <a href="https://www.instagram.com/reel/DaDeOtMOGDl/">instagram.com/reel/DaDeOtMOGDl</a></div>
+    <p>Desarma un supuesto que todos dan por hecho. Formato "mito vs. realidad", que en Situ sería "no, llevar a mi papá a un hogar no es la única opción".</p>
+  </div>
+
+  <p>Las cuatro son el asesor hablando a cámara con subtítulos: exactamente el formato de los 3 reels mensuales del equipo clínico que propone el punto 2. Y son un mes normal de producción de un Plan Presencia, no una campaña especial: lo que están viendo es constancia, no un esfuerzo puntual. Más piezas de otros rubros, para evaluar diseño y edición, en <a href="https://influencechile.cl">influencechile.cl</a> y en <a href="https://www.instagram.com/influence.chile">@influence.chile</a>.</p>
+
+  <div class="nota">
+    <strong>Una pieza de muestra para Situ, antes de que decidan.</strong> Como entendemos que lo que quieren ver es criterio y no portafolio, les proponemos hacer un carrusel sobre <em>"cómo saber si mi papá o mi mamá ya necesita apoyo en casa"</em>, con el tono y el respaldo clínico que ustedes manejan. Sin costo y sin compromiso. Si no les convence, no tiene sentido que sigamos conversando; si les convence, ya vieron exactamente cómo trabajaríamos con ustedes.
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="seccion">
+  <div class="cta">
+    <h2>¿Partimos?</h2>
+    <p>Si les hace sentido, coordinemos una reunión de 30 minutos para revisar la propuesta y resolver dudas. <strong>Díganos el día y la hora que les acomode y nos ajustamos.</strong> Si prefieren recibir primero la pieza de muestra y conversar después, también está bien.</p>
+    <div class="boton">Confirmar por correo o WhatsApp</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong><br>
+      Influence Chile · Agencia de marketing y desarrollo<br>
+      +56 9 6545 0723 · <a href="https://influencechile.cl">influencechile.cl</a> · Instagram <a href="https://www.instagram.com/influence.chile">@influence.chile</a>
+    </div>
+    <p class="pie">Propuesta válida por 30 días desde el 6 de octubre de 2026. Valores en pesos chilenos, netos, IVA indicado aparte. La referencia en dólares corresponde al observado de la fecha y es solo orientativa.</p>
+  </div>
+</section>
+
+</body>
+</html>
