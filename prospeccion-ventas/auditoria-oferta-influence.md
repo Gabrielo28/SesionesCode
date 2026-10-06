@@ -58,7 +58,7 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
 | 1 | `propuesta/generar.js` | Presencia **$290.000**; 8 publicaciones, historias 3×semana, CM incluido, "Meta Ads básico hasta 2 campañas" | Lo de la web: $350.000; 4 reels + 4 posts + 8 historias, **sin CM** | Una propuesta generada contradice la web que el cliente ya vio. **Corregido hoy** (ver §4). |
 | 2 | `generar.js` | Crecimiento: 12 publicaciones + 4 reels, historias diarias, reunión de estrategia | Web: 8 reels + 8 posts + 12 historias, monitoreo de comentarios | Prometemos cosas distintas según el documento. **Corregido hoy.** |
 | 3 | `generar.js` | Autoridad: 20 publicaciones, 8 reels, "producción en terreno", TikTok Ads y Google Ads incluidos, reporte quincenal | Web: 12 reels + 12 posts + 20 historias; **Google Ads es aparte** según la propia web | El generador regalaba Google Ads que la web cobra. **Corregido hoy.** |
-| 4 | `generar.js` vs web | "Contenido Estratégico" = *sesión de producción en terreno* | Web: *"3 reels + 12 posts + 12 historias (ideas)"* = un pack de ideas | Son dos productos distintos con el mismo nombre y precio. **Decisión pendiente** (ver §3). |
+| 4 | `generar.js` vs web | "Contenido Estratégico" = *sesión de producción en terreno* | Web: *"3 reels + 12 posts + 12 historias (ideas)"* | **Resuelto el 6-oct por Gabriel:** es un **informe de estrategia de contenido** con cada post, reel e historia detallados. El generador quedó con esa definición. Consecuencia: **la jornada de grabación presencial no existe como producto ni tiene precio** — ver §3.1. |
 | 5 | Propuesta CEOS (jul-2026) | Toda la tabla de planes con los valores viejos | — | Si CEOS la guardó y vuelve, hay que explicar el cambio de precio. |
 | 6 | Web, sección "Nuestro trabajo" | Pestaña "Para clientes" carga 10 piezas desde Instagram | — | Si Instagram no responde (pasa seguido con embeds), la sección queda vacía con el texto "Muy pronto sumaremos ejemplos…". Vale verificarlo en el celular antes de mandar el link a Situ. |
 | 7 | Tracker de contenido | Planes pactados con 5 clientes: YEET, Kurakavi FC, Remate Rivera (Crecimiento), Luis Núñez, World King (Presencia) | — | La pestaña **Registro está vacía**: no hay evidencia de cumplimiento mes a mes. Para Situ no importa; para operar, sí. |
@@ -67,10 +67,18 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
 
 ## 3. Lo que hace falta decidir para responder a Situ (no lo puedo decidir yo)
 
-1. **Qué es "Contenido Estratégico" ($69.990):** ¿pack de ideas (web) o jornada de grabación en
-   terreno (generador)? Situ pregunta explícitamente por grabación presencial en Santiago. Si es
-   la jornada, es exactamente lo que hay que ofrecerle y el precio ya existe. Si es el pack de
-   ideas, hay que ponerle precio a la jornada de grabación.
+1. **Precio de la jornada de grabación presencial.** Resuelto que "Contenido Estratégico" es el
+   informe de estrategia, la grabación en terreno no tiene producto propio. Situ la pide
+   explícitamente ("si incluyen jornadas de grabación o fotografía presencial en Santiago y con
+   qué frecuencia"). Dos caminos:
+   - **Absorberla** en el plan Crecimiento para Situ (1 jornada de 3 horas al mes, en Santiago,
+     dentro de los $450.000). Es lo más simple y lo que más pesa en su decisión; el margen lo
+     recupera el plan a 12 meses.
+   - **Cotizarla aparte** como línea nueva. Referencia, no precio de catálogo: una jornada de 3
+     horas con una persona en Santiago suele quedar entre $80.000 y $120.000 netos; con
+     $90.000 el total con IVA (~$643.000 ≈ USD 660) sigue dentro del rango de Situ.
+   Lo que se decida acá conviene después ponerlo en la web, porque lo van a preguntar todos
+   los clientes de servicios.
 2. **Ejemplos en salud / confianza.** No hay ningún cliente de salud publicado. Lo más cercano:
    la propuesta a Clínica Dental CEOS (julio 2026 — ¿se cerró o quedó en propuesta?) y los
    clientes previsionales (Asesoría Previsional, Orienta) que aparecen en Make y Meta Ads: servicio

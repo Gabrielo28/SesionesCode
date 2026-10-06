@@ -19,15 +19,20 @@ servicios de confianza; reunión breve si tiene sentido.
 **Lo que esto significa para nosotros:** no quieren el plan de más reels. Quieren pocas piezas
 que no den vergüenza frente a una familia que está decidiendo quién cuida a su mamá. El plan que
 calza en presupuesto y en espíritu es **Crecimiento ($450.000 neto)** con la mezcla de piezas
-inclinada a carruseles educativos y video del equipo clínico, más una jornada de grabación
-mensual. Todo con IVA queda dentro de los USD 700.
+inclinada a carruseles educativos y video del equipo clínico, y una jornada de grabación mensual
+que es lo que más van a valorar. Con IVA son $535.500 ≈ USD 550: queda holgura dentro de los
+USD 700, que conviene **no** llenar — un precio bajo el tope les da la sensación de que no
+estiramos la cotización al presupuesto que ellos mismos dijeron.
 
 ---
 
 ## Lo que tienes que confirmarme antes de enviar (marcado `[CONFIRMAR]` en el texto)
 
-1. Qué es "Contenido Estratégico" ($69.990): si es la jornada de grabación, el precio de abajo
-   está bien. Si es el pack de ideas, hay que ponerle precio a la jornada.
+1. **Precio de la jornada de grabación mensual** (3 horas, Santiago). "Contenido Estratégico" es
+   el informe de estrategia, así que la grabación no tiene precio de catálogo. Opción A: incluida
+   en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
+   Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
+   USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
 2. Ejemplos: ¿CEOS se cerró como cliente? ¿A Asesoría Previsional / Orienta se les hizo contenido
    o solo pauta? ¿Cuáles de las 10 piezas "para clientes" de la web son de servicios de confianza?
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
@@ -51,11 +56,11 @@ mensual. Todo con IVA queda dentro de los USD 700.
 > prioriza piezas educativas y video del equipo clínico real sobre cantidad, y recomienda **no**
 > contratar gestión de mensajes: ese primer contacto con una familia lo deben dar ustedes.
 >
-> **Sobre el presupuesto:** la propuesta queda en **$450.000 netos mensuales + IVA** por el plan,
-> más una jornada de grabación mensual presencial en Santiago de $69.990 netos `[CONFIRMAR]`.
-> Con IVA son $618.788, que al dólar observado de hoy equivalen a unos USD 635 — dentro del rango
-> que indicaron. Todos los valores de la propuesta están en pesos, netos, con el IVA indicado
-> aparte; el dólar es solo referencia.
+> **Sobre el presupuesto:** la propuesta queda en **$450.000 netos mensuales + IVA**, con una
+> jornada de grabación presencial al mes en Santiago incluida `[CONFIRMAR opción A/B]`. Con IVA
+> son $535.500, que al dólar observado de hoy equivalen a unos USD 550 — dentro del rango que
+> indicaron, con holgura. Todos los valores de la propuesta están en pesos, netos, con el IVA
+> indicado aparte; el dólar es solo referencia.
 >
 > Sobre ejemplos en salud: lo más cercano que tenemos es `[CONFIRMAR: CEOS / previsional /
 > piezas de la web]`. Y como entiendo que quieren ver criterio antes que portafolio, les propongo
@@ -122,10 +127,10 @@ plantillas que definimos en la semana 1 para que todo se vea de la misma casa), 
 pieza y de cada caption, edición de video con subtítulos quemados (el 85% de los reels se ve
 sin sonido) y portadas uniformes. Una ronda de ajustes por pieza.
 
-### 4. Grabación presencial en Santiago `[CONFIRMAR precio]`
+### 4. Grabación presencial en Santiago `[CONFIRMAR opción A/B]`
 
 **Una jornada de grabación al mes, de 3 horas, en Santiago** (su oficina en Las Condes, un
-domicilio con autorización o un lugar neutro), por **$69.990 netos**. De cada jornada salen los
+domicilio con autorización o un lugar neutro), **incluida en el plan**. De cada jornada salen los
 3 reels del equipo clínico del mes, fotos para los carruseles y material de historias para 4
 semanas. Necesitamos 1 o 2 personas del equipo (geriatra, enfermera, kinesióloga — rotando) por
 unos 60-90 minutos dentro de esa jornada.
@@ -182,12 +187,14 @@ vanidad ni 20 páginas de gráficos.
 
 | Concepto | Mensual neto | Con IVA (19%) |
 |---|---|---|
-| Plan Crecimiento (contenido, diseño, copy, edición, publicación, comentarios, reporte, adaptación a Facebook y LinkedIn, gestión de Meta Ads si la activan) | $450.000 | $535.500 |
-| Jornada de grabación presencial mensual `[CONFIRMAR]` | $69.990 | $83.288 |
-| **Total** | **$519.990** | **$618.788** |
+| Plan Crecimiento: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición, 1 jornada de grabación mensual en Santiago, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual, gestión de Meta Ads si la activan | $450.000 | $535.500 |
+| **Total** | **$450.000** | **$535.500** |
 
-Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 635 con IVA**. La facturación
+Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 550 con IVA**. La facturación
 es en pesos chilenos.
+
+`[Si eliges la opción B: agregar la fila "Jornada de grabación presencial mensual — $90.000 /
+$107.100" → total $540.000 neto / $642.600 con IVA ≈ USD 660.]`
 
 **Lo que no está incluido y conviene decir:** pauta en Meta (si alguna vez la quieren, la gestión
 ya está incluida y la inversión se paga directo a Meta — recomendamos desde $200.000/mes solo si

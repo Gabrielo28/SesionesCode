@@ -67,7 +67,7 @@ const PLANES = {
 // Google Ads no va en ningún plan (la web lo cotiza aparte: armado $150.000, gestión desde $250.000).
 const ADDONS = {
   meta_ads:    { nombre: 'Gestión avanzada de Meta Ads', min: 150000, max: 300000, detalle: 'Sobre la gestión incluida: estructura completa, públicos, testeo de creativos y optimización semanal.' },
-  contenido:   { nombre: 'Contenido Estratégico',        min: 69990,                detalle: 'Pack de 3 reels + 12 posts + 12 historias (ideas) para alimentar el mes completo.' },
+  contenido:   { nombre: 'Contenido Estratégico',        min: 69990,                detalle: 'Informe de estrategia de contenido: 3 reels, 12 posts y 12 historias detallados (ángulo, gancho, copy y objetivo de cada pieza) para que el cliente produzca o publique con rumbo.' },
   influencers: { nombre: 'Campaña de Influencers',       min: 99990,                detalle: '2 creadoras +10k · reels + historias: casting, negociación, brief, seguimiento y reporte.' }
 };
 
