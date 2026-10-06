@@ -39,9 +39,13 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    2-3 publicaciones suyas** (abres la publicación → "⋯" → "Copiar enlace"): una de él hablando a
    cámara y un carrusel educativo. Y su OK para citarlo con nombre. Más 1-2 piezas de otras marcas
    de la web, solo si son persona a cámara o carrusel.
-   *Dato lateral para Luis:* su cuenta no aparece en Google ni Bing buscando su nombre + "asesor
-   previsional". Eso se arregla con el sitio luisnunez.cl enlazando al Instagram y viceversa —
-   vale mencionárselo en la próxima reunión mensual.
+   *Dato lateral para Luis (para su próxima reunión mensual, no para Situ):* luisnunez.cl **no
+   enlaza al Instagram** ni tiene blog ni testimonios, y el Instagram no aparece en Google ni Bing
+   buscando su nombre + "asesor previsional". Son tres arreglos chicos — ícono de Instagram en el
+   sitio, link al sitio en la bio, y 2-3 testimonios en la web — que suben la credibilidad justo
+   donde su cliente la busca. Y el contacto del sitio es WhatsApp manual con horario hasta las
+   20:00: es candidato natural a "WhatsApp que responde y agenda" cuando el plan de redes esté
+   maduro.
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
 4. Sin permanencia mínima, evaluación a 90 días, inicio en 10 días hábiles — ¿sí?
 5. Las dos fechas de reunión que ofrecemos.
@@ -225,11 +229,13 @@ del calendario (se cotizan aparte).
 
 ### Ejemplos de trabajo `[CONFIRMAR 2-3 links de @luisnunez.cl + permiso para citarlo]`
 
-**Primero y con nombre: Luis Núñez, asesor previsional — instagram.com/luisnunez.cl.** Se presenta así: *"Nuestro cliente
-activo de contenido es un asesor previsional especializado en pensiones. Es el rubro más parecido
-al de Situ que hemos trabajado: una persona mayor y su familia decidiendo algo importante, un
-profesional que tiene que transmitir seriedad y respaldo, y un límite claro de lo que se puede
-prometer. Así se ve ese trabajo:"* — y debajo **2 o 3 piezas de Luis**, idealmente una de él
+**Primero y con nombre: Luis Núñez, asesor previsional — instagram.com/luisnunez.cl · luisnunez.cl.**
+Se presenta así: *"Nuestro cliente activo de contenido es un asesor previsional independiente,
+registrado en la Superintendencia de Pensiones y fiscalizado por la SP y la CMF. Es el rubro más
+parecido al de Situ que hemos trabajado: una persona mayor y su familia tomando una decisión que
+no se deshace — en sus palabras, 'una decisión mal tomada puede significar una pensión menor de
+por vida' —, un profesional regulado que tiene que transmitir seriedad y respaldo, y un límite
+claro de lo que se puede prometer. Así se ve ese trabajo:"* — y debajo **2 o 3 piezas de Luis**, idealmente una de él
 hablando a cámara explicando algo de pensiones y un carrusel educativo, cada una con una línea
 de qué resolvía (ej. "explicar un trámite sin tecnicismos para que el hijo se lo pueda reenviar
 al papá").
