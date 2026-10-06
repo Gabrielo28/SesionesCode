@@ -33,12 +33,15 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
    Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
    USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
-2. Ejemplos: el único cliente activo de contenido es **Luis Núñez, asesor previsional,
-   @luisnunez.cl** — el mejor ejemplo posible para Situ (mismo comprador: persona mayor + familia
-   decidiendo). Instagram no se puede leer desde acá, así que necesito que **copies los links de
-   2-3 publicaciones suyas** (abres la publicación → "⋯" → "Copiar enlace"): una de él hablando a
-   cámara y un carrusel educativo. Y su OK para citarlo con nombre. Más 1-2 piezas de otras marcas
-   de la web, solo si son persona a cámara o carrusel.
+2. Ejemplos: **resuelto.** Cuatro reels de Luis Núñez (@luisnunez.cl) ya están en la sección de
+   ejemplos con su línea de contexto; solo falta **su OK para citarlo con nombre**. Las otras
+   marcas de la web quedan fuera: ninguna de las 10 piezas es persona a cámara o carrusel
+   educativo que sume acá, y mezclar una bebida energética con cuidado de adultos mayores resta.
+   *Nota interna (no va a Situ):* los cuatro reels tienen entre 5 y 21 likes y casi sin
+   comentarios. Para Situ es irrelevante — pedimos que juzguen tono y claridad — pero para Luis
+   es el tema de su próxima reunión: el contenido está bien hecho y no llega a nadie, y las tres
+   correcciones del sitio (link a Instagram, link al sitio en la bio, testimonios) son el primer
+   paso antes de pensar en pauta.
    *Dato lateral para Luis (para su próxima reunión mensual, no para Situ):* luisnunez.cl **no
    enlaza al Instagram** ni tiene blog ni testimonios, y el Instagram no aparece en Google ni Bing
    buscando su nombre + "asesor previsional". Son tres arreglos chicos — ícono de Instagram en el
@@ -235,10 +238,29 @@ registrado en la Superintendencia de Pensiones y fiscalizado por la SP y la CMF.
 parecido al de Situ que hemos trabajado: una persona mayor y su familia tomando una decisión que
 no se deshace — en sus palabras, 'una decisión mal tomada puede significar una pensión menor de
 por vida' —, un profesional regulado que tiene que transmitir seriedad y respaldo, y un límite
-claro de lo que se puede prometer. Así se ve ese trabajo:"* — y debajo **2 o 3 piezas de Luis**, idealmente una de él
-hablando a cámara explicando algo de pensiones y un carrusel educativo, cada una con una línea
-de qué resolvía (ej. "explicar un trámite sin tecnicismos para que el hijo se lo pueda reenviar
-al papá").
+claro de lo que se puede prometer. Así se ve ese trabajo:"* — y debajo estas piezas, con su línea
+de contexto:
+
+1. **Pensión de sobrevivencia** (26-sep-2026) — https://www.instagram.com/reel/DdwOtBeOSvd/
+   *"La pensión de sobrevivencia no es automática para toda la familia."* Luis a cámara explica
+   quién califica (cónyuge, conviviente civil, hijos menores, a veces los padres) y los plazos que
+   las familias descubren demasiado tarde. **Es la pieza más parecida a lo que haría Situ:** le
+   habla a la familia, no al afiliado, y convierte un trámite que asusta en algo que se entiende.
+2. **El SCOMP no es un trámite más** (6-jul-2026) — https://www.instagram.com/reel/Dad4hC7BPMb/
+   *"El SCOMP puede marcar una gran diferencia en el monto de tu pensión."* Toma una etapa del
+   proceso que la gente firma sin leer y explica por qué importa. Equivalente en Situ: "qué pasa
+   en la primera visita" o "cómo se arma un plan de cuidado".
+3. **Cada caso previsional es un mundo** (13-jul-2026) — https://www.instagram.com/reel/DawXrf_OQSg/
+   Por qué no copiar la decisión del vecino: salud, edad del cónyuge, ahorros. Es el argumento de
+   la asesoría personalizada — el mismo que Situ usa con sus planes a medida.
+4. *(Opcional)* **Jubilarte a los 60 o 65 no siempre conviene** (26-jun-2026) —
+   https://www.instagram.com/reel/DaDeOtMOGDl/ — desarma un supuesto que todos dan por hecho.
+   Formato "mito vs. realidad", que en Situ sería "no, llevar a mi papá a un hogar no es la única
+   opción".
+
+Las cuatro son de Luis hablando a cámara con subtítulos: exactamente el formato de los 3 reels
+mensuales del equipo clínico que propone el punto 2. **No se muestran cifras de alcance ni likes**
+— la sección es para que vean tono, claridad y constancia, no métricas.
 
 Luis está en Plan Presencia (4 reels, 4 posts, 8 historias al mes): eso también sirve como
 prueba de constancia — *"lo que ven es un mes normal de producción, no una campaña especial"*.
