@@ -22,7 +22,7 @@
 | [archivo/](archivo/) | Lotes 1-3 de mensajes anteriores, reemplazados por `mensajes-frio-v2.md`. Se guardan solo como historial |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [auditoria-oferta-influence.md](auditoria-oferta-influence.md) | Qué vende la web, qué no define, inconsistencias internas corregidas y decisiones de política (grabación, permanencia, LinkedIn) |
-| [situ/](situ/) | **Lead entrante Situ (situ.care)**: brief y decisiones (`respuesta-situ.md`), propuesta en HTML/PDF de 9 páginas que responde sus 10 puntos (`propuesta-situ.pdf`) y el correo listo para pegar (`correo-situ.md`) |
+| [situ/](situ/) | **Lead entrante Situ (situ.care)**: brief y decisiones (`respuesta-situ.md`), propuesta en HTML/PDF de 9 páginas que responde los 9 puntos de su correo más inversión y ejemplos (`propuesta-situ.pdf`) y el correo listo para pegar (`correo-situ.md`) |
 | [../diagnostico-workflows.html](../diagnostico-workflows.html) | Cuestionario web público: autodiagnóstico de 2 minutos que llega calificado por WhatsApp |
 
 ---

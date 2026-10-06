@@ -7,13 +7,24 @@ Asunto: *"Cotización creación de contenido y gestión de redes – Situ"*. Lle
 **Quién es Situ:** cuidado integral de adultos mayores a domicilio ("ageing in place"): geriatría,
 cuidadoras, kinesiología, enfermería, podología, fonoaudiología y terapia ocupacional coordinados.
 Razón social AIP SpA, Alonso de Córdova 5710 of. 203, Las Condes. Operan en RM, Valparaíso y
-O'Higgins; foco comercial en el sector oriente. Tienen blog, talleres y charlas. Se definen como
+O'Higgins; foco comercial en el sector oriente (la propuesta lo refleja en "Qué entendimos" y
+en el pilar "Cómo funciona Situ"). Tienen blog, talleres y charlas. Se definen como
 *"tu Sherpa en el camino del cuidado"*. Redes: Instagram, Facebook, LinkedIn.
+
+**Transcripción literal de la lista del correo** (9 puntos, no 10; "Inversión" lo agregamos nosotros):
+*planificación y calendario mensual; cantidad y tipo de piezas (posts/carruseles/reels u otros
+formatos); diseño, copy y edición; si incluyen jornadas de grabación o fotografía presencial en
+Santiago y con qué frecuencia; programación/publicación y community management, si lo
+recomiendan; reutilización de contenido entre Instagram, Facebook y/o LinkedIn; reporte básico de
+resultados; qué material o dedicación necesitarían de parte de Situ; plazo mínimo de contratación
+y tiempo de inicio.* Además: ejemplos en salud, bienestar o servicios de confianza; indicar si los
+valores son netos o con IVA; reunión breve si tiene sentido. Firma "Equipo Situ"; Jorge escribe
+"soy parte del equipo", no se presenta como quien decide.
 
 **Lo que piden, en sus palabras:** contenido antes que gestión; *"las redes no son nuestro
 principal canal de adquisición"*; *"presencia profesional, consistente y confiable, priorizando
 calidad por sobre volumen"*; el comprador es *"el hijo o hija de la persona mayor"*; presupuesto
-**USD 500–700 mensuales**, aclarar neto o con IVA; detallar 10 puntos (abajo); ejemplos en salud o
+**USD 500–700 mensuales**, aclarar neto o con IVA; detallar 9 puntos (abajo), más ejemplos; ejemplos en salud o
 servicios de confianza; reunión breve si tiene sentido.
 
 **Lo que esto significa para nosotros:** no quieren el plan de más reels. Quieren pocas piezas
@@ -227,7 +238,7 @@ vanidad ni 20 páginas de gráficos.
   gráfica y pauta de grabación para el equipo. Semana 2: primer calendario aprobado y primeras
   publicaciones.
 
-### 10. Inversión
+### Inversión (no es un punto de su lista; va después de los 9)
 
 | Concepto | Mensual neto | Con IVA (19%) |
 |---|---|---|
