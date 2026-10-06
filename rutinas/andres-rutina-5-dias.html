@@ -1,9 +1,11 @@
 <title>Rutina Andrés 5 Días</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
-<style>
+<style id="page-style">
   /* Layout: una columna de lectura (max 920px). Cabecera oscura, tira semanal,
-     glosario de técnicas, 5 bloques de sesión con tabla y notas finales. */
+     glosario de técnicas, 5 bloques de sesión con tabla y notas finales.
+     El contenido se renderiza desde el JSON #routine-data; el modo edición
+     (solo para quien puede escribir el artefacto) republica la página. */
   :root {
     --bg: #F2F4F7;
     --surface: #FFFFFF;
@@ -14,6 +16,7 @@
     --accent: #1B55D4;
     --accent-ink: #FFFFFF;
     --accent-soft: #E1E9FB;
+    --danger: #B42318;
     --head-bg: #13171E;
     --head-ink: #F4F6FA;
     --head-muted: #9AA4B5;
@@ -23,19 +26,19 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
-      --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743;
+      --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743; --danger: #F08A80;
       --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
-    --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743;
+    --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743; --danger: #F08A80;
     --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
   body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin: 0; }
-  .wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 0 56px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 0 96px; }
   h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
   p { margin: 0; }
   .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
@@ -72,7 +75,6 @@
   .guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
   .g { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
   .g .t { font-family: var(--font-display); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
-  .g .t em { font-style: normal; color: var(--accent); }
   .g p { font-size: 14px; color: var(--muted); }
 
   .session { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); }
@@ -111,211 +113,343 @@
   li { max-width: 65ch; }
   .foot { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 20px; }
 
+  /* Modo edición */
+  .editing [data-f] { outline: 1px dashed var(--accent); outline-offset: 1px; background: var(--accent-soft); min-height: 1.4em; cursor: text; }
+  .editing [data-f]:focus { outline: 2px solid var(--accent); }
+  .editing [data-f]:empty::before { content: attr(data-ph); color: var(--muted); opacity: .7; }
+  .editing td.c { white-space: normal; }
+  .editing td.tech .ta { margin-top: 6px; }
+  .rm { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--danger); width: 30px; height: 30px; cursor: pointer; }
+  .rm:hover, .rm:focus-visible { border-color: var(--danger); outline: none; }
+  .add-row { margin: 10px 18px 14px; font: 600 13px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; border: 1px dashed var(--accent); background: transparent; color: var(--accent); padding: 8px 12px; cursor: pointer; }
+  .add-row:hover, .add-row:focus-visible { background: var(--accent-soft); outline: none; }
+
+  .toolbar { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--head-bg); color: var(--head-ink); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; z-index: 10; border-top: 1px solid #2A303B; }
+  .toolbar .st { font-size: 13px; color: var(--head-muted); margin-right: auto; min-width: 0; }
+  .toolbar button { font: 700 14px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .toolbar button.ghost { background: transparent; color: var(--head-ink); border-color: #4A5260; }
+  .toolbar button:disabled { opacity: .55; cursor: default; }
+  .toolbar button:focus-visible { outline: 2px solid var(--head-ink); outline-offset: 2px; }
+
   @media print {
     body { background: #fff; color: #000; font-size: 12px; }
     .head { background: #000 !important; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .session, section { break-inside: avoid; page-break-inside: avoid; }
     table { min-width: 0; }
+    .toolbar { display: none; }
   }
 </style>
 
-<div class="wrap">
+<script type="application/json" id="routine-data">
+{
+ "titulo": "Rutina Andrés 5 Días",
+ "cliente": "Andrés",
+ "subtitulo": "5 días",
+ "eyebrow": "Planificación de entrenamiento · Rutina 5 días",
+ "semana": [
+  {"d": "Lun", "n": "Pull", "s": "Tirones de pierna y torso", "on": true},
+  {"d": "Mar", "n": "Push", "s": "Empujes de pierna y torso", "on": true},
+  {"d": "Mié", "n": "Accesorios", "s": "Gemelo · hombro · brazos", "on": true},
+  {"d": "Jue", "n": "Torso", "s": "Pecho · espalda · hombro · bíceps", "on": true},
+  {"d": "Vie", "n": "Pierna", "s": "Cuádriceps · isquios · gemelo", "on": true},
+  {"d": "Sáb", "n": "Descanso", "s": "", "on": false},
+  {"d": "Dom", "n": "Descanso", "s": "", "on": false}
+ ],
+ "notaSemana": "Los días Pull y Push son de cuerpo completo: en Pull entran todos los tirones (peso muerto rumano, dominadas, remos, curl femoral, bíceps) y en Push todos los empujes (press banca, sentadilla, extensiones, fondos, tríceps). Los tres días restantes son especializados.",
+ "glosario": [
+  {"t": "RIR · Reps en reserva", "p": "Repeticiones que podrías hacer y no haces. RIR 0 es llegar al fallo. Donde no se indica, trabaja con RIR 1–2."},
+  {"t": "Top set / Back-off", "p": "Una serie pesada principal (top set) y después series más ligeras (back-off) con más repeticiones."},
+  {"t": "Rest-pause", "p": "Llegas cerca del fallo, descansas 5–10 segundos y sigues hasta completar las repeticiones objetivo."},
+  {"t": "Myoreps", "p": "Serie activadora cerca del fallo, descanso de 5 segundos y mini-series de pocas reps, repetido 2–3 veces."},
+  {"t": "Drop set", "p": "Al terminar la serie bajas el peso de inmediato y sigues sin descanso hasta el fallo."},
+  {"t": "Deadstop", "p": "Cada repetición arranca desde parado, sin rebote ni inercia. Más control y más fuerza desde abajo."}
+ ],
+ "dias": [
+  {
+   "nombre": "Pull full body", "dia": "Lunes",
+   "focus": "Todos los tirones del cuerpo: cadena posterior, espalda y bíceps.",
+   "chips": ["Isquios", "Glúteo", "Dorsal", "Espalda alta", "Bíceps"],
+   "ejercicios": [
+    {"nombre": "Peso muerto rumano o piernas rígidas (RDL / STL)", "nota": "Cadera atrás, espalda neutra, barra pegada a las piernas.", "series": "3", "reps": "8", "tag": "", "tecnica": "Elige una de las dos variantes y mantenla todo el bloque."},
+    {"nombre": "Dominadas (pull ups)", "nota": "Pecho hacia la barra, sin balanceo. Lastre si sobran reps.", "series": "3", "reps": "10", "tag": "", "tecnica": ""},
+    {"nombre": "Curl femoral sentado", "nota": "Cadera pegada al asiento, bajada controlada.", "series": "2", "reps": "12–15", "tag": "", "tecnica": ""},
+    {"nombre": "Remo Gironda", "nota": "Remo en polea baja con torso inclinado atrás, codos pegados.", "series": "4", "reps": "6–8 · 3–5 · 10–12", "tag": "Top set + back-off", "tecnica": "1 top set 6–8 · 1 serie 3–5 · 2 back-off 10–12."},
+    {"nombre": "Jalón al pecho unilateral", "nota": "Un brazo. Tira del codo hacia la cadera y estira completo arriba.", "series": "2", "reps": "10 / lado", "tag": "", "tecnica": ""},
+    {"nombre": "Curl de bíceps", "nota": "Codos fijos, sin balanceo del torso.", "series": "3", "reps": "12", "tag": "Rest-pause", "tecnica": "Pausas de 5–10 segundos hasta completar las 12 reps."}
+   ],
+   "foot": "Descansos: 2–3 min en RDL, dominadas y remo Gironda; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Push full body", "dia": "Martes",
+   "focus": "Todos los empujes del cuerpo: pecho, cuádriceps, hombro y tríceps.",
+   "chips": ["Pecho", "Cuádriceps", "Hombro", "Tríceps"],
+   "ejercicios": [
+    {"nombre": "Press banca (bench press)", "nota": "Escápulas retraídas, pies firmes. Series pesadas, descanso completo.", "series": "4", "reps": "3–6", "tag": "", "tecnica": ""},
+    {"nombre": "Extensión de cuádriceps", "nota": "Pausa de 1 segundo arriba.", "series": "2", "reps": "12–15", "tag": "", "tecnica": ""},
+    {"nombre": "Elevaciones laterales", "nota": "El codo guía el movimiento, sin impulso.", "series": "3", "reps": "15", "tag": "", "tecnica": ""},
+    {"nombre": "Sentadilla (variante nueva)", "nota": "Profundidad completa con técnica limpia.", "series": "3", "reps": "8", "tag": "", "tecnica": ""},
+    {"nombre": "Fondos en paralelas sin lastre", "nota": "Foco en la profundidad: baja todo lo que permita el hombro sin dolor.", "series": "3", "reps": "Fallo", "tag": "Al fallo", "tecnica": "Anota las reps de cada serie."},
+    {"nombre": "Tríceps", "nota": "Extensión en polea o la variante que prefieras.", "series": "2", "reps": "12", "tag": "", "tecnica": ""}
+   ],
+   "foot": "Descansos: 3 min en press banca y sentadilla; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Accesorios", "dia": "Miércoles",
+   "focus": "Sin básicos. Gemelo, hombro posterior y lateral, brazos y trapecio.",
+   "chips": ["Gemelo", "Hombro", "Bíceps", "Tríceps", "Trapecio"],
+   "ejercicios": [
+    {"nombre": "Elevación de talón", "nota": "Rango completo: estira abajo 1 segundo y sube a la punta.", "series": "4", "reps": "15", "tag": "", "tecnica": ""},
+    {"nombre": "Face pull", "nota": "Tira hacia la frente con codos altos y rotación externa.", "series": "2", "reps": "15", "tag": "", "tecnica": ""},
+    {"nombre": "Curl con barra", "nota": "Apoya la barra abajo y arranca cada rep desde parado.", "series": "3", "reps": "6–8", "tag": "Deadstop", "tecnica": ""},
+    {"nombre": "Kaz press", "nota": "Press cerrado en Smith o barra bajando a la base del cuello, codos pegados.", "series": "3", "reps": "10", "tag": "", "tecnica": ""},
+    {"nombre": "Encogimientos con barra (shrugs)", "nota": "Sube los hombros recto hacia las orejas, pausa arriba.", "series": "4", "reps": "12", "tag": "", "tecnica": ""},
+    {"nombre": "Elevaciones laterales en polea", "nota": "Cable por detrás del cuerpo, tensión constante.", "series": "2", "reps": "15", "tag": "", "tecnica": ""}
+   ],
+   "foot": "Descansos: 60–90 s en todo. Sesión corta y de calidad técnica."
+  },
+  {
+   "nombre": "Torso", "dia": "Jueves",
+   "focus": "Pecho, espalda, hombro y bíceps con técnicas de intensidad.",
+   "chips": ["Pecho", "Espalda", "Hombro", "Bíceps"],
+   "ejercicios": [
+    {"nombre": "Press inclinado en Smith", "nota": "Banco a 30°, barra a la clavícula.", "series": "3", "reps": "10", "tag": "", "tecnica": ""},
+    {"nombre": "Remo en barra T", "nota": "Pecho apoyado o libre, tira con los codos hacia atrás.", "series": "4", "reps": "12", "tag": "", "tecnica": ""},
+    {"nombre": "Pullover en polea", "nota": "Brazos casi rectos, siente el dorsal en todo el recorrido.", "series": "3", "reps": "10", "tag": "", "tecnica": ""},
+    {"nombre": "Vuelo posterior", "nota": "Codos ligeramente flexionados, abre hacia atrás.", "series": "2", "reps": "Myoreps + recta", "tag": "Myoreps", "tecnica": "Serie 1: activadora, descansa 5 s y sigue, 2–3 veces. Serie 2: una serie recta normal."},
+    {"nombre": "Elevaciones laterales", "nota": "Sin impulso, el codo guía.", "series": "2", "reps": "15 + drop", "tag": "Drop set", "tecnica": "Al terminar las 15 reps, baja el peso y sigue al fallo."},
+    {"nombre": "Curl de bíceps en predicador", "nota": "Brazo totalmente apoyado, extensión completa abajo.", "series": "3", "reps": "10", "tag": "RIR 0", "tecnica": "Todas las series al fallo."}
+   ],
+   "foot": "Descansos: 2 min en press y barra T; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Pierna", "dia": "Viernes",
+   "focus": "Cuádriceps, isquios y gemelo. Cierra la semana con volumen de pierna.",
+   "chips": ["Cuádriceps", "Glúteo", "Isquios", "Gemelo"],
+   "ejercicios": [
+    {"nombre": "Sentadilla en Smith", "nota": "Pies ligeramente adelantados, rango completo.", "series": "3", "reps": "8", "tag": "", "tecnica": ""},
+    {"nombre": "Sentadilla búlgara", "nota": "Pie trasero en banco, torso levemente inclinado. 10 por pierna.", "series": "3", "reps": "10 / pierna", "tag": "", "tecnica": ""},
+    {"nombre": "Curl de isquios sentado", "nota": "Bajada controlada, cadera fija.", "series": "2", "reps": "Fallo + myoreps", "tag": "Fallo + Myoreps", "tecnica": "Serie 1 al fallo. Serie 2 en myoreps hasta igualar las reps de la serie 1."},
+    {"nombre": "Gemelo (calf)", "nota": "Pausa abajo en estiramiento, subida completa.", "series": "3", "reps": "20", "tag": "", "tecnica": ""},
+    {"nombre": "Extensión de cuádriceps", "nota": "Series largas, controla la bajada.", "series": "2", "reps": "18", "tag": "", "tecnica": ""}
+   ],
+   "foot": "Descansos: 2–3 min en sentadilla y búlgaras; 60–90 s en el resto."
+  }
+ ],
+ "pautas": [
+  {"h": "En cada sesión", "items": [
+   "Calienta 5–8 min y haz 2–3 series de aproximación en el primer ejercicio del día.",
+   "Anota el peso en la columna de carga y las reps en los ejercicios al fallo.",
+   "Donde no se indica RIR, termina las series con 1–2 repeticiones en reserva."
+  ]},
+  {"h": "Progresión", "items": [
+   "Si completas todas las reps objetivo con buena técnica, sube el peso en la siguiente sesión.",
+   "En los ejercicios al fallo, el objetivo es superar las reps de la semana anterior con el mismo peso.",
+   "Cualquier molestia articular: cambia el ejercicio por una variante y avísame."
+  ]}
+ ]
+}
+</script>
 
-  <header class="head">
-    <div class="head-in">
-      <p class="eyebrow">Planificación de entrenamiento · Rutina 5 días</p>
-      <h1>Andrés<br><span>5 días</span></h1>
-      <p class="split-line"><b>Pull</b> full body · <b>Push</b> full body · Accesorios · <b>Torso</b> · <b>Pierna</b></p>
-      <div class="facts">
-        <div class="fact"><span class="k">Frecuencia</span><span class="v">5 sesiones<small>por semana</small></span></div>
-        <div class="fact"><span class="k">Lunes</span><span class="v">Pull<small>todo el cuerpo</small></span></div>
-        <div class="fact"><span class="k">Martes</span><span class="v">Push<small>todo el cuerpo</small></span></div>
-        <div class="fact"><span class="k">Miércoles</span><span class="v">Accesorios</span></div>
-        <div class="fact"><span class="k">Jueves · Viernes</span><span class="v">Torso · Pierna</span></div>
-      </div>
-    </div>
-  </header>
+<div id="app"></div>
 
-  <section>
-    <div class="sec-title"><h2>Estructura semanal</h2><span class="eyebrow">Lunes a viernes</span></div>
-    <div class="week">
-      <div class="day on"><span class="d">Lun</span><span class="n">Pull</span><span class="s">Tirones de pierna y torso</span></div>
-      <div class="day on"><span class="d">Mar</span><span class="n">Push</span><span class="s">Empujes de pierna y torso</span></div>
-      <div class="day on"><span class="d">Mié</span><span class="n">Accesorios</span><span class="s">Gemelo · hombro · brazos</span></div>
-      <div class="day on"><span class="d">Jue</span><span class="n">Torso</span><span class="s">Pecho · espalda · hombro · bíceps</span></div>
-      <div class="day on"><span class="d">Vie</span><span class="n">Pierna</span><span class="s">Cuádriceps · isquios · gemelo</span></div>
-      <div class="day off"><span class="d">Sáb</span><span class="n">Descanso</span><span class="s"></span></div>
-      <div class="day off"><span class="d">Dom</span><span class="n">Descanso</span><span class="s"></span></div>
-    </div>
-    <p class="note">Los días Pull y Push son de cuerpo completo: en Pull entran todos los tirones (peso muerto rumano, dominadas, remos, curl femoral, bíceps) y en Push todos los empujes (press banca, sentadilla, extensiones, fondos, tríceps). Los tres días restantes son especializados.</p>
-  </section>
+<script id="app-script">
+(function () {
+  'use strict';
+  // Reset que el publicador añade en <head>; se replica tal cual al republicar la página.
+  var RESET = ':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  var FONT_LINKS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">\n';
 
-  <section>
-    <div class="sec-title"><h2>Técnicas usadas en la rutina</h2></div>
-    <div class="guide">
-      <div class="g"><span class="t"><em>RIR</em> · Reps en reserva</span><p>Repeticiones que podrías hacer y no haces. RIR 0 es llegar al fallo. Donde no se indica, trabaja con RIR 1–2.</p></div>
-      <div class="g"><span class="t">Top set <em>/</em> Back-off</span><p>Una serie pesada principal (top set) y después series más ligeras (back-off) con más repeticiones.</p></div>
-      <div class="g"><span class="t">Rest-pause</span><p>Llegas cerca del fallo, descansas 5–10 segundos y sigues hasta completar las repeticiones objetivo.</p></div>
-      <div class="g"><span class="t">Myoreps</span><p>Serie activadora cerca del fallo, descanso de 5 segundos y mini-series de pocas reps, repetido 2–3 veces.</p></div>
-      <div class="g"><span class="t">Drop set</span><p>Al terminar la serie bajas el peso de inmediato y sigues sin descanso hasta el fallo.</p></div>
-      <div class="g"><span class="t">Deadstop</span><p>Cada repetición arranca desde parado, sin rebote ni inercia. Más control y más fuerza desde abajo.</p></div>
-    </div>
-  </section>
+  var app = document.getElementById('app');
+  var state = JSON.parse(document.getElementById('routine-data').textContent);
+  var editing = false;
+  var artifactNs = null;
+  var toolbar = null;
 
-  <!-- LUNES -->
-  <article class="session">
-    <div class="s-head">
-      <div class="s-num"><small>Día</small>1</div>
-      <div class="s-meta">
-        <h3>Pull full body <small>Lunes</small></h3>
-        <p class="focus">Todos los tirones del cuerpo: cadena posterior, espalda y bíceps.</p>
-        <div class="chips"><span class="chip">Isquios</span><span class="chip">Glúteo</span><span class="chip">Dorsal</span><span class="chip">Espalda alta</span><span class="chip">Bíceps</span></div>
-      </div>
-    </div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>Carga</th></tr></thead>
-        <tbody>
-          <tr><td class="ex"><div class="name">Peso muerto rumano o piernas rígidas (RDL / STL)</div><div class="cue">Cadera atrás, espalda neutra, barra pegada a las piernas.</div></td><td class="c big">3</td><td class="c">8</td><td class="tech"><span class="ta">Elige una de las dos variantes y mantenla todo el bloque.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Dominadas (pull ups)</div><div class="cue">Pecho hacia la barra, sin balanceo. Lastre si sobran reps.</div></td><td class="c big">3</td><td class="c">10</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Curl femoral sentado</div><div class="cue">Cadera pegada al asiento, bajada controlada.</div></td><td class="c big">2</td><td class="c">12–15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Remo Gironda</div><div class="cue">Remo en polea baja con torso inclinado atrás, codos pegados.</div></td><td class="c big">4</td><td class="c">6–8 · 3–5 · 10–12</td><td class="tech"><span class="tag">Top set + back-off</span><span class="ta">1 top set 6–8 · 1 serie 3–5 · 2 back-off 10–12.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Jalón al pecho unilateral</div><div class="cue">Un brazo. Tira del codo hacia la cadera y estira completo arriba.</div></td><td class="c big">2</td><td class="c">10 / lado</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Curl de bíceps</div><div class="cue">Codos fijos, sin balanceo del torso.</div></td><td class="c big">3</td><td class="c">12</td><td class="tech"><span class="tag">Rest-pause</span><span class="ta">Pausas de 5–10 segundos hasta completar las 12 reps.</span></td><td class="load"><div class="box"></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="s-foot"><b>Total:</b> 17 series · <b>Descansos:</b> 2–3 min en RDL, dominadas y remo Gironda; 60–90 s en el resto.</div>
-  </article>
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  // Campo editable: en modo edición lleva contenteditable y placeholder.
+  function f(path, cls, text, ph, tag) {
+    tag = tag || 'span';
+    return '<' + tag + ' class="' + cls + '" data-f="' + path + '" data-ph="' + esc(ph) + '"' +
+      (editing ? ' contenteditable="true" spellcheck="false"' : '') + '>' + esc(text) + '</' + tag + '>';
+  }
+  function setPath(obj, path, value) {
+    var parts = path.split('.');
+    var cur = obj;
+    for (var i = 0; i < parts.length - 1; i++) cur = cur[parts[i]];
+    cur[parts[parts.length - 1]] = value;
+  }
 
-  <!-- MARTES -->
-  <article class="session">
-    <div class="s-head">
-      <div class="s-num"><small>Día</small>2</div>
-      <div class="s-meta">
-        <h3>Push full body <small>Martes</small></h3>
-        <p class="focus">Todos los empujes del cuerpo: pecho, cuádriceps, hombro y tríceps.</p>
-        <div class="chips"><span class="chip">Pecho</span><span class="chip">Cuádriceps</span><span class="chip">Hombro</span><span class="chip">Tríceps</span></div>
-      </div>
-    </div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>Carga</th></tr></thead>
-        <tbody>
-          <tr><td class="ex"><div class="name">Press banca (bench press)</div><div class="cue">Escápulas retraídas, pies firmes. Series pesadas, descanso completo.</div></td><td class="c big">4</td><td class="c">3–6</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Extensión de cuádriceps</div><div class="cue">Pausa de 1 segundo arriba.</div></td><td class="c big">2</td><td class="c">12–15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Elevaciones laterales</div><div class="cue">El codo guía el movimiento, sin impulso.</div></td><td class="c big">3</td><td class="c">15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Sentadilla (variante nueva)</div><div class="cue">Profundidad completa con técnica limpia.</div></td><td class="c big">3</td><td class="c">8</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Fondos en paralelas sin lastre</div><div class="cue">Foco en la profundidad: baja todo lo que permita el hombro sin dolor.</div></td><td class="c big">3</td><td class="c">Fallo</td><td class="tech"><span class="tag">Al fallo</span><span class="ta">Anota las reps de cada serie.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Tríceps</div><div class="cue">Extensión en polea o la variante que prefieras.</div></td><td class="c big">2</td><td class="c">12</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="s-foot"><b>Total:</b> 17 series · <b>Descansos:</b> 3 min en press banca y sentadilla; 60–90 s en el resto.</div>
-  </article>
+  function header(s) {
+    var days = s.dias;
+    var facts = '<div class="fact"><span class="k">Frecuencia</span><span class="v">' + days.length + ' sesiones<small>por semana</small></span></div>';
+    days.forEach(function (d) {
+      facts += '<div class="fact"><span class="k">' + esc(d.dia) + '</span><span class="v">' + esc(d.nombre) + '</span></div>';
+    });
+    var split = days.map(function (d) { return '<b>' + esc(d.nombre) + '</b>'; }).join(' · ');
+    return '<header class="head"><div class="head-in">' +
+      '<p class="eyebrow">' + esc(s.eyebrow) + '</p>' +
+      '<h1>' + esc(s.cliente) + '<br><span>' + esc(s.subtitulo) + '</span></h1>' +
+      '<p class="split-line">' + split + '</p>' +
+      '<div class="facts">' + facts + '</div></div></header>';
+  }
 
-  <!-- MIÉRCOLES -->
-  <article class="session">
-    <div class="s-head">
-      <div class="s-num"><small>Día</small>3</div>
-      <div class="s-meta">
-        <h3>Accesorios <small>Miércoles</small></h3>
-        <p class="focus">Sin básicos. Gemelo, hombro posterior y lateral, brazos y trapecio.</p>
-        <div class="chips"><span class="chip">Gemelo</span><span class="chip">Hombro</span><span class="chip">Bíceps</span><span class="chip">Tríceps</span><span class="chip">Trapecio</span></div>
-      </div>
-    </div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>Carga</th></tr></thead>
-        <tbody>
-          <tr><td class="ex"><div class="name">Elevación de talón</div><div class="cue">Rango completo: estira abajo 1 segundo y sube a la punta.</div></td><td class="c big">4</td><td class="c">15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Face pull</div><div class="cue">Tira hacia la frente con codos altos y rotación externa.</div></td><td class="c big">2</td><td class="c">15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Curl con barra</div><div class="cue">Apoya la barra abajo y arranca cada rep desde parado.</div></td><td class="c big">3</td><td class="c">6–8</td><td class="tech"><span class="tag">Deadstop</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Kaz press</div><div class="cue">Press cerrado en Smith o barra bajando a la base del cuello, codos pegados.</div></td><td class="c big">3</td><td class="c">10</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Encogimientos con barra (shrugs)</div><div class="cue">Sube los hombros recto hacia las orejas, pausa arriba.</div></td><td class="c big">4</td><td class="c">12</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Elevaciones laterales en polea</div><div class="cue">Cable por detrás del cuerpo, tensión constante.</div></td><td class="c big">2</td><td class="c">15</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="s-foot"><b>Total:</b> 18 series · <b>Descansos:</b> 60–90 s en todo. Sesión corta y de calidad técnica.</div>
-  </article>
+  function week(s) {
+    var cells = s.semana.map(function (c) {
+      return '<div class="day ' + (c.on ? 'on' : 'off') + '"><span class="d">' + esc(c.d) + '</span><span class="n">' + esc(c.n) + '</span><span class="s">' + esc(c.s) + '</span></div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Estructura semanal</h2><span class="eyebrow">Lunes a viernes</span></div>' +
+      '<div class="week">' + cells + '</div>' + f('notaSemana', 'note', s.notaSemana, 'Nota sobre la semana', 'p') + '</section>';
+  }
 
-  <!-- JUEVES -->
-  <article class="session">
-    <div class="s-head">
-      <div class="s-num"><small>Día</small>4</div>
-      <div class="s-meta">
-        <h3>Torso <small>Jueves</small></h3>
-        <p class="focus">Pecho, espalda, hombro y bíceps con técnicas de intensidad.</p>
-        <div class="chips"><span class="chip">Pecho</span><span class="chip">Espalda</span><span class="chip">Hombro</span><span class="chip">Bíceps</span></div>
-      </div>
-    </div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>Carga</th></tr></thead>
-        <tbody>
-          <tr><td class="ex"><div class="name">Press inclinado en Smith</div><div class="cue">Banco a 30°, barra a la clavícula.</div></td><td class="c big">3</td><td class="c">10</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Remo en barra T</div><div class="cue">Pecho apoyado o libre, tira con los codos hacia atrás.</div></td><td class="c big">4</td><td class="c">12</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Pullover en polea</div><div class="cue">Brazos casi rectos, siente el dorsal en todo el recorrido.</div></td><td class="c big">3</td><td class="c">10</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Vuelo posterior</div><div class="cue">Codos ligeramente flexionados, abre hacia atrás.</div></td><td class="c big">2</td><td class="c">Myoreps + recta</td><td class="tech"><span class="tag">Myoreps</span><span class="ta">Serie 1: activadora, descansa 5 s y sigue, 2–3 veces. Serie 2: una serie recta normal.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Elevaciones laterales</div><div class="cue">Sin impulso, el codo guía.</div></td><td class="c big">2</td><td class="c">15 + drop</td><td class="tech"><span class="tag">Drop set</span><span class="ta">Al terminar las 15 reps, baja el peso y sigue al fallo.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Curl de bíceps en predicador</div><div class="cue">Brazo totalmente apoyado, extensión completa abajo.</div></td><td class="c big">3</td><td class="c">10</td><td class="tech"><span class="tag">RIR 0</span><span class="ta">Todas las series al fallo.</span></td><td class="load"><div class="box"></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="s-foot"><b>Total:</b> 17 series · <b>Descansos:</b> 2 min en press y barra T; 60–90 s en el resto.</div>
-  </article>
+  function glossary(s) {
+    var items = s.glosario.map(function (g, i) {
+      return '<div class="g">' + f('glosario.' + i + '.t', 't', g.t, 'Técnica') + f('glosario.' + i + '.p', '', g.p, 'Explicación', 'p') + '</div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Técnicas usadas en la rutina</h2></div><div class="guide">' + items + '</div></section>';
+  }
 
-  <!-- VIERNES -->
-  <article class="session">
-    <div class="s-head">
-      <div class="s-num"><small>Día</small>5</div>
-      <div class="s-meta">
-        <h3>Pierna <small>Viernes</small></h3>
-        <p class="focus">Cuádriceps, isquios y gemelo. Cierra la semana con volumen de pierna.</p>
-        <div class="chips"><span class="chip">Cuádriceps</span><span class="chip">Glúteo</span><span class="chip">Isquios</span><span class="chip">Gemelo</span></div>
-      </div>
-    </div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>Carga</th></tr></thead>
-        <tbody>
-          <tr><td class="ex"><div class="name">Sentadilla en Smith</div><div class="cue">Pies ligeramente adelantados, rango completo.</div></td><td class="c big">3</td><td class="c">8</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Sentadilla búlgara</div><div class="cue">Pie trasero en banco, torso levemente inclinado. 10 por pierna.</div></td><td class="c big">3</td><td class="c">10 / pierna</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Curl de isquios sentado</div><div class="cue">Bajada controlada, cadera fija.</div></td><td class="c big">2</td><td class="c">Fallo + myoreps</td><td class="tech"><span class="tag">Fallo + Myoreps</span><span class="ta">Serie 1 al fallo. Serie 2 en myoreps hasta igualar las reps de la serie 1.</span></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Gemelo (calf)</div><div class="cue">Pausa abajo en estiramiento, subida completa.</div></td><td class="c big">3</td><td class="c">20</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-          <tr><td class="ex"><div class="name">Extensión de cuádriceps</div><div class="cue">Series largas, controla la bajada.</div></td><td class="c big">2</td><td class="c">18</td><td class="tech"></td><td class="load"><div class="box"></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="s-foot"><b>Total:</b> 13 series · <b>Descansos:</b> 2–3 min en sentadilla y búlgaras; 60–90 s en el resto.</div>
-  </article>
+  function session(d, i) {
+    var p = 'dias.' + i + '.';
+    var total = d.ejercicios.reduce(function (n, e) { return n + (parseInt(e.series, 10) || 0); }, 0);
+    var rows = d.ejercicios.map(function (e, j) {
+      var q = p + 'ejercicios.' + j + '.';
+      var tech;
+      if (editing) {
+        tech = f(q + 'tag', 'tag', e.tag, 'Técnica (opcional)') + f(q + 'tecnica', 'ta', e.tecnica, 'Instrucción de la técnica (opcional)');
+      } else {
+        tech = (e.tag ? '<span class="tag">' + esc(e.tag) + '</span>' : '') + (e.tecnica ? '<span class="ta">' + esc(e.tecnica) + '</span>' : '');
+      }
+      var last = editing
+        ? '<td class="load"><button type="button" class="rm" data-rm="' + i + '.' + j + '" title="Eliminar ejercicio" aria-label="Eliminar ejercicio">×</button></td>'
+        : '<td class="load"><div class="box"></div></td>';
+      return '<tr><td class="ex">' + f(q + 'nombre', 'name', e.nombre, 'Nombre del ejercicio', 'div') + f(q + 'nota', 'cue', e.nota, 'Instrucción técnica', 'div') + '</td>' +
+        f(q + 'series', 'c big', e.series, '0', 'td') + f(q + 'reps', 'c', e.reps, 'reps', 'td') +
+        '<td class="tech">' + tech + '</td>' + last + '</tr>';
+    }).join('');
+    var chips = d.chips.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('');
+    var add = editing ? '<button type="button" class="add-row" data-add="' + i + '">+ Añadir ejercicio</button>' : '';
+    return '<article class="session"><div class="s-head"><div class="s-num"><small>Día</small>' + (i + 1) + '</div>' +
+      '<div class="s-meta"><h3>' + esc(d.nombre) + ' <small>' + esc(d.dia) + '</small></h3>' +
+      f(p + 'focus', 'focus', d.focus, 'Descripción de la sesión', 'p') +
+      '<div class="chips">' + chips + '</div></div></div>' +
+      '<div class="tbl"><table><thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>' + (editing ? '' : 'Carga') + '</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + add +
+      '<div class="s-foot"><b>Total:</b> ' + total + ' series · ' + f(p + 'foot', '', d.foot, 'Descansos y nota de la sesión') + '</div></article>';
+  }
 
-  <section>
-    <div class="sec-title"><h2>Pautas</h2></div>
-    <div class="cols">
-      <div>
-        <h3>En cada sesión</h3>
-        <ul>
-          <li>Calienta 5–8 min y haz 2–3 series de aproximación en el primer ejercicio del día.</li>
-          <li>Anota el peso en la columna de carga y las reps en los ejercicios al fallo.</li>
-          <li>Donde no se indica RIR, termina las series con 1–2 repeticiones en reserva.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>Progresión</h3>
-        <ul>
-          <li>Si completas todas las reps objetivo con buena técnica, sube el peso en la siguiente sesión.</li>
-          <li>En los ejercicios al fallo, el objetivo es superar las reps de la semana anterior con el mismo peso.</li>
-          <li>Cualquier molestia articular: cambia el ejercicio por una variante y avísame.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  function pautas(s) {
+    var cols = s.pautas.map(function (c, i) {
+      var lis = c.items.map(function (t, j) { return f('pautas.' + i + '.items.' + j, '', t, 'Pauta', 'li'); }).join('');
+      return '<div><h3>' + esc(c.h) + '</h3><ul>' + lis + '</ul></div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Pautas</h2></div><div class="cols">' + cols + '</div></section>';
+  }
 
-  <footer class="foot">
-    <span>Rutina 5 días · Andrés</span>
-    <span>Pull full body · Push full body · Accesorios · Torso · Pierna</span>
-  </footer>
+  function footer(s) {
+    return '<footer class="foot"><span>' + esc(s.titulo) + '</span><span>' + s.dias.map(function (d) { return esc(d.nombre); }).join(' · ') + '</span></footer>';
+  }
 
-</div>
+  function render() {
+    state.titulo = state.titulo || 'Rutina';
+    app.innerHTML = '<div class="wrap">' + header(state) + week(state) + glossary(state) +
+      state.dias.map(session).join('') + pautas(state) + footer(state) + '</div>';
+    document.body.classList.toggle('editing', editing);
+  }
+
+  // Lee los campos editados del DOM al estado (solo los valores, nunca el marcado).
+  function collect() {
+    var els = app.querySelectorAll('[data-f]');
+    for (var i = 0; i < els.length; i++) {
+      setPath(state, els[i].getAttribute('data-f'), els[i].innerText.replace(/\s+/g, ' ').trim());
+    }
+  }
+
+  // Documento completo regenerado desde el estado, con la misma forma que publica la herramienta.
+  function buildDoc(s) {
+    var json = JSON.stringify(s, null, 1).replace(/</g, '\\u003c');
+    var style = document.getElementById('page-style').textContent;
+    var script = document.getElementById('app-script').textContent;
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET + '</style></head><body>\n' +
+      '<title>' + esc(s.titulo) + '</title>\n' + FONT_LINKS +
+      '<style id="page-style">' + style + '</style>\n\n' +
+      '<script type="application/json" id="routine-data">\n' + json + '\n<\/script>\n\n' +
+      '<div id="app"></div>\n\n' +
+      '<script id="app-script">' + script + '<\/script>\n' +
+      '</body></html>';
+  }
+
+  function setStatus(msg) { if (toolbar) toolbar.querySelector('.st').textContent = msg; }
+
+  function showTools() {
+    toolbar = document.createElement('div');
+    toolbar.className = 'toolbar';
+    toolbar.innerHTML = '<span class="st">Solo tú ves esta barra. Pulsa Editar para cambiar textos, series, reps e instrucciones.</span>' +
+      '<button type="button" class="ghost" id="btn-cancel" hidden>Cancelar</button>' +
+      '<button type="button" id="btn-edit">Editar</button>' +
+      '<button type="button" id="btn-save" hidden>Guardar</button>';
+    document.body.appendChild(toolbar);
+    var bEdit = toolbar.querySelector('#btn-edit'), bSave = toolbar.querySelector('#btn-save'), bCancel = toolbar.querySelector('#btn-cancel');
+    bEdit.addEventListener('click', function () {
+      editing = true; render();
+      bEdit.hidden = true; bSave.hidden = false; bCancel.hidden = false;
+      setStatus('Toca cualquier texto resaltado para cambiarlo. Guardar publica la nueva versión para Andrés.');
+    });
+    bCancel.addEventListener('click', function () {
+      editing = false; render();
+      bEdit.hidden = false; bSave.hidden = true; bCancel.hidden = true;
+      setStatus('Cambios descartados.');
+    });
+    bSave.addEventListener('click', function () { save(bSave, bCancel); });
+  }
+  function hideTools() { if (toolbar) { toolbar.remove(); toolbar = null; } editing = false; render(); }
+
+  function save(bSave, bCancel) {
+    collect();
+    var html = buildDoc(state);
+    bSave.disabled = true; bCancel.disabled = true;
+    setStatus('Guardando…');
+    artifactNs.publish(html).then(function () {
+      setStatus('Guardado. Recargando la página…');
+    }).catch(function (err) {
+      var code = err && err.code;
+      if (code === 'conflict') { setStatus('Alguien guardó otra versión antes. Se recarga con la última.'); return; }
+      if (code === 'not_writer' || code === 'not_granted' || code === 'not_declared') { hideTools(); return; }
+      bSave.disabled = false; bCancel.disabled = false;
+      setStatus('No se pudo guardar (' + (code || 'error') + '). Tus cambios siguen en pantalla, prueba de nuevo.');
+    });
+  }
+
+  app.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-rm],[data-add]');
+    if (!t || !editing) return;
+    collect();
+    if (t.hasAttribute('data-rm')) {
+      var ij = t.getAttribute('data-rm').split('.');
+      state.dias[+ij[0]].ejercicios.splice(+ij[1], 1);
+    } else {
+      state.dias[+t.getAttribute('data-add')].ejercicios.push({ nombre: '', nota: '', series: '3', reps: '10', tag: '', tecnica: '' });
+    }
+    render();
+    if (t.hasAttribute('data-add')) {
+      var rows = app.querySelectorAll('.session')[+t.getAttribute('data-add')].querySelectorAll('tbody tr');
+      var cell = rows[rows.length - 1].querySelector('.name');
+      if (cell) cell.focus();
+    }
+  });
+
+  render();
+
+  // Herramientas de edición solo cuando el visor puede escribir el artefacto.
+  if (window.claude && typeof window.claude.use === 'function') {
+    Promise.all([window.claude.use('artifact'), window.claude.use('user')]).then(function (r) {
+      var art = r[0], user = r[1];
+      if (!art || !user) return;
+      return user.canEdit().then(function (can) { if (can) { artifactNs = art; showTools(); } });
+    }).catch(function () {});
+  }
+})();
+</script>
