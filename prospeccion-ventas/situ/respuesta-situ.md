@@ -33,8 +33,9 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
    Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
    USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
-2. Ejemplos: ¿CEOS se cerró como cliente? ¿A Asesoría Previsional / Orienta se les hizo contenido
-   o solo pauta? ¿Cuáles de las 10 piezas "para clientes" de la web son de servicios de confianza?
+2. Ejemplos: resuelto que no hay cliente de salud (CEOS quedó en propuesta; Asesoría Previsional
+   fue pauta/automatización y ya no es cliente). Falta solo que me digas **cuáles 3-4 de las 10
+   piezas "para clientes" de la web** mostramos — idealmente las de persona a cámara o carrusel.
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
 4. Sin permanencia mínima, evaluación a 90 días, inicio en 10 días hábiles — ¿sí?
 5. Las dos fechas de reunión que ofrecemos.
@@ -62,12 +63,14 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 > indicaron, con holgura. Todos los valores de la propuesta están en pesos, netos, con el IVA
 > indicado aparte; el dólar es solo referencia.
 >
-> Sobre ejemplos en salud: lo más cercano que tenemos es `[CONFIRMAR: CEOS / previsional /
-> piezas de la web]`. Y como entiendo que quieren ver criterio antes que portafolio, les propongo
-> algo concreto: antes de que decidan, les hacemos **una pieza de muestra para Situ** — un
-> carrusel sobre "cómo saber si mi papá o mi mamá ya necesita apoyo en casa", con el tono y el
-> respaldo clínico que ustedes manejan. Sin costo, sin compromiso. Si la pieza no les convence,
-> no tiene sentido que sigamos conversando; si les convence, ya vieron cómo trabajamos.
+> Sobre ejemplos en salud, prefiero ser directo: **hoy no tenemos un cliente de salud ni de
+> cuidado de personas en la cartera.** Lo que sí les puedo mostrar es cómo producimos para otras
+> marcas (en la propuesta van los links) para que juzguen el nivel de diseño y edición. Y como
+> entiendo que lo que quieren ver es criterio, no portafolio, les propongo algo concreto: antes
+> de que decidan, les hacemos **una pieza de muestra para Situ** — un carrusel sobre "cómo saber
+> si mi papá o mi mamá ya necesita apoyo en casa", con el tono y el respaldo clínico que ustedes
+> manejan. Sin costo, sin compromiso. Si la pieza no les convence, no tiene sentido que sigamos
+> conversando; si les convence, ya vieron exactamente cómo trabajaríamos con ustedes.
 >
 > ¿Les acomoda una reunión de 30 minutos el `[CONFIRMAR día/hora 1]` o el `[CONFIRMAR día/hora
 > 2]`? Si prefieren revisar la propuesta primero y después agendar, también está bien.
@@ -210,13 +213,21 @@ del calendario (se cotizan aparte).
   celular bajo nuestra pauta (les mandamos guion y encuadre), editamos nosotros. Funciona si
   alguien del equipo tiene 2 horas al mes para eso.
 
-### Ejemplos de trabajo `[CONFIRMAR]`
+### Ejemplos de trabajo `[CONFIRMAR qué 3-4 piezas]`
 
-`[Aquí van los links a las piezas de servicios de confianza que me confirmes, con una línea de
-contexto cada una. Si CEOS no se cerró, no se menciona. Si a Asesoría Previsional u Orienta se
-les hizo contenido, es el mejor ejemplo: mismo comprador que Situ.]`
+Se dice tal cual: *"No tenemos todavía un cliente de salud. Estas piezas son de otros rubros y
+las mostramos para que evalúen diseño, edición y constancia — no el tono, que para Situ sería
+distinto y es lo que la pieza de muestra viene a demostrar."*
 
-Y la pieza de muestra que ofrecemos en el correo: un carrusel para Situ antes de decidir.
+Debajo, 3 o 4 links de las 10 piezas "para clientes" que ya están en influencechile.cl (los que
+me indiques), cada uno con una línea: marca, qué formato es y qué resolvía. Mejor elegir las que
+tengan **una persona hablando a cámara** o un carrusel educativo, porque son los dos formatos
+que Situ va a recibir; una lata de bebida energética bailando no les dice nada.
+
+Cierra la sección la pieza de muestra: un carrusel para Situ, entregado antes de la decisión.
+
+Nota interna: Asesoría Previsional fue cliente de pauta y automatización, no de contenido, y ya
+no es cliente. CEOS quedó en propuesta. Ninguna de las dos se menciona.
 
 ---
 
