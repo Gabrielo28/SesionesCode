@@ -185,7 +185,7 @@
    "chips": ["Pecho", "Cuádriceps", "Hombro", "Tríceps"],
    "ejercicios": [
     {"nombre": "Press banca (bench press)", "nota": "Escápulas retraídas, pies firmes. Series pesadas, descanso completo.", "series": "4", "reps": "3–6", "tag": "", "tecnica": ""},
-    {"nombre": "Extensión de cuádriceps", "nota": "Pausa de 1 segundo arriba.", "series": "2", "reps": "12–15", "tag": "", "tecnica": ""},
+    {"nombre": "Extensión de cuádriceps", "nota": "Pausa de 1 segundo abajo, en máxima extensión, sin llegar al tope de la máquina.", "series": "2", "reps": "12–15", "tag": "", "tecnica": ""},
     {"nombre": "Elevaciones laterales", "nota": "El codo guía el movimiento, sin impulso.", "series": "3", "reps": "15", "tag": "", "tecnica": ""},
     {"nombre": "Sentadilla (variante nueva)", "nota": "Profundidad completa con técnica limpia.", "series": "3", "reps": "8", "tag": "", "tecnica": ""},
     {"nombre": "Fondos en paralelas sin lastre", "nota": "Foco en la profundidad: baja todo lo que permita el hombro sin dolor.", "series": "3", "reps": "Fallo", "tag": "Al fallo", "tecnica": "Anota las reps de cada serie."},
@@ -361,10 +361,19 @@
   }
 
   // Lee los campos editados del DOM al estado (solo los valores, nunca el marcado).
+  // Texto tal cual se escribió (textContent no aplica el text-transform del CSS, innerText sí).
+  function plainText(node) {
+    var out = '';
+    for (var c = node.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === 3) out += c.data;
+      else if (c.nodeType === 1) out += ' ' + plainText(c) + ' ';
+    }
+    return out;
+  }
   function collect() {
     var els = app.querySelectorAll('[data-f]');
     for (var i = 0; i < els.length; i++) {
-      setPath(state, els[i].getAttribute('data-f'), els[i].innerText.replace(/\s+/g, ' ').trim());
+      setPath(state, els[i].getAttribute('data-f'), plainText(els[i]).replace(/\s+/g, ' ').trim());
     }
   }
 
