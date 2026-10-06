@@ -14,35 +14,36 @@ const { execFileSync } = require('child_process');
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const LOGO = path.join(__dirname, '..', '..', 'web-influence', 'assets', 'logo-teal.png');
 
+// Precios e inclusiones espejo de influencechile.cl (sección #planes). Si cambia la web, cambia esto.
 const PLANES = {
   presencia: {
     nombre: 'Presencia',
-    precio: 290000,
+    precio: 350000,
     bajada: 'Para ordenar la casa y publicar con constancia.',
     incluye: [
-      '8 publicaciones mensuales',
-      'Historias 3 veces por semana',
-      'Diseño gráfico y edición de video',
-      'Calendario de contenido mensual',
-      'Community management (respuesta de comentarios y DMs)',
-      'Meta Ads básico (hasta 2 campañas)',
-      'Reporte mensual de métricas'
+      '4 reels mensuales optimizados',
+      '4 publicaciones (post o carrusel)',
+      '8 historias mensuales',
+      'Edición de video y diseño gráfico',
+      'Planificación y programación',
+      'Gestión de Meta Ads incluida (creatividades propias)',
+      'Informe mensual de resultados'
     ]
   },
   crecimiento: {
     nombre: 'Crecimiento',
     precio: 450000,
-    bajada: 'Para crecer en serio: más contenido, pauta e influencers.',
+    bajada: 'Para crecer en serio: más contenido, conversación e influencers.',
     incluye: [
-      '12 publicaciones mensuales',
-      'Historias diarias',
-      '4 reels mensuales con edición avanzada',
-      'Diseño gráfico y edición de video',
-      'Calendario de contenido y estrategia mensual',
-      'Community management',
-      'Meta Ads básico (hasta 2 campañas)',
-      'Campañas con influencers sin costo adicional',
-      'Reporte mensual + reunión de estrategia'
+      '8 reels mensuales optimizados',
+      '8 publicaciones (post o carrusel)',
+      '12 historias mensuales',
+      'Edición profesional y diseño avanzado',
+      'Estrategia y planificación mensual',
+      'Monitoreo y respuesta de comentarios',
+      'Gestión de Meta Ads incluida (creatividades propias)',
+      'Campañas con influencers incluidas',
+      'Informe mensual de resultados'
     ]
   },
   autoridad: {
@@ -50,24 +51,24 @@ const PLANES = {
     precio: 749990,
     bajada: 'Para marcas que quieren liderar su categoría.',
     incluye: [
-      '20 publicaciones mensuales',
-      'Historias diarias con producción',
-      '8 reels mensuales con edición avanzada',
-      'Producción audiovisual en terreno',
-      'Estrategia de contenido y de marca',
-      'Community management prioritario',
-      'Meta Ads básico (hasta 2 campañas)',
-      'Campañas con influencers sin costo adicional',
-      'Gestión de TikTok Ads y Google Ads',
-      'Reporte quincenal + reunión de estrategia'
+      '12 reels mensuales optimizados',
+      '12 publicaciones (post o carrusel)',
+      '20 historias mensuales',
+      'Estrategia avanzada y conceptos creativos',
+      'Respuesta de comentarios y mensajes',
+      'Optimización continua de contenido',
+      'Gestión de Meta Ads incluida (creatividades propias)',
+      'Campañas con influencers incluidas',
+      'Informe mensual de resultados'
     ]
   }
 };
 
+// Google Ads no va en ningún plan (la web lo cotiza aparte: armado $150.000, gestión desde $250.000).
 const ADDONS = {
-  meta_ads:    { nombre: 'Gestión avanzada de Meta Ads', min: 150000, max: 300000, detalle: 'Sobre las 2 campañas incluidas: estructura completa, públicos, testeo de creativos y optimización semanal.' },
-  contenido:   { nombre: 'Contenido Estratégico',        min: 69990,                detalle: 'Sesión de producción adicional en terreno: fotos y video para alimentar el mes completo.' },
-  influencers: { nombre: 'Campaña de Influencers',       min: 99990,                detalle: 'Casting, negociación, brief, seguimiento y reporte de la campaña completa.' }
+  meta_ads:    { nombre: 'Gestión avanzada de Meta Ads', min: 150000, max: 300000, detalle: 'Sobre la gestión incluida: estructura completa, públicos, testeo de creativos y optimización semanal.' },
+  contenido:   { nombre: 'Contenido Estratégico',        min: 69990,                detalle: 'Pack de 3 reels + 12 posts + 12 historias (ideas) para alimentar el mes completo.' },
+  influencers: { nombre: 'Campaña de Influencers',       min: 99990,                detalle: '2 creadoras +10k · reels + historias: casting, negociación, brief, seguimiento y reporte.' }
 };
 
 const clp = n => '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
