@@ -33,11 +33,15 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
    Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
    USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
-2. Ejemplos: el único cliente activo de contenido es **Luis Núñez, asesor previsional** — y es
-   el mejor ejemplo posible para Situ (mismo comprador: persona mayor + familia decidiendo).
-   Necesito: su @ de Instagram o los links de 2-3 piezas suyas (una a cámara, un carrusel), y
-   que estés de acuerdo en citarlo con nombre — si prefieres, le avisas a él antes. Más 1-2
-   piezas de otras marcas de la web, solo si son persona a cámara o carrusel.
+2. Ejemplos: el único cliente activo de contenido es **Luis Núñez, asesor previsional,
+   @luisnunez.cl** — el mejor ejemplo posible para Situ (mismo comprador: persona mayor + familia
+   decidiendo). Instagram no se puede leer desde acá, así que necesito que **copies los links de
+   2-3 publicaciones suyas** (abres la publicación → "⋯" → "Copiar enlace"): una de él hablando a
+   cámara y un carrusel educativo. Y su OK para citarlo con nombre. Más 1-2 piezas de otras marcas
+   de la web, solo si son persona a cámara o carrusel.
+   *Dato lateral para Luis:* su cuenta no aparece en Google ni Bing buscando su nombre + "asesor
+   previsional". Eso se arregla con el sitio luisnunez.cl enlazando al Instagram y viceversa —
+   vale mencionárselo en la próxima reunión mensual.
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
 4. Sin permanencia mínima, evaluación a 90 días, inicio en 10 días hábiles — ¿sí?
 5. Las dos fechas de reunión que ofrecemos.
@@ -67,7 +71,7 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 >
 > Sobre ejemplos: no tenemos todavía un cliente de salud, y prefiero decirlo antes que estirar
 > el portafolio. Lo más cercano — y creo que es más cercano de lo que parece — es el contenido
-> que hacemos para **un asesor previsional** `[CONFIRMAR nombre/@ y permiso]`: un servicio donde
+> que hacemos para **un asesor previsional** (Luis Núñez, @luisnunez.cl) `[CONFIRMAR permiso de Luis]`: un servicio donde
 > la persona mayor y sus hijos toman una decisión importante y necesitan confiar en quien los
 > asesora. Mismo comprador, misma exigencia de seriedad, mismo cuidado con lo que se puede
 > prometer. En la propuesta van los links.
@@ -219,9 +223,9 @@ del calendario (se cotizan aparte).
   celular bajo nuestra pauta (les mandamos guion y encuadre), editamos nosotros. Funciona si
   alguien del equipo tiene 2 horas al mes para eso.
 
-### Ejemplos de trabajo `[CONFIRMAR piezas de Luis Núñez + permiso para citarlo]`
+### Ejemplos de trabajo `[CONFIRMAR 2-3 links de @luisnunez.cl + permiso para citarlo]`
 
-**Primero y con nombre: Luis Núñez, asesor previsional.** Se presenta así: *"Nuestro cliente
+**Primero y con nombre: Luis Núñez, asesor previsional — instagram.com/luisnunez.cl.** Se presenta así: *"Nuestro cliente
 activo de contenido es un asesor previsional especializado en pensiones. Es el rubro más parecido
 al de Situ que hemos trabajado: una persona mayor y su familia decidiendo algo importante, un
 profesional que tiene que transmitir seriedad y respaldo, y un límite claro de lo que se puede
