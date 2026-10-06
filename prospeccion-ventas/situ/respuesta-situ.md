@@ -19,8 +19,9 @@ servicios de confianza; reunión breve si tiene sentido.
 **Lo que esto significa para nosotros:** no quieren el plan de más reels. Quieren pocas piezas
 que no den vergüenza frente a una familia que está decidiendo quién cuida a su mamá. El plan que
 calza en presupuesto y en espíritu es **Crecimiento ($450.000 neto)** con la mezcla de piezas
-inclinada a carruseles educativos y video del equipo clínico, y una jornada de grabación mensual
-que es lo que más van a valorar. Con IVA son $535.500 ≈ USD 550: queda holgura dentro de los
+inclinada a carruseles educativos y video del equipo clínico grabado por ellos con nuestra pauta
+(la grabación presencial va aparte y se les dice que no es imprescindible). Con IVA son $535.500
+≈ USD 550: queda holgura dentro de los
 USD 700, que conviene **no** llenar — un precio bajo el tope les da la sensación de que no
 estiramos la cotización al presupuesto que ellos mismos dijeron.
 
@@ -28,11 +29,12 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 
 ## Lo que tienes que confirmarme antes de enviar (marcado `[CONFIRMAR]` en el texto)
 
-1. **Precio de la jornada de grabación mensual** (3 horas, Santiago). "Contenido Estratégico" es
-   el informe de estrategia, así que la grabación no tiene precio de catálogo. Opción A: incluida
-   en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
-   Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
-   USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
+1. **Grabación: resuelto el 6-oct.** No va incluida, y se le dice a Situ que no es imprescindible:
+   depende del contenido que quieran. El plan funciona con material que graba su equipo con el
+   celular siguiendo nuestra pauta (guion, encuadre, luz) más fotos existentes y piezas de diseño.
+   Si quieren jornada presencial, se cotiza aparte por jornada. **Falta solo el precio referencial
+   que ponemos en la propuesta** — el texto de abajo usa $90.000 netos por jornada de 3 horas en
+   Santiago `[CONFIRMAR precio]`; cámbialo si quieres otro.
 2. Ejemplos: **resuelto.** Cuatro reels de Luis Núñez (@luisnunez.cl) ya están en la sección de
    ejemplos con su línea de contexto; solo falta **su OK para citarlo con nombre**. Las otras
    marcas de la web quedan fuera: ninguna de las 10 piezas es persona a cámara o carrusel
@@ -49,9 +51,10 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    donde su cliente la busca. Y el contacto del sitio es WhatsApp manual con horario hasta las
    20:00: es candidato natural a "WhatsApp que responde y agenda" cuando el plan de redes esté
    maduro.
-3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
-4. Sin permanencia mínima, evaluación a 90 días, inicio en 10 días hábiles — ¿sí?
-5. Las dos fechas de reunión que ofrecemos.
+3. LinkedIn incluido sin costo (4 adaptaciones al mes) — **resuelto: sí.**
+4. Permanencia — **resuelto:** sin permanencia mínima, con **aviso de término con un mes de
+   anticipación**. Evaluación a 90 días e inicio en 10 días hábiles quedan como estaban.
+5. Las dos fechas de reunión que ofrecemos — **pendiente.**
 
 ---
 
@@ -70,11 +73,15 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 > prioriza piezas educativas y video del equipo clínico real sobre cantidad, y recomienda **no**
 > contratar gestión de mensajes: ese primer contacto con una familia lo deben dar ustedes.
 >
-> **Sobre el presupuesto:** la propuesta queda en **$450.000 netos mensuales + IVA**, con una
-> jornada de grabación presencial al mes en Santiago incluida `[CONFIRMAR opción A/B]`. Con IVA
+> **Sobre el presupuesto:** la propuesta queda en **$450.000 netos mensuales + IVA**. Con IVA
 > son $535.500, que al dólar observado de hoy equivalen a unos USD 550 — dentro del rango que
 > indicaron, con holgura. Todos los valores de la propuesta están en pesos, netos, con el IVA
 > indicado aparte; el dólar es solo referencia.
+>
+> Sobre la grabación presencial que preguntan: no la incluimos en el plan, y les explico por qué
+> en la propuesta — con el tipo de contenido que necesita Situ, buena parte se puede grabar con
+> el celular de alguien del equipo siguiendo nuestra pauta, y el resto es diseño. Si en algún mes
+> quieren una jornada con nosotros en terreno, se cotiza aparte y queda indicada la referencia.
 >
 > Sobre ejemplos: no tenemos todavía un cliente de salud, y prefiero decirlo antes que estirar
 > el portafolio. Lo más cercano — y creo que es más cercano de lo que parece — es el contenido
@@ -133,7 +140,7 @@ usar esa capacidad así `[CONFIRMAR mezcla]`:
 | Formato | Cantidad / mes | Qué son |
 |---|---|---|
 | **Carruseles educativos** | 6 | Las piezas de "Decidir" y "Cómo funciona". Son las que se guardan y se reenvían entre hermanos — en esta categoría, el formato que más confianza construye. |
-| **Reels** | 6 | 3 con el equipo clínico hablando a cámara (grabados en la jornada mensual), 2 de proceso o día a día del cuidado, 1 testimonio o historia de familia. Nada de bailes. |
+| **Reels** | 6 | 3 con el equipo clínico hablando a cámara (grabados por ustedes con el celular siguiendo nuestra pauta de guion, encuadre y luz — nosotros editamos), 2 de proceso o día a día del cuidado, 1 testimonio o historia de familia. Nada de bailes. |
 | **Posts estáticos** | 2 | Datos, frases del equipo, avisos de talleres y charlas. |
 | **Historias** | 12 | Reutilización de lo anterior en formato corto, preguntas frecuentes, agenda de talleres, encuestas simples. |
 
@@ -147,16 +154,25 @@ plantillas que definimos en la semana 1 para que todo se vea de la misma casa), 
 pieza y de cada caption, edición de video con subtítulos quemados (el 85% de los reels se ve
 sin sonido) y portadas uniformes. Una ronda de ajustes por pieza.
 
-### 4. Grabación presencial en Santiago `[CONFIRMAR opción A/B]`
+### 4. Grabación presencial en Santiago
 
-**Una jornada de grabación al mes, de 3 horas, en Santiago** (su oficina en Las Condes, un
-domicilio con autorización o un lugar neutro), **incluida en el plan**. De cada jornada salen los
-3 reels del equipo clínico del mes, fotos para los carruseles y material de historias para 4
-semanas. Necesitamos 1 o 2 personas del equipo (geriatra, enfermera, kinesióloga — rotando) por
-unos 60-90 minutos dentro de esa jornada.
+**No está incluida en el plan, y no es imprescindible.** Lo decimos de frente porque depende del
+contenido que se quiera generar, y en el caso de Situ la mayor parte no la necesita:
 
-Si en algún mes no se puede grabar, ese mes trabajamos con material de archivo y piezas de
-diseño, y la jornada se corre al mes siguiente — no se pierde.
+- Los **carruseles y posts** son diseño: se hacen con fotos que ya tienen, fotos de archivo
+  profesional y la identidad gráfica que definimos en la semana 1.
+- Los **reels del equipo clínico** se graban con el celular de alguien de Situ, siguiendo una
+  pauta nuestra por pieza: qué decir en 40 segundos, dónde pararse, cómo encuadrar, con qué luz.
+  Son 60-90 minutos al mes de una persona del equipo. Nosotros editamos, subtitulamos y
+  ponemos las portadas — el resultado se ve profesional porque la edición lo es, no por la cámara.
+- Los **testimonios de familias** se graban igual, o por videollamada grabada cuando la familia
+  prefiere no recibir a nadie en la casa.
+
+Si en algún mes quieren una **jornada presencial con nosotros** (lanzamiento de un servicio,
+sesión de fotos del equipo completo, material para una temporada), se cotiza aparte por jornada:
+referencia **$90.000 netos por 3 horas en Santiago** `[CONFIRMAR precio]`, con fotos y video para
+alimentar varios meses. La frecuencia la deciden ustedes — para una marca como Situ, una o dos al
+año suelen bastar.
 
 ### 5. Programación, publicación y community management (lo que recomendamos)
 
@@ -190,31 +206,30 @@ vanidad ni 20 páginas de gráficos.
 | Una sola vez | Cada mes |
 |---|---|
 | Acceso como colaboradores a Instagram, Facebook y LinkedIn (no pedimos contraseñas) | Aprobar el calendario en 48 horas (una persona decide) |
-| Logo, colores, tipografías y fotos que ya tengan | 1-2 personas del equipo para la jornada de grabación (60-90 min) |
+| Logo, colores, tipografías y fotos que ya tengan | 60-90 minutos de una persona del equipo clínico para grabar los reels del mes con el celular, siguiendo nuestra pauta |
 | Una reunión de 60 minutos para definir pilares, tono y **qué no se puede decir** | Avisarnos talleres, charlas o novedades con una semana de anticipación |
 | 3 a 5 familias dispuestas a dar testimonio con autorización escrita (las conseguimos juntos) | Derivarnos cualquier consulta de prensa o comentario sensible que vean |
 
-### 9. Plazo mínimo y tiempo de inicio `[CONFIRMAR]`
+### 9. Plazo mínimo y tiempo de inicio
 
-- **Sin permanencia mínima obligatoria.** Facturación mensual. Recomendamos evaluar a los 90 días
-  porque antes de eso el contenido no alcanza a madurar — pero si a los 30 no están conformes,
-  se termina sin penalidad.
+- **Sin permanencia mínima.** Facturación mensual. Lo único que pedimos es **aviso de término con
+  un mes de anticipación**, para cerrar el calendario en curso y entregar todo el material
+  producido ordenado. Recomendamos evaluar a los 90 días porque antes de eso el contenido no
+  alcanza a madurar — pero la decisión de seguir es de ustedes cada mes.
 - **Inicio: 10 días hábiles después de la confirmación.** Semana 1: reunión de pilares, identidad
-  gráfica y primera jornada de grabación. Semana 2: primer calendario aprobado y primeras
+  gráfica y pauta de grabación para el equipo. Semana 2: primer calendario aprobado y primeras
   publicaciones.
 
 ### 10. Inversión
 
 | Concepto | Mensual neto | Con IVA (19%) |
 |---|---|---|
-| Plan Crecimiento: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición, 1 jornada de grabación mensual en Santiago, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual, gestión de Meta Ads si la activan | $450.000 | $535.500 |
-| **Total** | **$450.000** | **$535.500** |
+| Plan Crecimiento: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición, pauta de grabación para su equipo, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual, gestión de Meta Ads si la activan | $450.000 | $535.500 |
+| **Total mensual** | **$450.000** | **$535.500** |
+| *Opcional, solo si la piden:* jornada de grabación presencial en Santiago (3 h) `[CONFIRMAR precio]` | $90.000 por jornada | $107.100 |
 
-Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 550 con IVA**. La facturación
-es en pesos chilenos.
-
-`[Si eliges la opción B: agregar la fila "Jornada de grabación presencial mensual — $90.000 /
-$107.100" → total $540.000 neto / $642.600 con IVA ≈ USD 660.]`
+Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 550 con IVA** el plan mensual.
+La facturación es en pesos chilenos.
 
 **Lo que no está incluido y conviene decir:** pauta en Meta (si alguna vez la quieren, la gestión
 ya está incluida y la inversión se paga directo a Meta — recomendamos desde $200.000/mes solo si
@@ -226,9 +241,9 @@ del calendario (se cotizan aparte).
 - **Presencia ($350.000 neto / $416.500 con IVA ≈ USD 427):** 4 reels + 4 publicaciones + 8
   historias, sin respuesta a comentarios. Alcanza para una presencia correcta y constante; se
   queda corto en video del equipo, que es lo que más confianza da en esta categoría.
-- **Crecimiento sin jornada de grabación ($450.000 neto):** si prefieren grabar ustedes con el
-  celular bajo nuestra pauta (les mandamos guion y encuadre), editamos nosotros. Funciona si
-  alguien del equipo tiene 2 horas al mes para eso.
+- **Crecimiento con jornada presencial trimestral (~$480.000 neto promedio):** el plan más una
+  jornada con nosotros cada tres meses para renovar el banco de fotos y grabar al equipo completo.
+  Es la opción si prefieren que nadie de Situ tenga que grabar nunca.
 
 ### Ejemplos de trabajo `[CONFIRMAR 2-3 links de @luisnunez.cl + permiso para citarlo]`
 

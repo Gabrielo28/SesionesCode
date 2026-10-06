@@ -67,18 +67,14 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
 
 ## 3. Lo que hace falta decidir para responder a Situ (no lo puedo decidir yo)
 
-1. **Precio de la jornada de grabación presencial.** Resuelto que "Contenido Estratégico" es el
-   informe de estrategia, la grabación en terreno no tiene producto propio. Situ la pide
-   explícitamente ("si incluyen jornadas de grabación o fotografía presencial en Santiago y con
-   qué frecuencia"). Dos caminos:
-   - **Absorberla** en el plan Crecimiento para Situ (1 jornada de 3 horas al mes, en Santiago,
-     dentro de los $450.000). Es lo más simple y lo que más pesa en su decisión; el margen lo
-     recupera el plan a 12 meses.
-   - **Cotizarla aparte** como línea nueva. Referencia, no precio de catálogo: una jornada de 3
-     horas con una persona en Santiago suele quedar entre $80.000 y $120.000 netos; con
-     $90.000 el total con IVA (~$643.000 ≈ USD 660) sigue dentro del rango de Situ.
-   Lo que se decida acá conviene después ponerlo en la web, porque lo van a preguntar todos
-   los clientes de servicios.
+1. **Grabación presencial. Resuelto el 6-oct por Gabriel:** no va incluida en los planes y se le
+   explica al cliente que no es imprescindible — depende del contenido; los reels a cámara se
+   graban con el celular del cliente siguiendo una pauta nuestra y nosotros editamos. Si la
+   piden, se cotiza aparte por jornada. **Queda pendiente fijar el precio por jornada** (la
+   propuesta a Situ usa $90.000 netos / 3 h en Santiago como referencia). Esta política conviene
+   escribirla en la web: es la pregunta que hace todo cliente de servicios.
+   Política de permanencia, también resuelta: **sin permanencia mínima, aviso de término con un
+   mes de anticipación.** LinkedIn: adaptación de piezas incluida sin costo.
 2. **Ejemplos en salud / confianza. Resuelto el 6-oct:** no hay cliente de salud. CEOS quedó en
    propuesta; Asesoría Previsional fue pauta y automatización y ya no es cliente. **El único
    cliente activo de contenido es Luis Núñez, asesor previsional (Plan Presencia)** — y es el
