@@ -6,9 +6,14 @@ Asunto: *"Cotización creación de contenido y gestión de redes – Situ"*. Lle
 
 **Quién es Situ:** cuidado integral de adultos mayores a domicilio ("ageing in place"): geriatría,
 cuidadoras, kinesiología, enfermería, podología, fonoaudiología y terapia ocupacional coordinados.
-Razón social AIP SpA, Alonso de Córdova 5710 of. 203, Las Condes. Operan en RM, Valparaíso y
-O'Higgins; foco comercial en el sector oriente (la propuesta lo refleja en "Qué entendimos" y
-en el pilar "Cómo funciona Situ"). Tienen blog, talleres y charlas. Se definen como
+Razón social AIP SpA. Dirección en la web: **Warren Smith 32, Las Condes** (la ficha anterior decía
+Alonso de Córdova 5710 of. 203; la web manda). Teléfono/WhatsApp del sitio: +56 9 8889 9427. Operan
+en RM, Valparaíso y O'Higgins según su correo (la web **no** nombra regiones); foco comercial en el
+sector oriente (la propuesta lo refleja en "Qué entendimos" y en el pilar "Cómo funciona Situ").
+Fundadores (LinkedIn): **Jorge Browne** (médico geriatra, cofundador, la cara de los reels), **Paula
+Ossandón Lira** (cofundadora; la web la presenta como CEO, enfermera de cuidados paliativos),
+**Nicolás de la Carrera Valdés** (CEO y cofundador según LinkedIn). Ojo: el que escribió es **Jorge
+Baeza**, no Jorge Browne; son dos personas distintas. Tienen blog, talleres y charlas. Se definen como
 *"tu Sherpa en el camino del cuidado"*. Redes: Instagram, Facebook, LinkedIn.
 
 **Transcripción literal de la lista del correo** (9 puntos, no 10; "Inversión" lo agregamos nosotros):
@@ -20,6 +25,39 @@ resultados; qué material o dedicación necesitarían de parte de Situ; plazo m�
 y tiempo de inicio.* Además: ejemplos en salud, bienestar o servicios de confianza; indicar si los
 valores son netos o con IVA; reunión breve si tiene sentido. Firma "Equipo Situ"; Jorge escribe
 "soy parte del equipo", no se presenta como quien decide.
+
+## Lo que vimos en sus canales (revisado el 6-oct-2026)
+
+**Web situ.care.** Servicios coordinados (geriatría, cuidadoras 3/8/12/24 h, enfermería, kine,
+medicina general, podología, fono/TO, catres y traslados). Planes Sherpa: la página desarrolla el
+**Plan Situ a 3 UF/mes** (visita mensual de gestora de salud, seguimiento por WhatsApp y teléfono
+lunes a domingo, **monitoreo con IA en tiempo real**, 2 visitas anuales de geriatra con 50 % dcto.);
+el home lista además Sherpa Red $19.990, Salud Plus 4 UF, Relevo, Full 12/24, Social, Paliativos. CTA:
+teléfono, WhatsApp y formulario "Quiero que me contacten". **Sección "¿Qué dicen de nosotros?" vacía**
+y la de estadísticas sin datos. Blog activo (último artículo 2-oct-2026, vacuna neumocócica; 12+
+artículos: escalas Yesavage, Tinetti, test del reloj, fragilidad, ejercicios en casa, ley de cuidados).
+Página "Material educativo" con 6 guías para cuidadores. Talleres: "Entendiendo la depresión en edad
+avanzada" (vigente), "Demencia: desafíos para familias" y "Cuidados paliativos en casa" (pasados).
+
+**Instagram @situ.care** (perfil bloqueado para lectura; 4 reels que mandó Gabriel):
+
+| Reel | Fecha | Tema | Respuesta |
+|---|---|---|---|
+| DdCh60fjsAy | 8-sep-2026 | Anosognosia: "¿Sabías que hay una etapa de la demencia donde la persona ya no recuerda que olvida?" | **118 likes, 4 comentarios** (la mejor) |
+| DVbpV8KEZDr | 31-mar-2026 | "No toda queja de memoria significa demencia" (analogía del corredor) | 34 likes, 0 comentarios |
+| DbMlcymAZC7 | 24-jul-2026 | "Lo que a Europa le tomó un siglo, a Chile le tomó 25 años" (#JorgeBrowne) | 22 likes, 1 comentario |
+| DbRqg2njDC4 | 26-jul-2026 | Jorge Browne: el sistema de salud de 1951 y el "tsunami demográfico" | s/d, 1 comentario |
+
+Lectura: tienen voz y una cara clínica (Dr. Browne a cámara). Lo que más responde es el gancho
+"¿Sabías que…" con un dato clínico traducido a lenguaje de familia. Lo que falta es contenido que le
+hable a la hija que decide hoy y que muestre **cómo funciona el servicio** (Plan Situ, WhatsApp, IA);
+los reels de demografía y política de salud le hablan al sector, no al comprador. Hashtags
+inconsistentes (a veces sí, a veces no), música de Bridgerton en uno: señales de que no hay un
+sistema detrás, que es justo lo que vendemos.
+
+**LinkedIn** "Situ – Envejecer en casa": 1.403 seguidores, 2-10 empleados, una publicación cada 1-2
+meses (entrevista a Browne en "Código Chile", búsqueda de enfermera, artículo sobre IA "38 % menos
+urgencias, 28 % menos hospitalizaciones"). **Facebook** SituAiP: no se pudo leer.
 
 **Lo que piden, en sus palabras:** contenido antes que gestión; *"las redes no son nuestro
 principal canal de adquisición"*; *"presencia profesional, consistente y confiable, priorizando

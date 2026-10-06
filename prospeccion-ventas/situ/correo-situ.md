@@ -8,6 +8,8 @@
 
 Jorge, gracias por el detalle del correo. Es la mejor forma de pedir una cotización, porque nos deja responder exactamente lo que necesitan en vez de mandar un plan genérico.
 
+Antes de escribir revisamos su sitio, el blog, su Instagram y LinkedIn, así que la propuesta parte de lo que ya están haciendo bien (los reels del Dr. Browne, el blog, los talleres) y no de cero.
+
 Les adjunto la propuesta. Dos cosas antes de que la abran:
 
 **La leímos como lo que es: una marca de confianza, no una marca de volumen.** El comprador es un hijo o hija que está tomando una decisión difícil sobre su padre o su madre, y va a mirar las redes de Situ buscando una sola cosa: señales de que son serios. Por eso la propuesta prioriza piezas educativas y video del equipo clínico real sobre cantidad, y recomienda no contratar gestión de mensajes: ese primer contacto con una familia lo deben dar ustedes.
