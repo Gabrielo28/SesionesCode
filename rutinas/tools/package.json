@@ -1,0 +1,7 @@
+{
+  "name": "rutinas-tools",
+  "private": true,
+  "type": "module",
+  "description": "Genera el PDF de una rutina a partir de su HTML: node topdf.mjs <rutina.html> <salida.pdf>",
+  "dependencies": { "playwright": "^1.45.0" }
+}
