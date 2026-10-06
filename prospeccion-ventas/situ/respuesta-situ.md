@@ -82,19 +82,16 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 - Ejemplo: se presenta como "un asesor previsional independiente", **sin nombre**, enlazando su
   sitio (luisnunez.cl) y los cuatro reels. **Confirmado.**
 - Reunión: a disposición de ellos, sin proponer horarios. **Confirmado.**
-- **Precio (decidido por el asistente el 6-oct a pedido de Gabriel; se revierte si él dice otra cosa):**
-  se mantiene **$450.000 neto como opción A recomendada** y se agrega una **opción B de $550.000 neto**
-  (A + programa de testimonios: 1 testimonio/mes gestionado de punta a punta, 2 jornadas presenciales al
-  año incluidas, recomendación trimestral para la web). Se elimina la alternativa Presencia (queda bajo
-  el rango de Situ y sin comentarios) y la de "jornada trimestral" (absorbida por B).
-  Razones: (1) "presupuesto de referencia total USD 500–700" se lee como lo que pagan, así que lo
-  que importa es que ambas opciones quepan en neto **y** con IVA: A = USD 462/550, B = USD 564/671;
-  $600.000 ya se sale (USD 732 con IVA). (2) Horas estimadas de A ≈ 35/mes → ~$12.900/h neto,
-  margen sano si edición y diseño son internos, ajustado si se externalizan. (3) Somos un proveedor
-  desconocido sin caso de salud: el precio y la pieza de muestra son nuestras dos palancas; subir la
-  base a $500–550k sin más entregables regala esa ventaja. (4) B captura el tope del rango con un
-  entregable que ellos necesitan de verdad (testimonios: su web tiene la sección vacía) y ancla A
-  como la opción sensata. Horas extra de B ≈ 5,5/mes → el extra se cobra a ~$18.000/h.
+- **Precio (decisión final de Gabriel, 6-oct):** opción **A $450.000 neto = Instagram + Facebook**;
+  opción **B $550.000 neto = A + LinkedIn como canal propio** (4 piezas adaptadas con copy institucional,
+  1 publicación nativa de texto al mes con la voz de los fundadores, publicación y respuesta a comentarios
+  en la página, LinkedIn en el reporte). B es la recomendada en el PDF. Razón de Gabriel: LinkedIn no es
+  algo que gestionemos normalmente, así que no se regala; es lo que justifica llegar a $550k. **Se eliminó
+  el programa de testimonios** que yo había propuesto: si Situ consigue testimonios de familias, la edición
+  va incluida en el plan (es uno de los 6 reels), pero conseguirlos y grabarlos es de ellos.
+  Lo que sigue vigente de mi análisis: ambas opciones caben en USD 500–700 en neto y con IVA (A = USD
+  462/550, B = USD 564/671; $600k se sale con IVA); horas de A ≈ 35/mes (~$12.900/h); B suma ≈ 5-6 h de
+  LinkedIn (~$18.000/h del extra). Esto **reemplaza** la decisión anterior "LinkedIn sin costo".
 - **Accesos sin contraseñas:** Meta Business Suite (socio o persona con acceso a tareas) para IG+FB;
   "administrador de contenido" en la página de LinkedIn. Guía para Situ en `guia-accesos.md`; se
   envía con la confirmación, no con la propuesta.
@@ -122,7 +119,7 @@ Historial de lo que se fue resolviendo:
    donde su cliente la busca. Y el contacto del sitio es WhatsApp manual con horario hasta las
    20:00: es candidato natural a "WhatsApp que responde y agenda" cuando el plan de redes esté
    maduro.
-3. LinkedIn incluido sin costo (4 adaptaciones al mes) — **resuelto: sí.**
+3. LinkedIn — **resuelto el 6-oct (segunda vuelta): NO va gratis.** Es la opción B ($550.000). Ver decisión de precio arriba.
 4. Permanencia — **resuelto:** sin permanencia mínima, con **aviso de término con un mes de
    anticipación**. Evaluación a 90 días e inicio en 10 días hábiles quedan como estaban.
 5. Reunión — **resuelto:** sin proponer horarios; el día y la hora los ponen ellos.
@@ -262,9 +259,9 @@ año suelen bastar.
 
 - **Facebook:** todo lo de Instagram se publica también en Facebook (misma pieza, mismo
   calendario). Su comprador de 45-60 años está ahí más que en Instagram.
-- **LinkedIn:** 4 piezas al mes adaptadas — los carruseles educativos y una del equipo — con el
-  copy reescrito para LinkedIn (más institucional, sin emojis, con la mirada de "cómo se
-  organiza el cuidado en Chile"). Incluido en el plan, sin costo adicional.
+- **LinkedIn (opción B, $550.000):** 4 piezas al mes adaptadas con copy institucional, 1 publicación
+  nativa de texto al mes con la voz de los fundadores, publicación y respuesta a comentarios en la
+  página de empresa, LinkedIn dentro del reporte. En la opción A LinkedIn queda fuera.
 
 ### 7. Reporte básico de resultados
 
@@ -296,11 +293,11 @@ vanidad ni 20 páginas de gráficos.
 
 | Concepto | Mensual neto | Con IVA (19%) |
 |---|---|---|
-| Plan Crecimiento: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición, pauta de grabación para su equipo, publicación, respuesta a comentarios, adaptación a Facebook y LinkedIn, reporte mensual, gestión de Meta Ads si la activan | $450.000 | $535.500 |
-| **Total mensual** | **$450.000** | **$535.500** |
+| **A · Instagram + Facebook**: estrategia y calendario, 14 piezas de feed + 12 historias, diseño, copy y edición (incl. testimonios que consiga Situ), pauta de grabación, publicación IG+FB, comentarios, reporte, gestión de Meta Ads si la activan | $450.000 | $535.500 |
+| **B · A + LinkedIn como canal propio (recomendada)**: 4 piezas adaptadas, 1 publicación nativa mensual, publicación y comentarios en la página, LinkedIn en el reporte | **$550.000** | **$654.500** |
 | *Opcional, solo si la piden:* jornada de grabación presencial en Santiago (3 h) | $90.000 por jornada | $107.100 |
 
-Referencia en dólares al observado del 6-oct-2026 (~$975): **≈ USD 550 con IVA** el plan mensual.
+Referencia en dólares al observado del 6-oct-2026 (~$975): A ≈ USD 462 neto / 550 con IVA; B ≈ USD 564 neto / 671 con IVA.
 La facturación es en pesos chilenos.
 
 **Lo que no está incluido y conviene decir:** pauta en Meta (si alguna vez la quieren, la gestión

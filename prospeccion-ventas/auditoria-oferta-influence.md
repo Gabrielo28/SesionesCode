@@ -74,7 +74,7 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
    propuesta a Situ usa $90.000 netos / 3 h en Santiago como referencia). Esta política conviene
    escribirla en la web: es la pregunta que hace todo cliente de servicios.
    Política de permanencia, también resuelta: **sin permanencia mínima, aviso de término con un
-   mes de anticipación.** LinkedIn: adaptación de piezas incluida sin costo.
+   mes de anticipación.** LinkedIn: **no se regala** (decisión del 6-oct, segunda vuelta): se vende como canal aparte, en Situ es la diferencia entre $450.000 y $550.000. Lo que lo justifica: copy institucional propio, una publicación nativa de texto al mes, gestión de la página y reporte.
 2. **Ejemplos en salud / confianza. Resuelto el 6-oct:** no hay cliente de salud. CEOS quedó en
    propuesta; Asesoría Previsional fue pauta y automatización y ya no es cliente. **El único
    cliente activo de contenido es Luis Núñez, asesor previsional (Plan Presencia)** — y es el
@@ -90,8 +90,8 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
    prospección de automatización y el cross-sell de salud sean urgentes, no un proyecto lateral.
 3. **Cuáles de las 10 piezas "para clientes" de la web son las más cercanas a salud/servicios**,
    para citarlas por link en la propuesta. Desde acá no las puedo ver.
-4. **LinkedIn.** Situ pide reutilizar en LinkedIn. ¿Adaptamos piezas a LinkedIn sin costo dentro
-   del plan (mi recomendación: 4 al mes, el copy cambia, el diseño se reaprovecha) o es extra?
+4. **LinkedIn. Resuelto:** es extra. Gabriel: no solemos gestionar LinkedIn, así que se cobra; en
+   Situ es la opción B (+$100.000). Conviene agregarlo a la web como servicio aparte.
 5. **Permanencia e inicio.** Propongo mantener lo de CEOS: sin permanencia mínima obligatoria,
    evaluación a 90 días, inicio 10 días hábiles después de la firma con la primera grabación en
    la semana 1-2. Confirmar.
