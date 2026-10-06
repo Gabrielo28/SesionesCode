@@ -16,10 +16,8 @@
   /* Portada */
   .portada { page: portada; width: 210mm; height: 297mm; padding: 22mm 20mm; background: linear-gradient(155deg, #123638 0%, #12959C 100%);
              color: #fff; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
-  .marca { display: flex; align-items: center; gap: 4mm; }
-  .marca .ic { width: 14mm; height: 14mm; border-radius: 3mm; background: #3cc8cf; border: 1.2mm solid #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-style: italic; font-size: 16pt; color: #fff; }
-  .marca .nombre { font-weight: 800; font-size: 17pt; letter-spacing: -.02em; }
-  .marca .nombre span { font-weight: 500; opacity: .85; }
+  .marca img { height: 30mm; width: auto; display: block; filter: brightness(0) invert(1); }
+  .cta .marca-pie img { height: 22mm; width: auto; display: block; margin: 0 auto 6mm; }
   .portada .kicker { font-size: 9.5pt; letter-spacing: .18em; text-transform: uppercase; opacity: .8; margin-bottom: 5mm; }
   .portada h1 { font-size: 30pt; line-height: 1.12; font-weight: 800; margin-bottom: 7mm; max-width: 150mm; }
   .portada .sub { font-size: 12.5pt; font-weight: 500; opacity: .92; max-width: 140mm; line-height: 1.45; }
@@ -88,7 +86,7 @@
 
 <!-- PORTADA -->
 <section class="portada">
-  <div class="marca"><div class="ic">IC</div><div class="nombre">influence <span>chile</span></div></div>
+  <div class="marca"><img src="../propuesta/assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
   <div>
     <div class="kicker">Propuesta · 6 de octubre de 2026</div>
     <h1>Contenido y gestión de redes para Situ</h1>
@@ -293,6 +291,7 @@
 <!-- CIERRE -->
 <section class="seccion">
   <div class="cta">
+    <div class="marca-pie"><img src="../propuesta/assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
     <h2>¿Partimos?</h2>
     <p>Si les hace sentido, coordinemos una reunión de 30 minutos para revisar la propuesta y resolver dudas. <strong>Díganos el día y la hora que les acomode y nos ajustamos.</strong> Si prefieren recibir primero la pieza de muestra y conversar después, también está bien.</p>
     <div class="boton">Confirmar por correo o WhatsApp</div>

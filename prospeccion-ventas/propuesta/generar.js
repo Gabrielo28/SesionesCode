@@ -12,7 +12,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const LOGO = path.join(__dirname, '..', '..', 'web-influence', 'assets', 'logo-teal.png');
+const LOGO = path.join(__dirname, 'assets', 'logo-influence.png'); // mismo PNG que usa index.html
 
 // Precios e inclusiones espejo de influencechile.cl (sección #planes). Si cambia la web, cambia esto.
 const PLANES = {
