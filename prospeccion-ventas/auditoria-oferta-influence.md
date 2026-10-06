@@ -79,12 +79,19 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
      $90.000 el total con IVA (~$643.000 ≈ USD 660) sigue dentro del rango de Situ.
    Lo que se decida acá conviene después ponerlo en la web, porque lo van a preguntar todos
    los clientes de servicios.
-2. **Ejemplos en salud / confianza. Resuelto el 6-oct:** no hay ninguno. CEOS quedó en propuesta
-   y Asesoría Previsional fue cliente de pauta y automatización (no de contenido) y ya no lo es.
-   La cartera actual de contenido según el tracker es YEET, Kurakavi FC, Remate Rivera, Luis
-   Núñez y World King — consumo, deporte, remates. Para Situ se dice tal cual y se compensa con
-   la pieza de muestra. **Si Situ cierra, es el primer caso de salud y hay que producirlo pensando
-   en que sirva de ejemplo para los 39 cruces de salud del CSV de redes.**
+2. **Ejemplos en salud / confianza. Resuelto el 6-oct:** no hay cliente de salud. CEOS quedó en
+   propuesta; Asesoría Previsional fue pauta y automatización y ya no es cliente. **El único
+   cliente activo de contenido es Luis Núñez, asesor previsional (Plan Presencia)** — y es el
+   ejemplo correcto para Situ: servicio de confianza para personas mayores y sus familias. Las
+   otras cuatro marcas del tracker (YEET, Kurakavi FC, Remate Rivera, World King) **ya no son
+   clientes**: el tracker y la pestaña "Para clientes" de la web muestran cartera que no existe.
+   Para Situ se nombran como "marcas con las que hemos trabajado". **Si Situ cierra, es el primer
+   caso de salud y hay que producirlo pensando en que sirva de ejemplo para los 39 cruces de
+   salud del CSV de redes.**
+
+   Consecuencia operativa que no es menor: **la cartera real es un cliente en Plan Presencia
+   ($350.000/mes)**. Eso vuelve a Situ ($450.000) el cliente más grande si cierra, y hace que la
+   prospección de automatización y el cross-sell de salud sean urgentes, no un proyecto lateral.
 3. **Cuáles de las 10 piezas "para clientes" de la web son las más cercanas a salud/servicios**,
    para citarlas por link en la propuesta. Desde acá no las puedo ver.
 4. **LinkedIn.** Situ pide reutilizar en LinkedIn. ¿Adaptamos piezas a LinkedIn sin costo dentro

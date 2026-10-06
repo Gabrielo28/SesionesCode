@@ -33,9 +33,11 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
    en los $450.000 del plan (mi recomendación para Situ: es lo que más pesa en su decisión).
    Opción B: línea aparte — referencia $90.000 netos, con lo que el total sigue dentro de los
    USD 700. La propuesta de abajo está escrita con la **opción A**; si eliges B, se agrega la fila.
-2. Ejemplos: resuelto que no hay cliente de salud (CEOS quedó en propuesta; Asesoría Previsional
-   fue pauta/automatización y ya no es cliente). Falta solo que me digas **cuáles 3-4 de las 10
-   piezas "para clientes" de la web** mostramos — idealmente las de persona a cámara o carrusel.
+2. Ejemplos: el único cliente activo de contenido es **Luis Núñez, asesor previsional** — y es
+   el mejor ejemplo posible para Situ (mismo comprador: persona mayor + familia decidiendo).
+   Necesito: su @ de Instagram o los links de 2-3 piezas suyas (una a cámara, un carrusel), y
+   que estés de acuerdo en citarlo con nombre — si prefieres, le avisas a él antes. Más 1-2
+   piezas de otras marcas de la web, solo si son persona a cámara o carrusel.
 3. LinkedIn incluido sin costo (4 adaptaciones al mes) — ¿sí?
 4. Sin permanencia mínima, evaluación a 90 días, inicio en 10 días hábiles — ¿sí?
 5. Las dos fechas de reunión que ofrecemos.
@@ -63,14 +65,18 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 > indicaron, con holgura. Todos los valores de la propuesta están en pesos, netos, con el IVA
 > indicado aparte; el dólar es solo referencia.
 >
-> Sobre ejemplos en salud, prefiero ser directo: **hoy no tenemos un cliente de salud ni de
-> cuidado de personas en la cartera.** Lo que sí les puedo mostrar es cómo producimos para otras
-> marcas (en la propuesta van los links) para que juzguen el nivel de diseño y edición. Y como
-> entiendo que lo que quieren ver es criterio, no portafolio, les propongo algo concreto: antes
-> de que decidan, les hacemos **una pieza de muestra para Situ** — un carrusel sobre "cómo saber
-> si mi papá o mi mamá ya necesita apoyo en casa", con el tono y el respaldo clínico que ustedes
-> manejan. Sin costo, sin compromiso. Si la pieza no les convence, no tiene sentido que sigamos
-> conversando; si les convence, ya vieron exactamente cómo trabajaríamos con ustedes.
+> Sobre ejemplos: no tenemos todavía un cliente de salud, y prefiero decirlo antes que estirar
+> el portafolio. Lo más cercano — y creo que es más cercano de lo que parece — es el contenido
+> que hacemos para **un asesor previsional** `[CONFIRMAR nombre/@ y permiso]`: un servicio donde
+> la persona mayor y sus hijos toman una decisión importante y necesitan confiar en quien los
+> asesora. Mismo comprador, misma exigencia de seriedad, mismo cuidado con lo que se puede
+> prometer. En la propuesta van los links.
+>
+> Y como entiendo que lo que quieren ver es criterio, no portafolio, les propongo algo concreto:
+> antes de que decidan, les hacemos **una pieza de muestra para Situ** — un carrusel sobre "cómo
+> saber si mi papá o mi mamá ya necesita apoyo en casa", con el tono y el respaldo clínico que
+> ustedes manejan. Sin costo, sin compromiso. Si la pieza no les convence, no tiene sentido que
+> sigamos conversando; si les convence, ya vieron exactamente cómo trabajaríamos con ustedes.
 >
 > ¿Les acomoda una reunión de 30 minutos el `[CONFIRMAR día/hora 1]` o el `[CONFIRMAR día/hora
 > 2]`? Si prefieren revisar la propuesta primero y después agendar, también está bien.
@@ -213,21 +219,30 @@ del calendario (se cotizan aparte).
   celular bajo nuestra pauta (les mandamos guion y encuadre), editamos nosotros. Funciona si
   alguien del equipo tiene 2 horas al mes para eso.
 
-### Ejemplos de trabajo `[CONFIRMAR qué 3-4 piezas]`
+### Ejemplos de trabajo `[CONFIRMAR piezas de Luis Núñez + permiso para citarlo]`
 
-Se dice tal cual: *"No tenemos todavía un cliente de salud. Estas piezas son de otros rubros y
-las mostramos para que evalúen diseño, edición y constancia — no el tono, que para Situ sería
-distinto y es lo que la pieza de muestra viene a demostrar."*
+**Primero y con nombre: Luis Núñez, asesor previsional.** Se presenta así: *"Nuestro cliente
+activo de contenido es un asesor previsional especializado en pensiones. Es el rubro más parecido
+al de Situ que hemos trabajado: una persona mayor y su familia decidiendo algo importante, un
+profesional que tiene que transmitir seriedad y respaldo, y un límite claro de lo que se puede
+prometer. Así se ve ese trabajo:"* — y debajo **2 o 3 piezas de Luis**, idealmente una de él
+hablando a cámara explicando algo de pensiones y un carrusel educativo, cada una con una línea
+de qué resolvía (ej. "explicar un trámite sin tecnicismos para que el hijo se lo pueda reenviar
+al papá").
 
-Debajo, 3 o 4 links de las 10 piezas "para clientes" que ya están en influencechile.cl (los que
-me indiques), cada uno con una línea: marca, qué formato es y qué resolvía. Mejor elegir las que
-tengan **una persona hablando a cámara** o un carrusel educativo, porque son los dos formatos
-que Situ va a recibir; una lata de bebida energética bailando no les dice nada.
+Luis está en Plan Presencia (4 reels, 4 posts, 8 historias al mes): eso también sirve como
+prueba de constancia — *"lo que ven es un mes normal de producción, no una campaña especial"*.
+
+**Después, 1 o 2 piezas de otras marcas con las que hemos trabajado** (de las 10 que carga la web),
+presentadas como *"otros rubros, para que evalúen diseño y edición"* — solo si tienen persona a
+cámara o carrusel; una bebida energética no suma acá.
 
 Cierra la sección la pieza de muestra: un carrusel para Situ, entregado antes de la decisión.
 
-Nota interna: Asesoría Previsional fue cliente de pauta y automatización, no de contenido, y ya
-no es cliente. CEOS quedó en propuesta. Ninguna de las dos se menciona.
+Nota interna: CEOS quedó en propuesta y Asesoría Previsional (empresa distinta a Luis) fue
+pauta/automatización y ya no es cliente; no se mencionan. Las otras marcas del tracker (YEET,
+Kurakavi FC, Remate Rivera, World King) ya no son clientes activos: se nombran como "marcas con
+las que hemos trabajado", nunca como cartera actual.
 
 ---
 
