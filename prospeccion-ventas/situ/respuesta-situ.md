@@ -186,7 +186,7 @@ año suelen bastar.
   salga al instante y ordenada (qué comuna, qué necesita, cuándo la pueden llamar) antes de que
   llegue a su equipo. No va en esta propuesta; lo conversamos cuando tenga sentido.
 
-### 6. Reutilización entre Instagram, Facebook y LinkedIn `[CONFIRMAR LinkedIn]`
+### 6. Reutilización entre Instagram, Facebook y LinkedIn
 
 - **Facebook:** todo lo de Instagram se publica también en Facebook (misma pieza, mismo
   calendario). Su comprador de 45-60 años está ahí más que en Instagram.
@@ -245,7 +245,7 @@ del calendario (se cotizan aparte).
   jornada con nosotros cada tres meses para renovar el banco de fotos y grabar al equipo completo.
   Es la opción si prefieren que nadie de Situ tenga que grabar nunca.
 
-### Ejemplos de trabajo `[CONFIRMAR 2-3 links de @luisnunez.cl + permiso para citarlo]`
+### Ejemplos de trabajo `[CONFIRMAR permiso de Luis para citarlo]`
 
 **Primero y con nombre: Luis Núñez, asesor previsional — instagram.com/luisnunez.cl · luisnunez.cl.**
 Se presenta así: *"Nuestro cliente activo de contenido es un asesor previsional independiente,
