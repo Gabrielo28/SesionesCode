@@ -1,0 +1,380 @@
+<title>Rutina Andrés 5 Días</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one reading column (max 920px). Cabecera oscura con la identidad del plan,
+     tira semanal, guía de lectura, 5 bloques de sesión con tabla, progresión y notas. */
+  :root {
+    --bg: #F2F4F7;
+    --surface: #FFFFFF;
+    --surface-2: #E9EDF3;
+    --ink: #13171E;
+    --muted: #5A6373;
+    --line: #D5DAE2;
+    --accent: #1B55D4;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E1E9FB;
+    --head-bg: #13171E;
+    --head-ink: #F4F6FA;
+    --head-muted: #9AA4B5;
+    --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+    --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
+      --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743;
+      --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
+    --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743;
+    --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin: 0; }
+  .wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 0 56px; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
+  p { margin: 0; }
+  .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+  /* Cabecera */
+  .head { background: var(--head-bg); color: var(--head-ink); margin-inline: -16px; padding: 36px 16px 32px; }
+  .head-in { max-width: 888px; margin: 0 auto; display: grid; gap: 22px; }
+  .head .eyebrow { color: var(--head-muted); }
+  .head h1 { font-size: clamp(44px, 9vw, 84px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; }
+  .head h1 span { color: var(--accent); }
+  .split-line { font-family: var(--font-display); font-size: clamp(18px, 3.2vw, 24px); font-weight: 500; color: var(--head-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .split-line b { color: var(--head-ink); font-weight: 700; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: #2A303B; border: 1px solid #2A303B; }
+  .fact { background: var(--head-bg); padding: 12px 14px; display: grid; gap: 2px; }
+  .fact .k { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--head-muted); font-weight: 600; }
+  .fact .v { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .fact .v small { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--head-muted); margin-left: 6px; }
+
+  /* Secciones */
+  section { margin-top: 40px; }
+  .sec-title { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 18px; }
+  .sec-title h2 { font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .sec-title .eyebrow { margin-left: auto; }
+
+  /* Semana */
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day { background: var(--surface); border: 1px solid var(--line); padding: 10px 8px; min-height: 92px; display: grid; align-content: start; gap: 4px; }
+  .day .d { font-family: var(--font-display); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .day .n { font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+  .day .s { font-size: 12px; color: var(--muted); }
+  .day.on { border-top: 4px solid var(--accent); }
+  .day.off { background: var(--surface-2); border-style: dashed; }
+  .day.off .n { color: var(--muted); font-weight: 500; }
+  @media (max-width: 560px) {
+    .week { grid-template-columns: repeat(4, 1fr); }
+  }
+  .note { color: var(--muted); font-size: 14px; margin-top: 12px; max-width: 65ch; }
+
+  /* Guía de lectura */
+  .guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .g { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .g .t { font-family: var(--font-display); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .g .t em { font-style: normal; color: var(--accent); }
+  .g p { font-size: 14px; color: var(--muted); }
+
+  /* Sesión */
+  .session { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); }
+  .s-head { display: grid; grid-template-columns: auto 1fr; gap: 0; border-bottom: 1px solid var(--line); }
+  .s-num { background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; font-size: 40px; padding: 14px 18px; display: grid; place-items: center; min-width: 88px; line-height: 1; }
+  .s-num small { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .s-meta { padding: 14px 18px; display: grid; gap: 4px; min-width: 0; }
+  .s-meta h3 { font-size: clamp(26px, 5vw, 34px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .s-meta .focus { font-size: 14px; color: var(--muted); }
+  .s-meta .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .chip { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; background: var(--accent-soft); color: var(--ink); padding: 3px 8px; }
+
+  .tbl { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 620px; }
+  th { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 600; background: var(--surface-2); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.ex { min-width: 240px; }
+  td.ex .name { font-weight: 600; }
+  td.ex .cue { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  td.c { text-align: center; white-space: nowrap; }
+  td.c.big { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+  td.load { min-width: 86px; }
+  td.load .box { height: 26px; border: 1px dashed var(--line); background: var(--bg); }
+  th.c { text-align: center; }
+  .s-foot { padding: 12px 18px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
+  .s-foot b { color: var(--ink); }
+
+  /* Progresión */
+  .prog { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .pw { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .pw .w { font-family: var(--font-display); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .pw .r { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+  .pw p { font-size: 14px; color: var(--muted); }
+  .rule { margin-top: 16px; background: var(--accent-soft); padding: 14px 16px; display: grid; gap: 6px; }
+  .rule .t { font-family: var(--font-display); font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .rule p { font-size: 14px; }
+
+  /* Listas */
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .cols h3 { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; }
+  ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+  li { max-width: 65ch; }
+  .foot { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 20px; }
+
+  @media print {
+    body { background: #fff; color: #000; font-size: 12px; }
+    .head { background: #000 !important; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .session { break-inside: avoid; page-break-inside: avoid; }
+    section { break-inside: avoid; }
+    table { min-width: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .day.on:hover { transform: translateY(-2px); transition: transform .15s ease; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <div class="head-in">
+      <p class="eyebrow">Planificación de entrenamiento · Bloque 1 · 4 semanas</p>
+      <h1>Andrés<br><span>5 días</span></h1>
+      <p class="split-line"><b>Push</b> · Full body · <b>Pull</b> · Full body · <b>Accesorios</b></p>
+      <div class="facts">
+        <div class="fact"><span class="k">Frecuencia</span><span class="v">5 sesiones<small>por semana</small></span></div>
+        <div class="fact"><span class="k">Duración</span><span class="v">60–75 min<small>por sesión</small></span></div>
+        <div class="fact"><span class="k">Objetivo</span><span class="v">Hipertrofia<small>y fuerza base</small></span></div>
+        <div class="fact"><span class="k">Nivel</span><span class="v">Intermedio<small>a confirmar</small></span></div>
+        <div class="fact"><span class="k">Lugar</span><span class="v">Gimnasio<small>equipo completo</small></span></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-title"><h2>Estructura semanal</h2><span class="eyebrow">Orden sugerido</span></div>
+    <div class="week">
+      <div class="day on"><span class="d">Lun</span><span class="n">Push</span><span class="s">Pecho · hombro · tríceps</span></div>
+      <div class="day on"><span class="d">Mar</span><span class="n">Full body</span><span class="s">Énfasis pierna · sentadilla</span></div>
+      <div class="day off"><span class="d">Mié</span><span class="n">Descanso</span><span class="s">Caminata o movilidad</span></div>
+      <div class="day on"><span class="d">Jue</span><span class="n">Pull</span><span class="s">Espalda · bíceps · post.</span></div>
+      <div class="day on"><span class="d">Vie</span><span class="n">Full body</span><span class="s">Énfasis pierna · p. muerto</span></div>
+      <div class="day on"><span class="d">Sáb</span><span class="n">Accesorios</span><span class="s">Torso + pierna</span></div>
+      <div class="day off"><span class="d">Dom</span><span class="n">Descanso</span><span class="s">Recuperación total</span></div>
+    </div>
+    <p class="note">Las dos sesiones de full body llevan énfasis en pierna: una gira en torno a la sentadilla y la otra al peso muerto. Si prefieres entrenar de lunes a viernes seguidos, mantén el mismo orden y deja el fin de semana libre.</p>
+  </section>
+
+  <section>
+    <div class="sec-title"><h2>Cómo leer la rutina</h2></div>
+    <div class="guide">
+      <div class="g"><span class="t">Series <em>×</em> Reps</span><p>4 × 6–8 significa 4 series efectivas de entre 6 y 8 repeticiones. Las series de aproximación no cuentan.</p></div>
+      <div class="g"><span class="t"><em>RIR</em> · Reps en reserva</span><p>Cuántas repeticiones te quedan en el tanque al terminar la serie. RIR 2 = podrías hacer 2 más pero paras.</p></div>
+      <div class="g"><span class="t">Descanso</span><p>Tiempo entre series. Respétalo: en los básicos pesados necesitas los 2–3 min para rendir en la siguiente serie.</p></div>
+      <div class="g"><span class="t">Carga</span><p>Columna en blanco para anotar el peso usado. La regla de progresión está al final de la planificación.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><h2>Calentamiento</h2><span class="eyebrow">Antes de cada sesión · 8–10 min</span></div>
+    <div class="cols">
+      <div>
+        <h3>General</h3>
+        <ul>
+          <li>5 min de cardio suave: bici, remo o cinta a ritmo de conversación.</li>
+          <li>Movilidad según el día: hombros y torácica en Push/Pull, cadera y tobillos en días de pierna.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Series de aproximación</h3>
+        <ul>
+          <li>Solo en el primer ejercicio de cada sesión: 50% × 8 reps, 70% × 5 reps, 85% × 2 reps del peso de trabajo.</li>
+          <li>En el resto de ejercicios basta con 1 serie ligera de 8–10 reps.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DÍA 1 -->
+  <article class="session">
+    <div class="s-head">
+      <div class="s-num"><small>Día</small>1</div>
+      <div class="s-meta">
+        <h3>Push</h3>
+        <p class="focus">Pecho, hombro y tríceps. Empieza con el press banca cuando estás fresco y cierra con aislamiento.</p>
+        <div class="chips"><span class="chip">Pecho</span><span class="chip">Hombro</span><span class="chip">Tríceps</span><span class="chip">~65 min</span></div>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th class="c">Descanso</th><th class="c">RIR</th><th>Carga</th></tr></thead>
+        <tbody>
+          <tr><td class="ex"><div class="name">Press banca con barra</div><div class="cue">Escápulas retraídas, pies firmes. Barra a la altura del esternón.</div></td><td class="c big">4</td><td class="c">6–8</td><td class="c">2–3 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Press inclinado con mancuernas</div><div class="cue">Banco a 30°. Baja hasta sentir estiramiento en el pectoral superior.</div></td><td class="c big">3</td><td class="c">8–10</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Press militar sentado con mancuernas</div><div class="cue">Espalda apoyada, codos ligeramente adelante del cuerpo.</div></td><td class="c big">3</td><td class="c">8–10</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Cruces en polea (o fondos en paralelas)</div><div class="cue">Ligera inclinación del torso. Junta las manos al frente sin encoger hombros.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">90 s</td><td class="c">1–2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Elevaciones laterales con mancuernas</div><div class="cue">Codo guía el movimiento. Sin balanceo ni impulso de piernas.</div></td><td class="c big">4</td><td class="c">12–15</td><td class="c">60–75 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Extensión de tríceps en polea con barra</div><div class="cue">Codos pegados al cuerpo. Extensión completa abajo.</div></td><td class="c big">3</td><td class="c">12–15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Extensión de tríceps sobre cabeza con cuerda</div><div class="cue">Busca estirar la cabeza larga del tríceps. Movimiento controlado.</div></td><td class="c big">2</td><td class="c">12–15</td><td class="c">60 s</td><td class="c">0–1</td><td class="load"><div class="box"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="s-foot"><b>Total:</b> 22 series efectivas · <b>Clave de la sesión:</b> el press banca manda la progresión, el resto acompaña.</div>
+  </article>
+
+  <!-- DÍA 2 -->
+  <article class="session">
+    <div class="s-head">
+      <div class="s-num"><small>Día</small>2</div>
+      <div class="s-meta">
+        <h3>Full body · Énfasis pierna</h3>
+        <p class="focus">Gira en torno a la sentadilla. Después un tirón y un empuje de torso para mantener frecuencia.</p>
+        <div class="chips"><span class="chip">Cuádriceps</span><span class="chip">Isquios</span><span class="chip">Espalda</span><span class="chip">Pecho</span><span class="chip">~70 min</span></div>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th class="c">Descanso</th><th class="c">RIR</th><th>Carga</th></tr></thead>
+        <tbody>
+          <tr><td class="ex"><div class="name">Sentadilla trasera con barra</div><div class="cue">Profundidad hasta paralelo o más si la movilidad lo permite. Core firme, rodillas en línea con los pies.</div></td><td class="c big">4</td><td class="c">5–6</td><td class="c">3 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Peso muerto rumano con barra</div><div class="cue">Cadera atrás, espalda neutra. Baja hasta sentir el estiramiento en isquios, no más.</div></td><td class="c big">3</td><td class="c">8–10</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Remo con barra</div><div class="cue">Torso a 45°. Lleva la barra al abdomen bajo, pausa breve arriba.</div></td><td class="c big">3</td><td class="c">8–10</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Press plano con mancuernas</div><div class="cue">Rango completo. Mancuernas a la altura del pecho en el punto bajo.</div></td><td class="c big">3</td><td class="c">10</td><td class="c">90 s</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Zancadas caminando con mancuernas</div><div class="cue">Paso largo, rodilla trasera cerca del suelo. 10 por pierna.</div></td><td class="c big">2</td><td class="c">10 / pierna</td><td class="c">90 s</td><td class="c">1–2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Plancha abdominal</div><div class="cue">Glúteo y abdomen apretados, sin dejar caer la cadera.</div></td><td class="c big">3</td><td class="c">30–45 s</td><td class="c">45 s</td><td class="c">—</td><td class="load"><div class="box"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="s-foot"><b>Total:</b> 18 series efectivas · <b>Clave de la sesión:</b> sentadilla pesada y limpia; si la técnica se rompe, baja el peso.</div>
+  </article>
+
+  <!-- DÍA 3 -->
+  <article class="session">
+    <div class="s-head">
+      <div class="s-num"><small>Día</small>3</div>
+      <div class="s-meta">
+        <h3>Pull</h3>
+        <p class="focus">Espalda completa, deltoides posterior y bíceps. Tirón vertical primero, horizontal después.</p>
+        <div class="chips"><span class="chip">Dorsal</span><span class="chip">Espalda alta</span><span class="chip">Hombro post.</span><span class="chip">Bíceps</span><span class="chip">~65 min</span></div>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th class="c">Descanso</th><th class="c">RIR</th><th>Carga</th></tr></thead>
+        <tbody>
+          <tr><td class="ex"><div class="name">Dominadas (o jalón al pecho si no llegas a 6)</div><div class="cue">Agarre prono algo más ancho que hombros. Pecho hacia la barra, sin balanceo. Lastre cuando superes 8.</div></td><td class="c big">4</td><td class="c">6–8</td><td class="c">2–3 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Remo sentado en polea, agarre neutro</div><div class="cue">Pecho alto, tira con los codos hacia atrás. Estira bien al frente.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">90 s</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Remo con mancuerna a una mano</div><div class="cue">Apoyo en banco. Codo pegado, lleva la mancuerna hacia la cadera.</div></td><td class="c big">3</td><td class="c">10 / lado</td><td class="c">90 s</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Pullover en polea alta, brazos rectos</div><div class="cue">Codos casi extendidos. Siente el dorsal en todo el recorrido.</div></td><td class="c big">3</td><td class="c">12</td><td class="c">60–75 s</td><td class="c">1–2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Face pull con cuerda</div><div class="cue">Tira hacia la frente, codos altos, rotación externa al final.</div></td><td class="c big">3</td><td class="c">15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Curl con barra Z</div><div class="cue">Codos fijos a los costados. Baja controlado en 2 segundos.</div></td><td class="c big">3</td><td class="c">8–10</td><td class="c">75 s</td><td class="c">1–2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Curl martillo con mancuernas</div><div class="cue">Agarre neutro. Trabaja braquial y antebrazo.</div></td><td class="c big">2</td><td class="c">12</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="s-foot"><b>Total:</b> 21 series efectivas · <b>Clave de la sesión:</b> las dominadas marcan el progreso; registra reps y lastre.</div>
+  </article>
+
+  <!-- DÍA 4 -->
+  <article class="session">
+    <div class="s-head">
+      <div class="s-num"><small>Día</small>4</div>
+      <div class="s-meta">
+        <h3>Full body · Énfasis pierna</h3>
+        <p class="focus">Gira en torno al peso muerto. Luego un empuje y un tirón de torso, y cadena posterior con hip thrust.</p>
+        <div class="chips"><span class="chip">Cadena posterior</span><span class="chip">Cuádriceps</span><span class="chip">Pecho</span><span class="chip">Espalda</span><span class="chip">~70 min</span></div>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th class="c">Descanso</th><th class="c">RIR</th><th>Carga</th></tr></thead>
+        <tbody>
+          <tr><td class="ex"><div class="name">Peso muerto convencional (o con barra hexagonal)</div><div class="cue">Barra pegada a las piernas, espalda neutra, empuja el suelo. Reinicia cada repetición desde parado.</div></td><td class="c big">3</td><td class="c">4–5</td><td class="c">3 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Prensa de piernas</div><div class="cue">Pies a la anchura de hombros, a media altura. Rango completo sin despegar la zona lumbar.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Press inclinado con barra</div><div class="cue">Banco a 30°. Barra a la clavícula, codos a 45°.</div></td><td class="c big">3</td><td class="c">6–8</td><td class="c">2 min</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Jalón al pecho, agarre neutro</div><div class="cue">Inclina el torso levemente atrás, lleva la barra al esternón alto.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">90 s</td><td class="c">2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Hip thrust con barra</div><div class="cue">Mentón abajo, pausa de 1 segundo arriba apretando glúteo.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">90 s</td><td class="c">1–2</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Elevación de piernas colgado</div><div class="cue">Rodillas hacia el pecho si no llegas con piernas rectas. Sin balanceo.</div></td><td class="c big">3</td><td class="c">10–15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="s-foot"><b>Total:</b> 18 series efectivas · <b>Clave de la sesión:</b> peso muerto con técnica perfecta; pocas reps, mucha intención.</div>
+  </article>
+
+  <!-- DÍA 5 -->
+  <article class="session">
+    <div class="s-head">
+      <div class="s-num"><small>Día</small>5</div>
+      <div class="s-meta">
+        <h3>Accesorios · Torso + pierna</h3>
+        <p class="focus">Sin básicos pesados. Aislamiento de pierna, hombro, brazos y core para cerrar la semana con volumen de calidad.</p>
+        <div class="chips"><span class="chip">Cuádriceps</span><span class="chip">Isquios</span><span class="chip">Gemelo</span><span class="chip">Hombro</span><span class="chip">Brazos</span><span class="chip">Core</span><span class="chip">~60 min</span></div>
+      </div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th class="c">Descanso</th><th class="c">RIR</th><th>Carga</th></tr></thead>
+        <tbody>
+          <tr><td class="ex"><div class="name">Extensión de cuádriceps</div><div class="cue">Pausa de 1 segundo arriba. Baja en 2–3 segundos.</div></td><td class="c big">3</td><td class="c">12–15</td><td class="c">75 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Curl femoral tumbado</div><div class="cue">Cadera pegada al banco. Controla la bajada.</div></td><td class="c big">3</td><td class="c">12–15</td><td class="c">75 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Elevación de gemelo de pie</div><div class="cue">Rango completo: estira abajo 1 segundo, sube hasta la punta.</div></td><td class="c big">4</td><td class="c">10–12</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Elevaciones laterales en polea</div><div class="cue">Cable por detrás del cuerpo. Tensión constante desde abajo.</div></td><td class="c big">3</td><td class="c">12–15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Pájaros (deltoides posterior) en máquina o con mancuernas</div><div class="cue">Codos ligeramente flexionados, abre hacia los lados y atrás.</div></td><td class="c big">3</td><td class="c">15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Curl inclinado con mancuernas</div><div class="cue">Banco a 45–60°. Brazos colgando, estira completo abajo.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">60–75 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Press francés con barra Z</div><div class="cue">Baja la barra por detrás de la cabeza, codos apuntando al techo.</div></td><td class="c big">3</td><td class="c">10–12</td><td class="c">60–75 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+          <tr><td class="ex"><div class="name">Crunch en polea alta (o rueda abdominal)</div><div class="cue">Flexiona el tronco, no la cadera. Exhala al bajar.</div></td><td class="c big">3</td><td class="c">12–15</td><td class="c">60 s</td><td class="c">1</td><td class="load"><div class="box"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="s-foot"><b>Total:</b> 25 series efectivas · <b>Clave de la sesión:</b> técnica y conexión, cargas moderadas, descansos cortos.</div>
+  </article>
+
+  <section>
+    <div class="sec-title"><h2>Progresión del bloque</h2><span class="eyebrow">4 semanas</span></div>
+    <div class="prog">
+      <div class="pw"><span class="w">Semana 1</span><span class="r">RIR 3</span><p>Aprender los movimientos y encontrar los pesos de trabajo. Termina cada serie con 3 reps en reserva.</p></div>
+      <div class="pw"><span class="w">Semana 2</span><span class="r">RIR 2</span><p>Mismos pesos o algo más. Aquí ya se entrena como indica la tabla.</p></div>
+      <div class="pw"><span class="w">Semana 3</span><span class="r">RIR 1</span><p>Semana más dura del bloque. Sube carga donde la regla lo permita y acércate al fallo en aislamientos.</p></div>
+      <div class="pw"><span class="w">Semana 4</span><span class="r">Descarga</span><p>Mitad de las series, mismos pesos, RIR 3–4. El cuerpo se recupera para el siguiente bloque.</p></div>
+    </div>
+    <div class="rule">
+      <span class="t">Regla de progresión doble</span>
+      <p>Cuando completes el tope del rango de repeticiones en <b>todas</b> las series de un ejercicio con el RIR indicado, sube el peso en la siguiente sesión: <b>+2,5 kg</b> en ejercicios de torso y <b>+5 kg</b> en sentadilla, peso muerto y prensa. Vuelves al inicio del rango y repites el proceso.</p>
+      <p>Ejemplo: press banca 4 × 6–8 con 70 kg. Haces 8, 8, 8, 8 → la próxima sesión usas 72,5 kg y buscas 4 × 6.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title"><h2>Pautas generales</h2></div>
+    <div class="cols">
+      <div>
+        <h3>Durante la sesión</h3>
+        <ul>
+          <li>Anota siempre peso y repeticiones. Sin registro no hay progresión.</li>
+          <li>Si un día entras con poca energía, mantén los básicos y recorta 1 serie en los accesorios.</li>
+          <li>Dolor articular agudo no es fatiga: cambia el ejercicio por una variante y avísame.</li>
+          <li>Repeticiones controladas: 1–2 s de subida, 2–3 s de bajada en los aislamientos.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Fuera del gimnasio</h3>
+        <ul>
+          <li>7–8 horas de sueño. Es el factor que más afecta a la recuperación con 5 días de entreno.</li>
+          <li>Proteína en cada comida principal, objetivo aproximado de 1,6–2 g por kilo de peso corporal al día.</li>
+          <li>Hidratación y 8–10 mil pasos diarios los días de descanso.</li>
+          <li>Al terminar las 4 semanas revisamos cargas, sensaciones y ajustamos el bloque 2.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Rutina preparada para Andrés · Bloque 1</span>
+    <span>Split: Push · Full body · Pull · Full body · Accesorios</span>
+    <span>Nivel y objetivo asumidos como intermedio e hipertrofia, ajustables según evaluación.</span>
+  </footer>
+
+</div>
