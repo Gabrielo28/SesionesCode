@@ -82,6 +82,22 @@ estiramos la cotización al presupuesto que ellos mismos dijeron.
 - Ejemplo: se presenta como "un asesor previsional independiente", **sin nombre**, enlazando su
   sitio (luisnunez.cl) y los cuatro reels. **Confirmado.**
 - Reunión: a disposición de ellos, sin proponer horarios. **Confirmado.**
+- **Precio (decidido por el asistente el 6-oct a pedido de Gabriel; se revierte si él dice otra cosa):**
+  se mantiene **$450.000 neto como opción A recomendada** y se agrega una **opción B de $550.000 neto**
+  (A + programa de testimonios: 1 testimonio/mes gestionado de punta a punta, 2 jornadas presenciales al
+  año incluidas, recomendación trimestral para la web). Se elimina la alternativa Presencia (queda bajo
+  el rango de Situ y sin comentarios) y la de "jornada trimestral" (absorbida por B).
+  Razones: (1) "presupuesto de referencia total USD 500–700" se lee como lo que pagan, así que lo
+  que importa es que ambas opciones quepan en neto **y** con IVA: A = USD 462/550, B = USD 564/671;
+  $600.000 ya se sale (USD 732 con IVA). (2) Horas estimadas de A ≈ 35/mes → ~$12.900/h neto,
+  margen sano si edición y diseño son internos, ajustado si se externalizan. (3) Somos un proveedor
+  desconocido sin caso de salud: el precio y la pieza de muestra son nuestras dos palancas; subir la
+  base a $500–550k sin más entregables regala esa ventaja. (4) B captura el tope del rango con un
+  entregable que ellos necesitan de verdad (testimonios: su web tiene la sección vacía) y ancla A
+  como la opción sensata. Horas extra de B ≈ 5,5/mes → el extra se cobra a ~$18.000/h.
+- **Accesos sin contraseñas:** Meta Business Suite (socio o persona con acceso a tareas) para IG+FB;
+  "administrador de contenido" en la página de LinkedIn. Guía para Situ en `guia-accesos.md`; se
+  envía con la confirmación, no con la propuesta.
 
 Historial de lo que se fue resolviendo:
 

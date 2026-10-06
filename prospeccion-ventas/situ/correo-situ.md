@@ -1,7 +1,7 @@
 # Correo a Situ — listo para pegar
 
 **Para:** Jorge Emilio Baeza Barrera (responder al hilo original)
-**Adjunto:** `propuesta-situ.pdf` (9 páginas)
+**Adjunto:** `propuesta-situ.pdf` (9 páginas). La guía de accesos (`guia-accesos.md`) se manda después, cuando confirmen.
 **Asunto:** Re: Cotización creación de contenido y gestión de redes – Situ
 
 ---
@@ -14,9 +14,11 @@ Les adjunto la propuesta. Dos cosas antes de que la abran:
 
 **La leímos como lo que es: una marca de confianza, no una marca de volumen.** El comprador es un hijo o hija que está tomando una decisión difícil sobre su padre o su madre, y va a mirar las redes de Situ buscando una sola cosa: señales de que son serios. Por eso la propuesta prioriza piezas educativas y video del equipo clínico real sobre cantidad, y recomienda no contratar gestión de mensajes: ese primer contacto con una familia lo deben dar ustedes.
 
-**Sobre el presupuesto:** la propuesta queda en $450.000 netos mensuales + IVA. Con IVA son $535.500, que al dólar observado de hoy equivalen a unos USD 550, dentro del rango que indicaron y con holgura. Todos los valores de la propuesta están en pesos, netos, con el IVA indicado aparte; el dólar es solo referencia.
+**Sobre el presupuesto:** la propuesta recomendada queda en $450.000 netos mensuales + IVA. Con IVA son $535.500, que al dólar observado de hoy equivalen a unos USD 550, dentro del rango que indicaron y con holgura. Hay una segunda opción de $550.000 netos ($654.500 con IVA, unos USD 671) si prefieren que el programa de testimonios de familias lo llevemos nosotros de punta a punta. Todos los valores están en pesos, netos, con el IVA indicado aparte; el dólar es solo referencia.
 
 Sobre la grabación presencial que preguntan: no la incluimos en el plan, y les explico por qué en la propuesta. Con el tipo de contenido que necesita Situ, buena parte se puede grabar con el celular de alguien del equipo siguiendo nuestra pauta, y el resto es diseño. Si en algún mes quieren una jornada con nosotros en terreno, se cotiza aparte y queda indicada la referencia.
+
+Sobre los accesos: no necesitamos contraseñas. Instagram y Facebook se comparten desde Meta Business Suite y LinkedIn desde la página de empresa; les mandamos la guía de 10 minutos cuando confirmen.
 
 Sobre ejemplos: no tenemos todavía un cliente de salud, y prefiero decirlo antes que estirar el portafolio. Lo más cercano, y creo que es más cercano de lo que parece, es el contenido que hacemos para un asesor previsional independiente: un servicio donde la persona mayor y sus hijos toman una decisión importante y necesitan confiar en quien los asesora. Mismo comprador, misma exigencia de seriedad, mismo cuidado con lo que se puede prometer. En la propuesta van su sitio y cuatro piezas.
 
