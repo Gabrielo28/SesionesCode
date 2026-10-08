@@ -562,9 +562,12 @@
   }
 
   // Google Ads: se conecta con "Iniciar sesión con Google" (redirige a
-  // Google y vuelve a /app?google=...), luego se elige la cuenta.
+  // Google y vuelve a /app?google=...), luego se elige la cuenta. En pausa
+  // mientras el servidor no lo active (GOOGLE_ADS_ACTIVO): no se muestra.
   function renderGoogle() {
     const cont = $('#google-card');
+    cont.hidden = !negocioActual.googleActivo;
+    if (cont.hidden) return;
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     const g = negocioActual.googleConexion;
     const cabecera = `<div class="ig-card-head"><h2>Conexión con Google Ads${AY('google')}</h2>
@@ -1019,9 +1022,13 @@
     if (window.RubrofyRecargas) window.RubrofyRecargas.renderUso($('#plan-uso'));
   }
 
-  // Resultados tiene pestañas: Instagram, Meta Ads, Google Ads y Competencia.
+  // Resultados tiene pestañas: Instagram, Meta Ads y Competencia (y Google
+  // Ads, solo si el servidor lo tiene activo).
   let tabResultados = 'instagram';
   function renderResultados() {
+    const tabGoogle = document.querySelector('#resultados-pestanas [data-tab="google"]');
+    if (tabGoogle) tabGoogle.hidden = !negocioActual.googleActivo;
+    if (tabResultados === 'google' && !negocioActual.googleActivo) tabResultados = 'meta';
     document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.classList.toggle('activa', b.dataset.tab === tabResultados));
     const ctx = { api, negocio: negocioActual, planes: planesInfo, irA: irAVista, recargarContenido: ctxPanel().recargarContenido };
     const cont = $('#resultados');
@@ -1137,7 +1144,7 @@
     // "Vincular cuentas": un punto si Instagram no está conectado o pide reconectar.
     const igFalta = !negocioActual.instagramConectado || negocioActual.instagramEstado === 'reconectar';
     $('#rail-vincular-punto').hidden = !igFalta;
-    $('#rail-vincular').title = igFalta ? (negocioActual.instagramEstado === 'reconectar' ? 'Instagram pide reconectar' : 'Instagram no está conectado') : 'Vincular Instagram, Meta y Google';
+    $('#rail-vincular').title = igFalta ? (negocioActual.instagramEstado === 'reconectar' ? 'Instagram pide reconectar' : 'Instagram no está conectado') : (negocioActual.googleActivo ? 'Vincular Instagram, Meta y Google' : 'Vincular Instagram y Meta');
     const actual = $('#rail-planactual');
     actual.hidden = !plan.nombre;
     actual.innerHTML = plan.nombre ? `Plan <b>${escapeHtml(plan.nombre)}</b>` : '';

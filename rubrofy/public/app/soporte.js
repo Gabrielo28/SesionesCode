@@ -128,7 +128,9 @@
     const palabras = sinTildes(busqueda).split(/[^a-z0-9ñ]+/).filter((p) => p.length > 1 && !VACIAS.has(p)).map(raiz);
     if (!palabras.length) { res.innerHTML = ''; return; }
     const faq = preguntas(ctx.negocio).map((p) => ({ t: p.q, d: p.a, p: [], ir: p.ir, b: p.b, escribir: p.escribir }));
-    const ayudas = Object.values((window.Ayuda && window.Ayuda.textos) || {}).filter((a) => !/^admin|^adm-/.test(a.t || ''));
+    // Sin la ayuda de Google Ads mientras esté en pausa en el servidor.
+    const ayudas = Object.entries((window.Ayuda && window.Ayuda.textos) || {})
+      .filter(([k, a]) => !/^admin|^adm-/.test(a.t || '') && (k !== 'google' || ctx.negocio.googleActivo)).map(([, a]) => a);
     const todo = [...faq, ...ayudas.map((a) => ({ t: a.t, d: a.d, p: a.p || [], n: a.n }))];
     // Primero lo que coincide en el título.
     const hallados = todo.map((a) => {

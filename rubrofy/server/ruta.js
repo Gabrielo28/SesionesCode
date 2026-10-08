@@ -191,7 +191,7 @@ function calcular(input) {
     {
       id: 'publicidad',
       titulo: 'Conecta tu publicidad',
-      detalle: 'Meta Ads y Google Ads: cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.',
+      detalle: negocio.googleActivo ? 'Meta Ads y Google Ads: cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.' : 'Meta Ads: cuánto inviertes en Instagram y Facebook, qué obtienes y cuánto cuesta cada resultado.',
       estado: !plan.ads ? 'bloqueado' : (negocio.metaConexion || negocio.googleConexion) ? 'hecho' : 'pendiente',
       requierePlan: plan.ads ? null : 'Estudio',
       prioridad: 8,

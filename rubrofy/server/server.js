@@ -266,8 +266,9 @@ function sendJSON(res, status, data, extraHeaders) {
 function negocioPublico(negocio) {
   const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
-  resto.googleConexion = google.publico(googleInfo);
-  resto.googleConfigurado = google.configurado();
+  resto.googleActivo = google.activo();
+  resto.googleConexion = google.activo() ? google.publico(googleInfo) : null;
+  resto.googleConfigurado = google.activo() && google.configurado();
   resto.instagramConectado = !!(igInfo && igInfo.accessToken);
   // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
   // programadas esperan hasta que se reconecte).
@@ -850,7 +851,7 @@ const sincronizador = analitica.crearSincronizador({
       return plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
     }
     if (fuente === 'google_ads') {
-      return plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
+      return google.activo() && plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
     }
     if (fuente === 'competencia') {
       return plan.competencia && !!(negocio.meta && negocio.meta.igUserId && negocio.meta.estado !== 'reconectar');
@@ -891,7 +892,7 @@ informe.registrarSeccion('competencia', (negocio) => {
 });
 
 informe.registrarSeccion('googleAds', (negocio, desde, hasta) => {
-  if (!getPlan(negocio.plan).ads || !negocio.google || !negocio.google.customerId) return null;
+  if (!google.activo() || !getPlan(negocio.plan).ads || !negocio.google || !negocio.google.customerId) return null;
   return Object.assign(google.resumen(negocio.id, desde, hasta), { moneda: negocio.google.moneda, cuenta: negocio.google.nombre });
 });
 
@@ -1928,7 +1929,7 @@ const server = http.createServer(async (req, res) => {
       // GET /api/google/callback?code&state — vuelta de "Iniciar sesión con
       // Google". El state va firmado y ligado al negocio, y además tiene que
       // coincidir con la sesión: nadie puede enganchar su Google a otra cuenta.
-      if (parts[1] === 'google' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
+      if (parts[1] === 'google' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET' && google.activo()) {
         const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
         const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
         const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'google-oauth', nonce);
@@ -2815,6 +2816,7 @@ const server = http.createServer(async (req, res) => {
         //   DELETE /api/negocios/:id/google
         //   GET    /api/negocios/:id/google-ads?dias=30 · POST .../google-ads/sincronizar
         if (parts[3] === 'google' || parts[3] === 'google-ads') {
+          if (!google.activo()) return sendJSON(res, 404, { error: 'Google Ads no está disponible por ahora' });
           if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Google Ads está disponible en el plan Estudio' });
           if (parts[3] === 'google' && parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
             if (!google.configurado()) return sendJSON(res, 400, { error: 'Google Ads no está configurado en este servidor' });

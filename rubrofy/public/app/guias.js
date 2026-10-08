@@ -117,17 +117,17 @@
       pasos: [['Conecta Instagram', 'Sin conexión no hay datos que mostrar.'], ['Mira lo importante', 'Cuántas personas te vieron y qué publicación funcionó mejor.'], ['Rubrofy aprende solo', 'Usa estos datos para mejorar la semana siguiente.']],
       pista: 'Revisa esta pantalla una vez a la semana; no hace falta más.',
       tour: [
-        { sel: '#resultados-pestanas', t: 'Elige qué mirar', d: 'Tu Instagram, tu publicidad en Meta o Google, o tu competencia.' },
+        { sel: '#resultados-pestanas', t: 'Elige qué mirar', d: 'Tu Instagram, tu publicidad en Meta o tu competencia.' },
         { sel: '#resultados', t: 'Tus números', d: 'Lo más importante arriba. Rubrofy te explica qué significa cada cosa.' },
       ],
     },
     'res-publicidad': {
       ilu: '◁', titulo: 'Tu publicidad, en simple',
-      texto: 'Si pagas anuncios en Instagram, Facebook o Google, aquí ves si están funcionando.',
+      texto: 'Si pagas anuncios en Instagram o Facebook, aquí ves si están funcionando.',
       pasos: [['Conecta tu cuenta de anuncios', 'Se hace en Conexiones y ajustes.'], ['Mira cuánto gastas y qué logras', 'Comparado con el período anterior.'], ['Lee el diagnóstico', 'Rubrofy te dice en palabras simples qué mejorar.']],
       pista: 'Si no haces publicidad pagada, puedes ignorar esta pantalla.',
       tour: [
-        { sel: '#resultados-pestanas', t: 'Meta o Google', d: 'Cambia entre tus anuncios de Instagram/Facebook y los de Google.' },
+        { sel: '#resultados-pestanas', t: 'Tus pestañas', d: 'Meta Ads son tus anuncios de Instagram y Facebook. Al lado están tu Instagram y tu competencia.' },
         { sel: '#resultados', t: 'Tus anuncios', d: 'Gasto, resultados y costo de cada resultado, con un diagnóstico al final.' },
       ],
     },

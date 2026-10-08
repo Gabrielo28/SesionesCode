@@ -83,7 +83,7 @@
         const fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
         const DETALLE = {
           pro: ['Estrategia y publicaciones completas: gancho, texto y hashtags', 'La IA escribe con tu voz y aprende de tus correcciones', 'Resultados de Instagram e informe mensual'],
-          estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', 'Meta Ads, Google Ads y competencia'],
+          estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', ctx.negocio().googleActivo ? 'Meta Ads, Google Ads y competencia' : 'Meta Ads y competencia'],
         };
         const nombre = (id) => ((ctx.planes || []).find((x) => x.id === id) || {}).nombre || id;
         const prueba = catPrueba ? `<div class="bv-prueba" data-bv-prueba>
@@ -114,7 +114,7 @@
             ? '<button type="button" class="btn-ig bv-ig" data-bv="conectar-ig">Conectar ahora</button>'
             : estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
           <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
-          <div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>
+          ${neg.googleActivo ? `<div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>` : ''}
         </div>
         <div class="bv-final">
           <b>${sinPlan ? 'Después: elige tu plan y creamos tu primera semana' : 'Último paso: tu primera semana'}</b>

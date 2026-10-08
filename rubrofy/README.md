@@ -359,7 +359,18 @@ Común a Meta Ads y Google Ads, con reglas explicables (sin IA):
   período anterior y, en Meta, el público (edad y sexo) y la ubicación con
   resultados más baratos.
 
-## Google Ads (server/google.js)
+## Google Ads (server/google.js) — en pausa
+
+**En pausa:** Rubrofy se concentra en Instagram y Meta Ads, así que Google
+Ads no se ofrece en el sitio, el panel, el informe ni /admin. El código sigue
+completo para cuando se amplíe el servicio. Para reactivarlo: definir
+`GOOGLE_ADS_ACTIVO=1` (además de las claves de abajo) y volver a mencionarlo
+en el sitio (`public/site/index.html`: sección Publicidad, integraciones,
+preguntas y tabla de planes), en `privacidad.html`, `terminos.html` y
+`eliminar-datos.html`, y en los textos de ayuda (`ayuda.js`, `guias.js`).
+Sin la variable, sus rutas responden 404, no se sincroniza y el panel no
+muestra la pestaña ni la tarjeta de conexión. Los datos ya guardados se
+conservan.
 
 En el plan Estudio, Resultados → **Google Ads** muestra inversión, clics,
 conversiones, costo por conversión, ROAS y campañas (mismo panel que Meta

@@ -87,11 +87,11 @@
       p: ['Elige el mes.', 'Pulsa "Generar conclusión" si aún no la tiene.', 'Imprímelo o guárdalo en PDF, o copia el enlace para compartirlo.'] },
 
     // ---------- Publicidad y competencia ----------
-    'publicidad': { t: 'Publicidad', d: 'Tus campañas de Meta Ads o Google Ads: cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.',
-      p: ['Conecta tu cuenta publicitaria en Conexiones y ajustes (plan Estudio).', 'Elige la pestaña Meta Ads o Google Ads.', 'Mira los totales y la tabla de campañas.'] },
+    'publicidad': { t: 'Publicidad', d: 'Tus campañas de Meta Ads (Instagram y Facebook): cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.',
+      p: ['Conecta tu cuenta publicitaria en Conexiones y ajustes (plan Estudio).', 'Elige la pestaña Meta Ads.', 'Mira los totales y la tabla de campañas.'] },
     'ads-numeros': { t: 'Los números de publicidad', d: 'Inversión: lo que gastaste. Resultados: el objetivo de la campaña (mensajes, compras, clics…). Costo por resultado: inversión ÷ resultados, mientras más bajo mejor. CTR: porcentaje de gente que hizo clic. CPC: costo por clic. ROAS: ventas atribuidas ÷ inversión.' },
     'campanas': { t: 'Campañas', d: 'Cada campaña con su inversión, resultados y costo por resultado.',
-      p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos (en Meta o Google).'] },
+      p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos.'] },
     'adm-respaldo': { t: 'Respaldo externo', d: 'Una copia de Rubrofy fuera de Railway, en un bucket de Cloudflare R2 (o S3): la base de datos una vez al día y las fotos y videos nuevos.',
       p: ['Se hace solo cada día, desde las 4:00 (hora de Chile).', 'La base se guarda comprimida y, con RESPALDO_CLAVE, cifrada: 7 copias diarias que se van renovando y una por mes.', 'Las fotos y videos se suben una sola vez; después solo lo nuevo o cambiado.', 'Pulsa "Respaldar ahora" antes de un cambio grande.'], n: 'Para restaurar: descarga el archivo desde el bucket y usa scripts/restaurar-respaldo.js (pasos en DEPLOY-RAILWAY.md). Si un respaldo falla, te llega una alerta por correo.' },
     'adm-soporte': { t: 'Soporte', d: 'Las solicitudes que los clientes envían desde "Ayuda y soporte": problemas, consultas, pagos y sugerencias.',
@@ -141,7 +141,7 @@
     'video-ia': { t: 'Video con IA', d: 'Genera un video corto para el Reel o la historia. Si la pieza tiene foto, la anima; si no, lo crea desde la idea de la pieza.',
       p: ['Pulsa "Crear video con IA".', 'Elige la calidad (Rápida, Recomendada o Premium) y la duración (5, 10 o 15 segundos). Ves cuántos créditos ⚡ usa antes de crearlo.', 'Espera 1 a 3 minutos: la tarjeta se actualiza sola.', 'Revísalo con "Ver" antes de aprobar.'], n: 'Se paga con créditos ⚡. Si el video no llega, te devolvemos los créditos.' },
     'diagnostico': { t: 'Diagnóstico', d: 'Rubrofy revisa tus campañas y te dice en palabras simples qué está funcionando, qué está gastando de más y qué hacer.',
-      p: ['Parte por los puntos con "!": son plata que se está yendo sin resultados.', 'Los "→" son oportunidades: mover presupuesto, cambiar el anuncio o apuntar a otro público.', 'Haz los cambios en Meta o Google Ads y vuelve en 3 o 4 días a ver si el costo bajó.'], n: 'Las flechas de los números comparan con el período anterior del mismo largo.' },
+      p: ['Parte por los puntos con "!": son plata que se está yendo sin resultados.', 'Los "→" son oportunidades: mover presupuesto, cambiar el anuncio o apuntar a otro público.', 'Haz los cambios en Meta Ads y vuelve en 3 o 4 días a ver si el costo bajó.'], n: 'Las flechas de los números comparan con el período anterior del mismo largo.' },
     'ads-anuncios': { t: 'Tus anuncios', d: 'Cada anuncio con su imagen, lo que gastó y lo que consiguió. El borde verde marca el más rentable y el rojo los que gastan sin resultados.',
       p: ['Apaga los anuncios en rojo si ya llevan varios días así.', 'Haz variantes del anuncio en verde: misma idea, otra foto o texto.'] },
     'ads-publico': { t: 'Edad y sexo', d: 'Cuánto te cuesta cada resultado según quién vio el anuncio. Más claro = más barato. Los cuadros vacíos gastaron sin resultados.',
@@ -198,7 +198,7 @@
       p: ['Elige un ritmo sugerido o ajusta con − y +.', 'Elige la hora de los posts.', 'Pulsa "Crear mi estrategia".'] },
     'bv-estrategia': { t: 'Tu estrategia', d: 'La IA la armó con lo que contaste. Ajústala a tu gusto.',
       p: ['Revisa el resumen y el tono.', 'Cambia o agrega enfoques.', 'Si no te convence, "Proponer otra con IA".', 'Pulsa "Continuar".'] },
-    'bv-conexiones': { t: 'Conexiones', d: 'Instagram es necesario para publicar solo. Meta Ads y Google Ads son opcionales.',
+    'bv-conexiones': { t: 'Conexiones', d: 'Instagram es necesario para publicar solo. Meta Ads es opcional.',
       p: ['Si puedes, pulsa "Conectar ahora" en Instagram.', 'Si no, pulsa "Generar mi primera semana": puedes conectar después en Conexiones y ajustes.'] },
 
     // ---------- Administración ----------
@@ -220,7 +220,7 @@
     // ---------- Sitio ----------
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',
       p: ['Escribe qué haces y qué vendes, en una o dos frases.', 'Ejemplo: "panadería artesanal de barrio, pan de masa madre y pasteles".'] },
-    'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads, Google Ads y competencia.',
+    'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads y competencia.',
       p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta en una página segura de pago; cambias de plan, de tarjeta o cancelas desde tu panel cuando quieras.'] },
   };
 

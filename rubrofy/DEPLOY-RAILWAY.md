@@ -68,7 +68,7 @@ queda apagada y el resto funciona igual)
 | Notificaciones push | Nada: las claves VAPID se generan solas. Opcional fijarlas con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` |
 | Cobro (**obligatorio**: el servicio es solo de pago) | Con **Flow** (recomendado en Chile): `FLOW_API_KEY`, `FLOW_SECRET_KEY` y, mientras pruebas, `FLOW_SANDBOX=1` (bórrala al pasar a producción, con las claves de producción: ver "Pasar de sandbox a producción" en el README). Los planes se crean solos en Flow. Con Stripe (alternativa): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Si están las de Flow, se usa Flow. Sin ninguna, nadie puede pagar ni crear contenido. |
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |
-| Google Ads | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`) |
+| Google Ads (en pausa) | No se ofrece. Para reactivarlo: `GOOGLE_ADS_ACTIVO=1`, `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`; ver README) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
@@ -117,7 +117,7 @@ Una vez que `https://rubrofy.com` funcione:
   `STRIPE_SECRET_KEY=... node scripts/setup-stripe.js` (en tu computador)
   para crear los precios y copia los IDs a `STRIPE_PRICE_PRO` y
   `STRIPE_PRICE_ESTUDIO`.
-- **Google Ads** → en el cliente OAuth de Google Cloud, URI de redirección
+- **Google Ads** (solo si se reactiva) → en el cliente OAuth de Google Cloud, URI de redirección
   autorizada: `https://rubrofy.com/api/google/callback`.
 - **Meta** → en la app de Meta (Configuración → Básica): dominio de la app
   `rubrofy.com`, URL de la política de privacidad

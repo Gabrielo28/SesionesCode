@@ -37,6 +37,15 @@ function configurado() {
   return !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 }
 
+// Google Ads está en pausa: Rubrofy se concentra en Instagram y Meta Ads.
+// El código queda listo para cuando se amplíe el servicio; se vuelve a
+// ofrecer con GOOGLE_ADS_ACTIVO=1 (y GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET).
+// Apagado: no hay rutas, no se sincroniza, no sale en el panel, el informe
+// ni /admin. Los datos que ya existan se conservan.
+function activo() {
+  return process.env.GOOGLE_ADS_ACTIVO === '1';
+}
+
 class ErrorGoogle extends Error {
   constructor(mensaje, tipo) {
     super(mensaje);
@@ -251,5 +260,5 @@ function nuevoEstadoOAuth() {
 }
 
 module.exports = {
-  configurado, urlAutorizacion, canjearCodigo, cuentasAccesibles, sincronizar, resumen, primeraFecha, publico, nuevoEstadoOAuth, SCOPE,
+  configurado, activo, urlAutorizacion, canjearCodigo, cuentasAccesibles, sincronizar, resumen, primeraFecha, publico, nuevoEstadoOAuth, SCOPE,
 };
