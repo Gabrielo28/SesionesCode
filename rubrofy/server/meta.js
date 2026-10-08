@@ -86,7 +86,7 @@ class ErrorMeta extends Error {
 }
 
 async function fbGet(ruta, params, accessToken) {
-  const qs = new URLSearchParams(Object.assign({}, params, { access_token: accessToken }));
+  const qs = new URLSearchParams(Object.assign({}, params, accessToken ? { access_token: accessToken } : {}));
   const url = ruta.startsWith('http') ? ruta : `${FB}${ruta}?${qs}`;
   let res;
   try {
@@ -143,6 +143,41 @@ async function tokenLargo(accessToken) {
   } catch (err) {
     return null;
   }
+}
+
+// --- "Conectar con Facebook" (OAuth) ---
+// El dueño inicia sesión en Facebook y acepta los permisos; Meta vuelve a
+// /api/meta/callback con un código que se canjea por un token de usuario y
+// luego por uno de ~60 días. Así nadie tiene que pegar tokens.
+// Con META_LOGIN_CONFIG_ID (Facebook Login para empresas, apps de tipo
+// Empresa) se manda esa configuración; si no, la lista de permisos.
+const PERMISOS_LOGIN = ['ads_read', 'pages_show_list', 'pages_read_engagement', 'instagram_basic', 'instagram_manage_insights', 'business_management'];
+
+function loginDisponible() {
+  return !!(process.env.META_APP_ID && process.env.META_APP_SECRET);
+}
+
+function urlLogin(redirectUri, state) {
+  const qs = new URLSearchParams({ client_id: process.env.META_APP_ID, redirect_uri: redirectUri, state, response_type: 'code' });
+  if (process.env.META_LOGIN_CONFIG_ID) {
+    qs.set('config_id', process.env.META_LOGIN_CONFIG_ID);
+    qs.set('override_default_response_type', 'true');
+  } else {
+    qs.set('scope', (process.env.META_LOGIN_PERMISOS || PERMISOS_LOGIN.join(',')).replace(/\s+/g, ''));
+  }
+  return `https://www.facebook.com/${VERSION}/dialog/oauth?${qs}`;
+}
+
+// Código de la vuelta → { accessToken, venceEl } (largo si Meta lo entrega).
+async function canjearCodigo(code, redirectUri) {
+  const corto = await fbGet('/oauth/access_token', {
+    client_id: process.env.META_APP_ID, client_secret: process.env.META_APP_SECRET, redirect_uri: redirectUri, code,
+  });
+  if (!corto.access_token) throw new ErrorMeta('Meta no entregó un token', null);
+  const largo = await tokenLargo(corto.access_token);
+  const token = largo ? largo.accessToken : corto.access_token;
+  const seg = largo ? largo.expiraEnSeg : Number(corto.expires_in) || null;
+  return { accessToken: token, venceEl: seg ? new Date(Date.now() + seg * 1000).toISOString() : null };
 }
 
 // --- Meta Ads ---
@@ -380,5 +415,5 @@ function publicoMeta(meta) {
 }
 
 module.exports = {
-  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
+  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
 };

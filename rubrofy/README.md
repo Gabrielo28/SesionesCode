@@ -326,15 +326,28 @@ tabla por campaña, también como sección del informe mensual. Es **solo
 lectura**: Rubrofy no crea ni modifica campañas. Si hay inversión y ningún
 resultado, avisa que puede faltar configurar las conversiones.
 
-**Conexión con Meta** (Configuración): es distinta de la de Instagram y
-sirve también para la competencia. Se pega un token de Meta con los
-permisos `ads_read`, `pages_show_list`, `pages_read_engagement` e
-`instagram_basic`; Rubrofy lista las cuentas publicitarias y las cuentas de
-Instagram a las que tiene acceso y el negocio elige. Lo más práctico es un
-token de **usuario del sistema** de Business Manager, que no vence. Con
-`META_APP_ID` y `META_APP_SECRET` configurados, un token de usuario se
-canjea por uno de larga duración (~60 días). Si Meta lo rechaza, la
-conexión queda en "Reconectar" sin afectar la publicación en Instagram.
+**Conexión con Meta** (Conexiones y ajustes): es distinta de la de
+Instagram y sirve también para la competencia.
+
+- **"Conectar con Facebook"** (con `META_APP_ID` y `META_APP_SECRET`): el
+  dueño entra con la cuenta de Facebook que administra sus anuncios y su
+  página, y acepta los permisos (`ads_read`, `pages_show_list`,
+  `pages_read_engagement`, `instagram_basic`, `instagram_manage_insights` y
+  `business_management`). `GET /api/negocios/:id/meta/conectar` redirige al
+  diálogo de Meta con un state firmado, ligado al negocio y a la sesión;
+  `GET /api/meta/callback` canjea el código por un token de ~60 días y lee
+  las cuentas. Con una cuenta publicitaria y un Instagram queda conectado
+  solo; con varias, el panel pide elegir (`PUT /api/negocios/:id/meta` sin
+  token) y el token espera en el servidor 30 minutos (`metaPendiente`, nunca
+  llega al panel). Con `META_LOGIN_CONFIG_ID` (Facebook Login para
+  empresas) se manda esa configuración en vez de la lista de permisos.
+- **Token pegado** (opción avanzada, o si no está la app): un token con
+  esos mismos permisos; lo más práctico es uno de **usuario del sistema** de
+  Business Manager, que no vence. Con la app configurada, un token de
+  usuario se canjea por uno de ~60 días.
+
+Si Meta rechaza el token, la conexión queda en "Reconectar" sin afectar la
+publicación en Instagram.
 
 Se sincroniza cada 12 h: la primera vez 30 días, después los últimos 3
 (Meta sigue atribuyendo conversiones a días anteriores).

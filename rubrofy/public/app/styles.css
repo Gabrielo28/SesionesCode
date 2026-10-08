@@ -676,6 +676,11 @@ a { color: var(--amber); }
 .switch { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; }
 .switch input { width: 18px; height: 18px; accent-color: var(--amber); }
 button.btn-ig { border: none; }
+.btn-fb { flex: none; display: inline-flex; align-items: center; gap: 9px; padding: 11px 18px; font-size: 13.5px; text-decoration: none; color: #fff;
+  background: #1877f2; border-radius: 9px; font-weight: 700; }
+.btn-fb:hover { filter: brightness(1.08); }
+.fb-f { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: #fff; color: #1877f2;
+  font: 800 13px/1 Arial, sans-serif; padding-top: 3px; box-sizing: border-box; }
 .bv-ig { padding: 8px 14px; font-size: 12px; }
 .login-ok { margin: 0; font-size: 13px; color: var(--green); line-height: 1.5; }
 

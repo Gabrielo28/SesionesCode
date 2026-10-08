@@ -261,11 +261,41 @@ function sendJSON(res, status, data, extraHeaders) {
   res.end(body);
 }
 
+// "Conectar con Facebook" con varias cuentas deja el token esperando (30
+// minutos) a que el negocio elija cuáles usar.
+const META_PENDIENTE_MS = 30 * 60 * 1000;
+function metaPendienteVigente(p) {
+  return !!(p && p.accessToken && p.opciones && Date.now() - Date.parse(p.creadoEl) < META_PENDIENTE_MS);
+}
+
+// Guarda la conexión con Meta (token pegado o de "Conectar con Facebook") y
+// trae los anuncios si corresponde.
+async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }) {
+  const fresco = store.getNegocio(negocioId);
+  fresco.meta = {
+    accessToken,
+    adAccountId: cuenta ? cuenta.id : null, cuentaNombre: cuenta ? cuenta.nombre : null, moneda: cuenta ? cuenta.moneda : null,
+    igUserId: ig ? ig.id : null, igUsername: ig ? ig.username : null,
+    venceEl: venceEl || null,
+    conectadoEl: new Date().toISOString(),
+  };
+  delete fresco.metaPendiente;
+  store.saveNegocio(fresco);
+  if (fresco.meta.adAccountId && plan.ads) await meta.sincronizarAds(negocioId);
+  return store.getNegocio(negocioId);
+}
+
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
-// los IDs internos de Stripe).
+// los IDs internos de Stripe o Flow).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, meta: metaInfo, google: googleInfo, ...resto } = negocio;
+  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
+  resto.metaLoginDisponible = meta.loginDisponible();
+  // Vuelta de "Conectar con Facebook" con varias cuentas: el panel muestra
+  // cuáles elegir (sin el token, que queda en el servidor).
+  resto.metaElegir = metaPendienteVigente(metaPendiente) ? {
+    cuentasPublicitarias: metaPendiente.opciones.cuentasPublicitarias, cuentasInstagram: metaPendiente.opciones.cuentasInstagram,
+  } : null;
   resto.googleActivo = google.activo();
   resto.googleConexion = google.activo() ? google.publico(googleInfo) : null;
   resto.googleConfigurado = google.activo() && google.configurado();
@@ -1926,6 +1956,40 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      // GET /api/meta/callback?code&state — vuelta de "Conectar con Facebook"
+      // (Meta Ads y competencia). Mismo cuidado: state firmado, ligado al
+      // negocio y a la sesión. Con una sola cuenta de cada tipo queda conectado;
+      // con varias, el panel pide elegir (el token espera en el servidor).
+      if (parts[1] === 'meta' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
+        const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
+        const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
+        const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'meta-oauth', nonce);
+        if (!firmaOk || sesionActual(req) !== negocioId) return volver({ meta: 'error', motivo: 'La conexión venció o no corresponde a tu sesión. Intenta de nuevo.' });
+        if (url.searchParams.get('error')) return volver({ meta: 'error', motivo: 'No se dieron los permisos en Facebook. Vuelve a intentarlo y acepta todos los permisos.' });
+        const negocioM = store.getNegocio(negocioId);
+        const planM = getPlan(negocioM && negocioM.plan);
+        if (!negocioM || (!planM.ads && !planM.competencia)) return volver({ meta: 'error', motivo: 'Meta Ads y competencia están disponibles en el plan Estudio.' });
+        try {
+          const t = await meta.canjearCodigo(url.searchParams.get('code'), urlPublica(req) + '/api/meta/callback');
+          const op = await meta.opcionesDeCuenta(t.accessToken);
+          const ads = op.cuentasPublicitarias;
+          const igs = op.cuentasInstagram;
+          if (!ads.length && !igs.length) {
+            return volver({ meta: 'error', motivo: 'Esa cuenta de Facebook no administra cuentas publicitarias ni un Instagram profesional vinculado a una página. Entra con la cuenta que administra tus anuncios.' });
+          }
+          if (ads.length <= 1 && igs.length <= 1) {
+            await guardarMeta(negocioId, planM, { accessToken: t.accessToken, venceEl: t.venceEl, cuenta: ads[0] || null, ig: igs[0] || null });
+            return volver({ meta: 'ok' });
+          }
+          const n = store.getNegocio(negocioId);
+          n.metaPendiente = { accessToken: t.accessToken, venceEl: t.venceEl, opciones: op, creadoEl: new Date().toISOString() };
+          store.saveNegocio(n);
+          return volver({ meta: 'elegir' });
+        } catch (err) {
+          return volver({ meta: 'error', motivo: 'No se pudo conectar con Meta: ' + err.message });
+        }
+      }
+
       // GET /api/google/callback?code&state — vuelta de "Iniciar sesión con
       // Google". El state va firmado y ligado al negocio, y además tiene que
       // coincidir con la sesión: nadie puede enganchar su Google a otra cuenta.
@@ -2727,8 +2791,19 @@ const server = http.createServer(async (req, res) => {
         //   POST   /api/negocios/:id/meta/cuentas { accessToken } — qué cuentas puede elegir
         //   PUT    /api/negocios/:id/meta { accessToken, adAccountId, igUserId }
         //   DELETE /api/negocios/:id/meta
+        //   GET    /api/negocios/:id/meta/conectar — "Conectar con Facebook"
+        //   PUT    /api/negocios/:id/meta { adAccountId, igUserId } — elige tras "Conectar con Facebook"
         if (parts[3] === 'meta') {
           const plan = getPlan(negocio.plan);
+          if (parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
+            const volverM = (motivo) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams({ meta: 'error', motivo }) }); return res.end(); };
+            if (!plan.ads && !plan.competencia) return volverM('Meta Ads y competencia están disponibles en el plan Estudio.');
+            if (!meta.loginDisponible()) return volverM('"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
+            const nonce = google.nuevoEstadoOAuth();
+            const firma = auth.crearTokenFoto(negocioId, 'meta-oauth', nonce, 15).replace(/\./g, '_');
+            res.writeHead(302, { Location: meta.urlLogin(urlPublica(req) + '/api/meta/callback', `${negocioId}.${nonce}.${firma}`) });
+            return res.end();
+          }
           if (!plan.ads && !plan.competencia) {
             return sendJSON(res, 403, { error: 'Meta Ads y competencia están disponibles en el plan Estudio' });
           }
@@ -2745,35 +2820,39 @@ const server = http.createServer(async (req, res) => {
           if (parts.length === 4 && req.method === 'PUT') {
             const body = await readBody(req);
             let token = String(body.accessToken || '').trim();
+            let venceEl = null;
+            let opciones = null;
+            // Sin token: es la elección después de "Conectar con Facebook".
+            if (!token && negocio.metaPendiente) {
+              if (!metaPendienteVigente(negocio.metaPendiente)) return sendJSON(res, 400, { error: 'Pasó mucho rato: vuelve a pulsar "Conectar con Facebook".' });
+              ({ accessToken: token, venceEl, opciones } = negocio.metaPendiente);
+            }
             if (!token) return sendJSON(res, 400, { error: 'Falta el token de Meta' });
-            let opciones;
-            try {
-              opciones = await meta.opcionesDeCuenta(token);
-            } catch (err) {
-              return sendJSON(res, 400, { error: 'Meta rechazó el token: revisa que esté completo y vigente.' });
+            if (!opciones) {
+              try {
+                opciones = await meta.opcionesDeCuenta(token);
+              } catch (err) {
+                return sendJSON(res, 400, { error: 'Meta rechazó el token: revisa que esté completo y vigente.' });
+              }
             }
             const cuenta = opciones.cuentasPublicitarias.find((c) => c.id === body.adAccountId) || null;
             const ig = opciones.cuentasInstagram.find((c) => c.id === body.igUserId) || null;
             if (body.adAccountId && !cuenta) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta publicitaria elegida' });
             if (body.igUserId && !ig) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta de Instagram elegida' });
             if (!cuenta && !ig) return sendJSON(res, 400, { error: 'Elige una cuenta publicitaria o una cuenta de Instagram' });
-            const largo = await meta.tokenLargo(token);
-            if (largo) token = largo.accessToken;
-            const fresco = store.getNegocio(negocioId);
-            fresco.meta = {
-              accessToken: token,
-              adAccountId: cuenta ? cuenta.id : null, cuentaNombre: cuenta ? cuenta.nombre : null, moneda: cuenta ? cuenta.moneda : null,
-              igUserId: ig ? ig.id : null, igUsername: ig ? ig.username : null,
-              venceEl: largo && largo.expiraEnSeg ? new Date(Date.now() + largo.expiraEnSeg * 1000).toISOString() : null,
-              conectadoEl: new Date().toISOString(),
-            };
-            store.saveNegocio(fresco);
-            if (fresco.meta.adAccountId && plan.ads) await meta.sincronizarAds(negocioId);
-            return sendJSON(res, 200, negocioPublico(store.getNegocio(negocioId)));
+            if (!venceEl) {
+              const largo = await meta.tokenLargo(token);
+              if (largo) {
+                token = largo.accessToken;
+                venceEl = largo.expiraEnSeg ? new Date(Date.now() + largo.expiraEnSeg * 1000).toISOString() : null;
+              }
+            }
+            return sendJSON(res, 200, negocioPublico(await guardarMeta(negocioId, plan, { accessToken: token, venceEl, cuenta, ig })));
           }
           if (parts.length === 4 && req.method === 'DELETE') {
             const fresco = store.getNegocio(negocioId);
             delete fresco.meta;
+            delete fresco.metaPendiente;
             store.saveNegocio(fresco);
             return sendJSON(res, 200, negocioPublico(fresco));
           }

@@ -67,7 +67,7 @@ queda apagada y el resto funciona igual)
 | Imágenes y videos con IA | `HIGGSFIELD_API_KEY` (la llave completa, tal como se copia de open.higgsfield.ai/api-keys; preferido) u `OPENAI_API_KEY`. Opcionales: `HIGGSFIELD_MODELO_IMAGEN`, `HIGGSFIELD_MODELO_VIDEO`, `OPENAI_IMAGE_MODEL`, `OPENAI_VIDEO_MODEL`, `VIDEO_IA_SEGUNDOS`, `VIDEO_IA_AUDIO` |
 | Notificaciones push | Nada: las claves VAPID se generan solas. Opcional fijarlas con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` |
 | Cobro (**obligatorio**: el servicio es solo de pago) | Con **Flow** (recomendado en Chile): `FLOW_API_KEY`, `FLOW_SECRET_KEY` y, mientras pruebas, `FLOW_SANDBOX=1` (bórrala al pasar a producción, con las claves de producción: ver "Pasar de sandbox a producción" en el README). Los planes se crean solos en Flow. Con Stripe (alternativa): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Si están las de Flow, se usa Flow. Sin ninguna, nadie puede pagar ni crear contenido. |
-| Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (opcional `META_GRAPH_VERSION`) |
+| Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (activan "Conectar con Facebook"), `META_LOGIN_CONFIG_ID` (configuración de Facebook Login para empresas; recomendada) y opcional `META_GRAPH_VERSION` |
 | Google Ads (en pausa) | No se ofrece. Para reactivarlo: `GOOGLE_ADS_ACTIVO=1`, `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`; ver README) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
@@ -125,6 +125,25 @@ Una vez que `https://rubrofy.com` funcione:
   `https://rubrofy.com/terminos.html` y, en "Eliminación de datos", la URL de
   instrucciones `https://rubrofy.com/eliminar-datos.html`. Revisa el texto de
   esas páginas con un abogado antes de lanzar.
+- **"Conectar con Facebook"** (Meta Ads y competencia, plan Estudio), en
+  la misma app de Meta (tipo Empresa):
+  1. Agrega el producto **Inicio de sesión con Facebook para empresas**
+     (Facebook Login for Business). En su Configuración, en "URI de
+     redireccionamiento de OAuth válidos", agrega
+     `https://rubrofy.com/api/meta/callback`.
+  2. Crea una **configuración** de inicio de sesión: tipo de token "Token de
+     acceso de usuario" y los permisos `ads_read`, `pages_show_list`,
+     `pages_read_engagement`, `instagram_basic`, `instagram_manage_insights`
+     y `business_management`. Copia su ID a `META_LOGIN_CONFIG_ID`.
+  3. En Configuración → Básica copia el **identificador de la app** y la
+     **clave secreta** a `META_APP_ID` y `META_APP_SECRET` (son los de la
+     app de Meta, distintos de los de Instagram).
+  4. Mientras la app no tenga esos permisos aprobados en **Revisión de la
+     app** (con la empresa verificada), solo pueden conectarse las personas
+     con un rol en la app. Para abrirlo a todos los clientes, pide acceso
+     avanzado a esos permisos; Meta pide un video del flujo: botón
+     "Conectar con Facebook", aceptar permisos y ver los anuncios en
+     Resultados → Meta Ads.
 - **Instagram**: Meta descarga las fotos y videos desde `PUBLIC_URL` con
   enlaces firmados temporales.
 - **"Conectar con Instagram"** (para que el cliente inicie sesión en vez de

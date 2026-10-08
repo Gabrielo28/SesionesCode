@@ -106,6 +106,8 @@
           <p class="bv-nota">Al pagar vuelves a Rubrofy y tu primera semana se crea sola. Lo que armaste queda guardado.</p>`;
       }
       const neg = ctx.negocio();
+      const planNeg = (ctx.planes || []).find((p) => p.id === neg.plan) || {};
+      const conPlanAds = !!(planNeg.ads || planNeg.competencia);
       const estado = (ok, txtOk, txtNo) => `<span class="bv-estado ${ok ? 'ok' : ''}">${ok ? txtOk : txtNo}</span>`;
       return `<h2>Conecta tus cuentas${AY('bv-conexiones')}</h2>
         <p class="bv-lead">Puedes hacerlo ahora o después. Todas se conectan desde <b>Conexiones y ajustes</b>, abajo en el menú.</p>
@@ -113,7 +115,9 @@
           <div class="bv-con"><i class="c-ig"></i><div><b>Instagram${perfil.instagram ? ` @${esc(perfil.instagram)}` : ''}</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible
             ? '<button type="button" class="btn-ig bv-ig" data-bv="conectar-ig">Conectar ahora</button>'
             : estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
-          <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
+          <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${!neg.metaConexion && neg.metaLoginDisponible && conPlanAds
+            ? '<button type="button" class="btn-fb bv-ig" data-bv="conectar-meta">Conectar</button>'
+            : estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
           ${neg.googleActivo ? `<div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>` : ''}
         </div>
         <div class="bv-final">
@@ -255,6 +259,16 @@
         } catch (err) {
           return pintar(err.mensaje || 'No se pudo abrir el pago. Intenta de nuevo.');
         }
+      }
+      if (accion === 'conectar-meta') {
+        // Termina la bienvenida (y crea la primera semana) antes de ir a Facebook.
+        try {
+          await guardarPaso(b);
+        } catch (err) {
+          return pintar(err.mensaje || err.message || 'No se pudo guardar.');
+        }
+        window.location.href = `/api/negocios/${ctx.negocio().id}/meta/conectar`;
+        return;
       }
       if (accion === 'conectar-ig') {
         // Termina la bienvenida (y crea la primera semana) antes de ir a Instagram.

@@ -186,7 +186,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     'Cobro (Flow o Stripe)': !!(require('./flow').configurado() || (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET)),
     ...(require('./flow').configurado() ? { 'Flow cobrando de verdad (sin FLOW_SANDBOX)': require('./flow').entorno() === 'produccion' } : {}),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
-    'Meta Ads y competencia': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
+    'Meta Ads y competencia (Conectar con Facebook)': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
     ...(require('./google').activo() ? { 'Google Ads': require('./google').configurado() } : {}),
     'Correo semanal (Resend)': !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM),
     'URL pública (PUBLIC_URL)': !!process.env.PUBLIC_URL,

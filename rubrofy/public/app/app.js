@@ -618,20 +618,39 @@
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     const c = negocioActual.metaConexion;
     const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2>
-      <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
+      <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : negocioActual.metaElegir ? 'reconectar' : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : negocioActual.metaElegir ? 'Falta elegir' : 'Sin conectar'}</span></div>`;
     if (!plan.ads && !plan.competencia) {
       cont.innerHTML = cabecera + '<p class="sub">Para ver tu publicidad en Meta y seguir a tu competencia. Disponible en el plan Estudio.</p>';
+      return;
+    }
+    // Vuelta de "Conectar con Facebook" con varias cuentas: elegir cuáles usar.
+    const elegir = negocioActual.metaElegir;
+    if (elegir) {
+      const opAds = elegir.cuentasPublicitarias.map((x, i) => `<option value="${escapeHtml(x.id)}"${i === 0 ? ' selected' : ''}>${escapeHtml(x.nombre)} · ${escapeHtml(x.moneda || '')}${x.activa ? '' : ' (inactiva)'}</option>`).join('');
+      const opIg = elegir.cuentasInstagram.map((x, i) => `<option value="${escapeHtml(x.id)}"${i === 0 ? ' selected' : ''}>@${escapeHtml(x.username)} · ${escapeHtml(x.pagina)}</option>`).join('');
+      cont.innerHTML = cabecera + `
+        <p class="sub">Tu Facebook administra varias cuentas. Elige cuáles quieres ver en Rubrofy:</p>
+        <form class="config-form" data-meta="elegir">
+          <label>Cuenta publicitaria<select name="adAccountId"><option value="">(ninguna)</option>${opAds}</select></label>
+          <label>Tu cuenta de Instagram (para comparar con tu competencia)<select name="igUserId"><option value="">(ninguna)</option>${opIg}</select></label>
+          <p class="config-error" data-meta="error" hidden></p>
+          <div class="config-actions"><button type="submit" class="btn-approve">Usar estas cuentas</button></div>
+        </form>`;
       return;
     }
     if (c && c.estado !== 'reconectar') {
       cont.innerHTML = cabecera + `
         <p class="sub">${c.cuentaNombre ? `Cuenta publicitaria: <b>${escapeHtml(c.cuentaNombre)}</b> (${escapeHtml(c.moneda || '')})` : 'Sin cuenta publicitaria'}<br>
         ${c.igUsername ? `Instagram para competencia: <b>@${escapeHtml(c.igUsername)}</b>` : 'Sin cuenta de Instagram para competencia'}
-        ${c.venceEl ? `<br>El token vence el ${fechaCorta(c.venceEl)}.` : ''}</p>
-        <button type="button" class="btn-danger" data-meta="desconectar">Desconectar Meta</button>`;
-    } else {
-      cont.innerHTML = cabecera + `
-        <p class="sub">Pega un token de Meta con los permisos <code>ads_read</code>, <code>pages_show_list</code>, <code>pages_read_engagement</code> e <code>instagram_basic</code>. Lo más cómodo es un token de "usuario del sistema" de tu Business Manager, que no vence.</p>
+        ${c.venceEl ? `<br>La conexión vence el ${fechaCorta(c.venceEl)}${negocioActual.metaLoginDisponible ? ': antes de esa fecha, vuelve a pulsar "Conectar con Facebook".' : '.'}` : ''}</p>
+        <div class="config-actions cta-acciones-izq">
+          ${negocioActual.metaLoginDisponible ? `<a class="btn-ghost estilo-btn" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/meta/conectar">Cambiar de cuenta</a>` : ''}
+          <button type="button" class="btn-danger" data-meta="desconectar">Desconectar Meta</button>
+        </div>`;
+      return;
+    }
+    const formToken = `
+        <p class="sub">Pega un token de Meta con los permisos <code>ads_read</code>, <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>instagram_basic</code> e <code>instagram_manage_insights</code>. Lo más cómodo es un token de "usuario del sistema" de tu Business Manager, que no vence.</p>
         <form class="config-form" data-meta="form">
           <label>Token de acceso de Meta<input type="password" name="token" required></label>
           <div data-meta="opciones" hidden>
@@ -644,7 +663,17 @@
             <button type="submit" class="btn-approve" data-meta="conectar" hidden>Conectar</button>
           </div>
         </form>`;
+    const aviso = c && c.estado === 'reconectar' ? '<p class="sub"><b>Meta pidió volver a conectar.</b> Mientras tanto, tus anuncios y tu competencia no se actualizan.</p>' : '';
+    if (!negocioActual.metaLoginDisponible) {
+      cont.innerHTML = cabecera + aviso + formToken;
+      return;
     }
+    cont.innerHTML = cabecera + aviso + `
+      <div class="ig-login">
+        <a class="btn-fb" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/meta/conectar"><span class="fb-f" aria-hidden="true">f</span>${c ? 'Volver a conectar con Facebook' : 'Conectar con Facebook'}</a>
+        <p class="sub">Entra con la cuenta de Facebook que administra tus anuncios y la página de tu negocio, y acepta los permisos. Rubrofy solo lee: no crea ni cambia anuncios.</p>
+      </div>
+      <details class="ig-manual"><summary>Conectar con un token (avanzado)</summary>${formToken}</details>`;
   }
 
   async function accionMeta(e) {
@@ -680,16 +709,19 @@
   async function conectarMeta(e) {
     e.preventDefault();
     const form = e.target;
+    // "elegir": después de "Conectar con Facebook" (el token quedó en el servidor).
+    const datos = { adAccountId: form.adAccountId.value || null, igUserId: form.igUserId.value || null };
+    if (form.dataset.meta !== 'elegir') datos.accessToken = form.token.value;
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
     try {
-      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, {
-        method: 'PUT',
-        body: JSON.stringify({ accessToken: form.token.value, adAccountId: form.adAccountId.value || null, igUserId: form.igUserId.value || null }),
-      });
+      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, { method: 'PUT', body: JSON.stringify(datos) });
       renderMeta();
     } catch (err) {
       const error = $('#meta-card [data-meta="error"]');
       error.textContent = err.mensaje || 'No se pudo conectar.';
       error.hidden = false;
+      if (btn) btn.disabled = false;
     }
   }
 
@@ -1536,12 +1568,13 @@
     const destino = window.location.hash.slice(1);
     irAVista(VISTAS.includes(destino) || ALIAS_MARCA[destino] ? destino : 'inicio');
     if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
-    const volvioDeOAuth = /[?&](google|instagram)=/.test(window.location.search);
+    const volvioDeOAuth = /[?&](google|instagram|meta)=/.test(window.location.search);
     avisarRetornoCorreo();
     avisarRetornoCheckout();
     avisarRetornoRecarga();
     avisarRetornoGoogle();
     avisarRetornoInstagram();
+    avisarRetornoMeta();
     let yaPregunto = false;
     try { yaPregunto = sessionStorage.getItem('rubrofy-perfil-' + negocioActual.id) === '1'; sessionStorage.setItem('rubrofy-perfil-' + negocioActual.id, '1'); } catch (err) { yaPregunto = false; }
     if (!volvioDeOAuth && (!negocioActual.bienvenidaCompletada || (!negocioActual.perfilCompleto && !yaPregunto))) abrirBienvenida();
@@ -1556,6 +1589,18 @@
     if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar Instagram.');
     irAVista(r === 'ok' ? 'inicio' : 'config');
     return true;
+  }
+
+  // Vuelta de "Conectar con Facebook" (Meta Ads y competencia).
+  function avisarRetornoMeta() {
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('meta');
+    if (!r) return;
+    history.replaceState(null, '', '/app');
+    if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar con Meta.');
+    const c = negocioActual.metaConexion;
+    if (r === 'ok' && c && c.adAccountId) return irAVista('resultados', 'meta');
+    irAVista('config', null, 'meta-card');
   }
 
   // Vuelta de "Iniciar sesión con Google": avisa el resultado y abre Configuración.
