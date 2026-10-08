@@ -28,6 +28,12 @@ function base() {
   return process.env.FLOW_SANDBOX === '1' ? API.sandbox : API.produccion;
 }
 
+// 'sandbox' o 'produccion'. Los clientes, suscripciones y cupones de un
+// ambiente no existen en el otro: se guarda en cuál se crearon.
+function entorno() {
+  return process.env.FLOW_SANDBOX === '1' ? 'sandbox' : 'produccion';
+}
+
 // Firma: parámetros ordenados por nombre, concatenados nombre+valor, HMAC
 // SHA-256 con la clave secreta (sin el parámetro s).
 function firmar(params, secreto) {
@@ -154,7 +160,7 @@ function estadoPago(token) {
 }
 
 module.exports = {
-  configurado, firmar, idPlan, asegurarPlan,
+  configurado, entorno, firmar, idPlan, asegurarPlan,
   crearCliente, registrarTarjeta, estadoRegistro,
   crearSuscripcion, agregarCupon, crearCupon, obtenerSuscripcion, cancelarSuscripcion, cambiarPlan, estadoSuscripcion,
   crearPago, estadoPago,

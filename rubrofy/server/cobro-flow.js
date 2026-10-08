@@ -8,7 +8,9 @@
 //
 // negocio.flow = {
 //   customerId, subscriptionId, estado (active | trialing | past_due | canceled | incomplete),
-//   planFlow, tarjeta { tipo, ultimos4 }, cancelaAlFinal, periodoFin, planPendiente
+//   planFlow, tarjeta { tipo, ultimos4 }, cancelaAlFinal, periodoFin, planPendiente,
+//   entorno ('sandbox' | 'produccion'; sin el campo, es de sandbox: así se
+//   guardaba antes de pasar a producción)
 // }
 
 const flow = require('./flow');
@@ -66,6 +68,7 @@ function aplicarSuscripcion(negocioId, sub) {
   const estado = flow.estadoSuscripcion(sub);
   const antes = new Map(((negocio.flow && negocio.flow.cobros) || []).map((c) => [c.id, c.estado]));
   negocio.flow = Object.assign({}, negocio.flow, {
+    entorno: flow.entorno(),
     subscriptionId: sub.subscriptionId,
     customerId: sub.customerId || (negocio.flow && negocio.flow.customerId),
     estado,
@@ -130,24 +133,31 @@ async function sincronizarTodas() {
 }
 
 async function asegurarCliente(negocio) {
-  if (negocio.flow && negocio.flow.customerId) return { data: negocio.flow.customerId };
+  // En producción, un cliente creado en sandbox no sirve: se crea otro. En
+  // sandbox nunca se reemplaza lo guardado (podría ser un cliente real).
+  const reutilizable = flow.entorno() === 'sandbox' || entornoDe(negocio.flow) === 'produccion';
+  if (negocio.flow && negocio.flow.customerId && reutilizable) return { data: negocio.flow.customerId };
   const r = await flow.crearCliente({ nombre: negocio.nombre, email: negocio.email, negocioId: negocio.id });
   if (r.error) return r;
   const fresco = store.getNegocio(negocio.id);
-  fresco.flow = Object.assign({}, fresco.flow, { customerId: r.data.customerId });
+  fresco.flow = Object.assign({}, fresco.flow, { customerId: r.data.customerId, entorno: flow.entorno() });
   store.saveNegocio(fresco);
   return { data: r.data.customerId };
 }
 
-// El cupón de Flow de un código de descuento (se crea la primera vez que se usa).
+// El cupón de Flow de un código de descuento (se crea la primera vez que se
+// usa en cada ambiente). Se guarda como "produccion:123"; un id sin prefijo
+// es de antes de pasar a producción, o sea de sandbox.
 async function cuponDe(fila) {
-  if (fila.flow_cupon) return { data: fila.flow_cupon };
+  const guardado = String(fila.flow_cupon || '');
+  const [ent, id] = guardado.includes(':') ? guardado.split(':') : ['sandbox', guardado];
+  if (id && ent === flow.entorno()) return { data: id };
   const r = await flow.crearCupon({
     nombre: `Rubrofy ${fila.codigo}`, meses: fila.meses,
     porcentaje: fila.tipo === 'porcentaje' ? fila.valor : null, monto: fila.tipo === 'monto' ? fila.valor : null,
   });
   if (r.error) return r;
-  beneficios.guardarCuponFlow(fila.codigo, r.data.id);
+  beneficios.guardarCuponFlow(fila.codigo, `${flow.entorno()}:${r.data.id}`);
   return { data: String(r.data.id) };
 }
 
@@ -173,7 +183,7 @@ async function suscribir(negocioId, planId, base, codigo, periodo) {
   if (d.codigo) beneficios.registrarCanje(d.codigo, negocioId, planId);
   // La suscripción nueva pasa a ser la que se sigue.
   const fresco = store.getNegocio(negocioId);
-  fresco.flow = Object.assign({}, fresco.flow, { subscriptionId: r.data.subscriptionId });
+  fresco.flow = Object.assign({}, fresco.flow, { subscriptionId: r.data.subscriptionId, entorno: flow.entorno() });
   store.saveNegocio(fresco);
   return { negocio: aplicarSuscripcion(negocioId, r.data) };
 }
@@ -323,7 +333,42 @@ function publico(negocio) {
   };
 }
 
+// En qué ambiente de Flow se creó lo guardado (sin el campo: sandbox).
+function entornoDe(f) {
+  return (f && f.entorno) || 'sandbox';
+}
+
+// Al pasar de sandbox a producción, los clientes y suscripciones de prueba
+// no existen en Flow de verdad: con ellos nadie podría inscribir su tarjeta
+// y una cuenta que "pagó" en sandbox seguiría con plan sin pagar nunca.
+// Al arrancar en producción, lo de sandbox se archiva en negocio.flowSandbox
+// y el plan vuelve a lo que corresponde sin pago (prueba gratis vigente,
+// plan de regalo o cortesía de administrador). En sandbox no hace nada: así
+// volver a probar nunca borra datos de cobros reales.
+function limpiarSandbox(ahora = Date.now()) {
+  if (flow.entorno() !== 'produccion') return [];
+  const limpiados = [];
+  for (const n of store.listNegocios()) {
+    if (!n.flow || entornoDe(n.flow) === 'produccion') continue;
+    const negocio = store.getNegocio(n.id);
+    const antes = negocio.plan || 'gratis';
+    negocio.flowSandbox = Object.assign({}, negocio.flow, { archivadoEl: new Date(ahora).toISOString() });
+    delete negocio.flow;
+    // La pausa se apoya en la suscripción de sandbox: ya no aplica.
+    delete negocio.pausa;
+    const pagaConStripe = !!(negocio.stripe && negocio.stripe.subscriptionId);
+    if (!pagaConStripe) {
+      negocio.plan = pruebaGratis.vigente(negocio, ahora) ? negocio.prueba.plan : beneficios.planSinPago(negocio, ahora);
+      deps.planDeCortesia(negocio);
+    }
+    store.saveNegocio(negocio);
+    limpiados.push({ negocioId: negocio.id, antes, despues: negocio.plan || 'gratis' });
+  }
+  return limpiados;
+}
+
 module.exports = {
+  limpiarSandbox, entornoDe,
   configurar, planDesdeFlow, periodoDesdeFlow, aplicarSuscripcion, sincronizar, sincronizarTodas,
   elegirPlan, aplicarCodigo, inscribirTarjeta, retornoTarjeta, cancelar, cancelarYa, suscripcionVigente, suscribir,
   pagarRecarga, confirmarPago, publico, cobroDeFlow,

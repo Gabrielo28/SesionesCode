@@ -1150,6 +1150,12 @@ cobroFlow.configurar({
     return avisos.correoRecibo({ negocio, urlPanel: url('#cuenta'), montoClp: datos.monto, detalle: `Plan ${getPlan(negocio.plan).nombre || ''}`.trim(), periodo: datos.periodo, fecha: datos.fecha });
   }),
 });
+// Al pasar a producción, lo creado en sandbox se archiva y el plan vuelve a
+// lo que corresponde sin pago (ver limpiarSandbox en cobro-flow.js).
+if (pagos.proveedor() === 'flow') {
+  const limpiados = cobroFlow.limpiarSandbox();
+  if (limpiados.length) console.log(`Flow en producción: se archivaron los cobros de sandbox de ${limpiados.length} cuenta(s): ${limpiados.map((l) => `${l.negocioId} (${l.antes} → ${l.despues})`).join(', ')}`);
+}
 let ultimaRevisionFlow = 0;
 const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
 setTimeout(revisarFlow, 60 * 1000).unref();

@@ -184,6 +184,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     'IA de textos (Anthropic)': !!process.env.ANTHROPIC_API_KEY,
     'Imágenes y videos con IA (Higgsfield u OpenAI)': !!(process.env.HIGGSFIELD_API_KEY || process.env.OPENAI_API_KEY),
     'Cobro (Flow o Stripe)': !!(require('./flow').configurado() || (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET)),
+    ...(require('./flow').configurado() ? { 'Flow cobrando de verdad (sin FLOW_SANDBOX)': require('./flow').entorno() === 'produccion' } : {}),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Meta Ads y competencia': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
     'Google Ads': !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),

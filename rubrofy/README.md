@@ -1157,6 +1157,32 @@ y `FLOW_SANDBOX=1` mientras se prueba en sandbox.flow.cl (quitarla para
 cobrar de verdad; las claves de sandbox y producción son distintas).
 `PUBLIC_URL` tiene que estar puesta: Flow avisa a esa dirección.
 
+### Pasar de sandbox a producción
+
+1. En Flow (producción): cuenta de empresa activa y **Cargo automático**
+   contratado (Medios de pago → Editar datos). Sin él, Flow no cobra la
+   tarjeta sola cada mes: manda un link de pago por correo.
+2. En Railway: cambiar `FLOW_API_KEY` y `FLOW_SECRET_KEY` por las de
+   producción y **borrar** `FLOW_SANDBOX`. Al reiniciar, el registro dice
+   "Cobro con Flow (producción)" y /admin marca "Flow cobrando de verdad".
+3. Al arrancar en producción, Rubrofy archiva lo creado en sandbox
+   (`negocio.flowSandbox`): esos clientes y suscripciones no existen en el
+   Flow de verdad. Cada cuenta vuelve al plan que le toca sin pago (prueba
+   gratis vigente, plan de regalo o cortesía de administrador); quien había
+   "pagado" en sandbox elige su plan de nuevo. Los planes y los cupones de
+   los códigos de descuento se vuelven a crear solos en producción. Lo
+   guardado lleva su ambiente (`flow.entorno`; los cupones, "produccion:id"),
+   así que reiniciar no vuelve a archivar nada y volver a sandbox no borra
+   cobros reales.
+4. Probar con una tarjeta real: suscribirse a Pro, revisar el cobro en Flow
+   y el comprobante por correo, y cancelar.
+
+**Boletas:** Rubrofy no emite boletas. En pagos con tarjeta, el comprobante
+de pago tiene valor de boleta si en el SII se declara el modelo "No emito
+boleta cuando recibo pago electrónico". Los pagos por transferencia (posibles
+en las recargas si están activos en Flow) sí requieren boleta: o se
+desactivan en Flow (Medios de pago) o se emite la boleta aparte.
+
 ## Planes y cobro (Stripe)
 
 Todo negocio nace **sin plan**. Para pasar a **Pro** o **Estudio** desde
