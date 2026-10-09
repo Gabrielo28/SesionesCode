@@ -371,6 +371,15 @@ Común a Meta Ads y Google Ads, con reglas explicables (sin IA):
   ventas que no cubren la inversión, costo que subió o bajó contra el
   período anterior y, en Meta, el público (edad y sexo) y la ubicación con
   resultados más baratos.
+- **"Hacer este cambio en Meta"**: cada hallazgo de Meta trae un `destino`
+  (`tipo`: campañas, conjuntos o anuncios; los `ids` involucrados y `que`,
+  el texto de lo que se abre) y el servidor lo convierte en `enlace` con
+  `meta.enlaceAdministrador()`. El botón abre el Administrador de anuncios
+  de Meta en esa cuenta, en esa vista y con esas campañas o anuncios
+  seleccionados. Rubrofy no cambia nada: el cambio lo hace el dueño en Meta.
+  Los parámetros `selected_campaign_ids` y `selected_ad_ids` no están
+  documentados por Meta; si dejan de funcionar, el enlace igual abre la
+  cuenta y la vista correctas (`act` y la ruta sí son estables).
 
 ## Google Ads (server/google.js) — en pausa
 

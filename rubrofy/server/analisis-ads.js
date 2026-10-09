@@ -19,10 +19,15 @@ function comparar(actual, anterior) {
 const PCT = (v) => `${Math.round(Math.abs(v) * 100)} %`;
 
 // dinero: función que formatea montos en la moneda de la cuenta.
+// Cada hallazgo puede traer un "destino": dónde se hace el cambio en la
+// plataforma de anuncios (tipo campanas | anuncios | conjuntos, los ids y
+// "que": cómo se le dice al dueño lo que se abre). El enlace lo arma cada
+// plataforma (ver enlaceAdministrador en meta.js).
 function diagnostico({ resumen, anterior, desgloses, dinero }) {
   const t = resumen.total;
   const hallazgos = [];
-  const agregar = (nivel, titulo, detalle, accion) => hallazgos.push({ nivel, titulo, detalle, accion: accion || null });
+  const agregar = (nivel, titulo, detalle, accion, destino) => hallazgos.push({ nivel, titulo, detalle, accion: accion || null, destino: destino || null });
+  const nombres = (l) => (l.length === 1 ? `"${l[0]}"` : `${l.slice(0, -1).map((x) => `"${x}"`).join(', ')} y "${l[l.length - 1]}"`);
   if (!t.gasto) return hallazgos;
 
   const campanas = resumen.campanas.filter((c) => c.gasto > 0);
@@ -33,7 +38,8 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
     if (!c.resultados && c.gasto >= t.gasto * 0.1) {
       agregar('alerta', `"${c.nombre}" gastó ${dinero(c.gasto)} sin resultados`,
         `Es el ${PCT(c.gasto / t.gasto)} de tu inversión del período.`,
-        'Revisa que su objetivo sea el que buscas (mensajes, ventas o formularios) o pausa la campaña y pasa ese presupuesto a la que mejor rinde.');
+        'Revisa que su objetivo sea el que buscas (mensajes, ventas o formularios) o pausa la campaña y pasa ese presupuesto a la que mejor rinde.',
+        { tipo: 'campanas', ids: [c.id], que: `la campaña "${c.nombre}"` });
     }
   }
 
@@ -45,7 +51,8 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
     if (peor.costoPorResultado >= mejor.costoPorResultado * 1.5) {
       agregar('idea', `Cada resultado de "${peor.nombre}" cuesta ${(peor.costoPorResultado / mejor.costoPorResultado).toLocaleString('es-CL', { maximumFractionDigits: 1 })} veces más que en "${mejor.nombre}"`,
         `${dinero(peor.costoPorResultado)} contra ${dinero(mejor.costoPorResultado)} por resultado.`,
-        `Mueve parte del presupuesto de "${peor.nombre}" a "${mejor.nombre}" de a poco (20 % cada 3 o 4 días) y mira si el costo se mantiene.`);
+        `Mueve parte del presupuesto de "${peor.nombre}" a "${mejor.nombre}" de a poco (20 % cada 3 o 4 días) y mira si el costo se mantiene.`,
+        { tipo: 'campanas', ids: [peor.id, mejor.id], que: `las campañas ${nombres([peor.nombre, mejor.nombre])}` });
     }
   }
 
@@ -54,7 +61,8 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
     if (c.impresiones >= 2000 && c.ctr != null && c.ctr < 0.008) {
       agregar('alerta', `Pocos hacen clic en "${c.nombre}" (CTR ${(c.ctr * 100).toLocaleString('es-CL', { maximumFractionDigits: 2 })} %)`,
         'Menos de 1 de cada 125 personas que lo ven hace clic: el anuncio no está llamando la atención.',
-        'Prueba otra imagen o video con el producto y el precio en los primeros segundos, y un texto más directo.');
+        'Prueba otra imagen o video con el producto y el precio en los primeros segundos, y un texto más directo.',
+        { tipo: 'anuncios', campanas: [c.id], que: `los anuncios de "${c.nombre}"` });
     }
   }
 
@@ -62,7 +70,8 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
   if (t.roas != null && t.roas < 1) {
     agregar('alerta', 'Las ventas atribuidas no cubren lo invertido',
       `Por cada ${dinero(1000)} invertidos vuelven ${dinero(t.roas * 1000)} en ventas registradas.`,
-      'Si también vendes por WhatsApp o en el local, esas ventas no aparecen acá: compara con tu caja antes de cortar la campaña.');
+      'Si también vendes por WhatsApp o en el local, esas ventas no aparecen acá: compara con tu caja antes de cortar la campaña.',
+      { tipo: 'campanas', que: 'tus campañas' });
   }
 
   // 5. Contra el período anterior.
@@ -74,14 +83,17 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
       if (v >= 0.25) {
         agregar('alerta', `El costo por resultado subió ${PCT(v)} contra el período anterior`,
           `De ${dinero(cprAntes)} a ${dinero(cpr)}.`,
-          'Suele pasar cuando el mismo público ya vio muchas veces el anuncio: cambia la imagen o el texto, o amplía el público.');
+          'Suele pasar cuando el mismo público ya vio muchas veces el anuncio: cambia la imagen o el texto, o amplía el público.',
+          { tipo: 'anuncios', que: 'tus anuncios' });
       } else if (v <= -0.2) {
         agregar('bien', `El costo por resultado bajó ${PCT(v)} contra el período anterior`, `De ${dinero(cprAntes)} a ${dinero(cpr)}.`,
-          'Lo que cambiaste está funcionando: si el negocio da abasto, es buen momento para subir el presupuesto de a poco.');
+          'Lo que cambiaste está funcionando: si el negocio da abasto, es buen momento para subir el presupuesto de a poco.',
+          { tipo: 'campanas', que: 'tus campañas' });
       }
     } else if (!t.resultados && anterior.resultados > 0) {
       agregar('alerta', 'Este período no hubo resultados y el anterior sí', 'Algo cambió en las campañas o en el seguimiento de conversiones.',
-        'Revisa si se pausó una campaña, se cambió el objetivo o dejó de funcionar el píxel.');
+        'Revisa si se pausó una campaña, se cambió el objetivo o dejó de funcionar el píxel.',
+        { tipo: 'campanas', que: 'tus campañas' });
     }
   }
 
@@ -94,7 +106,8 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
       if (p.costoPorResultado <= t.costoPorResultado * 0.8) {
         agregar('idea', `Tu público más barato: ${p.sexoNombre.toLowerCase()} de ${p.edad} años`,
           `Cada resultado cuesta ${dinero(p.costoPorResultado)}, ${PCT(1 - p.costoPorResultado / t.costoPorResultado)} menos que el promedio.`,
-          'Crea un conjunto de anuncios enfocado en ese grupo o usa sus intereses para una campaña nueva.');
+          'Crea un conjunto de anuncios enfocado en ese grupo o usa sus intereses para una campaña nueva.',
+          { tipo: 'conjuntos', que: 'tus conjuntos de anuncios (ahí se elige el público)' });
       }
     }
     const lugares = desgloses.ubicaciones.filter(minimo).sort((a, b) => a.costoPorResultado - b.costoPorResultado);
@@ -104,14 +117,17 @@ function diagnostico({ resumen, anterior, desgloses, dinero }) {
       if (peor.costoPorResultado >= m.costoPorResultado * 1.5) {
         agregar('idea', `${m.nombre} te da resultados más baratos que ${peor.nombre}`,
           `${dinero(m.costoPorResultado)} contra ${dinero(peor.costoPorResultado)} por resultado.`,
-          `Haz piezas pensadas para ${m.nombre.split(' · ')[1] || m.nombre} (formato vertical si son Historias o Reels).`);
+          `Haz piezas pensadas para ${m.nombre.split(' · ')[1] || m.nombre} (formato vertical si son Historias o Reels).`,
+          { tipo: 'conjuntos', que: 'tus conjuntos de anuncios (ahí se eligen las ubicaciones)' });
       }
     }
     const conGasto = desgloses.anuncios.filter((a) => a.gasto > 0);
     const muertos = conGasto.filter((a) => !a.resultados && a.gasto >= t.gasto * 0.1);
     if (muertos.length) {
       agregar('alerta', muertos.length === 1 ? `El anuncio "${muertos[0].nombre}" no trae resultados` : `${muertos.length} anuncios gastan sin traer resultados`,
-        `Suman ${dinero(muertos.reduce((s, a) => s + a.gasto, 0))} en el período.`, 'Apágalos y deja correr los que sí convierten.');
+        muertos.length === 1 ? `Gastó ${dinero(muertos[0].gasto)} en el período.` : `Suman ${dinero(muertos.reduce((s, a) => s + a.gasto, 0))} en el período.`,
+        muertos.length === 1 ? 'Apágalo y deja correr los anuncios que sí convierten.' : 'Apágalos y deja correr los que sí convierten.',
+        { tipo: 'anuncios', ids: muertos.map((a) => a.id), que: muertos.length === 1 ? `el anuncio "${muertos[0].nombre}"` : `los anuncios ${nombres(muertos.map((a) => a.nombre))}` });
     }
   }
 
@@ -139,7 +155,9 @@ function formatoDinero(moneda) {
 // primeraFecha: el primer día con datos de la fuente. Si el período anterior
 // no está completo (la cuenta se conectó hace poco), no se compara: un
 // "+2900 %" contra un solo día sería engañoso.
-function analizar({ resumenDe, desglosesDe, desde, hasta, dias, moneda, sumarDias, primeraFecha }) {
+// enlaceDe(destino): la dirección para hacer el cambio en la plataforma
+// (si no se entrega, los hallazgos van sin botón).
+function analizar({ resumenDe, desglosesDe, desde, hasta, dias, moneda, sumarDias, primeraFecha, enlaceDe }) {
   const resumen = resumenDe(desde, hasta);
   const inicioAnterior = sumarDias(desde, -dias);
   const completo = primeraFecha && primeraFecha <= inicioAnterior;
@@ -150,7 +168,8 @@ function analizar({ resumenDe, desglosesDe, desde, hasta, dias, moneda, sumarDia
     anterior: completo ? anterior : null,
     variacion: comparar(resumen.total, anterior),
     desgloses,
-    diagnostico: diagnostico({ resumen, anterior: completo ? anterior : null, desgloses, dinero: formatoDinero(moneda) }),
+    diagnostico: diagnostico({ resumen, anterior: completo ? anterior : null, desgloses, dinero: formatoDinero(moneda) })
+      .map((h) => (h.destino && enlaceDe ? Object.assign(h, { enlace: enlaceDe(h.destino) }) : h)),
   };
 }
 

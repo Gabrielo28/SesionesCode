@@ -2967,6 +2967,7 @@ const server = http.createServer(async (req, res) => {
           }, analisisAds.analizar({
             resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
             desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
+            enlaceDe: (destino) => meta.enlaceAdministrador(n.meta.adAccountId, destino),
           })));
         }
 

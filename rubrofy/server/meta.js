@@ -182,6 +182,23 @@ async function canjearCodigo(code, redirectUri) {
 
 // --- Meta Ads ---
 
+// "Hacer este cambio en Meta": abre el Administrador de anuncios en la
+// cuenta y, si se sabe, en la campaña o los anuncios del hallazgo. Rubrofy
+// no cambia nada: el dueño lo hace en Meta. Los parámetros de selección no
+// están documentados por Meta; si dejaran de funcionar, igual se abre la
+// cuenta correcta en la vista indicada (y el panel dice qué buscar).
+const ADS_MANAGER = 'https://adsmanager.facebook.com/adsmanager/manage';
+function enlaceAdministrador(adAccountId, destino) {
+  const act = String(adAccountId || '').replace(/^act_/, '').replace(/\D/g, '');
+  const ids = (l) => (l || []).filter((x) => x != null && String(x) !== '').map((x) => encodeURIComponent(String(x))).join(',');
+  const vista = destino.tipo === 'anuncios' ? 'ads' : destino.tipo === 'conjuntos' ? 'adsets' : 'campaigns';
+  let url = `${ADS_MANAGER}/${vista}?act=${act}`;
+  const campanas = ids(destino.tipo === 'campanas' ? destino.ids : destino.campanas);
+  if (campanas) url += `&selected_campaign_ids=${campanas}`;
+  if (destino.tipo === 'anuncios' && ids(destino.ids)) url += `&selected_ad_ids=${ids(destino.ids)}`;
+  return url;
+}
+
 const sqlAds = {
   upsert: db.prepare(`INSERT INTO meta_ads_diario (negocio_id, campana_id, fecha, campana, objetivo, gasto, impresiones,
       clics, compras, leads, mensajes, valor_compras)
@@ -415,5 +432,5 @@ function publicoMeta(meta) {
 }
 
 module.exports = {
-  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
+  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, enlaceAdministrador, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
 };

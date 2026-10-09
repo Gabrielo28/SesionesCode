@@ -36,8 +36,11 @@
       <h2>Diagnóstico${AY('diagnostico')}</h2>
       <ul class="diag-lista">${lista.map((h) => `<li class="diag-${h.nivel}">
         <span class="diag-icono" aria-hidden="true">${icono[h.nivel]}</span>
-        <div><b>${e(h.titulo)}</b><span>${e(h.detalle)}</span>${h.accion ? `<span class="diag-accion">${e(h.accion)}</span>` : ''}</div>
+        <div><b>${e(h.titulo)}</b><span>${e(h.detalle)}</span>${h.accion ? `<span class="diag-accion">${e(h.accion)}</span>` : ''}
+          ${h.enlace ? `<span class="diag-ir"><a class="btn-meta-cambio" href="${e(h.enlace)}" target="_blank" rel="noopener">Hacer este cambio en Meta <span aria-hidden="true">↗</span></a>
+            <small>Abre ${e(h.destino.que)} en el Administrador de anuncios de Meta.</small></span>` : ''}</div>
       </li>`).join('')}</ul>
+      ${lista.some((h) => h.enlace) ? '<p class="diag-nota">Rubrofy no cambia tus anuncios: el botón te lleva al lugar exacto en Meta para que lo hagas tú. Vuelve en 3 o 4 días para ver si mejoró.</p>' : ''}
     </div>`;
   }
 

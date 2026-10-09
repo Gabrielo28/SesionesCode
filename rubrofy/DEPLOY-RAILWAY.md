@@ -143,7 +143,10 @@ Una vez que `https://rubrofy.com` funcione:
      con un rol en la app. Para abrirlo a todos los clientes, pide acceso
      avanzado a esos permisos; Meta pide un video del flujo: botón
      "Conectar con Facebook", aceptar permisos y ver los anuncios en
-     Resultados → Meta Ads.
+     Resultados → Meta Ads. Muestra también el botón "Hacer este cambio en
+     Meta" de una recomendación: explica que Rubrofy solo lee (`ads_read`)
+     y que los cambios los hace el dueño en el Administrador de anuncios.
+     Ese botón es un enlace y no necesita permisos extra.
 - **Instagram**: Meta descarga las fotos y videos desde `PUBLIC_URL` con
   enlaces firmados temporales.
 - **"Conectar con Instagram"** (para que el cliente inicie sesión en vez de
