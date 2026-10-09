@@ -2,7 +2,6 @@
   'use strict';
 
   const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
-  const MESES_LARGO = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
 
   let negocioActual = null;
   let nichoActual = null; // estrategia de contenido del negocio actual (enfoques, categoriasFoto)
@@ -11,7 +10,6 @@
   let planesInfo = []; // catálogo de planes (ver /api/planes) — precios y disponibilidad
   let codigoDescuento = null; // código revisado y todavía no usado: { codigo, descripcion, planes, precios }
   let vistaActual = 'inicio';
-  let calSelectedId = null;
   const editingIds = new Set();
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
   const pedirCambioIds = new Set(); // piezas con el campo "Pedir cambio" abierto
@@ -131,12 +129,6 @@
     return { color: 'var(--ink-faint)', texto: 'Programada &middot; ' + escapeHtml(fechaCorta(item.publicarEl || pub.proximoIntento)) };
   }
 
-  function parseItemDate(dateStr) {
-    const [ddMes, hora] = dateStr.split(' - ');
-    const [ddStr, mes] = ddMes.split(' ');
-    return { day: parseInt(ddStr, 10), monthIndex: MESES.indexOf(mes), hora: hora };
-  }
-
   // ---------- render: stats ----------
   function renderStats() {
     const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
@@ -242,6 +234,26 @@
     return partes.join('');
   }
 
+  // La foto de la Galería de la pieza: la que el negocio eligió o una de su categoría.
+  function fotoGaleriaDe(item) {
+    const fe = item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo) ? item.fotoElegida : null;
+    const categoria = fe ? fe.categoria : item.categoriaFoto;
+    const archivo = fe ? fe.archivo : (item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null);
+    return archivo ? { categoria, archivo } : null;
+  }
+
+  // La foto de la pieza: de la Galería o, si no hay, la creada con IA.
+  function fotoDe(item) {
+    const g = fotoGaleriaDe(item);
+    if (g) return `/fotos/${negocioActual.id}/${encodeURIComponent(g.categoria)}/${encodeURIComponent(g.archivo)}`;
+    return item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null;
+  }
+
+  // La imagen diseñada con el kit de marca, si la tiene.
+  function disenoDe(item) {
+    return item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
+  }
+
   function cardHTML(item) {
     const meta = statusMeta(item.status);
     const caption = item.variants[item.variantIndex];
@@ -256,15 +268,9 @@
     const conVideo = formato === 'reel' || formato === 'historia';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
-    // La foto que el negocio eligió (Galería) o una de la categoría de la pieza.
-    const fe = item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo) ? item.fotoElegida : null;
-    const fotoCat = fe ? fe.categoria : item.categoriaFoto;
-    const fotoNombre = fe ? fe.archivo : (item.categoriaFoto ? pickFotoFilename(item.categoriaFoto, item.id) : null);
-    const fotoUrl = fotoNombre
-      ? `/fotos/${negocioActual.id}/${encodeURIComponent(fotoCat)}/${encodeURIComponent(fotoNombre)}`
-      : (item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null);
+    const fotoUrl = fotoDe(item);
     // Diseño con la marca: la tarjeta muestra la imagen diseñada.
-    const disenoUrl = item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
+    const disenoUrl = disenoDe(item);
     const puedeDisenar = !!fotoUrl && !publicada && (formato === 'post' || formato === 'carrusel' || (formato === 'historia' && !item.video));
     // Lo que le falta para publicarse, a la vista en la imagen de la tarjeta.
     const uniendoClips = !!(item.union && item.union.estado === 'uniendo');
@@ -334,7 +340,7 @@
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
               <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
               <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
-              ${!fotoNombre && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
+              ${!fotoGaleriaDe(item) && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
               ${puedeDisenar ? `<button class="btn-ghost" data-action="disenar" data-id="${item.id}" data-foto="${escapeHtml(fotoUrl)}">${item.diseno ? 'Cambiar diseño' : '✦ Diseñar con mi marca'}</button>` : ''}
               ${fotoUrl && !publicada && formato !== 'reel' ? `<button class="btn-ghost" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">⇄ Cambiar foto</button>` : ''}
               <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
@@ -376,88 +382,13 @@
   }
 
   // ---------- render: calendario ----------
-  function startOfWeekMonday(date) {
-    const day = date.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-    const d = new Date(date);
-    d.setDate(d.getDate() + diff);
-    return d;
-  }
-
-  function buildCalendarDays(year, month) {
-    const first = new Date(year, month, 1);
-    const last = new Date(year, month + 1, 0);
-    const start = startOfWeekMonday(first);
-    const lastWeekStart = startOfWeekMonday(last);
-    const end = new Date(lastWeekStart);
-    end.setDate(end.getDate() + 6);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const days = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dd = new Date(d);
-      days.push({ date: dd, inMonth: dd.getMonth() === month, isToday: dd.getTime() === today.getTime() });
-    }
-    return days;
-  }
-
-  function renderCalDetail() {
-    const detail = $('#cal-detail');
-    const item = contenido.find((it) => it.id === calSelectedId);
-    if (!item) {
-      detail.innerHTML = '<span class="kicker">Detalle</span><p class="empty">Selecciona una publicación del calendario para ver su detalle.</p>';
-      return;
-    }
-    const meta = statusMeta(item.status);
-    const p = parseItemDate(item.date);
-    detail.innerHTML = `
-      <span class="kicker">Detalle</span>
-      <div class="row"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${meta.color}"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;">${meta.label}</span></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);">${p.day} ${MESES[p.monthIndex]} &middot; ${p.hora}</span>
-      <span class="tagpill">${escapeHtml(item.tag)}</span>
-      ${item.gancho ? `<p class="card-gancho"><span>Gancho</span>${escapeHtml(item.gancho)}</p>` : ''}
-      <p class="detail-text">${escapeHtml(item.variants[item.variantIndex])}</p>
-      ${item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
-    `;
-  }
-
+  // Semana o mes, y mover publicaciones de día: public/app/calendario.js.
   function renderCalendario() {
-    const now = new Date();
-    $('#cal-month').textContent = MESES_LARGO[now.getMonth()] + ' ' + now.getFullYear();
-
-    const days = buildCalendarDays(now.getFullYear(), now.getMonth());
-    const grid = $('#cal-grid');
-    grid.innerHTML = '';
-
-    days.forEach((day) => {
-      const cellItems = contenido.filter((it) => {
-        const p = parseItemDate(it.date);
-        return p.monthIndex === day.date.getMonth() && p.day === day.date.getDate();
-      });
-
-      const cell = document.createElement('div');
-      cell.className = 'cal-cell' + (day.inMonth ? '' : ' out') + (day.isToday ? ' today' : '');
-
-      const num = document.createElement('span');
-      num.className = 'num';
-      num.textContent = String(day.date.getDate());
-      cell.appendChild(num);
-
-      cellItems.forEach((it) => {
-        const meta = statusMeta(it.status);
-        const p = parseItemDate(it.date);
-        const chip = document.createElement('div');
-        chip.className = 'cal-chip' + (it.id === calSelectedId ? ' selected' : '');
-        chip.dataset.id = it.id;
-        chip.innerHTML = `<span class="dot" style="background:${meta.color}"></span><span class="txt">${p.hora} ${escapeHtml(it.tag)}</span>`;
-        cell.appendChild(chip);
-      });
-
-      grid.appendChild(cell);
-    });
-
-    renderCalDetail();
+    window.RubrofyCalendario.render($('#calendario'), Object.assign(ctxPanel(), {
+      partesEnZona, escapeHtml, formatoDe, FORMATOS,
+      miniatura: (it) => disenoDe(it) || fotoDe(it),
+      refrescar: () => refreshContenido().catch(() => {}),
+    }));
   }
 
   // ---------- render: fotos ----------
@@ -1581,7 +1512,7 @@
     fotos = fotosData;
     planesInfo = planesData;
     editingIds.clear();
-    calSelectedId = null;
+    if (window.RubrofyCalendario) window.RubrofyCalendario.reiniciar();
     actualizarSwitcher();
     $('#view-login').hidden = true;
     $('#view-app').hidden = false;
@@ -2196,14 +2127,6 @@
       if (!pendientes) return;
       try { await refreshContenido(); } catch (err) { /* reintenta en la próxima vuelta */ }
     }, 30000);
-
-    // delegación de eventos en el calendario
-    $('#cal-grid').addEventListener('click', (e) => {
-      const chip = e.target.closest('.cal-chip');
-      if (!chip) return;
-      calSelectedId = chip.dataset.id;
-      renderCalendario();
-    });
 
     try {
       negocioActual = await api('/api/me');

@@ -56,8 +56,9 @@
       p: ['Lee la alerta.', 'Corrige el texto con "Editar", o actualiza tus datos en Estrategia si el precio es real.', 'La alerta desaparece cuando el texto calza con tus datos.'] },
 
     // ---------- Calendario y fotos ----------
-    'calendario': { t: 'Calendario', d: 'Tus publicaciones del mes ubicadas en su día y hora.',
-      p: ['Pulsa una publicación para ver su detalle a la derecha.', 'Colores: verde aprobada, rosado pendiente, rojo rechazada.', 'Para mover una fecha, hazlo desde la tarjeta en Por aprobar.'] },
+    'calendario': { t: 'Calendario', d: 'Tus publicaciones de la semana o del mes, cada una en su día y hora.',
+      p: ['Elige "Semana" o "Mes" y muévete con las flechas.', 'Para cambiar una publicación de día, arrástrala (en el celular, toca "Mover" y elige el día). Mantiene su hora.', 'Pulsa una publicación para ver su detalle.', 'Colores: rosado por aprobar, verde aprobada. Las publicadas (🔒) no se mueven.'],
+      n: 'Si ya estaba aprobada, se reprograma sola. Justo después de moverla puedes "Deshacer".' },
     'fotos': { t: 'Galería', d: 'Todas tus fotos en un solo lugar. Rubrofy elige de aquí la foto de cada publicación, o la eliges tú desde la tarjeta con "Cambiar foto".',
       p: ['Pulsa "Subir fotos" o arrástralas al recuadro. Elige en qué categoría guardarlas (por ejemplo "producto" o "local").', '"Crear con IA": describe la foto con tus palabras, elige el estilo y el formato (plan Estudio o con una recarga).', 'Sube varias por categoría: Rubrofy las va alternando entre tus publicaciones.', 'Para quitar una, pasa el mouse sobre la foto y pulsa la ×.'], n: 'Los carruseles necesitan al menos 2 fotos en su categoría.' },
 

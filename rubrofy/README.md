@@ -109,8 +109,19 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   encima (igual que el programa original); si no, muestra un degradé de
   marcador. Aprobar, rechazar, deshacer, pedir otra versión y editar el
   texto a mano funcionan de verdad contra la API.
-- **Calendario** — las mismas publicaciones ubicadas en su fecha, con un
-  panel de detalle al hacer clic.
+- **Calendario** (`public/app/calendario.js`) — vista **Semana** (por
+  defecto: 7 columnas con la foto, la hora, el formato y el estado de cada
+  publicación; en celular, una lista por día) o **Mes**, con flechas y
+  "Hoy" (la vista elegida se recuerda en el navegador, `rubrofy-cal-modo`).
+  Las publicaciones **por aprobar y aprobadas se cambian de día**:
+  arrastrándolas en el computador, o con "↔ Mover" (celular, o "Mover a
+  otro día" en el detalle), que abre una hoja con los 7 días (los puntos
+  dicen cuántas tiene cada uno), flechas de semana y la hora. Mantiene la
+  hora salvo que se cambie ahí; los días pasados no se pueden elegir; las
+  publicadas (🔒) y las que se están publicando no se mueven; las
+  rechazadas no aparecen. Usa `PUT …/contenido/:id/reprogramar` (si estaba
+  aprobada, se reprograma sola) y después ofrece "Deshacer". Días y horas
+  se calculan en la zona del negocio, no la del navegador.
 - **Fotos del negocio** — subir y borrar fotos por categoría (las categorías
   las define la estrategia del negocio); el contenido las usa automáticamente
   según el enfoque de cada pieza. Si una pieza no tiene foto real todavía,
