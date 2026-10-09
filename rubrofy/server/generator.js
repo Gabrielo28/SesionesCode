@@ -41,6 +41,13 @@ function bloqueEstilo(negocio, formatos) {
   return partes.length ? '\n\nAsí publica este negocio (imita el estilo, no copies los textos):\n' + partes.join('\n') : '';
 }
 
+// Diseño de la marca que el dueño aplicó ("Descubre tu diseño con IA"):
+// guía qué se muestra en cada pieza.
+function bloqueDiseno(negocio) {
+  const guia = require('./diseno-ia').guiaVisual(negocio);
+  return guia ? `\n\nEstilo visual de la marca (síguelo en "idea"): ${guia}` : '';
+}
+
 const claude = require('./claude');
 
 // Paleta de degradés de respaldo para el marcador de la tarjeta cuando no
@@ -119,6 +126,7 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones, opciones
     (negocio.planContenido ? ' ' + planContenido.textoParaPrompt(negocio.planContenido) : '') +
     (ctx ? aprendizaje.textoParaPrompt(ctx) : '') +
     bloqueEstilo(negocio, piezas.map((p) => p.formato)) +
+    bloqueDiseno(negocio) +
     voz.textoParaPrompt(negocio) +
     contextoIA.bloque(negocio, ['general', 'voz', 'copys', ...new Set(piezas.map((p) => p.formato))], indicaciones) +
     (opciones.brief ? require('./brief').textoParaPrompt(negocio, opciones.brief.brief, opciones.brief.fechas) : '') + '\n\n' +

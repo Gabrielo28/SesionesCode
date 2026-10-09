@@ -29,7 +29,7 @@ function configurado() {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
-const ESFUERZO_POR_USO = { estrategia: 'medium', estilo: 'medium', informe: 'medium' };
+const ESFUERZO_POR_USO = { estrategia: 'medium', estilo: 'medium', informe: 'medium', diseno: 'medium' };
 
 function esfuerzo(uso) {
   const valido = (v) => (v && ESFUERZOS.includes(String(v).toLowerCase()) ? String(v).toLowerCase() : null);

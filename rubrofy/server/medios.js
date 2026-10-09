@@ -76,6 +76,8 @@ function promptImagen(negocio, item, incluirTexto) {
     + ' Fotografía profesional, luz natural, composición atractiva para redes sociales, sin marcas de agua ni logos inventados.';
   const ctx = contextoIA.plano(negocio, ['imagen']);
   if (ctx) p += ` Indicaciones visuales: ${ctx}`;
+  const guia = require('./diseno-ia').guiaVisual(negocio);
+  if (guia) p += ` Estilo visual de la marca: ${guia}`;
   p += incluirTexto && item.headline
     ? ` Incluye el titular "${item.headline.replace(/\n/g, ' ')}" como texto grande y legible sobre la imagen.`
     : ' No incluyas texto, letras ni palabras en la imagen.';
@@ -245,6 +247,8 @@ function promptLibre(negocio, texto, estilo) {
     + ' Composición atractiva para redes sociales, sin marcas de agua ni logos inventados. No incluyas texto, letras ni palabras en la imagen.';
   const ctx = contextoIA.plano(negocio, ['imagen']);
   if (ctx) p += ` Indicaciones visuales: ${ctx}`;
+  const guia = require('./diseno-ia').guiaVisual(negocio);
+  if (guia) p += ` Estilo visual de la marca: ${guia}`;
   return p.slice(0, 3000);
 }
 

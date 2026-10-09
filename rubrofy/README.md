@@ -1102,6 +1102,41 @@ un **pago único** (Stripe Checkout en modo `payment`, no una suscripción):
   JPEG en `data/marca/<negocio>/`. Al publicar, la pieza usa el diseño; la
   foto original no se toca.
 
+## Descubre tu diseño con IA (server/diseno-ia.js, public/app/diseno-ia.js)
+
+En **Tu marca → Cómo se ve**, arriba del kit (planes Pro y Estudio). Claude
+mira el Instagram y la web del negocio y propone su diseño; nada cambia
+hasta que el dueño pulsa **Aplicar a mi kit de marca**.
+
+- **Qué mira**: hasta 9 publicaciones importadas de Instagram ("Mi estilo";
+  si está conectado y hay menos de 6, las importa primero), eligiendo las
+  que más y menos interacción tuvieron (tabla `ig_posts`) más las recientes,
+  y diciéndole a Claude cuál funcionó; y la web del perfil: colores más usados
+  en su CSS (en línea y hasta 4 hojas propias; se saltan las de librerías
+  como Bootstrap o Font Awesome), `theme-color`, tipografías (Google Fonts y
+  `font-family`), su logo (`<img>` con "logo", o `apple-touch-icon`) y su
+  imagen principal (`og:image`). La web se lee con las mismas protecciones
+  que "Leer mi web con IA" (`perfil.descargarBytes`: sin IP privadas,
+  revisión en cada redirección, límites de tamaño y tiempo).
+- **Qué propone**: paleta de 3 a 5 colores con su rol (principal, apoyo,
+  fondo, textos, acento) y de dónde sale, un aviso si web e Instagram no
+  calzan, la tipografía más cercana de las 4 del kit, qué fotos le funcionan
+  y cuáles evitar (con miniaturas), 3 a 5 pasos para llegar al diseño que el
+  dueño dice que busca ("¿Cómo quieres que se vea tu marca?", opcional), la
+  posición del logo y una guía visual para las fotos con IA. Vista previa con
+  el mismo dibujo de los diseños.
+- **Aplicar**: "Editar antes de aplicar" deja cambiar colores, tipografía y
+  posición del logo. Aplicar guarda el kit y, si se marca, el logo de la web
+  (queda guardado aparte como `logo-web-*` hasta que se decida). Con "Usar
+  esta guía al crear fotos con IA", la guía entra en los pedidos de imagen
+  (`medios.promptImagen` y `promptLibre`) y en la "idea" de cada pieza del
+  generador.
+- Usa 1 pieza con IA del mes; máximo 5 análisis por hora por negocio. Se
+  guarda en `negocio.disenoIA`.
+
+API: `GET /api/negocios/:id/diseno-ia`, `POST …/diseno-ia/analizar { deseo }`,
+`POST …/diseno-ia/aplicar { color, color2, fuente, posLogo, usarLogoWeb, usarEnImagenes }`.
+
 ## Edición de reels (server/edicion-reels.js, public/app/reels.js)
 
 "Editar con Rubrofy" en un reel o historia con video. Con **ffmpeg** en el
@@ -1375,6 +1410,7 @@ server/
   aprendizaje.js Lo que la IA aprende de cada negocio (aprobaciones, correcciones, resultados)
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
+  diseno-ia.js  "Descubre tu diseño con IA": lee Instagram y la web, propone paleta, letra y fotos, y lo aplica al kit
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
   analisis-ads.js Variación contra el período anterior y diagnóstico de publicidad
   aprendizaje-ads.js Publicidad que aprende: detecta los cambios en Meta, mide si funcionaron y enseña al contenido

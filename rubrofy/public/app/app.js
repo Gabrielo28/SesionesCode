@@ -1062,7 +1062,15 @@
     document.querySelectorAll('#view-marca [data-marca-panel]').forEach((p) => { p.hidden = p.dataset.marcaPanel !== tabMarca; });
     if (tabMarca === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
     else if (tabMarca === 'ejemplos') window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
-    else if (window.RubrofyDiseno) window.RubrofyDiseno.renderKit($('#marca-card'));
+    else if (window.RubrofyDiseno) {
+      if (window.RubrofyDisenoIA) {
+        window.RubrofyDisenoIA.render($('#marca-ia'), Object.assign(ctxPanel(), {
+          negocio: () => negocioActual,
+          alAplicar: () => renderMarca(),
+        }));
+      }
+      window.RubrofyDiseno.renderKit($('#marca-card'));
+    }
   }
 
   // Menú por etapas (1 Configura, 2 Cada semana, 3 Mide, 4 Cada mes): cada

@@ -1527,6 +1527,67 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .marca-pestanas { margin: 6px 0 4px; flex-shrink: 0; }
 .marca-resumen { flex-shrink: 0; }
 .marca-kit { max-width: 640px; }
+/* "Descubre tu diseño con IA" (diseno-ia.js) */
+.marca-ia { max-width: none; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+.dia-cab { display: flex; align-items: center; gap: 10px; }
+.dia-cab h2 { margin: 0; font-size: 18px; }
+.dia-nuevo { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--amber); background: rgba(255, 77, 148, .14); padding: 3px 8px; border-radius: 6px; }
+.dia-fuentes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.dia-fuente { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: 12px; padding: 11px 13px; background: var(--bg); min-width: 0; }
+.dia-fuente > div { flex: 1; min-width: 0; }
+.dia-fuente b { display: block; font-size: 14px; }
+.dia-fuente span { font-size: 12px; color: var(--ink-faint); overflow-wrap: anywhere; }
+.dia-fuente em { font-style: normal; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.dia-fuente em.ok { color: var(--green); }
+.dia-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; font-style: normal; font-size: 17px; }
+.dia-ic.ig { background: linear-gradient(135deg, #f9ce34, #ee2a7b 55%, #6228d7); }
+.dia-ic.web { background: #26324a; }
+.dia-deseo { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; }
+.dia-deseo i { font-style: normal; font-weight: 500; color: var(--ink-faint); }
+.dia-deseo input { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; color: var(--ink); font: inherit; font-weight: 500; font-size: 14px; }
+.dia-acciones { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
+.dia-acciones .btn-approve { flex: none; }
+.dia-acciones .sub { margin: 0; }
+.dia-error { margin: 0; color: var(--coral); font-size: 13px; }
+.dia-error:empty { display: none; }
+.dia-plan { font-size: 13.5px; color: var(--ink-dim); border: 1px dashed var(--border); border-radius: 10px; padding: 12px 14px; }
+.dia-res { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 22px; border-top: 1px solid var(--border); padding-top: 18px; margin-top: 4px; }
+.dia-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.dia-resumen { margin: 0; font-size: 14.5px; line-height: 1.55; }
+.dia-bloque h3 { margin: 0 0 10px; font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); font-weight: 700; }
+.dia-paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.dia-color span { display: block; height: 52px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, .1); }
+.dia-color b { display: block; font-size: 12.5px; margin-top: 6px; }
+.dia-color small { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); line-height: 1.4; }
+.dia-aviso { margin: 10px 0 0; font-size: 12.5px; color: #ffd0e2; background: rgba(255, 77, 148, .08); border: 1px solid rgba(255, 77, 148, .3); border-radius: 10px; padding: 9px 12px; }
+.dia-letra { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
+.dia-letra span { font-size: 28px; font-weight: 700; line-height: 1.15; }
+.dia-letra p { margin: 0; font-size: 12.5px; color: var(--ink-dim); flex: 1 1 200px; }
+.dia-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.dia-foto { margin: 0; position: relative; aspect-ratio: 1; border-radius: 9px; overflow: hidden; background: var(--bg); }
+.dia-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dia-foto figcaption { position: absolute; left: 4px; right: 4px; bottom: 4px; font-size: 10px; font-weight: 800; border-radius: 5px; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dia-foto figcaption.bien { background: rgba(63, 191, 95, .92); color: #08130b; }
+.dia-foto figcaption.mal { background: rgba(255, 107, 90, .94); color: #1a0705; }
+.dia-lista { margin: 10px 0 0; padding-left: 18px; font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
+.dia-lista b { color: var(--ink); }
+.dia-pasos { margin: 0; padding: 0; list-style: none; counter-reset: dia; display: flex; flex-direction: column; gap: 9px; }
+.dia-pasos li { counter-increment: dia; display: flex; gap: 10px; font-size: 13.5px; line-height: 1.45; }
+.dia-pasos li::before { content: counter(dia); width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 77, 148, .18); color: var(--amber); font-size: 12px; font-weight: 800; display: grid; place-items: center; flex-shrink: 0; }
+.dia-vista { width: 100%; max-width: 340px; height: auto; aspect-ratio: 4 / 5; border-radius: 14px; border: 1px solid var(--border); display: block; background: var(--bg); }
+.dia-editar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dia-editar label { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--ink-dim); }
+.dia-editar input[type="color"] { width: 100%; height: 38px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); padding: 2px; }
+.dia-editar select { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px; color: var(--ink); font: inherit; }
+.dia-check { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--ink-dim); }
+.dia-check img { width: 30px; height: 30px; object-fit: contain; border-radius: 6px; background: #fff; }
+.dia-botones { display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
+.dia-botones button { width: 100%; justify-content: center; text-align: center; }
+.dia-estado { margin: 0; font-size: 12.5px; color: var(--ink-faint); }
+@media (max-width: 900px) {
+  .dia-res { grid-template-columns: 1fr; }
+  .dia-vista, .dia-botones { max-width: none; }
+}
 
 /* Vincular cuentas: botón destacado del menú */
 .rail-btn.rail-vincular { position: relative; margin-bottom: 6px; border: 1px solid rgba(255, 77, 148, .55); background: linear-gradient(135deg, rgba(255, 77, 148, .16), rgba(168, 85, 247, .16)); color: var(--ink); font-weight: 600; }

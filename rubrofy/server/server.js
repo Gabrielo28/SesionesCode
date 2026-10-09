@@ -33,6 +33,7 @@ const reelsPrueba = require('./reels-prueba');
 const push = require('./push');
 const costos = require('./costos');
 const perfil = require('./perfil');
+const disenoIA = require('./diseno-ia');
 const pruebaGratis = require('./prueba-gratis');
 const recargas = require('./recargas');
 const marca = require('./marca');
@@ -74,6 +75,8 @@ const limiteCorreoPrueba = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 })
 // Regenerar la estrategia llama a Claude: tope por negocio.
 const limiteEstrategia = crearLimitador({ max: 10, ventanaMs: 60 * 60 * 1000 });
 const limiteVerificar = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
+// "Descubre tu diseño con IA" lee la web y manda imágenes a Claude: tope por negocio.
+const limiteDisenoIA = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
 
 // Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
 // cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
@@ -2748,6 +2751,46 @@ const server = http.createServer(async (req, res) => {
           }
           store.deleteFoto(negocioId, categoria, archivo);
           return sendJSON(res, 200, store.listFotos(negocioId));
+        }
+
+        // Diseño con IA desde su Instagram y su web (server/diseno-ia.js):
+        //   GET  /api/negocios/:id/diseno-ia                 de dónde puede leer y el último análisis
+        //   POST /api/negocios/:id/diseno-ia/analizar { deseo }
+        //   POST /api/negocios/:id/diseno-ia/aplicar  { color, color2, fuente, posLogo, usarLogoWeb, usarEnImagenes }
+        if (parts[3] === 'diseno-ia') {
+          if (parts.length === 4 && req.method === 'GET') {
+            return sendJSON(res, 200, {
+              diseno: negocio.disenoIA || null,
+              instagram: { conectado: !!(negocio.instagram && negocio.instagram.accessToken), importadas: estilo.listar(negocioId).filter((r) => r.origen === 'instagram' && r.imagen).length },
+              web: (negocio.perfil && negocio.perfil.web) || null,
+              disponible: !!getPlan(negocio.plan).usaIA,
+            });
+          }
+          if (parts[4] === 'analizar' && parts.length === 5 && req.method === 'POST') {
+            if (!getPlan(negocio.plan).usaIA) return sendJSON(res, 403, { error: 'El diseño con IA está en los planes Pro y Estudio' });
+            if (!process.env.ANTHROPIC_API_KEY) return sendJSON(res, 400, { error: 'La IA no está configurada en este servidor' });
+            if (textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
+            const espera = limiteDisenoIA.esperaSegundos(negocioId);
+            if (espera) return sendJSON(res, 429, { error: 'Ya analizaste tu diseño varias veces esta hora. Intenta más tarde.' });
+            limiteDisenoIA.registrar(negocioId);
+            const r = await disenoIA.analizar(negocio, (await readBody(req)).deseo);
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            registrarUsoIA(negocioId, 'usoTextosIA', 1);
+            const fresco = store.getNegocio(negocioId);
+            fresco.disenoIA = r.diseno;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, { diseno: fresco.disenoIA, negocio: negocioPublico(fresco) });
+          }
+          if (parts[4] === 'aplicar' && parts.length === 5 && req.method === 'POST') {
+            const fresco = store.getNegocio(negocioId);
+            const r = disenoIA.aplicar(fresco, await readBody(req));
+            if (r.error) return sendJSON(res, 400, { error: r.error });
+            fresco.marca = r.marca;
+            fresco.disenoIA = r.disenoIA;
+            store.saveNegocio(fresco);
+            return sendJSON(res, 200, { diseno: fresco.disenoIA, negocio: negocioPublico(fresco) });
+          }
+          return sendJSON(res, 400, { error: 'Acción inválida' });
         }
 
         // Kit de marca (server/marca.js):

@@ -144,7 +144,7 @@
     marca: {
       ilu: '★', titulo: 'Tu marca, en un solo lugar',
       texto: 'Aquí le enseñas a Rubrofy cómo es tu marca. Mientras más sepa, más tuyo suena y se ve lo que crea.',
-      pasos: [['Cómo hablas', 'Tu tono, a quién le hablas y las palabras que usas (o evitas).'], ['Tus ejemplos', 'Publicaciones que te gustan, para que aprenda de ellas.'], ['Cómo se ve', 'Tu logo, colores y letra para los diseños y reels.']],
+      pasos: [['Cómo hablas', 'Tu tono, a quién le hablas y las palabras que usas (o evitas).'], ['Tus ejemplos', 'Publicaciones que te gustan, para que aprenda de ellas.'], ['Cómo se ve', 'Tu logo, colores y letra. La IA puede descubrirlos mirando tu Instagram y tu web.']],
       pista: 'Arriba ves qué falta: toca cualquiera de esos avisos para ir directo.',
       tour: [
         { sel: '#marca-resumen', t: 'Lo que ya sabe', d: 'En verde lo listo; lo que falta, punteado. Tócalo para completarlo.' },

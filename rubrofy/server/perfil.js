@@ -104,13 +104,16 @@ async function urlSegura(u) {
   if (ips.some((i) => ipPrivada(i.address))) throw new Error('Esa dirección no está permitida');
 }
 
-async function descargar(url) {
+// Descarga una dirección pública (nunca de la red interna: se revisa en cada
+// redirección). Devuelve { buffer, tipo, url }. Con `entero`, si pesa más de
+// `max` falla en vez de cortarla (para imágenes, que cortadas no sirven).
+async function descargarBytes(url, { acepta = 'text/html,application/xhtml+xml', max = 500000, tipos = /html|text/i, errorTipo = 'Esa dirección no es una página web', entero = false } = {}) {
   let actual = new URL(url);
   for (let saltos = 0; saltos < 4; saltos++) {
     await urlSegura(actual);
     const res = await fetch(actual.href, {
       redirect: 'manual', signal: AbortSignal.timeout(9000),
-      headers: { 'user-agent': 'RubrofyBot/1.0 (+https://rubrofy.com)', accept: 'text/html,application/xhtml+xml' },
+      headers: { 'user-agent': 'RubrofyBot/1.0 (+https://rubrofy.com)', accept: acepta },
     });
     if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
       actual = new URL(res.headers.get('location'), actual);
@@ -118,20 +121,25 @@ async function descargar(url) {
     }
     if (!res.ok) throw new Error(`El sitio respondió ${res.status}`);
     const tipo = res.headers.get('content-type') || '';
-    if (tipo && !/html|text/i.test(tipo)) throw new Error('Esa dirección no es una página web');
+    if (tipo && !tipos.test(tipo)) throw new Error(errorTipo);
     const lector = res.body.getReader();
     const partes = [];
     let total = 0;
-    while (total < 500000) {
+    while (total < max) {
       const { done, value } = await lector.read();
       if (done) break;
       partes.push(Buffer.from(value));
       total += value.length;
     }
     lector.cancel().catch(() => {});
-    return Buffer.concat(partes).toString('utf8');
+    if (entero && total >= max) throw new Error('El archivo es demasiado grande');
+    return { buffer: Buffer.concat(partes), tipo, url: actual.href };
   }
   throw new Error('Demasiadas redirecciones');
+}
+
+async function descargar(url) {
+  return (await descargarBytes(url)).buffer.toString('utf8');
 }
 
 function textoDeHtml(html) {
@@ -174,4 +182,4 @@ async function leerWeb(negocio, url) {
   };
 }
 
-module.exports = { normalizar, completo, textoParaPrompt, leerWeb, CANALES, ipPrivada };
+module.exports = { normalizar, completo, textoParaPrompt, leerWeb, CANALES, ipPrivada, urlWeb, descargarBytes };

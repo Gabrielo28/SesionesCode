@@ -71,9 +71,18 @@ function decodificar(dataBase64, max) {
 function guardarLogo(negocioId, dataBase64, anterior) {
   const r = decodificar(dataBase64, MAX_LOGO);
   if (r.error) return r;
-  const archivo = `logo-${Date.now()}.${r.tipo}`;
-  fs.writeFileSync(path.join(dir(negocioId), archivo), r.buf);
-  if (anterior) fs.rmSync(ruta(negocioId, anterior), { force: true });
+  return guardarImagen(negocioId, 'logo', r.buf, anterior);
+}
+
+// Guarda una imagen ya leída (logo, o el logo que se encontró en la web del
+// negocio mientras el dueño decide si lo usa). Borra la anterior.
+function guardarImagen(negocioId, prefijo, buf, anterior) {
+  const tipo = tipoImagen(buf);
+  if (!tipo) return { error: 'El archivo no es una imagen PNG, JPG o WebP' };
+  if (buf.length > MAX_LOGO) return { error: 'La imagen pesa más de 2 MB' };
+  const archivo = `${prefijo}-${Date.now()}.${tipo}`;
+  fs.writeFileSync(path.join(dir(negocioId), archivo), buf);
+  if (anterior && anterior !== archivo) fs.rmSync(ruta(negocioId, anterior), { force: true });
   return { archivo };
 }
 
@@ -92,4 +101,4 @@ function guardarDiseno(negocioId, itemId, dataBase64, anterior) {
   return { archivo };
 }
 
-module.exports = { MARCA_DIR, FUENTES, POSICIONES, PLANTILLAS, normalizar, guardarLogo, guardarDiseno, borrar, ruta, tipoImagen };
+module.exports = { MARCA_DIR, FUENTES, POSICIONES, PLANTILLAS, normalizar, guardarLogo, guardarImagen, guardarDiseno, borrar, ruta, tipoImagen };
