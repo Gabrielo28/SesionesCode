@@ -119,7 +119,6 @@
       p: ['Pulsa "Activar notificaciones" y acepta el permiso.', 'Repite en cada dispositivo donde quieras recibirlas.', 'Para dejar de recibirlas en uno, pulsa "Desactivar en este dispositivo".'], n: 'En iPhone, primero instala Rubrofy en tu pantalla de inicio (iOS 16.4 o superior).' },
     'perfil': { t: 'Perfil del negocio', d: 'Qué es tu negocio, dónde está, cómo te compran, tus redes, tu web y lo que vendes. La IA lo usa en todo lo que crea para ti.',
       p: ['Escribe qué es tu negocio como se lo contarías a un cliente nuevo.', 'Agrega tus redes y tu web: la IA solo menciona los canales que escribas.', 'Si tienes web, pulsa "Leer mi web con IA" para completar lo que falte.', 'Pulsa "Guardar perfil".'] },
-    'bv-venta': { t: 'Lo que ofreces', d: 'Tus productos o servicios, tu cliente ideal y por qué te eligen. El precio y la promoción son opcionales: la IA solo menciona los que escribas aquí.' },
     'voz': { t: 'Voz de marca', d: 'La ficha de cómo habla tu marca. La IA la sigue en todo lo que escribe y cada texto recibe un puntaje de fidelidad.',
       p: ['Pulsa "Completar con IA" para una primera propuesta, o llénala tú.', 'Revisa trato, emojis y las palabras que sí y que no usas.', 'Guarda: las piezas por aprobar se puntúan al tiro.', 'Usa "Escribir con mi voz" para cualquier otro texto del negocio.'] },
     'voz-ficha': { t: 'Quién es tu marca', d: 'Lo esencial: qué son, a quién le hablan y 3 a 5 adjetivos de personalidad. Escríbelo como se lo explicarías a alguien nuevo en tu equipo.' },
@@ -192,18 +191,6 @@
       p: ['Para subir de plan, pulsa "Actualizar a…" y paga con tarjeta.', 'Para cambiar la tarjeta o cancelar, usa los botones al final de esta tarjeta.', 'Tus pagos quedan en la sección Pagos, más abajo.'], n: 'Las piezas con IA, los reels editados y los créditos ⚡ del plan se renuevan el día 1 de cada mes. Los créditos de packs duran 12 meses.' },
     'eliminar': { t: 'Eliminar cuenta', d: 'Borra tu cuenta y todo su contenido, fotos, métricas y conexiones. No se puede deshacer.',
       p: ['Pulsa "Eliminar cuenta".', 'Confirma.'], n: 'Si tienes un plan de pago, la suscripción se cancela.' },
-
-    // ---------- Bienvenida ----------
-    'bv-negocio': { t: 'Tu negocio', d: 'Lo primero es que Rubrofy te conozca: qué es tu negocio, dónde está, cómo te compran y dónde te encuentran.',
-      p: ['Describe tu negocio en una o dos frases.', 'Marca cómo te compran (local, online, WhatsApp…).', 'Agrega tus redes y tu web.', 'Con web y plan Pro o Estudio, "Leer mi web con IA" completa lo que falte.'], n: 'La IA solo menciona las redes y canales que escribas aquí.' },
-    'bv-objetivo': { t: 'Objetivo y tono', d: 'Qué quieres lograr y cómo quieres sonar.',
-      p: ['Elige uno o dos objetivos.', 'Elige un tono (opcional).', 'Pulsa "Continuar".'] },
-    'bv-ritmo': { t: 'Cuánto publicar', d: 'Cuántas publicaciones de cada formato quieres por semana.',
-      p: ['Elige un ritmo sugerido o ajusta con − y +.', 'Elige la hora de los posts.', 'Pulsa "Crear mi estrategia".'] },
-    'bv-estrategia': { t: 'Tu estrategia', d: 'La IA la armó con lo que contaste. Ajústala a tu gusto.',
-      p: ['Revisa el resumen y el tono.', 'Cambia o agrega enfoques.', 'Si no te convence, "Proponer otra con IA".', 'Pulsa "Continuar".'] },
-    'bv-conexiones': { t: 'Conexiones', d: 'Instagram es necesario para publicar solo. Meta Ads es opcional.',
-      p: ['Si puedes, pulsa "Conectar ahora" en Instagram.', 'Si no, pulsa "Generar mi primera semana": puedes conectar después en Conexiones y ajustes.'] },
 
     // ---------- Administración ----------
     'adm-kpis': { t: 'Indicadores', d: 'Negocios: total y nuevos del periodo. Pagan un plan: cuántos y el ingreso mensual (MRR). Activos 7 días: entraron al panel. Visitas: vistas de la portada y cuántas terminan en registro. Publicado: publicaciones y aprobaciones del periodo. Por resolver: publicaciones fallidas e Instagram por reconectar.' },

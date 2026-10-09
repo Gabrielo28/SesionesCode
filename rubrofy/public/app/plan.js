@@ -579,5 +579,6 @@
     camposPerfil, camposVenta, leerPerfil, activarPerfil,
     catalogo, camposNegocio, camposObjetivo, camposRitmo, activar, leerPlan, leerDatos,
     estrategiaEditable, activarEstrategia, leerEstrategia, resumenPlan, textoTotal, renderVista, ETIQUETAS, SINGULAR,
+    OFERTA, TIPOS_OFERTA, CANALES,
   };
 })();

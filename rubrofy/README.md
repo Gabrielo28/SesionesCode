@@ -265,19 +265,36 @@ marca el informe del mes como leído.
 ## Bienvenida, estrategia y plan semanal (server/plan-contenido.js, public/app/bienvenida.js)
 
 Al registrarse ya no se genera contenido de inmediato. La primera vez que el
-negocio entra al panel, una **bienvenida** de 5 pasos le pregunta:
+negocio entra al panel, una **bienvenida tipo cuestionario** (una pregunta
+por pantalla, unos 2 minutos) arma su perfil, su plan y su estrategia. Es
+una capa a pantalla completa con los colores de Rubrofy (fondo rosado pálido
+`#fff4f8`, cintas rosadas y negras animadas, botones negros), una barra de
+progreso en 4 tramos, "‹" para volver y "Saltar" (pide confirmación). Las
+preguntas de una sola opción avanzan al tocarlas; Enter también continúa.
+Orden:
 
-1. **Tu negocio**: precio, unidad, producto destacado, promoción, a quién le
-   habla y qué lo hace distinto.
-2. **Objetivo y tono**: vender más, más reservas o consultas, ganar
-   seguidores, fidelizar o dar a conocer la marca (uno o dos), y cómo quiere
-   sonar.
-3. **Cuánto publicar**: posts, carruseles, reels e historias por semana (con
-   ritmos sugeridos) y la hora de los posts.
-4. **Tu estrategia**: Claude la propone con todo lo anterior (resumen, tono y
-   enfoques) y el dueño la ajusta a mano.
-5. **Conexiones**: dónde conectar Instagram, Meta Ads y Google Ads. Termina
-   generando la primera semana según el plan.
+1. **Tu negocio**: "Hola, {negocio}" con la comparación *Sin Rubrofy / Con
+   Rubrofy* → (con IA) "¿Tu negocio tiene sitio web?" para leerla y
+   rellenar lo vacío → "¿Qué es tu negocio y qué hace?" (obligatoria) →
+   "¿Qué ofreces?" (servicios, productos o ambos) → qué vende (+ producto
+   estrella opcional) y a quién (ambas preguntas cambian según lo que
+   ofrece) → "¿Por qué te eligen a ti?" → "¿Cómo te compran?" (varias) →
+   "¿Dónde te encuentran?" (ciudad, Instagram, WhatsApp, web). Al salir de
+   aquí se guarda el perfil.
+2. **Tu plan**: "Tú apruebas. Rubrofy publica." (ejemplo con su producto) →
+   "¿Qué quieres lograr con Instagram?" (uno o dos) → "¿Cómo quieres
+   sonar?" (con una frase de ejemplo por tono) → "¿Cuánto quieres publicar
+   por semana?" (ritmos sugeridos). Al elegir el ritmo se guarda el plan y
+   la estrategia se genera en segundo plano.
+3. **Tu estrategia**: "Rubrofy aprende de tus resultados" mientras se arma →
+   "Tu estrategia de contenido" (resumen y temas; "Proponer otra con IA").
+4. **Conexiones**: "Conecta tu Instagram" (Meta Ads dice "Próximamente"
+   mientras no esté abierto). Sin plan sigue "Empieza gratis o elige tu
+   plan"; con plan, o al activar la prueba, pasa a "Creando tu primera
+   semana…" con los pasos animados, genera la semana según el plan y se
+   cierra.
+
+Precio, unidad y promoción ya no se preguntan aquí: quedan en Estrategia.
 
 Después todo se cambia en **Estrategia**. **Generar semana** crea exactamente
 la mezcla del plan (máximo 12 por vez) y la reparte en la semana, después de
@@ -513,12 +530,12 @@ qué hashtags usan que tú no.
 
 ## Perfil del negocio y bienvenida (server/perfil.js, public/app/bienvenida.js)
 
-Lo primero que hace un negocio nuevo es presentarse: **qué es y qué hace**,
-ciudad, **cómo vende** (local, online, domicilio, WhatsApp, agenda, ferias),
-**sus redes y su web** (Instagram, TikTok, Facebook, WhatsApp, sitio) y,
-en el paso siguiente, **qué vende**, a quién y por qué lo eligen. Precio y
-promoción quedan como opcionales. Después: objetivo, cuánto publicar,
-estrategia, conexiones y primera semana.
+Lo primero que hace un negocio nuevo es presentarse, una pregunta por
+pantalla: **qué es y qué hace**, si ofrece servicios o productos, **qué
+vende**, a quién le habla, por qué lo eligen, **cómo vende** (local, online,
+domicilio, WhatsApp, agenda, ferias) y **dónde lo encuentran** (ciudad,
+Instagram, WhatsApp, web). Después: objetivo, tono, cuánto publicar,
+estrategia, conexiones y primera semana (ver la sección anterior).
 
 - **Leer mi web con IA** (Pro y Estudio): descarga el sitio (solo URL
   públicas: se resuelve el dominio y se rechazan IP privadas, también en
@@ -528,8 +545,9 @@ estrategia, conexiones y primera semana.
 - El perfil entra en **todos** los pedidos a la IA (vía `contexto-ia.js`),
   y la IA solo menciona las redes y canales que el negocio escribió.
 - Las cuentas que ya habían pasado la bienvenida ven una vez por sesión
-  solo "Tu negocio" y "Lo que vendes" hasta completar el perfil. También se
-  edita en Conexiones y ajustes → Tu negocio.
+  solo las preguntas del negocio (el botón final dice "Guardar" y arriba
+  "Ahora no") hasta completar el perfil. También se edita en Conexiones y
+  ajustes → Tu negocio.
 
 ## Menú por etapas y "Tu marca"
 
