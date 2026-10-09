@@ -263,9 +263,27 @@
         ${datos.campanas.length ? `<table class="tabla" style="margin-top:12px">
           <thead><tr><th>Campaña</th><th>Inversión</th><th>Clics</th><th>Resultados</th><th>Costo / resultado</th></tr></thead>
           <tbody>${datos.campanas.slice(0, 8).map((c) => `<tr><td>${e(c.nombre || c.id)}</td><td>${dinero(c.gasto, m)}</td><td>${n(c.clics)}</td><td>${n(c.resultados)}</td><td>${dinero(c.costoPorResultado, m)}</td></tr>`).join('')}</tbody>
-        </table>` : '<p class="vacio">Sin campañas con actividad este mes.</p>'}`;
+        </table>` : '<p class="vacio">Sin campañas con actividad este mes.</p>'}
+        ${cambiosDelMes(datos.cambios, m)}
+        ${datos.aprendido && datos.aprendido.length ? `<h3 class="sub-h">Lo que aprendimos de tus anuncios</h3><ul class="lista-aprendido">${datos.aprendido.map((f) => `<li>${e(f)}</li>`).join('')}</ul>` : ''}`;
       return div;
     };
+  }
+  // Cambios que el dueño hizo en Meta este mes (publicidad que aprende) y si funcionaron.
+  function cambiosDelMes(cambios, m) {
+    if (!cambios || !cambios.length) return '';
+    const veredicto = { mejoro: 'Funcionó', empeoro: 'No mejoró', igual: 'Sin cambio claro', sin_datos: 'Sin datos suficientes' };
+    const signo = (v) => (v == null ? '' : ` (${v > 0 ? '+' : '−'}${Math.round(Math.abs(v) * 100)} %)`);
+    const fila = (c) => {
+      let r = c.resultado ? veredicto[c.resultado] : 'Midiendo';
+      if (c.resultado && c.resultado !== 'sin_datos' && c.metrica === 'cpr' && c.antes && c.despues && c.antes.valor != null && c.despues.valor != null) {
+        r += `: ${dinero(c.antes.valor, m)} → ${dinero(c.despues.valor, m)} por resultado${signo(c.variacion)}`;
+      } else if (c.resultado && c.resultado !== 'sin_datos' && c.variacion != null) r += signo(c.variacion);
+      return `<tr><td>${e(c.titulo)}</td><td>${new Date(c.hechoEl + 'T12:00:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}</td><td>${e(r)}</td></tr>`;
+    };
+    return `<h3 class="sub-h">Cambios que hiciste este mes</h3>
+      <table class="tabla"><thead><tr><th>Recomendación</th><th>Hecho</th><th>Resultado (7 días antes y después)</th></tr></thead>
+      <tbody>${cambios.map(fila).join('')}</tbody></table>`;
   }
   secciones.metaAds = seccionAds('Publicidad en Meta', 'compras, formularios y conversaciones');
   secciones.googleAds = seccionAds('Publicidad en Google', 'conversiones');

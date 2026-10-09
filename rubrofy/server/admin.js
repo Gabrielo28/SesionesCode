@@ -216,6 +216,9 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     porPlan,
     porEtapa,
     referentes: sql.referentes.all(desde).map((r) => ({ dominio: r.dominio, n: r.n })),
+    // Publicidad que aprende: cuántas recomendaciones se hacen y cuántas
+    // funcionan (solo números de todos los negocios, sin su contenido).
+    publicidad: require('./aprendizaje-ads').estadisticas(90),
     sistema: {
       version,
       encendidoDesde: new Date(inicio).toISOString(),

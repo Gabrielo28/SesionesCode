@@ -52,9 +52,25 @@ db.exec(`
     estado TEXT,
     PRIMARY KEY (negocio_id, ad_id)
   );
+  -- Estado, objetivo y presupuesto de cada campaña (para saber si el dueño
+  -- pausó una campaña o movió presupuesto; ver aprendizaje-ads.js).
+  CREATE TABLE IF NOT EXISTS meta_campanas (
+    negocio_id TEXT NOT NULL,
+    campana_id TEXT NOT NULL,
+    nombre TEXT,
+    estado TEXT,
+    objetivo TEXT,
+    presupuesto REAL,                -- diario o total, en la unidad que entrega Meta
+    PRIMARY KEY (negocio_id, campana_id)
+  );
 `);
+// De cada anuncio también: su campaña, cuándo se creó, el texto y si es
+// video o imagen (lo que la IA aprende de los anuncios que mejor funcionan).
+for (const [col, tipo] of [['campana_id', 'TEXT'], ['creado_el', 'TEXT'], ['texto', 'TEXT'], ['formato', 'TEXT']]) {
+  if (!db.prepare('PRAGMA table_info(meta_anuncios)').all().some((c) => c.name === col)) db.exec(`ALTER TABLE meta_anuncios ADD COLUMN ${col} ${tipo}`);
+}
 store.registrarLimpieza((negocioId) => {
-  for (const tabla of ['meta_ads_diario', 'meta_ads_desglose', 'meta_anuncios']) {
+  for (const tabla of ['meta_ads_diario', 'meta_ads_desglose', 'meta_anuncios', 'meta_campanas']) {
     db.prepare(`DELETE FROM ${tabla} WHERE negocio_id = ?`).run(negocioId);
   }
 });
@@ -212,11 +228,26 @@ const sqlAds = {
     ON CONFLICT (negocio_id, tipo, clave, fecha) DO UPDATE SET gasto = excluded.gasto, impresiones = excluded.impresiones,
       clics = excluded.clics, resultados = excluded.resultados, valor_compras = excluded.valor_compras`),
   hayDesglose: db.prepare('SELECT COUNT(*) AS n FROM meta_ads_desglose WHERE negocio_id = ?'),
-  upsertAnuncio: db.prepare(`INSERT INTO meta_anuncios (negocio_id, ad_id, nombre, campana, miniatura, estado)
-    VALUES (@negocio_id, @ad_id, @nombre, @campana, @miniatura, @estado)
+  upsertAnuncio: db.prepare(`INSERT INTO meta_anuncios (negocio_id, ad_id, nombre, campana, miniatura, estado, campana_id, creado_el, texto, formato)
+    VALUES (@negocio_id, @ad_id, @nombre, @campana, @miniatura, @estado, @campana_id, @creado_el, @texto, @formato)
     ON CONFLICT (negocio_id, ad_id) DO UPDATE SET nombre = COALESCE(excluded.nombre, nombre), campana = COALESCE(excluded.campana, campana),
-      miniatura = COALESCE(excluded.miniatura, miniatura), estado = COALESCE(excluded.estado, estado)`),
+      miniatura = COALESCE(excluded.miniatura, miniatura), estado = COALESCE(excluded.estado, estado),
+      campana_id = COALESCE(excluded.campana_id, campana_id), creado_el = COALESCE(excluded.creado_el, creado_el),
+      texto = COALESCE(excluded.texto, texto), formato = COALESCE(excluded.formato, formato)`),
+  upsertCampana: db.prepare(`INSERT INTO meta_campanas (negocio_id, campana_id, nombre, estado, objetivo, presupuesto)
+    VALUES (@negocio_id, @campana_id, @nombre, @estado, @objetivo, @presupuesto)
+    ON CONFLICT (negocio_id, campana_id) DO UPDATE SET nombre = excluded.nombre, estado = excluded.estado,
+      objetivo = excluded.objetivo, presupuesto = excluded.presupuesto`),
 };
+
+// Video o imagen, según lo que Meta dice del creativo.
+function formatoCreativo(c) {
+  if (!c) return null;
+  if (c.video_id || c.object_type === 'VIDEO') return 'video';
+  if (c.image_url || c.thumbnail_url || c.object_type === 'PHOTO' || c.object_type === 'SHARE') return 'imagen';
+  return null;
+}
+const numeroONull = (v) => (v == null || v === '' || !isFinite(Number(v)) ? null : Number(v));
 
 const resultadosDe = (f) => sumarAcciones(f.actions, ACCIONES.compras) + sumarAcciones(f.actions, ACCIONES.leads)
   + sumarAcciones(f.actions, ACCIONES.mensajes);
@@ -254,21 +285,44 @@ async function sincronizarDesgloses(negocioId, meta, hoy) {
       }
     });
   }
-  // Miniaturas de los anuncios (una llamada; las URL de Meta vencen, por eso se refrescan en cada sincronización).
+  // Anuncios: miniatura (las URL de Meta vencen, por eso se refrescan en cada
+  // sincronización), estado, campaña, fecha de creación, texto y formato.
   try {
-    const ads = await todasLasPaginas(`/${meta.adAccountId}/ads`, { fields: 'id,name,effective_status,creative{thumbnail_url,image_url}', limit: '100' }, meta.accessToken, 5);
+    const ads = await todasLasPaginas(`/${meta.adAccountId}/ads`, {
+      fields: 'id,name,effective_status,campaign_id,created_time,creative{thumbnail_url,image_url,body,object_type,video_id}', limit: '100',
+    }, meta.accessToken, 5);
     for (const a of ads) {
       const n = nombres.get(String(a.id)) || {};
+      const c = a.creative || {};
       sqlAds.upsertAnuncio.run({
         negocio_id: negocioId, ad_id: String(a.id), nombre: a.name || n.nombre || null, campana: n.campana || null,
-        miniatura: (a.creative && (a.creative.thumbnail_url || a.creative.image_url)) || null, estado: a.effective_status || null,
+        miniatura: c.thumbnail_url || c.image_url || null, estado: a.effective_status || null,
+        campana_id: a.campaign_id ? String(a.campaign_id) : null, creado_el: a.created_time ? new Date(a.created_time).toISOString() : null,
+        texto: typeof c.body === 'string' && c.body.trim() ? c.body.trim().slice(0, 300) : null, formato: formatoCreativo(c),
       });
       nombres.delete(String(a.id));
     }
   } catch (err) {
     if (err.tipo === 'token') throw err;
   }
-  for (const [id, n] of nombres) sqlAds.upsertAnuncio.run({ negocio_id: negocioId, ad_id: id, nombre: n.nombre || null, campana: n.campana || null, miniatura: null, estado: null });
+  for (const [id, n] of nombres) {
+    sqlAds.upsertAnuncio.run({ negocio_id: negocioId, ad_id: id, nombre: n.nombre || null, campana: n.campana || null, miniatura: null, estado: null,
+      campana_id: null, creado_el: null, texto: null, formato: null });
+  }
+  // Campañas: estado, objetivo y presupuesto (una llamada).
+  try {
+    const campanas = await todasLasPaginas(`/${meta.adAccountId}/campaigns`, { fields: 'id,name,effective_status,objective,daily_budget,lifetime_budget', limit: '100' }, meta.accessToken, 5);
+    store.transaccion(() => {
+      for (const c of campanas) {
+        sqlAds.upsertCampana.run({
+          negocio_id: negocioId, campana_id: String(c.id), nombre: c.name || null, estado: c.effective_status || null, objetivo: c.objective || null,
+          presupuesto: numeroONull(c.daily_budget) || numeroONull(c.lifetime_budget),
+        });
+      }
+    });
+  } catch (err) {
+    if (err.tipo === 'token') throw err;
+  }
 }
 
 // Primera vez: 30 días. Después: los últimos 3 (Meta sigue atribuyendo
@@ -326,6 +380,27 @@ async function sincronizarAds(negocioId) {
   }
 }
 
+const sqlCuenta = {
+  campanas: db.prepare('SELECT * FROM meta_campanas WHERE negocio_id = ?'),
+  anuncios: db.prepare('SELECT * FROM meta_anuncios WHERE negocio_id = ?'),
+  gastoCampanas: db.prepare('SELECT campana_id AS id, SUM(gasto) AS gasto FROM meta_ads_diario WHERE negocio_id = ? AND fecha BETWEEN ? AND ? GROUP BY campana_id'),
+  gastoAnuncios: db.prepare("SELECT clave AS id, SUM(gasto) AS gasto FROM meta_ads_desglose WHERE negocio_id = ? AND tipo = 'anuncio' AND fecha BETWEEN ? AND ? GROUP BY clave"),
+};
+
+// Cómo está la cuenta ahora (campañas y anuncios), para saber qué cambió.
+function estadoCuenta(negocioId) {
+  return {
+    campanas: new Map(sqlCuenta.campanas.all(negocioId).map((c) => [c.campana_id, { estado: c.estado, objetivo: c.objetivo, presupuesto: c.presupuesto }])),
+    anuncios: sqlCuenta.anuncios.all(negocioId).map((a) => ({ id: a.ad_id, nombre: a.nombre, campanaId: a.campana_id, estado: a.estado, creadoEl: a.creado_el, texto: a.texto, formato: a.formato })),
+  };
+}
+
+// Gasto por campaña o por anuncio en un rango: Map id → gasto.
+function gastoPor(negocioId, tipo, desde, hasta) {
+  const sql = tipo === 'anuncios' ? sqlCuenta.gastoAnuncios : sqlCuenta.gastoCampanas;
+  return new Map(sql.all(negocioId, desde, hasta).map((f) => [f.id, f.gasto || 0]));
+}
+
 const sqlResumen = {
   campanas: db.prepare(`SELECT campana_id, MAX(campana) AS campana, MAX(objetivo) AS objetivo, SUM(gasto) AS gasto,
       SUM(impresiones) AS impresiones, SUM(clics) AS clics, SUM(compras) AS compras, SUM(leads) AS leads,
@@ -360,8 +435,9 @@ function primeraFechaAds(negocioId) {
 }
 
 function resumenAds(negocioId, desde, hasta) {
+  const estados = new Map(sqlCuenta.campanas.all(negocioId).map((c) => [c.campana_id, c.estado]));
   const campanas = sqlResumen.campanas.all(negocioId, desde, hasta).map((c) => Object.assign({
-    id: c.campana_id, nombre: c.campana, objetivo: c.objetivo,
+    id: c.campana_id, nombre: c.campana, objetivo: c.objetivo, estado: estados.get(c.campana_id) || null,
   }, metricasDe(c)));
   const total = campanas.reduce((t, c) => {
     for (const k of ['gasto', 'impresiones', 'clics', 'compras', 'leads', 'mensajes']) t[k] = (t[k] || 0) + c[k];
@@ -407,7 +483,7 @@ function desglosesAds(negocioId, desde, hasta) {
   const fichas = new Map(sqlDesglose.anuncios.all(negocioId).map((a) => [a.ad_id, a]));
   const anuncios = leer('anuncio').filter((f) => f.gasto > 0 || f.resultados > 0).map((f) => {
     const a = fichas.get(f.clave) || {};
-    return conCosto({ id: f.clave, nombre: a.nombre || f.clave, campana: a.campana || null, miniatura: a.miniatura || null, estado: a.estado || null,
+    return conCosto({ id: f.clave, nombre: a.nombre || f.clave, campana: a.campana || null, miniatura: a.miniatura || null, estado: a.estado || null, formato: a.formato || null,
       gasto: f.gasto, impresiones: f.impresiones, clics: f.clics, resultados: f.resultados, valorCompras: f.valor_compras });
   });
   const edadSexo = leer('edad_sexo').map((f) => {
@@ -433,4 +509,5 @@ function publicoMeta(meta) {
 
 module.exports = {
   fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, enlaceAdministrador, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
+  estadoCuenta, gastoPor, POSICIONES,
 };

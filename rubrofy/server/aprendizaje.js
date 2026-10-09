@@ -3,11 +3,24 @@
 //   - textos que el dueño aprobó tal cual (así le gusta),
 //   - correcciones: cómo lo escribió la IA y cómo lo dejó el dueño,
 //   - textos que rechazó (evitar),
-//   - resultados reales: enfoques y posts con más interacción (analitica.js).
+//   - resultados reales: enfoques y posts con más interacción (analitica.js),
+//   - publicidad: el texto, el formato, la ubicación y el público de sus
+//     anuncios de Meta con resultados más baratos (aprendizaje-ads.js).
 // Solo se usa en planes con IA (lo consume generator.js en el prompt).
 
 const store = require('./store');
 const analitica = require('./analitica');
+const { getPlan } = require('./planes');
+
+// Lo que enseñan sus anuncios (solo con Meta Ads conectado y en un plan con publicidad).
+function leccionPublicidad(negocio) {
+  if (!negocio.meta || !negocio.meta.adAccountId || !getPlan(negocio.plan).ads) return null;
+  try {
+    return require('./aprendizaje-ads').leccion(negocio.id);
+  } catch (err) {
+    return null;
+  }
+}
 
 const MAX_CARACTERES = 300;
 const recortar = (t) => String(t || '').trim().slice(0, MAX_CARACTERES);
@@ -32,6 +45,7 @@ function contexto(negocio) {
     mejoresEnfoques: resultados.mejoresEnfoques.map((e) => e.label),
     mejoresTextos: resultados.mejoresTextos.map(recortar),
     horario: resultados.horario,
+    publicidad: (leccionPublicidad(negocio) || { prompt: [] }).prompt,
   };
 }
 
@@ -54,6 +68,10 @@ function textoParaPrompt(ctx) {
     if (ctx.mejoresEnfoques.length) bloque += `\n- Enfoques con mejores resultados: ${ctx.mejoresEnfoques.join(', ')}`;
     if (ctx.mejoresTextos.length) bloque += '\n' + ctx.mejoresTextos.map((t) => `- Post destacado: ${t}`).join('\n');
     partes.push(bloque);
+  }
+  if (ctx.publicidad && ctx.publicidad.length) {
+    partes.push('Lo que mejor funcionó en sus anuncios pagados de Meta (resultados más baratos); úsalo como pista, sin copiar los textos:\n'
+      + ctx.publicidad.map((t) => `- ${t}`).join('\n'));
   }
   return partes.length ? '\n\n' + partes.join('\n\n') : '';
 }

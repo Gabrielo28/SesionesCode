@@ -380,6 +380,57 @@ Común a Meta Ads y Google Ads, con reglas explicables (sin IA):
   Los parámetros `selected_campaign_ids` y `selected_ad_ids` no están
   documentados por Meta; si dejan de funcionar, el enlace igual abre la
   cuenta y la vista correctas (`act` y la ruta sí son estables).
+- No se recomienda apagar lo que ya está apagado: las campañas y anuncios
+  pausados, archivados o rechazados en Meta quedan fuera del diagnóstico.
+
+## Publicidad que aprende (server/aprendizaje-ads.js)
+
+Rubrofy sigue siendo de **solo lectura** en Meta, pero aprende de lo que el
+dueño hace con sus recomendaciones. Todo usa el mismo permiso `ads_read`.
+
+- **Cada recomendación tiene una clave estable** (`regla:ids`, por ejemplo
+  `anuncios-sin-resultados:ad3`), una `alternativa` (qué proponer si ya se
+  hizo y no funcionó; no se manda al panel) y `cambio` (la acción en pocas
+  palabras, como aparece en "Tus cambios").
+- **Se registra** (tabla `meta_cambios`) cuando el dueño toca "Hacer este
+  cambio en Meta", "Ya lo hice" o "No me sirve"
+  (`POST /api/negocios/:id/ads/cambios`), con una foto de cómo estaba la
+  cuenta (estado, objetivo y presupuesto de las campañas, estado de los
+  anuncios, gasto diario).
+- **Detecta solo si se hizo**, después de cada sincronización y al abrir
+  Meta Ads: campaña o anuncio pausado, objetivo cambiado, presupuesto
+  movido (de la campaña cara a la barata o de toda la cuenta), reparto del
+  gasto, campaña o anuncio que dejó de gastar (con 2 días completos de
+  datos), anuncio nuevo (en "pocos clics", de esa misma campaña) o más
+  inversión. La sincronización ahora lee también `/campaigns` (estado,
+  objetivo y presupuesto, tabla `meta_campanas`) y de cada anuncio su
+  campaña, fecha de creación, texto y si es video o imagen.
+- **Mide si funcionó**: 7 días antes del cambio contra los 7 días después
+  (sin contar el día del cambio). Desde el día 4 muestra un resultado
+  parcial; a los 7 queda cerrado. Según la regla mide el costo por
+  resultado, el CTR de esas campañas, el retorno, los resultados por día o
+  "escala" (más resultados sin que el costo suba 15 % o más). ±10 % es
+  "funcionó" o "no mejoró"; menos, "sin cambio claro".
+- **Ajusta el próximo diagnóstico**: lo que ya le funcionó a ese negocio va
+  primero en su nivel con "Te funcionó antes"; si el último intento de esa
+  regla no mejoró, propone la alternativa; "No me sirve" oculta esa
+  recomendación 30 días (dos veces la misma regla en 90 días oculta la
+  regla) y se puede deshacer con "Volver a mostrarlas". Una recomendación
+  abierta en Meta y nunca hecha se archiva a los 21 días.
+- **Enseña al contenido** (`leccion`): de los últimos 60 días, el texto y
+  formato de los anuncios con resultados al menos 20 % más baratos, video
+  contra imagen, la ubicación y el público más baratos (con 3 resultados
+  como mínimo). Va al prompt de la IA que escribe las publicaciones
+  (`aprendizaje.js`, solo en planes con publicidad) y al panel en "Lo que
+  Rubrofy aprendió de tus anuncios".
+- **"Crear esta pieza en Rubrofy"** (`POST /api/negocios/:id/ads/pieza`): en
+  la recomendación de ubicación crea un Reel, historia o post pensado para
+  ese lugar, con lo que enseñan sus anuncios. Usa una pieza con IA del mes
+  y llega a Por aprobar marcada "Sugerida por tus anuncios".
+- **Informe mensual**: la sección de Meta incluye los cambios del mes con
+  su resultado y lo aprendido. **/admin** muestra solo números por regla
+  (abiertas, hechas, "No me sirve", cuántas funcionaron), útiles para
+  ajustar las reglas; nunca el contenido de un negocio.
 
 ## Google Ads (server/google.js) — en pausa
 
@@ -1280,6 +1331,7 @@ server/
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
   analisis-ads.js Variación contra el período anterior y diagnóstico de publicidad
+  aprendizaje-ads.js Publicidad que aprende: detecta los cambios en Meta, mide si funcionaron y enseña al contenido
   google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
   competencia.js Seguimiento de competidores en Instagram (Business Discovery)
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)

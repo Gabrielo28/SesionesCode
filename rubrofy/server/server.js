@@ -26,6 +26,7 @@ const meta = require('./meta');
 const google = require('./google');
 const competencia = require('./competencia');
 const analisisAds = require('./analisis-ads');
+const aprendizajeAds = require('./aprendizaje-ads');
 const contextoIA = require('./contexto-ia');
 const voz = require('./voz');
 const reelsPrueba = require('./reels-prueba');
@@ -909,7 +910,14 @@ const sincronizador = analitica.crearSincronizador({
       }
       return r;
     },
-    meta_ads: (id) => meta.sincronizarAds(id),
+    meta_ads: async (id) => {
+      const r = await meta.sincronizarAds(id);
+      // Publicidad que aprende: ¿el dueño hizo los cambios? ¿funcionaron?
+      if (r.ok) {
+        try { aprendizajeAds.revisar(id); } catch (err) { console.log(`Aprendizaje ads: ${id}: ${err.message}`); }
+      }
+      return r;
+    },
     google_ads: (id) => google.sincronizar(id),
     competencia: (id) => competencia.sincronizar(id),
   },
@@ -989,8 +997,31 @@ function urlPublica(req) {
 // Sección de Meta Ads en el informe mensual (si el plan la incluye y hay cuenta).
 informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
   if (!getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
-  return Object.assign(meta.resumenAds(negocio.id, desde, hasta), { moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre });
+  // También los cambios que hizo el dueño en el mes y lo que enseñan sus anuncios.
+  let cambios = [];
+  let aprendido = null;
+  try {
+    cambios = aprendizajeAds.delPeriodo(negocio.id, desde, hasta);
+    aprendido = aprendizajeAds.leccion(negocio.id, { hoy: hasta });
+  } catch (err) { /* sin datos: el resumen igual sale */ }
+  return Object.assign(meta.resumenAds(negocio.id, desde, hasta), {
+    moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre, cambios, aprendido: aprendido ? aprendido.frases : [],
+  });
 });
+
+// Análisis de Meta Ads de los últimos `dias` días, con lo aprendido de los
+// cambios que el dueño hizo antes (ver aprendizaje-ads.js).
+function analisisMeta(negocioId, dias) {
+  const n = store.getNegocio(negocioId);
+  const hasta = analitica.fechaLocal(new Date());
+  const enlaceDe = (destino) => meta.enlaceAdministrador(n.meta.adAccountId, destino);
+  const a = analisisAds.analizar({
+    resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
+    desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
+    enlaceDe,
+  });
+  return { n, analisis: a, aprendido: aprendizajeAds.aplicar(negocioId, n.meta.adAccountId, a.diagnostico, { enlaceDe }) };
+}
 
 // --- notificaciones push (server/push.js) ---
 const NOMBRE_FORMATO = { post: 'post', carrusel: 'carrusel', reel: 'Reel', historia: 'historia' };
@@ -2951,24 +2982,75 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'ads') {
           if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Meta Ads está disponible en el plan Estudio' });
           if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Conexiones y ajustes' });
+          const diasDe = (v) => ([7, 30, 90].includes(Number(v)) ? Number(v) : 30);
+          // POST /api/negocios/:id/ads/cambios — publicidad que aprende:
+          //   { clave, accion: 'abrir' | 'hecho' | 'descartar', dias } sobre una recomendación del diagnóstico,
+          //   { id, accion: 'hecho' | 'descartar' } sobre un cambio de "Tus cambios",
+          //   { accion: 'mostrar-ocultas' } vuelve a mostrar las que dijo que no le sirven.
+          if (parts.length === 5 && parts[4] === 'cambios' && req.method === 'POST') {
+            const body = await readBody(req);
+            if (body.accion === 'mostrar-ocultas') {
+              aprendizajeAds.mostrarOcultas(negocioId);
+              return sendJSON(res, 200, { ok: true });
+            }
+            if (!['abrir', 'hecho', 'descartar'].includes(body.accion)) return sendJSON(res, 400, { error: 'Acción inválida' });
+            if (body.id != null) {
+              if (body.accion === 'abrir' || !aprendizajeAds.actualizar(negocioId, body.id, body.accion)) return sendJSON(res, 404, { error: 'Ese cambio ya no está pendiente' });
+              return sendJSON(res, 200, { ok: true });
+            }
+            const { n, analisis } = analisisMeta(negocioId, diasDe(body.dias));
+            const h = typeof body.clave === 'string' && analisis.diagnostico.find((x) => x.clave === body.clave);
+            if (!h) return sendJSON(res, 404, { error: 'Esa recomendación ya no aparece. Actualiza la página.' });
+            aprendizajeAds.registrar(negocioId, n.meta.adAccountId, h, body.accion);
+            const despues = analisisMeta(negocioId, diasDe(body.dias)).aprendido;
+            const ahora = despues.diagnostico.find((x) => x.clave === body.clave) || null;
+            return sendJSON(res, 200, { ok: true, hallazgo: ahora, ocultas: despues.ocultas });
+          }
+          // POST /api/negocios/:id/ads/pieza { clave } — "Crear esta pieza en Rubrofy":
+          // una pieza para la ubicación donde sus anuncios rinden más, con lo
+          // que enseñan sus anuncios. Llega a Por aprobar, como todo.
+          if (parts.length === 5 && parts[4] === 'pieza' && req.method === 'POST') {
+            const body = await readBody(req);
+            const { analisis } = analisisMeta(negocioId, diasDe(body.dias));
+            const h = typeof body.clave === 'string' && analisis.diagnostico.find((x) => x.clave === body.clave && x.pieza);
+            if (!h) return sendJSON(res, 404, { error: 'Esa recomendación ya no aparece. Actualiza la página.' });
+            const usaIA = getPlan(negocio.plan).usaIA;
+            if (usaIA && textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
+            const leccion = aprendizajeAds.leccion(negocioId);
+            const existentes = store.getContenido(negocioId);
+            const formato = h.pieza.formato;
+            const [nueva] = await generarBanco(negocio, 1, existentes.length, {
+              usarIA: usaIA, formato, diaInicio: diaSiguienteDeLaCola(existentes),
+              indicaciones: contextoIA.indicacion(`Esta pieza es para ${h.pieza.lugar}, donde los anuncios del negocio consiguen resultados más baratos, y tiene que servir también para promocionarla como anuncio: lo importante (producto y precio) en los primeros 2 segundos${formato === 'post' ? '' : ', formato vertical'} y un llamado a la acción directo.${leccion && leccion.prompt.length ? ' Lo que mejor le funciona en anuncios: ' + leccion.prompt.join(' ') : ''}`),
+            });
+            registrarUsoIA(negocioId, 'usoTextosIA', nueva.generadoConIA ? 1 : 0);
+            nueva.sugeridaPorAnuncios = String(h.pieza.lugar).slice(0, 60); // el panel la marca
+            store.saveContenido(negocioId, store.getContenido(negocioId).concat([nueva]));
+            return sendJSON(res, 200, { ok: true, item: nueva });
+          }
           if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
             const r = await sincronizador.sincronizarAhora(negocioId, 'meta_ads');
             if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
           } else if (!(parts.length === 4 && req.method === 'GET')) {
             return sendJSON(res, 400, { error: 'Acción inválida' });
           }
-          const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
-          const hasta = analitica.fechaLocal(new Date());
-          const n = store.getNegocio(negocioId);
+          const dias = diasDe(url.searchParams.get('dias'));
+          // Pone al día los cambios (detectar y medir) antes de mostrar.
+          try { aprendizajeAds.revisar(negocioId); } catch (err) { console.log(`Aprendizaje ads: ${negocioId}: ${err.message}`); }
+          const { n, analisis, aprendido } = analisisMeta(negocioId, dias);
+          let leccion = null;
+          try { leccion = aprendizajeAds.leccion(negocioId); } catch (err) { leccion = null; }
           return sendJSON(res, 200, Object.assign({
             dias,
             conexion: meta.publicoMeta(n.meta),
             sync: analitica.estadoSync(negocioId, 'meta_ads'),
-          }, analisisAds.analizar({
-            resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
-            desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
-            enlaceDe: (destino) => meta.enlaceAdministrador(n.meta.adAccountId, destino),
-          })));
+          }, analisis, {
+            diagnostico: aprendido.diagnostico,
+            ocultas: aprendido.ocultas,
+            cambios: aprendido.cambios,
+            resumenCambios: aprendido.resumenCambios,
+            aprendido: leccion ? { frases: leccion.frases, usaIA: !!getPlan(n.plan).usaIA } : null,
+          }));
         }
 
         // POST /api/negocios/:id/prueba — activa los días gratis con el formulario.

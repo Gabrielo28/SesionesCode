@@ -295,7 +295,7 @@
         </div>
         <div class="card-body">
           <div class="card-meta">
-            <span class="card-tag">${escapeHtml(item.tag)}</span>${item.briefPunto ? `<span class="card-tag card-tag-brief" title="Responde al brief de la semana">📝 ${escapeHtml(item.briefPunto)}</span>` : ''}
+            <span class="card-tag">${escapeHtml(item.tag)}</span>${item.briefPunto ? `<span class="card-tag card-tag-brief" title="Responde al brief de la semana">📝 ${escapeHtml(item.briefPunto)}</span>` : ''}${item.sugeridaPorAnuncios ? `<span class="card-tag card-tag-brief" title="Pensada para ${escapeHtml(item.sugeridaPorAnuncios)}, donde tus anuncios rinden más">📣 Sugerida por tus anuncios</span>` : ''}
             ${fechaEditIds.has(item.id)
               ? `<input type="datetime-local" class="card-date-input" data-fecha-id="${item.id}" value="${item.publicarEl ? valorInputFecha(item.publicarEl) : ''}">`
               : (puedeCambiarFecha
