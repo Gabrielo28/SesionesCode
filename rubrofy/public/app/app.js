@@ -664,6 +664,13 @@
           </div>
         </form>`;
     const aviso = c && c.estado === 'reconectar' ? '<p class="sub"><b>Meta pidió volver a conectar.</b> Mientras tanto, tus anuncios y tu competencia no se actualizan.</p>' : '';
+    if (negocioActual.metaLoginPronto) {
+      // La app de Meta todavía está en revisión: el botón aún no sirve para clientes.
+      cont.innerHTML = cabecera + aviso + `
+        <div class="ig-login"><p class="sub"><b>Muy pronto: conectar con Facebook en un clic.</b> Meta está revisando Rubrofy; cuando apruebe, aquí aparecerá el botón.</p></div>
+        <details class="ig-manual"><summary>Conectar con un token (avanzado)</summary>${formToken}</details>`;
+      return;
+    }
     if (!negocioActual.metaLoginDisponible) {
       cont.innerHTML = cabecera + aviso + formToken;
       return;

@@ -187,6 +187,7 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     ...(require('./flow').configurado() ? { 'Flow cobrando de verdad (sin FLOW_SANDBOX)': require('./flow').entorno() === 'produccion' } : {}),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Meta Ads y competencia (Conectar con Facebook)': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
+    ...(process.env.META_APP_ID && process.env.META_APP_SECRET ? { 'Conectar con Facebook para todos los clientes (META_LOGIN_PUBLICO, tras la aprobación de Meta)': require('./meta').loginPublico() } : {}),
     ...(require('./google').activo() ? { 'Google Ads': require('./google').configurado() } : {}),
     'Correo semanal (Resend)': !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM),
     'URL pública (PUBLIC_URL)': !!process.env.PUBLIC_URL,

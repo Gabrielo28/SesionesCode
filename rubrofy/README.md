@@ -341,6 +341,10 @@ Instagram y sirve también para la competencia.
   token) y el token espera en el servidor 30 minutos (`metaPendiente`, nunca
   llega al panel). Con `META_LOGIN_CONFIG_ID` (Facebook Login para
   empresas) se manda esa configuración en vez de la lista de permisos.
+  Mientras Meta no apruebe la app, el botón solo aparece para las cuentas
+  de `META_LOGIN_PRUEBA_EMAILS` (a los demás Facebook les diría "La app no
+  está activa"); ellos ven "Muy pronto" y el token plegado. Con
+  `META_LOGIN_PUBLICO=1` el botón queda para todos.
 - **Token pegado** (opción avanzada, o si no está la app): un token con
   esos mismos permisos; lo más práctico es uno de **usuario del sistema** de
   Business Manager, que no vence. Con la app configurada, un token de

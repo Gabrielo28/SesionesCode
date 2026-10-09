@@ -291,7 +291,9 @@ async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }
 function negocioPublico(negocio) {
   const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
-  resto.metaLoginDisponible = meta.loginDisponible();
+  resto.metaLoginDisponible = meta.loginDisponible(negocio);
+  // Configurado pero todavía no abierto a este cliente (Meta aún no aprueba la app).
+  resto.metaLoginPronto = meta.loginConfigurado() && !resto.metaLoginDisponible;
   // Vuelta de "Conectar con Facebook" con varias cuentas: el panel muestra
   // cuáles elegir (sin el token, que queda en el servidor).
   resto.metaElegir = metaPendienteVigente(metaPendiente) ? {
@@ -2829,7 +2831,10 @@ const server = http.createServer(async (req, res) => {
           if (parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
             const volverM = (motivo) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams({ meta: 'error', motivo }) }); return res.end(); };
             if (!plan.ads && !plan.competencia) return volverM('Meta Ads y competencia están disponibles en el plan Estudio.');
-            if (!meta.loginDisponible()) return volverM('"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
+            if (!meta.loginDisponible(negocio)) {
+              return volverM(meta.loginConfigurado() ? '"Conectar con Facebook" estará disponible cuando Meta termine de revisar Rubrofy.'
+                : '"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
+            }
             const nonce = google.nuevoEstadoOAuth();
             const firma = auth.crearTokenFoto(negocioId, 'meta-oauth', nonce, 15).replace(/\./g, '_');
             res.writeHead(302, { Location: meta.urlLogin(urlPublica(req) + '/api/meta/callback', `${negocioId}.${nonce}.${firma}`) });

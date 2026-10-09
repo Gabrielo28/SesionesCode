@@ -169,8 +169,23 @@ async function tokenLargo(accessToken) {
 // Empresa) se manda esa configuración; si no, la lista de permisos.
 const PERMISOS_LOGIN = ['ads_read', 'pages_show_list', 'pages_read_engagement', 'instagram_basic', 'instagram_manage_insights', 'business_management'];
 
-function loginDisponible() {
+// Mientras Meta no apruebe la app (modo desarrollo), solo pueden entrar las
+// personas con un rol en ella: a cualquier otro cliente Facebook le muestra
+// "La app no está activa". Por eso el botón se ofrece solo a las cuentas de
+// Rubrofy en META_LOGIN_PRUEBA_EMAILS (la de prueba y la del revisor de Meta)
+// hasta que META_LOGIN_PUBLICO=1, después de la aprobación y de pasar la app
+// a "En vivo". Sin negocio responde si la app está configurada.
+function loginConfigurado() {
   return !!(process.env.META_APP_ID && process.env.META_APP_SECRET);
+}
+function loginPublico() {
+  return process.env.META_LOGIN_PUBLICO === '1';
+}
+function loginDisponible(negocio) {
+  if (!loginConfigurado()) return false;
+  if (loginPublico() || negocio === undefined) return true;
+  const prueba = String(process.env.META_LOGIN_PRUEBA_EMAILS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+  return !!(negocio && negocio.email && prueba.includes(String(negocio.email).trim().toLowerCase()));
 }
 
 function urlLogin(redirectUri, state) {
@@ -508,6 +523,6 @@ function publicoMeta(meta) {
 }
 
 module.exports = {
-  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, enlaceAdministrador, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
+  fbGet, todasLasPaginas, opcionesDeCuenta, tokenLargo, loginDisponible, loginConfigurado, loginPublico, enlaceAdministrador, urlLogin, canjearCodigo, PERMISOS_LOGIN, sincronizarAds, resumenAds, primeraFechaAds, desglosesAds, publicoMeta, ErrorMeta, sumarAcciones,
   estadoCuenta, gastoPor, POSICIONES,
 };
