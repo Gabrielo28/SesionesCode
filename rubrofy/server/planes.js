@@ -86,6 +86,10 @@ function listPlanesPublico() {
     cuotaReelsEditados: p.cuotaReelsEditados,
     analitica: p.analitica,
     ads: p.ads,
+    // Meta Ads y Competencia esperan la aprobación de Meta: el sitio los
+    // muestra como "Próximamente" (ver abiertoPara en meta.js).
+    adsProximamente: !!p.ads && process.env.META_LOGIN_PUBLICO !== '1',
+    competenciaProximamente: !!p.competencia && process.env.META_LOGIN_PUBLICO !== '1',
     competencia: p.competencia,
     // Con Flow los planes se crean solos en Flow; con Stripe hay que dar el precio.
     disponible: require('./flow').configurado() || !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),

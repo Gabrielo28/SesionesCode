@@ -319,6 +319,19 @@ llamadas (el límite de Meta es ~200 por hora por cuenta).
 
 ## Meta Ads (server/meta.js)
 
+**Próximamente:** Meta Ads y Competencia esperan la aprobación de la app
+en Meta. Hasta entonces solo las usan las cuentas de Rubrofy en
+`META_LOGIN_PRUEBA_EMAILS` (para probar y grabar el video de la revisión);
+para el resto (`meta.abiertoPara`): el sitio, la tabla de planes
+(`adsProximamente` y `competenciaProximamente` en `/api/planes`), el menú,
+las pestañas de Resultados, la conexión con Meta, la bienvenida y la ruta
+dicen "Próximamente"; sus rutas responden 404 con `proximamente: true`, no
+se sincronizan, no van al informe y lo aprendido de los anuncios no va al
+prompt. Desconectar Meta sí se puede. Con `META_LOGIN_PUBLICO=1` se abre
+para todos; el texto fijo del sitio (`public/site/index.html`: sección
+"Publicidad y competencia", integraciones y la pregunta sobre publicidad)
+hay que cambiarlo a mano en ese momento.
+
 En el plan Estudio, Resultados → **Meta Ads** muestra la inversión, los
 resultados (compras, formularios y conversaciones iniciadas por WhatsApp,
 Messenger o Instagram Direct), el costo por resultado, CTR, CPC, ROAS y una
@@ -343,8 +356,8 @@ Instagram y sirve también para la competencia.
   empresas) se manda esa configuración en vez de la lista de permisos.
   Mientras Meta no apruebe la app, el botón solo aparece para las cuentas
   de `META_LOGIN_PRUEBA_EMAILS` (a los demás Facebook les diría "La app no
-  está activa"); ellos ven "Muy pronto" y el token plegado. Con
-  `META_LOGIN_PUBLICO=1` el botón queda para todos.
+  está activa"); el resto ve la conexión como "Próximamente". Con
+  `META_LOGIN_PUBLICO=1` queda para todos.
 - **Token pegado** (opción avanzada, o si no está la app): un token con
   esos mismos permisos; lo más práctico es uno de **usuario del sistema** de
   Business Manager, que no vence. Con la app configurada, un token de

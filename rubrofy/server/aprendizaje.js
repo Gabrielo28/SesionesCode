@@ -14,7 +14,7 @@ const { getPlan } = require('./planes');
 
 // Lo que enseñan sus anuncios (solo con Meta Ads conectado y en un plan con publicidad).
 function leccionPublicidad(negocio) {
-  if (!negocio.meta || !negocio.meta.adAccountId || !getPlan(negocio.plan).ads) return null;
+  if (!negocio.meta || !negocio.meta.adAccountId || !getPlan(negocio.plan).ads || !require('./meta').abiertoPara(negocio)) return null;
   try {
     return require('./aprendizaje-ads').leccion(negocio.id);
   } catch (err) {

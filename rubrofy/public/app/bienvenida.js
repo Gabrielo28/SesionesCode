@@ -83,7 +83,7 @@
         const fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
         const DETALLE = {
           pro: ['Estrategia y publicaciones completas: gancho, texto y hashtags', 'La IA escribe con tu voz y aprende de tus correcciones', 'Resultados de Instagram e informe mensual'],
-          estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', ctx.negocio().googleActivo ? 'Meta Ads, Google Ads y competencia' : 'Meta Ads y competencia'],
+          estudio: ['Todo lo de Pro', 'Fotos y videos generados con IA', ctx.negocio().metaAbierto === false ? 'Meta Ads y competencia (próximamente)' : ctx.negocio().googleActivo ? 'Meta Ads, Google Ads y competencia' : 'Meta Ads y competencia'],
         };
         const nombre = (id) => ((ctx.planes || []).find((x) => x.id === id) || {}).nombre || id;
         const prueba = catPrueba ? `<div class="bv-prueba" data-bv-prueba>
@@ -115,7 +115,9 @@
           <div class="bv-con"><i class="c-ig"></i><div><b>Instagram${perfil.instagram ? ` @${esc(perfil.instagram)}` : ''}</b><span>Para publicar solo lo que apruebes, en su fecha y hora.</span></div>${!neg.instagramConectado && neg.instagramLoginDisponible
             ? '<button type="button" class="btn-ig bv-ig" data-bv="conectar-ig">Conectar ahora</button>'
             : estado(neg.instagramConectado, 'Conectado', 'Sin conectar')}</div>
-          <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${!neg.metaConexion && neg.metaLoginDisponible && conPlanAds
+          <div class="bv-con"><i class="c-meta"></i><div><b>Meta Ads</b><span>Tu inversión y resultados en Facebook e Instagram. Plan Estudio.</span></div>${neg.metaAbierto === false
+            ? '<span class="pronto">Próximamente</span>'
+            : !neg.metaConexion && neg.metaLoginDisponible && conPlanAds
             ? '<button type="button" class="btn-fb bv-ig" data-bv="conectar-meta">Conectar</button>'
             : estado(!!neg.metaConexion, 'Conectado', 'Opcional')}</div>
           ${neg.googleActivo ? `<div class="bv-con"><i class="c-g"></i><div><b>Google Ads</b><span>Tus campañas de Google junto a tu Instagram. Plan Estudio.</span></div>${estado(!!neg.googleConexion, 'Conectado', 'Opcional')}</div>` : ''}

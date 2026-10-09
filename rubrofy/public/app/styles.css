@@ -276,6 +276,15 @@ a { color: var(--amber); }
 }
 .ig-estado.conectado { background: rgba(63,191,95,0.16); color: var(--green); }
 .ig-estado.reconectar { background: rgba(221,106,82,0.16); color: var(--coral); }
+.ig-estado.pronto { background: rgba(255,77,148,0.14); color: var(--amber); }
+/* Meta Ads y Competencia "Próximamente" (hasta que Meta apruebe la app) */
+.pronto { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: var(--amber); background: rgba(255,77,148,0.14); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.tab-pronto { font-style: normal; font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: var(--amber); margin-left: 4px; }
+.rail-pronto { color: var(--amber); border-color: rgba(255,77,148,0.45); }
+.res-pronto { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 22px 18px; max-width: 640px; }
+.res-pronto h2 { margin: 10px 0 6px; font-size: 18px; }
+.res-pronto p { margin: 0 0 8px; font-size: 14px; color: var(--ink); line-height: 1.5; }
+.res-pronto p.sub { color: var(--ink-dim); font-size: 13px; }
 .ig-card .config-form { max-width: none; }
 
 /* --- plan --- */

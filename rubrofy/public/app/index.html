@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=45">
+  <link rel="stylesheet" href="/app/styles.css?v=46">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -77,10 +77,10 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/></svg><span class="rail-label">Resultados</span><em class="rail-plan" data-plan-req="analitica" hidden>Pro</em>
       </button>
       <button class="rail-btn" data-view="resultados" data-tab="meta" title="Publicidad">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 V14 H7 L13 18 V6 L7 10 Z"/><path d="M16.5 9.5 a3.5 3.5 0 0 1 0 5"/></svg><span class="rail-label">Publicidad</span><em class="rail-plan" data-plan-req="ads" hidden>Estudio</em>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 V14 H7 L13 18 V6 L7 10 Z"/><path d="M16.5 9.5 a3.5 3.5 0 0 1 0 5"/></svg><span class="rail-label">Publicidad</span><em class="rail-plan" data-plan-req="ads" hidden>Estudio</em><em class="rail-plan rail-pronto" data-meta-pronto hidden>Pronto</em>
       </button>
       <button class="rail-btn" data-view="resultados" data-tab="competencia" title="Competencia">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10.5" r="2.3"/><path d="M3.5 19 c0.8-3.2 3-4.8 5.5-4.8 s4.7 1.6 5.5 4.8"/><path d="M15 15 c2.4-0.4 4.6 0.8 5.5 3.6"/></svg><span class="rail-label">Competencia</span><em class="rail-plan" data-plan-req="competencia" hidden>Estudio</em>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10.5" r="2.3"/><path d="M3.5 19 c0.8-3.2 3-4.8 5.5-4.8 s4.7 1.6 5.5 4.8"/><path d="M15 15 c2.4-0.4 4.6 0.8 5.5 3.6"/></svg><span class="rail-label">Competencia</span><em class="rail-plan" data-plan-req="competencia" hidden>Estudio</em><em class="rail-plan rail-pronto" data-meta-pronto hidden>Pronto</em>
       </button>
       </div>
       <button type="button" class="rail-grupo" data-grupo="mes" aria-expanded="true"><span>4 · Cada mes</span><svg class="rail-grupo-flecha" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9 L12 15 L18 9"/></svg></button>
@@ -236,9 +236,9 @@
         </div>
         <div class="pestanas" role="tablist" id="resultados-pestanas">
           <button role="tab" data-tab="instagram" class="activa">Instagram</button>
-          <button role="tab" data-tab="meta">Meta Ads</button>
+          <button role="tab" data-tab="meta">Meta Ads <em class="tab-pronto" data-meta-pronto hidden>Pronto</em></button>
           <button role="tab" data-tab="google" hidden>Google Ads</button>
-          <button role="tab" data-tab="competencia">Competencia</button>
+          <button role="tab" data-tab="competencia">Competencia <em class="tab-pronto" data-meta-pronto hidden>Pronto</em></button>
         </div>
         <div id="resultados"></div>
       </section>
@@ -436,30 +436,30 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=45"></script>
-  <script src="/app/guias.js?v=45"></script>
-  <script src="/app/graficos.js?v=45"></script>
-  <script src="/app/plan.js?v=45"></script>
-  <script src="/app/prueba-form.js?v=45"></script>
-  <script src="/app/recargas.js?v=45"></script>
-  <script src="/app/diseno.js?v=45"></script>
-  <script src="/app/reels.js?v=45"></script>
-  <script src="/app/videos.js?v=45"></script>
-  <script src="/app/brief.js?v=45"></script>
-  <script src="/app/creditos.js?v=45"></script>
-  <script src="/app/imagen.js?v=45"></script>
-  <script src="/app/galeria.js?v=45"></script>
-  <script src="/app/cuenta.js?v=45"></script>
-  <script src="/app/soporte.js?v=45"></script>
-  <script src="/app/bienvenida.js?v=45"></script>
-  <script src="/app/inicio.js?v=45"></script>
-  <script src="/app/resultados.js?v=45"></script>
-  <script src="/app/estilo.js?v=45"></script>
-  <script src="/app/ads.js?v=45"></script>
-  <script src="/app/competencia.js?v=45"></script>
-  <script src="/app/contexto.js?v=45"></script>
-  <script src="/app/voz.js?v=45"></script>
-  <script src="/app/pwa.js?v=45"></script>
-  <script src="/app/app.js?v=45"></script>
+  <script src="/app/ayuda.js?v=46"></script>
+  <script src="/app/guias.js?v=46"></script>
+  <script src="/app/graficos.js?v=46"></script>
+  <script src="/app/plan.js?v=46"></script>
+  <script src="/app/prueba-form.js?v=46"></script>
+  <script src="/app/recargas.js?v=46"></script>
+  <script src="/app/diseno.js?v=46"></script>
+  <script src="/app/reels.js?v=46"></script>
+  <script src="/app/videos.js?v=46"></script>
+  <script src="/app/brief.js?v=46"></script>
+  <script src="/app/creditos.js?v=46"></script>
+  <script src="/app/imagen.js?v=46"></script>
+  <script src="/app/galeria.js?v=46"></script>
+  <script src="/app/cuenta.js?v=46"></script>
+  <script src="/app/soporte.js?v=46"></script>
+  <script src="/app/bienvenida.js?v=46"></script>
+  <script src="/app/inicio.js?v=46"></script>
+  <script src="/app/resultados.js?v=46"></script>
+  <script src="/app/estilo.js?v=46"></script>
+  <script src="/app/ads.js?v=46"></script>
+  <script src="/app/competencia.js?v=46"></script>
+  <script src="/app/contexto.js?v=46"></script>
+  <script src="/app/voz.js?v=46"></script>
+  <script src="/app/pwa.js?v=46"></script>
+  <script src="/app/app.js?v=46"></script>
 </body>
 </html>

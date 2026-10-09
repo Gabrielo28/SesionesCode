@@ -282,7 +282,7 @@ async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }
   };
   delete fresco.metaPendiente;
   store.saveNegocio(fresco);
-  if (fresco.meta.adAccountId && plan.ads) await meta.sincronizarAds(negocioId);
+  if (fresco.meta.adAccountId && plan.ads && meta.abiertoPara(fresco)) await meta.sincronizarAds(negocioId);
   return store.getNegocio(negocioId);
 }
 
@@ -291,9 +291,9 @@ async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }
 function negocioPublico(negocio) {
   const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
+  // Meta Ads y Competencia: "Próximamente" hasta que Meta apruebe la app.
+  resto.metaAbierto = meta.abiertoPara(negocio);
   resto.metaLoginDisponible = meta.loginDisponible(negocio);
-  // Configurado pero todavía no abierto a este cliente (Meta aún no aprueba la app).
-  resto.metaLoginPronto = meta.loginConfigurado() && !resto.metaLoginDisponible;
   // Vuelta de "Conectar con Facebook" con varias cuentas: el panel muestra
   // cuáles elegir (sin el token, que queda en el servidor).
   resto.metaElegir = metaPendienteVigente(metaPendiente) ? {
@@ -881,13 +881,13 @@ const sincronizador = analitica.crearSincronizador({
       return plan.analitica && !!(negocio.instagram && negocio.instagram.accessToken && negocio.instagram.estado !== 'reconectar');
     }
     if (fuente === 'meta_ads') {
-      return plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
+      return meta.abiertoPara(negocio) && plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
     }
     if (fuente === 'google_ads') {
       return google.activo() && plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
     }
     if (fuente === 'competencia') {
-      return plan.competencia && !!(negocio.meta && negocio.meta.igUserId && negocio.meta.estado !== 'reconectar');
+      return meta.abiertoPara(negocio) && plan.competencia && !!(negocio.meta && negocio.meta.igUserId && negocio.meta.estado !== 'reconectar');
     }
     return false;
   },
@@ -926,7 +926,7 @@ const sincronizador = analitica.crearSincronizador({
 });
 
 informe.registrarSeccion('competencia', (negocio) => {
-  if (!getPlan(negocio.plan).competencia || !negocio.meta || !negocio.meta.igUserId) return null;
+  if (!meta.abiertoPara(negocio) || !getPlan(negocio.plan).competencia || !negocio.meta || !negocio.meta.igUserId) return null;
   const c = competencia.comparacion(negocio);
   return c.filas.length > 1 ? c : null;
 });
@@ -998,7 +998,7 @@ function urlPublica(req) {
 
 // Sección de Meta Ads en el informe mensual (si el plan la incluye y hay cuenta).
 informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
-  if (!getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
+  if (!meta.abiertoPara(negocio) || !getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
   // También los cambios que hizo el dueño en el mes y lo que enseñan sus anuncios.
   let cambios = [];
   let aprendido = null;
@@ -2830,16 +2830,16 @@ const server = http.createServer(async (req, res) => {
           const plan = getPlan(negocio.plan);
           if (parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
             const volverM = (motivo) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams({ meta: 'error', motivo }) }); return res.end(); };
+            if (!meta.abiertoPara(negocio)) return volverM('Meta Ads y Competencia llegan pronto a Rubrofy.');
             if (!plan.ads && !plan.competencia) return volverM('Meta Ads y competencia están disponibles en el plan Estudio.');
-            if (!meta.loginDisponible(negocio)) {
-              return volverM(meta.loginConfigurado() ? '"Conectar con Facebook" estará disponible cuando Meta termine de revisar Rubrofy.'
-                : '"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
-            }
+            if (!meta.loginDisponible(negocio)) return volverM('"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
             const nonce = google.nuevoEstadoOAuth();
             const firma = auth.crearTokenFoto(negocioId, 'meta-oauth', nonce, 15).replace(/\./g, '_');
             res.writeHead(302, { Location: meta.urlLogin(urlPublica(req) + '/api/meta/callback', `${negocioId}.${nonce}.${firma}`) });
             return res.end();
           }
+          // Desconectar se puede siempre; conectar, solo si Meta está abierto para este negocio.
+          if (!meta.abiertoPara(negocio) && req.method !== 'DELETE') return sendJSON(res, 404, { error: 'Meta Ads y Competencia llegan pronto a Rubrofy.', proximamente: true });
           if (!plan.ads && !plan.competencia) {
             return sendJSON(res, 403, { error: 'Meta Ads y competencia están disponibles en el plan Estudio' });
           }
@@ -2901,6 +2901,7 @@ const server = http.createServer(async (req, res) => {
         //   DELETE /api/negocios/:id/competencia/:username
         //   POST   /api/negocios/:id/competencia/sincronizar
         if (parts[3] === 'competencia') {
+          if (!meta.abiertoPara(negocio)) return sendJSON(res, 404, { error: 'Competencia llega pronto a Rubrofy.', proximamente: true });
           if (!getPlan(negocio.plan).competencia) return sendJSON(res, 403, { error: 'Competencia está disponible en el plan Estudio' });
           if (!negocio.meta || !negocio.meta.igUserId) {
             return sendJSON(res, 400, { error: 'Conecta Meta en Conexiones y ajustes y elige tu cuenta de Instagram para seguir a tu competencia' });
@@ -2985,6 +2986,7 @@ const server = http.createServer(async (req, res) => {
         // GET  /api/negocios/:id/ads?dias=30 — Meta Ads del período (solo lectura)
         // POST /api/negocios/:id/ads/sincronizar
         if (parts[3] === 'ads') {
+          if (!meta.abiertoPara(negocio)) return sendJSON(res, 404, { error: 'Meta Ads llega pronto a Rubrofy.', proximamente: true });
           if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Meta Ads está disponible en el plan Estudio' });
           if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Conexiones y ajustes' });
           const diasDe = (v) => ([7, 30, 90].includes(Number(v)) ? Number(v) : 30);

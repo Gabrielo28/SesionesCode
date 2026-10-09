@@ -619,6 +619,12 @@
     const c = negocioActual.metaConexion;
     const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2>
       <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : negocioActual.metaElegir ? 'reconectar' : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : negocioActual.metaElegir ? 'Falta elegir' : 'Sin conectar'}</span></div>`;
+    if (negocioActual.metaAbierto === false) {
+      // Meta Ads y Competencia esperan la aprobación de Meta.
+      cont.innerHTML = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2><span class="ig-estado pronto">Próximamente</span></div>
+        <p class="sub">Muy pronto vas a poder conectar tu Facebook para ver tu publicidad en Meta y seguir a tu competencia, en el plan Estudio.</p>`;
+      return;
+    }
     if (!plan.ads && !plan.competencia) {
       cont.innerHTML = cabecera + '<p class="sub">Para ver tu publicidad en Meta y seguir a tu competencia. Disponible en el plan Estudio.</p>';
       return;
@@ -664,13 +670,6 @@
           </div>
         </form>`;
     const aviso = c && c.estado === 'reconectar' ? '<p class="sub"><b>Meta pidió volver a conectar.</b> Mientras tanto, tus anuncios y tu competencia no se actualizan.</p>' : '';
-    if (negocioActual.metaLoginPronto) {
-      // La app de Meta todavía está en revisión: el botón aún no sirve para clientes.
-      cont.innerHTML = cabecera + aviso + `
-        <div class="ig-login"><p class="sub"><b>Muy pronto: conectar con Facebook en un clic.</b> Meta está revisando Rubrofy; cuando apruebe, aquí aparecerá el botón.</p></div>
-        <details class="ig-manual"><summary>Conectar con un token (avanzado)</summary>${formToken}</details>`;
-      return;
-    }
     if (!negocioActual.metaLoginDisponible) {
       cont.innerHTML = cabecera + aviso + formToken;
       return;
@@ -1073,6 +1072,16 @@
     const cont = $('#resultados');
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
     if (tabResultados === 'instagram') return window.RubrofyResultados.render(cont, ctx);
+    if (negocioActual.metaAbierto === false && (tabResultados === 'meta' || tabResultados === 'competencia')) {
+      cont.innerHTML = tabResultados === 'competencia'
+        ? `<div class="res-pronto"><span class="pronto">Próximamente</span><h2>Tu competencia, en Rubrofy</h2>
+            <p>Sigue hasta 5 cuentas de Instagram de tu competencia y descubre qué publican, cuándo y qué les funciona, comparado contigo.</p>
+            <p class="sub">Llega pronto al plan Estudio. Mientras tanto, tus resultados de Instagram están en la pestaña Instagram.</p></div>`
+        : `<div class="res-pronto"><span class="pronto">Próximamente</span><h2>Meta Ads, en Rubrofy</h2>
+            <p>Verás cuánto inviertes en Instagram y Facebook, qué te trae cada anuncio y qué cambiar, en palabras simples. Rubrofy también aprenderá de tus anuncios para escribir mejor tus publicaciones.</p>
+            <p class="sub">Llega pronto al plan Estudio. Mientras tanto, tus resultados de Instagram están en la pestaña Instagram.</p></div>`;
+      return;
+    }
     const clave = tabResultados === 'competencia' ? 'competencia' : 'ads';
     if (!plan[clave]) {
       cont.innerHTML = `<div class="res-aviso">${tabResultados === 'competencia'
@@ -1177,7 +1186,13 @@
     const numSop = $('#rail-soporte');
     numSop.textContent = respuestas; numSop.hidden = !respuestas;
     const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
-    document.querySelectorAll('[data-plan-req]').forEach((el) => { el.hidden = !!plan[el.dataset.planReq] || !planesInfo.length; });
+    // Meta Ads y Competencia dicen "Pronto" hasta que Meta apruebe la app.
+    const metaPronto = negocioActual.metaAbierto === false;
+    document.querySelectorAll('[data-plan-req]').forEach((el) => {
+      const deMeta = el.dataset.planReq === 'ads' || el.dataset.planReq === 'competencia';
+      el.hidden = (deMeta && metaPronto) || !!plan[el.dataset.planReq] || !planesInfo.length;
+    });
+    document.querySelectorAll('[data-meta-pronto]').forEach((el) => { el.hidden = !metaPronto; });
     const enlaceAdmin = $('#rail-admin');
     enlaceAdmin.hidden = !negocioActual.esAdmin;
     // "Vincular cuentas": un punto si Instagram no está conectado o pide reconectar.

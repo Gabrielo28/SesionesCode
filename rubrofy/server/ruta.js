@@ -192,8 +192,9 @@ function calcular(input) {
       id: 'publicidad',
       titulo: 'Conecta tu publicidad',
       detalle: negocio.googleActivo ? 'Meta Ads y Google Ads: cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.' : 'Meta Ads: cuánto inviertes en Instagram y Facebook, qué obtienes y cuánto cuesta cada resultado.',
-      estado: !plan.ads ? 'bloqueado' : (negocio.metaConexion || negocio.googleConexion) ? 'hecho' : 'pendiente',
-      requierePlan: plan.ads ? null : 'Estudio',
+      // Meta Ads espera la aprobación de Meta: "Próximamente" (sin botón).
+      estado: negocio.metaAbierto === false && !negocio.googleConexion ? 'proximo' : !plan.ads ? 'bloqueado' : (negocio.metaConexion || negocio.googleConexion) ? 'hecho' : 'pendiente',
+      requierePlan: negocio.metaAbierto === false && !negocio.googleConexion ? 'Próximamente' : plan.ads ? null : 'Estudio',
       prioridad: 8,
       accion: (negocio.metaConexion || negocio.googleConexion) ? { tipo: 'vista', vista: 'resultados', tab: 'meta' } : { tipo: 'vista', vista: 'config' },
       boton: 'Conectar',
@@ -205,8 +206,8 @@ function calcular(input) {
       detalle: competidores
         ? `Sigues ${plural(competidores, 'cuenta', 'cuentas')}. Compara seguidores, frecuencia e interacción.`
         : 'Agrega hasta 5 cuentas de Instagram y compárate con ellas.',
-      estado: !plan.competencia ? 'bloqueado' : competidores ? 'hecho' : 'pendiente',
-      requierePlan: plan.competencia ? null : 'Estudio',
+      estado: negocio.metaAbierto === false ? 'proximo' : !plan.competencia ? 'bloqueado' : competidores ? 'hecho' : 'pendiente',
+      requierePlan: negocio.metaAbierto === false ? 'Próximamente' : plan.competencia ? null : 'Estudio',
       prioridad: 9,
       accion: { tipo: 'vista', vista: 'resultados', tab: 'competencia' },
       boton: 'Agregar competidores',

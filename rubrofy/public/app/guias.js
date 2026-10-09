@@ -191,6 +191,8 @@
   // clave de la guía según la vista (y la pestaña de Resultados)
   function claveDe(vista, tab) {
     if (vista !== 'resultados') return vista;
+    // Meta Ads y Competencia "Próximamente": sin guía de cómo usarlas.
+    if ((tab === 'meta' || tab === 'competencia') && ctx && ctx.negocio && ctx.negocio.metaAbierto === false) return null;
     return tab === 'competencia' ? 'res-competencia' : tab === 'meta' || tab === 'google' ? 'res-publicidad' : 'res-instagram';
   }
 
