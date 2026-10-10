@@ -237,7 +237,11 @@ sin cookies ni IP y sin bots; el origen se guarda solo como dominio.
 
 **Conectar con Instagram**: con `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`,
 el panel muestra el botón "Conectar con Instagram" (también en el último
-paso de la bienvenida). El dueño inicia sesión en Instagram y acepta los
+paso de la bienvenida). Mientras Meta no apruebe la app
+(`INSTAGRAM_APP_APROBADA` distinto de `1`), junto al botón se explica el error
+"Rol de desarrollador insuficiente" y "Escribir a soporte" deja escrita la
+solicitud "Habilitar mi Instagram en Rubrofy" con su @usuario, para agregarlo
+como evaluador. El dueño inicia sesión en Instagram y acepta los
 permisos `instagram_business_basic`, `instagram_business_content_publish` e
 `instagram_business_manage_insights`. `GET /api/negocios/:id/instagram/conectar`
 redirige con un state firmado y ligado a la sesión (igual que Google);

@@ -313,6 +313,9 @@ function negocioPublico(negocio) {
   resto.instagramVenceEl = (igInfo && igInfo.venceEl) || null;
   resto.instagramUsuario = (igInfo && igInfo.username) || null;
   resto.instagramLoginDisponible = instagram.loginConfigurado();
+  // Mientras Meta no apruebe la app de Instagram, solo entran las cuentas
+  // agregadas como evaluadoras: el panel muestra cómo pedir que la habiliten.
+  resto.instagramEnRevision = resto.instagramLoginDisponible && process.env.INSTAGRAM_APP_APROBADA !== '1';
   resto.avisosSemanal = !(negocio.avisos && negocio.avisos.semanal === false);
   resto.correoConfigurado = correo.configurado();
   resto.esAdmin = admin.esAdmin(negocio); // solo muestra el enlace; /api/admin valida por su cuenta

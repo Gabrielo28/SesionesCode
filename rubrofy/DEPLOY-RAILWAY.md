@@ -70,6 +70,7 @@ queda apagada y el resto funciona igual)
 | Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (activan "Conectar con Facebook"), `META_LOGIN_CONFIG_ID` (configuración de Facebook Login para empresas; recomendada), `META_LOGIN_PRUEBA_EMAILS` (correos de las cuentas de Rubrofy que usan Meta Ads y Competencia mientras Meta revisa la app, separados por coma; para el resto dicen "Próximamente"), `META_LOGIN_PUBLICO=1` (Meta Ads y Competencia para todos, después de la aprobación) y opcional `META_GRAPH_VERSION` |
 | Google Ads (en pausa) | No se ofrece. Para reactivarlo: `GOOGLE_ADS_ACTIVO=1`, `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`; ver README) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
+| Instagram aprobado por Meta | `INSTAGRAM_APP_APROBADA=1` cuando Meta apruebe la app y la publiques (quita el aviso "¿Instagram te muestra 'Rol de desarrollador insuficiente'?") |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
@@ -168,7 +169,10 @@ Una vez que `https://rubrofy.com` funcione:
      de Instagram** (aparecen en esa misma sección; no son el ID y la clave
      de la app de Meta) a `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`.
   4. Mientras la app esté en modo desarrollo, solo pueden conectarse las
-     cuentas de Instagram agregadas como evaluadoras (Roles de la app →
+     cuentas de Instagram agregadas como evaluadoras (el panel lo explica
+     junto al botón y deja escrita la solicitud "Habilitar mi Instagram en
+     Rubrofy" en Ayuda y soporte; cuando Meta apruebe, pon
+     `INSTAGRAM_APP_APROBADA=1` para quitar ese aviso) (Roles de la app →
      Evaluadores de Instagram, y aceptar la invitación en Instagram →
      Configuración → Apps y sitios web). Para abrirlo a todos los clientes,
      pide en App Review los permisos `instagram_business_basic`,

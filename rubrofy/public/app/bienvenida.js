@@ -261,6 +261,7 @@
           cuerpo: `<div class="bv2-cuentas">
               <div class="bv2-cuenta"><i class="c-ig" aria-hidden="true"></i><div><b>Instagram${r.perfil.instagram ? ` @${esc(r.perfil.instagram)}` : ''}</b><span>Publica lo que apruebes.</span></div>
                 ${conectado ? '<em class="bv2-ok">Conectado</em>' : n.instagramLoginDisponible ? '<button type="button" class="bv2-ig" data-bv="conectar-ig">Conectar</button>' : '<em>Después</em>'}</div>
+              ${!conectado && n.instagramEnRevision ? '<p class="bv2-nota-ig">¿Instagram te muestra "Rol de desarrollador insuficiente"? Estamos terminando la aprobación de Rubrofy en Meta: sigue sin conectar y escríbenos tu usuario en <b>Ayuda y soporte</b>; te habilitamos el mismo día.</p>' : ''}
               <div class="bv2-cuenta"><i class="c-meta" aria-hidden="true"></i><div><b>Meta Ads</b><span>Tu publicidad en Facebook e Instagram. Plan Estudio.</span></div>
                 ${n.metaAbierto === false ? '<em class="bv2-pronto">Próximamente</em>' : n.metaConexion ? '<em class="bv2-ok">Conectado</em>' : '<em>Opcional</em>'}</div>
             </div>

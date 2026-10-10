@@ -476,6 +476,7 @@
     const login = !!negocioActual.instagramLoginDisponible;
     const necesitaConectar = !conectado || reconectar;
     $('#ig-login').hidden = !(login && necesitaConectar);
+    $('#ig-revision').hidden = !(login && necesitaConectar && negocioActual.instagramEnRevision);
     $('#btn-ig-login').href = `/api/negocios/${negocioActual.id}/instagram/conectar`;
     $('#btn-ig-login-txt').textContent = reconectar ? 'Reconectar con Instagram' : 'Conectar con Instagram';
     // Con "Conectar con Instagram" disponible, pegar el ID y el token es cosa
@@ -1773,6 +1774,17 @@
       } finally {
         b.disabled = false;
       }
+    });
+
+    // "Rol de desarrollador insuficiente": la solicitud a soporte queda escrita.
+    $('#btn-ig-revision').addEventListener('click', () => {
+      const ig = (negocioActual.perfil || {}).instagram;
+      window.RubrofySoporte.escribir({
+        tipo: 'problema',
+        asunto: 'Habilitar mi Instagram en Rubrofy',
+        texto: `Al conectar Instagram me aparece "Rol de desarrollador insuficiente". Mi usuario de Instagram es: ${ig ? '@' + ig : '(escríbelo aquí)'}`,
+      });
+      irAVista('soporte');
     });
 
     $('#btn-desconectar-ig').addEventListener('click', async () => {

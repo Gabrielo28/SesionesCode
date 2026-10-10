@@ -79,6 +79,7 @@
   let contacto = null;
   let abierta = null; // id de la solicitud desplegada
   let tipoElegido = 'problema';
+  let borrador = null; // { tipo, asunto, texto } que otra pantalla deja listo para enviar
   let busqueda = '';
 
   async function render(c) {
@@ -90,6 +91,7 @@
     pintarRevision();
     pintarPreguntas();
     pintarForm();
+    aplicarBorrador();
     pintarSolicitudes();
     try {
       const r = await ctx.api(`/api/negocios/${ctx.negocio.id}/soporte`);
@@ -320,5 +322,25 @@
     if (ctx.alLeer) ctx.alLeer();
   }
 
-  window.RubrofySoporte = { render, registrar };
+  // Otra pantalla deja la solicitud escrita (ej: "Habilitar mi Instagram");
+  // se completa al abrir Ayuda y soporte y el dueño solo la revisa y envía.
+  function escribir(b) {
+    borrador = b;
+    if (b && b.tipo) tipoElegido = b.tipo;
+  }
+  function aplicarBorrador() {
+    const form = document.querySelector('#soporte [data-sop-enviar]');
+    if (!borrador || !form) return;
+    const b = borrador;
+    borrador = null;
+    const radio = form.querySelector(`input[name="tipo"][value="${tipoElegido}"]`);
+    if (radio) radio.checked = true;
+    if (b.asunto && !form.asunto.value) form.asunto.value = b.asunto;
+    if (b.texto && !form.texto.value) form.texto.value = b.texto;
+    const ancla = document.getElementById('sop-escribir');
+    if (ancla) setTimeout(() => ancla.scrollIntoView({ block: 'start', behavior: 'smooth' }), 100);
+    setTimeout(() => form.texto.focus({ preventScroll: true }), 400);
+  }
+
+  window.RubrofySoporte = { render, registrar, escribir };
 })();
