@@ -22,7 +22,9 @@ html, body {
 button { font: inherit; cursor: pointer; }
 a { color: var(--amber); }
 
-.app { display: flex; height: 100vh; overflow: hidden; }
+/* 100dvh: en celulares, 100vh cuenta el espacio bajo la barra del navegador
+   y lo último del menú quedaba escondido sin poder desplazarse. */
+.app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 /* El atributo hidden SIEMPRE oculta, aunque una clase fije display (flex,
    grid...). Sin esto, cada regla nueva con display reabría el bug de las
    "vistas fantasma" (formularios que aparecen estando ocultos). */
@@ -33,6 +35,7 @@ a { color: var(--amber); }
 .rail {
   width: 228px; flex-shrink: 0; background: var(--rail); border-right: 1px solid var(--border);
   display: flex; flex-direction: column; padding: 18px 12px; overflow-y: auto;
+  overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
 }
 .rail .logo { display: flex; align-items: center; gap: 10px; padding: 0 8px; margin-bottom: 18px; }
 .rail .logo img { width: 32px; height: 32px; border-radius: 8px; display: block; }
@@ -236,7 +239,7 @@ a { color: var(--amber); }
 .cal-tip b { color: var(--ink); }
 .cal-tip-movil { display: none; }
 .calendario .cal-body { gap: 16px; align-items: flex-start; }
-.calendario .cal-detail { margin: 0; padding: 18px; border: 1px solid var(--border); border-radius: 12px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+.calendario .cal-detail { margin: 0; padding: 18px; border: 1px solid var(--border); border-radius: 12px; position: sticky; top: 16px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow: auto; }
 .cal-det-estado { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; }
 .cal-det-fecha { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-faint); }
 .cal-det-img { width: 100%; max-width: 280px; border-radius: 10px; border: 1px solid var(--border); display: block; }
@@ -348,7 +351,7 @@ a { color: var(--amber); }
 
 /* --- login --- */
 .login-view {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+  min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px;
 }
 .login-view[hidden] { display: none; }
 .login-form {
@@ -428,7 +431,7 @@ a { color: var(--amber); }
 
 /* --- pantallas angostas (celular) --- */
 @media (max-width: 760px) {
-  .rail { width: 56px; padding: 16px 0; }
+  .rail { width: 56px; padding: 16px 0 calc(16px + env(safe-area-inset-bottom)); }
   .rail .logo img { width: 28px; height: 28px; }
   .rail-btn { width: 36px; height: 36px; margin-bottom: 4px; }
   .rail-btn svg { width: 17px; height: 17px; }
@@ -962,7 +965,7 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 }
 
 /* --- prueba gratis: formulario (diálogo del panel y bienvenida) --- */
-.dlg-prueba { width: min(440px, calc(100vw - 24px)); max-height: calc(100vh - 32px); }
+.dlg-prueba { width: min(440px, calc(100vw - 24px)); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); }
 .dlg-prueba .dlg-caja { gap: 12px; }
 .dlg-acciones { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .pg-campos { display: flex; flex-direction: column; gap: 12px; }
@@ -1009,7 +1012,7 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 .rc-hist { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: var(--ink-dim); }
 
 /* --- diseño con la marca (public/app/diseno.js) --- */
-.dlg-diseno { width: min(920px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.dlg-diseno { width: min(920px, calc(100vw - 24px)); max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
 .dz-caja { gap: 14px; }
 .dz-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 .dz-lienzo { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -1033,7 +1036,7 @@ h1 .ay, h2 .ay { margin-left: 8px; }
 @media (max-width: 700px) { .dz-grid { grid-template-columns: 1fr; } }
 
 /* --- editor de reels (public/app/reels.js) --- */
-.dlg-reel { width: min(940px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.dlg-reel { width: min(940px, calc(100vw - 24px)); max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
 .rl-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
 .rl-vista { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .rl-tel { width: min(300px, 100%); aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; position: relative; background: #000; border: 5px solid #2a2630; }
@@ -1261,7 +1264,7 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .stat-creditos:hover { border-color: var(--amber); }
 .stat-creditos.bajo { border-color: #e0a33b; }
 .stat-creditos.bajo b { color: #e0a33b; }
-.dlg-cr { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 32px); }
+.dlg-cr { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); }
 .dlg-cr-comprar { width: min(680px, calc(100vw - 24px)); }
 .cr-calidades { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
 .cr-cal { position: relative; display: flex; flex-direction: column; gap: 2px; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg); cursor: pointer; font-size: 13px; }
@@ -1478,7 +1481,7 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 
 /* Editar con IA */
 .gl-visor-ia { border-color: rgba(255, 77, 148, .55); background: linear-gradient(135deg, rgba(255, 77, 148, .28), rgba(168, 85, 247, .28)); }
-.dlg.dlg-editar-ia { width: min(900px, calc(100vw - 24px)); max-height: calc(100vh - 24px); }
+.dlg.dlg-editar-ia { width: min(900px, calc(100vw - 24px)); max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
 .ed-caja { gap: 14px; }
 .ed-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .ed-fotos { display: grid; gap: 12px; }
@@ -2022,4 +2025,34 @@ textarea.bv2-input { resize: vertical; line-height: 1.45; }
 @media (prefers-reduced-motion: reduce) {
   .bv2-cintas path, .bv2-card, .bv2-pasos li.ahora::before { animation: none !important; }
   .bv2-prog i, .bv2-op { transition: none; }
+}
+
+/* Menú de solo íconos (tablet y celular): "☰" lo despliega encima, con los
+   nombres; se cierra al elegir, al tocar fuera o con Esc. */
+.rail-abrir, .rail-velo { display: none; }
+@media (max-width: 1100px) {
+  .rail-abrir { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 9px; background: none; color: var(--ink-dim); cursor: pointer; }
+  .rail-abrir:hover, .rail-abrir:focus-visible { color: var(--ink); border-color: var(--amber); outline: none; }
+  .rail-abrir svg { stroke: currentColor; flex-shrink: 0; }
+  .rail-abrir .ic-cerrar, .rail-abrir[aria-expanded="true"] .ic-abrir { display: none; }
+  .rail-abrir[aria-expanded="true"] .ic-cerrar { display: block; }
+  .app.menu-abierto::before { content: ''; flex: 0 0 72px; }
+  .app.menu-abierto .rail { position: fixed; top: 0; left: 0; bottom: 0; z-index: 80; width: min(284px, 86vw); align-items: stretch; padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); box-shadow: 10px 0 34px rgba(0, 0, 0, .55); }
+  .app.menu-abierto .rail .logo { padding: 0 8px; }
+  .app.menu-abierto .rail-marca, .app.menu-abierto .rail-label { display: block !important; }
+  .app.menu-abierto .rail-plan { display: inline-block !important; }
+  .app.menu-abierto .rail-planactual:not([hidden]) { display: block !important; }
+  .app.menu-abierto .rail-avance:not([hidden]) { display: flex !important; }
+  .app.menu-abierto .rail-grupo { font-size: 10px; padding: 14px 10px 6px; width: 100%; border-top: 0; border-radius: 7px; margin-top: 0; }
+  .app.menu-abierto .rail-grupo > span { display: inline; }
+  .app.menu-abierto .rail-grupo-items, .app.menu-abierto .rail-abajo { align-items: stretch; }
+  .app.menu-abierto .rail-btn { width: 100%; height: auto; justify-content: flex-start; padding: 10px; margin-bottom: 2px; }
+  .app.menu-abierto .rail-num { position: static; font-size: 11px; padding: 1px 7px; }
+  .app.menu-abierto .rail-punto { position: static; margin-left: auto; }
+  .app.menu-abierto .rail-abrir { width: 100%; justify-content: flex-start; gap: 11px; padding: 0 10px; font: inherit; font-size: 13.5px; text-align: left; }
+  .app.menu-abierto .rail-velo { display: block; position: fixed; inset: 0; z-index: 79; background: rgba(8, 7, 10, .62); }
+}
+@media (max-width: 760px) {
+  .rail-abrir { width: 36px; height: 36px; }
+  .app.menu-abierto::before { flex-basis: 56px; }
 }

@@ -568,6 +568,13 @@ navegador, `localStorage` `rubrofy-menu-cerrados`); si se navega a una
 pantalla de una etapa cerrada, esa etapa se abre sola. Con el menú de solo
 íconos (pantallas angostas) las etapas no se pliegan.
 
+En tablet y celular el menú es de solo íconos y se desplaza hasta el
+último. El botón **☰** de arriba lo despliega encima del contenido con el
+nombre de cada sección (también se desplaza); se cierra al elegir una, al
+tocar fuera o con Esc. El panel mide `100dvh` (el alto visible): con
+`100vh` los celulares contaban el espacio bajo la barra del navegador y lo
+último del menú quedaba escondido sin poder desplazarse.
+
 Abajo, el botón destacado **Vincular cuentas** (lleva a Conexiones; un
 punto rojo si Instagram no está conectado o pide reconectar) y la sección
 plegable **Configuración** (Administración, Conexiones y ajustes, Mi cuenta,

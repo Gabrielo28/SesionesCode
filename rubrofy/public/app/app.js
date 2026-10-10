@@ -1708,6 +1708,23 @@
       btn.addEventListener('click', () => irAVista(btn.dataset.view, btn.dataset.tab));
     });
 
+    // Tablet y celular: el menú es solo íconos; "☰" lo despliega con los
+    // nombres y se cierra al elegir una sección, al tocar fuera o con Esc.
+    const menuDesplegado = (abrir) => {
+      $('#view-app').classList.toggle('menu-abierto', abrir);
+      $('#rail-abrir').setAttribute('aria-expanded', String(abrir));
+      $('#rail-abrir').setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Ver los nombres del menú');
+      if (abrir) $('.rail').scrollTop = 0;
+    };
+    $('#rail-abrir').addEventListener('click', () => menuDesplegado(!$('#view-app').classList.contains('menu-abierto')));
+    $('#rail-velo').addEventListener('click', () => menuDesplegado(false));
+    $('.rail').addEventListener('click', (e) => {
+      if (e.target.closest('.rail-btn, .rail-avance, .rail-planactual')) menuDesplegado(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('#view-app').classList.contains('menu-abierto')) { menuDesplegado(false); $('#rail-abrir').focus(); }
+    });
+
     // fotos: subir y borrar (delegación)
 
     // conexión con Instagram

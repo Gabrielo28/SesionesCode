@@ -14,7 +14,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rubrofy">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&family=Caveat:wght@700&display=swap">
-  <link rel="stylesheet" href="/app/styles.css?v=49">
+  <link rel="stylesheet" href="/app/styles.css?v=50">
 </head>
 <body>
   <section id="view-login" class="login-view" hidden>
@@ -41,6 +41,10 @@
         <img src="/app/icon-192.png?v=2" width="34" height="34" alt="Rubrofy">
         <span class="rail-marca">Rubrofy</span>
       </div>
+      <button type="button" class="rail-abrir" id="rail-abrir" aria-expanded="false" aria-label="Ver los nombres del menú" title="Ver los nombres del menú">
+        <svg class="ic-abrir" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7 H20 M4 12 H20 M4 17 H20"/></svg>
+        <svg class="ic-cerrar" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18"/></svg><span class="rail-label">Cerrar menú</span>
+      </button>
       <button class="rail-btn active" data-view="inicio" title="Inicio">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4.5 L20 11"/><path d="M6.5 9.5 V19.5 H17.5 V9.5"/><path d="M10 19.5 V14 H14 V19.5"/></svg><span class="rail-label">Inicio</span>
       </button>
@@ -115,6 +119,7 @@
       <button type="button" class="rail-avance" id="rail-avance" title="Ver tu ruta en Inicio" hidden></button>
       <button type="button" class="rail-planactual" id="rail-planactual" title="Ver tu plan en Mi cuenta" hidden></button>
     </nav>
+    <div class="rail-velo" id="rail-velo" aria-hidden="true"></div>
 
     <div class="main">
       <header class="topbar">
@@ -425,32 +430,32 @@
     </form>
   </dialog>
 
-  <script src="/app/ayuda.js?v=49"></script>
-  <script src="/app/guias.js?v=49"></script>
-  <script src="/app/graficos.js?v=49"></script>
-  <script src="/app/plan.js?v=49"></script>
-  <script src="/app/prueba-form.js?v=49"></script>
-  <script src="/app/recargas.js?v=49"></script>
-  <script src="/app/diseno.js?v=49"></script>
-  <script src="/app/diseno-ia.js?v=49"></script>
-  <script src="/app/reels.js?v=49"></script>
-  <script src="/app/videos.js?v=49"></script>
-  <script src="/app/brief.js?v=49"></script>
-  <script src="/app/creditos.js?v=49"></script>
-  <script src="/app/imagen.js?v=49"></script>
-  <script src="/app/galeria.js?v=49"></script>
-  <script src="/app/cuenta.js?v=49"></script>
-  <script src="/app/soporte.js?v=49"></script>
-  <script src="/app/bienvenida.js?v=49"></script>
-  <script src="/app/inicio.js?v=49"></script>
-  <script src="/app/calendario.js?v=49"></script>
-  <script src="/app/resultados.js?v=49"></script>
-  <script src="/app/estilo.js?v=49"></script>
-  <script src="/app/ads.js?v=49"></script>
-  <script src="/app/competencia.js?v=49"></script>
-  <script src="/app/contexto.js?v=49"></script>
-  <script src="/app/voz.js?v=49"></script>
-  <script src="/app/pwa.js?v=49"></script>
-  <script src="/app/app.js?v=49"></script>
+  <script src="/app/ayuda.js?v=50"></script>
+  <script src="/app/guias.js?v=50"></script>
+  <script src="/app/graficos.js?v=50"></script>
+  <script src="/app/plan.js?v=50"></script>
+  <script src="/app/prueba-form.js?v=50"></script>
+  <script src="/app/recargas.js?v=50"></script>
+  <script src="/app/diseno.js?v=50"></script>
+  <script src="/app/diseno-ia.js?v=50"></script>
+  <script src="/app/reels.js?v=50"></script>
+  <script src="/app/videos.js?v=50"></script>
+  <script src="/app/brief.js?v=50"></script>
+  <script src="/app/creditos.js?v=50"></script>
+  <script src="/app/imagen.js?v=50"></script>
+  <script src="/app/galeria.js?v=50"></script>
+  <script src="/app/cuenta.js?v=50"></script>
+  <script src="/app/soporte.js?v=50"></script>
+  <script src="/app/bienvenida.js?v=50"></script>
+  <script src="/app/inicio.js?v=50"></script>
+  <script src="/app/calendario.js?v=50"></script>
+  <script src="/app/resultados.js?v=50"></script>
+  <script src="/app/estilo.js?v=50"></script>
+  <script src="/app/ads.js?v=50"></script>
+  <script src="/app/competencia.js?v=50"></script>
+  <script src="/app/contexto.js?v=50"></script>
+  <script src="/app/voz.js?v=50"></script>
+  <script src="/app/pwa.js?v=50"></script>
+  <script src="/app/app.js?v=50"></script>
 </body>
 </html>
