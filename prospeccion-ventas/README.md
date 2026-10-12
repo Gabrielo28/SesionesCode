@@ -13,12 +13,12 @@
 | [07-icp-automatizacion.md](07-icp-automatizacion.md) | A quién vendemos automatización con IA — distinto del ICP de redes, 100% remoto |
 | [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
-| [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 54 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
+| [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 74 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
 | [mensajes-frio-v2.md](mensajes-frio-v2.md) | **Los mensajes vigentes**: secuencia completa (invitación LinkedIn → mensaje 1 → día 4 → día 10) para las 20 de prioridad A, mensaje 1 para las 26 de B, y por qué no se escribe a las 8 de C |
 | [mensajes-por-canal.md](mensajes-por-canal.md) | **Por dónde escribirle a cada una**: las 46 (A+B) clasificadas en WhatsApp / email / llamada / LinkedIn según lo que la empresa publica como canal, con el mensaje ya en el formato de ese canal (WhatsApp corto, email con asunto, guion de llamada) |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
-| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (64 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
+| [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (74 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
 | [archivo/](archivo/) | Lotes 1-3 de mensajes anteriores, reemplazados por `mensajes-frio-v2.md`. Se guardan solo como historial |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows) |
 | [auditoria-oferta-influence.md](auditoria-oferta-influence.md) | Qué vende la web, qué no define, inconsistencias internas corregidas y decisiones de política (grabación, permanencia, LinkedIn) |
