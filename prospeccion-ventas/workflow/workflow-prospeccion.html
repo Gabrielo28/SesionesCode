@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Workflow de prospección · Influence Chile</title><style>
+@font-face { font-family:'Montserrat'; font-weight:400 800; src:url('../situ/fonts/montserrat.woff2') format('woff2'); }
+@page { size: A4 landscape; margin:0; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Montserrat,sans-serif; color:#123638; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.page { width:297mm; height:210mm; padding:10mm 11mm 9mm; page-break-after:always; position:relative; background:#fff; overflow:hidden; }
+.page:last-child { page-break-after:auto; }
+.hd { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #FF7B7B; padding-bottom:2.5mm; margin-bottom:4mm; }
+.hd .k { font-size:8.5pt; letter-spacing:.18em; text-transform:uppercase; color:#5f7a7a; font-weight:700; margin-bottom:1.5mm; }
+.hd h1 { font-size:19pt; color:#12959C; font-weight:800; line-height:1.1; }
+.hd p { font-size:9.5pt; color:#5f7a7a; margin-top:1mm; }
+.hd img { height:14mm; }
+.foot { position:absolute; bottom:5mm; left:11mm; right:11mm; display:flex; justify-content:space-between; font-size:8pt; color:#5f7a7a; }
+/* semana */
+.week { display:grid; grid-template-columns:34mm repeat(5,1fr); gap:2.5mm; }
+.week .day { background:#12959C; color:#fff; border-radius:6px; padding:2.5mm; text-align:center; font-weight:800; font-size:11pt; }
+.week .day small { display:block; font-weight:500; font-size:8pt; opacity:.9; margin-top:.5mm; }
+.week .lane { background:#123638; color:#fff; border-radius:6px; padding:2.5mm; font-weight:800; font-size:9.5pt; display:flex; align-items:center; }
+.week .lane.s { background:#12959C; } .week .lane.g { background:#FF7B7B; }
+.week .c { border:1.5px solid #e6f1f1; border-radius:6px; padding:2mm 2.5mm; font-size:8.6pt; line-height:1.3; min-height:18mm; background:#fff; }
+.week .c.auto { border-color:#123638; background:#f3f6f6; } .week .c.s { border-color:#12959C; } .week .c.g { border-color:#FF7B7B; background:#fff8f8; }
+.week .c b { display:block; margin-bottom:1mm; } .week .c .t { color:#5f7a7a; font-size:8pt; font-weight:700; }
+.week .c.empty { border-style:dashed; color:#b7c9c9; display:flex; align-items:center; justify-content:center; font-size:8.5pt; }
+.funnel { display:flex; gap:0; margin-top:4mm; align-items:stretch; }
+.funnel div { flex:1; background:#e6f1f1; padding:2.5mm 4mm 2.5mm 8mm; clip-path:polygon(0 0,calc(100% - 6mm) 0,100% 50%,calc(100% - 6mm) 100%,0 100%,6mm 50%); text-align:center; }
+.funnel div:first-child { clip-path:polygon(0 0,calc(100% - 6mm) 0,100% 50%,calc(100% - 6mm) 100%,0 100%); }
+.funnel div:nth-child(odd) { background:#d6ecec; }
+.funnel b { display:block; font-size:14pt; color:#12959C; } .funnel span { font-size:8.5pt; color:#5f7a7a; }
+/* reglas */
+.rules { display:grid; grid-template-columns:repeat(4,1fr); gap:2.5mm; margin-bottom:3.5mm; }
+.rule { border-left:4px solid #FF7B7B; background:#fff7f7; border-radius:0 6px 6px 0; padding:2.2mm 3mm; font-size:8.5pt; line-height:1.3; }
+.rule b { display:block; color:#123638; margin-bottom:1mm; font-size:9.5pt; }
+.two { display:grid; grid-template-columns:1.15fr 1fr; gap:6mm; }
+h2 { font-size:11.5pt; color:#12959C; font-weight:800; margin-bottom:2mm; }
+table { width:100%; border-collapse:collapse; font-size:8.2pt; }
+th { background:#12959C; color:#fff; text-align:left; padding:1.5mm 2.5mm; font-size:8.3pt; }
+td { padding:0.9mm 2.5mm; border-bottom:1px solid #e6f1f1; vertical-align:top; }
+td code { font-family:monospace; font-size:8.5pt; color:#12959C; font-weight:700; }
+.steps { display:flex; gap:2mm; margin-top:3mm; }
+.steps div { flex:1; border:1.5px solid #12959C; border-radius:6px; padding:2mm 2.5mm; font-size:8.3pt; line-height:1.3; }
+.steps div b { display:block; color:#12959C; font-size:10pt; margin-bottom:1mm; }
+.legend { display:flex; gap:5mm; font-size:8.5pt; color:#5f7a7a; margin-top:2mm; }
+.legend i { display:inline-block; width:3.5mm; height:3.5mm; border-radius:1mm; vertical-align:middle; margin-right:1.5mm; }
+</style></head><body><section class="page"><div class="hd"><div><div class="k">Workflow de prospección · Influence Chile · 1/4</div><h1>El flujo completo, por carriles</h1><p>Dos fuentes (frío y entrantes), tres responsables, un solo pipeline. Teal = asistente · coral = Gabriel · oscuro = automático. Línea punteada = reciclaje.</p></div><img src="../propuesta/assets/logo-influence.png" alt="Influence"></div><svg viewBox="0 0 1043 620" width="1043" height="620" font-family="Montserrat, sans-serif">
+<defs>
+<marker id="ah-teal" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#12959C"/></marker>
+<marker id="ah-coral" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FF7B7B"/></marker>
+<marker id="ah-dark" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#123638"/></marker>
+</defs>
+<text x="185.92857142857144" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">CAPTAR</text>
+<text x="317.7857142857143" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">VERIFICAR</text>
+<text x="449.64285714285717" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">PREPARAR</text>
+<text x="581.5" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">CONTACTAR</text>
+<text x="713.3571428571429" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">SEGUIR</text>
+<text x="845.2142857142858" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">REUNIR</text>
+<text x="977.0714285714286" y="12" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="2" fill="#5f7a7a">CERRAR</text>
+<rect x="0" y="20" width="1043" height="144" rx="10" fill="#fff" stroke="#e6f1f1"/>
+<rect x="0" y="20" width="110" height="144" rx="10" fill="#FF7B7B"/>
+<text x="55" y="81.0" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" letter-spacing="1">ENTRANTES</text>
+<text x="55" y="97.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">test web</text>
+<text x="55" y="109.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">Instagram</text>
+<text x="55" y="121.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">correo</text>
+<rect x="0" y="170" width="1043" height="144" rx="10" fill="#f6fbfb" stroke="#e6f1f1"/>
+<rect x="0" y="170" width="110" height="144" rx="10" fill="#123638"/>
+<text x="55" y="231.0" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" letter-spacing="1">AUTOMÁTICO</text>
+<text x="55" y="247.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">rutina</text>
+<text x="55" y="259.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">lunes 10:00</text>
+<rect x="0" y="320" width="1043" height="144" rx="10" fill="#fff" stroke="#e6f1f1"/>
+<rect x="0" y="320" width="110" height="144" rx="10" fill="#12959C"/>
+<text x="55" y="381.0" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" letter-spacing="1">ASISTENTE</text>
+<text x="55" y="397.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">verifica</text>
+<text x="55" y="409.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">redacta</text>
+<text x="55" y="421.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">prepara</text>
+<text x="55" y="433.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">registra</text>
+<rect x="0" y="470" width="1043" height="144" rx="10" fill="#f6fbfb" stroke="#e6f1f1"/>
+<rect x="0" y="470" width="110" height="144" rx="10" fill="#FF7B7B"/>
+<text x="55" y="531.0" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" letter-spacing="1">GABRIEL</text>
+<text x="55" y="547.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">aprueba</text>
+<text x="55" y="559.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">envía</text>
+<text x="55" y="571.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">conversa</text>
+<text x="55" y="583.0" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">cierra</text>
+<rect x="127.92857142857144" y="51.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="185.92857142857144" y="79.125" text-anchor="middle" font-size="12.5" font-weight="700" fill="#123638">Entrante</text>
+<text x="185.92857142857144" y="96.0" text-anchor="middle" font-size="12.5" font-weight="500" fill="#123638">test web · DM IG</text>
+<text x="185.92857142857144" y="112.875" text-anchor="middle" font-size="12.5" font-weight="500" fill="#123638">correo</text>
+<rect x="523.5" y="51.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="581.5" y="74.7375" text-anchor="middle" font-size="10.5" font-weight="700" fill="#123638">Responder &lt; 2 h</text>
+<text x="581.5" y="88.9125" text-anchor="middle" font-size="10.5" font-weight="500" fill="#123638">una meta: agendar</text>
+<text x="581.5" y="103.0875" text-anchor="middle" font-size="10.5" font-weight="500" fill="#123638">pide @ o web</text>
+<text x="581.5" y="117.2625" text-anchor="middle" font-size="10.5" font-weight="500" fill="#123638">2 horarios · sin precio</text>
+<rect x="127.92857142857144" y="201.0" width="116" height="82" rx="8" fill="#fff" stroke="#123638" stroke-width="2"/>
+<text x="185.92857142857144" y="224.13" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Lunes 10:00</text>
+<text x="185.92857142857144" y="238.71" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">busca 8-10 nuevas</text>
+<text x="185.92857142857144" y="253.29" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">otro ángulo</text>
+<text x="185.92857142857144" y="267.87" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">cada semana</text>
+<rect x="259.7857142857143" y="351.0" width="116" height="82" rx="8" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="317.7857142857143" y="374.13" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Verificar</text>
+<text x="317.7857142857143" y="388.71" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">web real · equipo</text>
+<text x="317.7857142857143" y="403.29" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">sin IA ni agenda</text>
+<text x="317.7857142857143" y="417.87" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">regla Auditron</text>
+<rect x="391.64285714285717" y="351.0" width="116" height="82" rx="8" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="449.64285714285717" y="381.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Decisor + canal</text>
+<text x="449.64285714285717" y="396.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">+ mensaje 5 partes</text>
+<text x="449.64285714285717" y="410.58000000000004" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">→ por_contactar</text>
+<rect x="655.3571428571429" y="351.0" width="116" height="82" rx="8" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="713.3571428571429" y="374.13" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Preparar</text>
+<text x="713.3571428571429" y="388.71" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">auditoría express</text>
+<text x="713.3571428571429" y="403.29" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">o mapa de proceso</text>
+<text x="713.3571428571429" y="417.87" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">antes de la reunión</text>
+<rect x="787.2142857142858" y="351.0" width="116" height="82" rx="8" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="845.2142857142858" y="374.13" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Propuesta</text>
+<text x="845.2142857142858" y="388.71" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">el mismo día</text>
+<text x="845.2142857142858" y="403.29" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">2 opciones · neto+IVA</text>
+<text x="845.2142857142858" y="417.87" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">sin permanencia</text>
+<rect x="919.0714285714286" y="351.0" width="116" height="82" rx="8" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="977.0714285714286" y="381.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Registro (vie)</text>
+<text x="977.0714285714286" y="396.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">números semana</text>
+<text x="977.0714285714286" y="410.58000000000004" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">dormidos → 90 días</text>
+<rect x="391.64285714285717" y="501.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="449.64285714285717" y="531.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Aprueba lote</text>
+<text x="449.64285714285717" y="546.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">10 empresas</text>
+<text x="449.64285714285717" y="560.5799999999999" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">5 A + 5 B · 20 min</text>
+<rect x="523.5" y="501.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="581.5" y="531.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Envía a mano (mar)</text>
+<text x="581.5" y="546.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">WhatsApp 10-13</text>
+<text x="581.5" y="560.5799999999999" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">email 9-11 · llamada</text>
+<rect x="655.3571428571429" y="501.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="713.3571428571429" y="531.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Seguimiento (jue)</text>
+<text x="713.3571428571429" y="546.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">día 4 · día 10</text>
+<text x="713.3571428571429" y="560.5799999999999" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">después: se deja</text>
+<rect x="787.2142857142858" y="501.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="845.2142857142858" y="531.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Reunión 30 min</text>
+<text x="845.2142857142858" y="546.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">jue / vie</text>
+<text x="845.2142857142858" y="560.5799999999999" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">agenda del prospecto</text>
+<rect x="919.0714285714286" y="501.0" width="116" height="82" rx="8" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="977.0714285714286" y="531.42" text-anchor="middle" font-size="10.8" font-weight="700" fill="#123638">Cierre</text>
+<text x="977.0714285714286" y="546.0" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">ganado / perdido</text>
+<text x="977.0714285714286" y="560.5799999999999" text-anchor="middle" font-size="10.8" font-weight="500" fill="#123638">motivo en notas</text>
+<path d="M243.92857142857144,242.0 L259.7857142857143,392.0" fill="none" stroke="#123638" stroke-width="2.2" marker-end="url(#ah-dark)"/>
+<path d="M375.7857142857143,392.0 L391.64285714285717,392.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<path d="M449.64285714285717,433.0 L449.64285714285717,501.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<path d="M507.64285714285717,542.0 L523.5,542.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<path d="M639.5,542.0 L655.3571428571429,542.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="600.8285714285714" y="589.0" width="93.2" height="16" rx="4" fill="#fff"/>
+<text x="647.4285714285714" y="601.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FF7B7B">sin respuesta</text>
+<path d="M611.5,501.0 Q641.5,461.0 693.3571428571429,433.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="622.7" y="449.0" width="67.6" height="16" rx="4" fill="#fff"/>
+<text x="656.5" y="461.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#12959C">respondió</text>
+<path d="M243.92857142857144,92.0 L523.5,92.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<path d="M581.5,133.0 Q621.5,291.0 713.3571428571429,351.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="590.5" y="145.0" width="138.0" height="16" rx="4" fill="#fff"/>
+<text x="659.5" y="157.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FF7B7B">entra como respondió</text>
+<path d="M713.3571428571429,433.0 L845.2142857142858,501.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<path d="M845.2142857142858,501.0 L845.2142857142858,433.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<path d="M845.2142857142858,433.0 L977.0714285714286,501.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<path d="M771.3571428571429,542.0 L787.2142857142858,542.0" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="739.0857142857143" y="589.0" width="80.4" height="16" rx="4" fill="#fff"/>
+<text x="779.2857142857143" y="601.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FF7B7B">si contesta</text>
+<path d="M753.3571428571429,501.0 L753.3571428571429,467.0 L977.0714285714286,467.0 L977.0714285714286,435.0" fill="none" stroke="#12959C" stroke-width="2.2" stroke-dasharray="6,5" marker-end="url(#ah-teal)"/>
+<rect x="915.0714285714286" y="458.0" width="72" height="16" rx="4" fill="#fff"/><text x="951.0714285714286" y="470.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#12959C">→ dormido</text>
+<path d="M977.0714285714286,351.0 C977.0714285714286,291.0 449.64285714285717,291.0 479.64285714285717,351.0" fill="none" stroke="#12959C" stroke-width="2" stroke-dasharray="6,5" marker-end="url(#ah-teal)"/>
+<rect x="507.6428571428571" y="291.0" width="184" height="16" rx="4" fill="#fff"/><text x="599.6428571428571" y="303.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#12959C">a los 90 días, otro ángulo</text>
+</svg><div class="foot"><span>Influence Chile · prospección redes + automatización · versión 12-oct-2026</span><span>Fuente: prospeccion-ventas/00-workflow-prospeccion.md</span></div></section><section class="page"><div class="hd"><div><div class="k">Workflow de prospección · Influence Chile · 2/4</div><h1>La semana, día por día</h1><p>Horario Chile. Cada tarjeta dice qué se hace, quién y cuánto toma. Abajo, la meta semanal mientras no haya datos reales.</p></div><img src="../propuesta/assets/logo-influence.png" alt="Influence"></div><div class="week"><div></div><div class="day">Lunes<small>abastecer</small></div><div class="day">Martes<small>contactar</small></div><div class="day">Miércoles<small>preparar</small></div><div class="day">Jueves<small>seguir</small></div><div class="day">Viernes<small>cerrar y medir</small></div><div class="lane">AUTOMÁTICO</div><div class="c auto"><b>Rutina 10:00</b>Busca 8-10 empresas nuevas con otro ángulo, verifica, carga al CSV y al pipeline como B, manda resumen.<div class="t">sin intervención</div></div><div class="c empty">—</div><div class="c empty">—</div><div class="c empty">—</div><div class="c empty">—</div><div class="lane s">ASISTENTE</div><div class="c s"><b>Lote de la semana</b>10 en por_contactar con mensaje por canal. 5 A + 5 B. Si faltan, busca decisores; no baja la vara.<div class="t">30 min</div></div><div class="c s"><b>A demanda</b>Mueve a contactado lo que Gabriel reporte. Responde dudas de tono.<div class="t">10 min</div></div><div class="c s"><b>Preparar lo que respondió</b>Redes: auditoría express (8 min). Automatización: mapa del proceso visto desde afuera + pregunta de diagnóstico.<div class="t">por respuesta</div></div><div class="c s"><b>Entrantes</b>Mensaje listo para pegar en minutos cuando llega un pantallazo. Cualquier día.<div class="t">&lt; 2 h</div></div><div class="c s"><b>Propuesta y registro</b>Propuesta el mismo día de la reunión. Registro semanal. Dormidos a 90 días.<div class="t">30 min</div></div><div class="lane g">GABRIEL</div><div class="c g"><b>Aprobar el lote</b>Lee los 10 mensajes, corrige tono, descarta la que no cierre.<div class="t">20 min</div></div><div class="c g"><b>Enviar a mano</b>WhatsApp 10:00-13:00 · email 9:00-11:00 (+ invitación LinkedIn) · llamada para pedir correo. Reporta: &quot;contacté a X, Y, Z&quot;.<div class="t">60-90 min</div></div><div class="c g"><b>Responder</b>Lo que contestó: una línea si es no; agendar si es sí. Anota la objeción.<div class="t">15 min</div></div><div class="c g"><b>Seguimiento día 4 y día 10</b>Una línea nueva, no el mismo mensaje. Reuniones de 30 min jue/vie.<div class="t">30 min</div></div><div class="c g"><b>Reunión → decisión</b>Reunión, aprobar propuesta, marcar ganado/perdido con motivo. Elegir ángulo del lunes.<div class="t">30 min + reuniones</div></div></div><div class="funnel"><div><b>10</b><span>contactos en frío + todos los entrantes</span></div><div><b>3</b><span>respuestas</span></div><div><b>1-2</b><span>reuniones</span></div><div><b>1</b><span>propuesta</span></div><div><b>1 / mes</b><span>cierre (meta inicial)</span></div></div><div class="legend"><span><i style="background:#123638"></i>automático</span><span><i style="background:#12959C"></i>asistente</span><span><i style="background:#FF7B7B"></i>Gabriel</span><span>Horario Chile. La meta se recalibra con 4 semanas de datos reales.</span></div><div class="foot"><span>Influence Chile · prospección redes + automatización · versión 12-oct-2026</span><span>Fuente: prospeccion-ventas/00-workflow-prospeccion.md</span></div></section><section class="page"><div class="hd"><div><div class="k">Workflow de prospección · Influence Chile · 3/4</div><h1>Estados del pipeline</h1><p>Cada empresa está en exactamente un estado. Solo avanza; si retrocede, se anota por qué en notas. Coral = cola de trabajo de Gabriel.</p></div><img src="../propuesta/assets/logo-influence.png" alt="Influence"></div><svg viewBox="0 0 1043 285" width="1043" height="285" font-family="Montserrat, sans-serif">
+<defs>
+<marker id="ah-teal" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#12959C"/></marker>
+<marker id="ah-coral" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#FF7B7B"/></marker>
+<marker id="ah-dark" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#123638"/></marker>
+</defs>
+<rect x="0.0" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="59.9375" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">por_verificar</text>
+<text x="59.9375" y="70" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">sin confirmar</text>
+<path d="M119.875,59.0 L130.875,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="131.875" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="191.8125" y="44" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">por_identificar_</text>
+<text x="191.8125" y="57" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">decisor</text>
+<text x="191.8125" y="78" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">calza, falta nombre</text>
+<path d="M251.75,59.0 L262.75,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="263.75" y="22" width="119.875" height="74" rx="9" fill="#FF7B7B" stroke="#FF7B7B" stroke-width="2"/>
+<text x="323.6875" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="monospace">por_contactar</text>
+<text x="323.6875" y="70" text-anchor="middle" font-size="9" fill="#fff" opacity=".9">COLA DE GABRIEL</text>
+<path d="M383.625,59.0 L394.625,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="395.625" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="455.5625" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">contactado</text>
+<text x="455.5625" y="70" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">fecha en el CSV</text>
+<path d="M515.5,59.0 L526.5,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="527.5" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="587.4375" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">respondio</text>
+<text x="587.4375" y="70" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">cualquier respuesta</text>
+<path d="M647.375,59.0 L658.375,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="659.375" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="719.3125" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">reunion_agendada</text>
+<text x="719.3125" y="70" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">fecha en notas</text>
+<path d="M779.25,59.0 L790.25,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="791.25" y="22" width="119.875" height="74" rx="9" fill="#fff" stroke="#12959C" stroke-width="2"/>
+<text x="851.1875" y="44" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">propuesta_</text>
+<text x="851.1875" y="57" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">enviada</text>
+<text x="851.1875" y="78" text-anchor="middle" font-size="9" fill="#123638" opacity=".9">fecha y monto</text>
+<path d="M911.125,59.0 L922.125,59.0" fill="none" stroke="#12959C" stroke-width="2.2" marker-end="url(#ah-teal)"/>
+<rect x="923.125" y="22" width="119.875" height="74" rx="9" fill="#12959C" stroke="#12959C" stroke-width="2"/>
+<text x="983.0625" y="48" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="monospace">cerrado_ganado</text>
+<path d="M455.5625,96 L455.5625,108" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="395.625" y="110" width="119.875" height="56" rx="9" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="455.5625" y="134" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">sin_respuesta</text>
+<text x="455.5625" y="151" text-anchor="middle" font-size="9" fill="#123638">tras día 4 y día 10</text>
+<path d="M455.5625,166 L455.5625,194" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="395.625" y="196" width="119.875" height="56" rx="9" fill="#f6fbfb" stroke="#12959C" stroke-width="2" stroke-dasharray="6,5"/>
+<text x="455.5625" y="220" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">dormido</text>
+<text x="455.5625" y="237" text-anchor="middle" font-size="9" fill="#123638">90 días · otro ángulo</text>
+<path d="M851.1875,96 L851.1875,108" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="791.25" y="110" width="119.875" height="56" rx="9" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="851.1875" y="134" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">cerrado_perdido</text>
+<text x="851.1875" y="151" text-anchor="middle" font-size="9" fill="#123638">motivo en notas</text>
+<path d="M59.9375,96 L59.9375,108" fill="none" stroke="#5f7a7a" stroke-width="2.2" marker-end="url(#ah-dark)"/>
+<rect x="0.0" y="110" width="119.875" height="56" rx="9" fill="#fff" stroke="#5f7a7a" stroke-width="2"/>
+<text x="59.9375" y="134" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">descartada_*</text>
+<text x="59.9375" y="151" text-anchor="middle" font-size="9" fill="#123638">icp · sin fuente</text>
+<path d="M587.4375,96 L587.4375,108" fill="none" stroke="#FF7B7B" stroke-width="2.2" marker-end="url(#ah-coral)"/>
+<rect x="527.5" y="110" width="119.875" height="56" rx="9" fill="#fff" stroke="#FF7B7B" stroke-width="2"/>
+<text x="587.4375" y="134" text-anchor="middle" font-size="10" font-weight="800" fill="#123638" font-family="monospace">entrantes</text>
+<text x="587.4375" y="151" text-anchor="middle" font-size="9" fill="#123638">web · IG · correo</text>
+</svg><table style="margin-top:2mm"><tr><th style="width:30%">Estado</th><th>Significa</th><th style="width:22%">Lo mueve</th></tr><tr><td><code>por_verificar</code></td><td>entró a la lista, pero el sitio no se pudo leer o falta confirmar equipo</td><td>asistente</td></tr><tr><td><code>por_confirmar_tamano · por_confirmar_decisor</code></td><td>verificada; falta saber si tiene equipo o quién decide</td><td>asistente (LinkedIn, búsqueda)</td></tr><tr><td><code>por_identificar_decisor</code></td><td>calza con el ICP; falta nombre y cargo</td><td>asistente</td></tr><tr><td><code>por_contactar</code></td><td>decisor, canal y mensaje listos. La cola de trabajo de Gabriel</td><td>asistente deja · Gabriel saca</td></tr><tr><td><code>contactado</code></td><td>mensaje 1 enviado; fecha en fecha_contacto</td><td>Gabriel, al enviar</td></tr><tr><td><code>sin_respuesta</code></td><td>día 4 y día 10 enviados, nada</td><td>Gabriel</td></tr><tr><td><code>dormido</code></td><td>descansa 90 días; vuelve a por_contactar con otro ángulo</td><td>asistente, el viernes</td></tr><tr><td><code>respondio</code></td><td>cualquier respuesta, incluso &quot;no ahora&quot;. Los entrantes entran aquí</td><td>Gabriel</td></tr><tr><td><code>reunion_agendada</code></td><td>fecha en notas</td><td>Gabriel</td></tr><tr><td><code>propuesta_enviada</code></td><td>fecha y monto en notas</td><td>asistente, al enviar</td></tr><tr><td><code>cerrado_ganado · cerrado_perdido</code></td><td>motivo en notas; lo perdido dice qué objeción no supimos responder</td><td>Gabriel</td></tr><tr><td><code>descartada_icp · descartada_sin_fuente</code></td><td>no calza o no se pudo verificar; no se borra, evita reencontrarla</td><td>asistente</td></tr></table><div class="foot"><span>Influence Chile · prospección redes + automatización · versión 12-oct-2026</span><span>Fuente: prospeccion-ventas/00-workflow-prospeccion.md</span></div></section><section class="page"><div class="hd"><div><div class="k">Workflow de prospección · Influence Chile · 4/4</div><h1>Reglas, el prospecto paso a paso y cómo pedir</h1><p>Lo que no se negocia, el proceso de 15 minutos por empresa, y las frases que disparan cada tarea del asistente.</p></div><img src="../propuesta/assets/logo-influence.png" alt="Influence"></div><div class="rules"><div class="rule"><b>Verificar antes de escribir</b>Lo que no se vio con los propios ojos no se afirma. Un dato inventado cuesta la cuenta (lección Auditron).</div><div class="rule"><b>El clic de enviar es de Gabriel</b>Se automatiza buscar, verificar, redactar y registrar. Nunca el envío por LinkedIn, Instagram o WhatsApp.</div><div class="rule"><b>Precios solo en reunión o propuesta</b>En frío y en el primer mensaje a un entrante, nunca. Excepción: los planes públicos de la web si insisten.</div><div class="rule"><b>Día 4, día 10, y se deja</b>Volver a los 90 días con otro ángulo es válido. Escribir cinco veces, no.</div><div class="rule"><b>Lo que no gestionamos se cobra</b>LinkedIn, grabación presencial, Google Ads. La propuesta no regala servicios.</div><div class="rule"><b>Responder lo que pidieron, en su orden</b>Si pidieron 9 puntos, son 9. Propuesta con 2 opciones máximo, neto + IVA, sin permanencia.</div><div class="rule"><b>Un entrante vale cinco fríos</b>Respuesta antes de 2 horas, una sola meta: agendar. Todo entrante se registra, prospere o no.</div><div class="rule"><b>Nada de clientes sin preguntar</b>No se tocan automatizaciones de clientes ni se gastan créditos de Apollo sin aviso.</div></div><h2>Un prospecto en frío, de principio a fin (15 minutos del asistente)</h2><div class="steps"><div><b>1 · Verificar</b>¿Empresa real? ¿Web o fuente pública? ¿Equipo? ¿Ya usa IA o agenda real? → descartada_icp</div><div><b>2 · Decisor</b>Nombre + cargo + dónde se vio. Sin nombre no se escribe.</div><div><b>3 · Canal</b>Inmobiliaria → WhatsApp · legal/contable/RR.HH. → email + LinkedIn · estudio chico → llamada</div><div><b>4 · Mensaje</b>Quién soy · qué vi en SU web · qué suele costar · qué hacemos · una pregunta fácil. ≤ 6 líneas, sin precio.</div><div><b>5 · Registrar</b>Fila completa en el pipeline, estado por_contactar.</div></div><div class="two" style="margin-top:3.5mm"><div><h2>Frases que disparan cada tarea</h2><table><tr><th>Dices</th><th>El asistente hace</th></tr><tr><td><code>lote de la semana</code></td><td>10 en por_contactar, mensajes por canal, 5 A + 5 B</td></tr><tr><td><code>contacté a X, Y, Z</code></td><td>Mueve a contactado con fecha de hoy</td></tr><tr><td><code>respondió X: [texto]</code></td><td>Clasifica, propone respuesta, prepara auditoría</td></tr><tr><td><code>auditoría express @cuenta</code></td><td>3 observaciones para abrir la reunión</td></tr><tr><td><code>responde este lead</code></td><td>Mensaje listo para pegar, con horarios</td></tr><tr><td><code>propuesta para X</code></td><td>Carpeta propia con PDF y correo (estándar situ/)</td></tr><tr><td><code>registra</code></td><td>Pipeline y registro semanal al día</td></tr><tr><td><code>números de la semana</code></td><td>Tabla + lectura de qué cambiar</td></tr><tr><td><code>la rutina que busque [X]</code></td><td>Cambia el ángulo del lunes</td></tr></table></div><div><h2>Dónde vive cada pieza</h2><table><tr><th>Archivo</th><th>Para qué</th></tr><tr><td><code>00-workflow-prospeccion.md</code></td><td>este flujo, en texto</td></tr><tr><td><code>pipeline-automatizacion.csv</code></td><td>74 empresas, un estado por fila</td></tr><tr><td><code>mensajes-por-canal.md</code></td><td>mensajes listos por canal</td></tr><tr><td><code>03-auditoria-express.md</code></td><td>las 5 secciones de la auditoría</td></tr><tr><td><code>04-seguimiento-y-objeciones.md</code></td><td>qué decir cuando responden</td></tr><tr><td><code>propuesta/ · situ/</code></td><td>generador y plantilla a medida</td></tr><tr><td><code>registro-semanal.md</code></td><td>los números, cada viernes</td></tr></table></div></div><div class="foot"><span>Influence Chile · prospección redes + automatización · versión 12-oct-2026</span><span>Fuente: prospeccion-ventas/00-workflow-prospeccion.md</span></div></section></body></html>

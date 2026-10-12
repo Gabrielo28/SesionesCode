@@ -5,6 +5,7 @@
 | Archivo | Para qué |
 |---|---|
 | [00-workflow-prospeccion.md](00-workflow-prospeccion.md) | **Empieza acá.** El flujo completo: estados del pipeline, la semana día por día, entrantes, reglas y qué pedirle al asistente |
+| [workflow/](workflow/) | El mismo workflow en 4 láminas gráficas (PDF y PNG): flujo por carriles, semana, estados, reglas |
 | [registro-semanal.md](registro-semanal.md) | Los números de cada semana (contactos, respuestas, reuniones, propuestas, cierres) |
 | [01-icp-y-scoring.md](01-icp-y-scoring.md) | A quién vendemos, señales de compra, scoring 0-100 |
 | [02-guiones-de-contacto.md](02-guiones-de-contacto.md) | Primer contacto: DM, email, WhatsApp, llamada |
