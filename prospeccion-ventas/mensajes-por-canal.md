@@ -265,15 +265,69 @@ Invitación y secuencia en `mensajes-frio-v2.md`.
 
 ---
 
+## NUEVAS DEL 12-OCT — 10 empresas (todas B)
+
+Salieron de la búsqueda semanal del lunes 12. Mismo criterio de canal que arriba. Tres vienen con
+**"verificar antes"**: el sitio no cargó al revisarlas y los datos son del buscador o de directorios.
+A esas no se les escribe hasta abrir el sitio desde un navegador y confirmar lo que dice el mensaje.
+
+### WhatsApp
+
+**MATT Gestión — Matías Schenone** · +56 9 2642 6034 (WhatsApp del sitio) · mschenone@mattgestion.cl — *candidata a subir a A: decisor con nombre y correo directo*
+> Hola Matías, soy Gabriel de Influence Chile. Vi que en MATT son cuatro personas con unas 110 propiedades y 6 proyectos entre Puerto Varas y Coyhaique, y que la cotización entra toda por WhatsApp. ¿Cuántas de esas consultas son "¿sigue disponible?" o "¿cuándo se puede ver?"? Trabajo con corredoras del sur en que esa parte se conteste sola y a ustedes les llegue la visita puesta.
+
+**Urbana Propiedades** · +56 9 9017 5378 — *identificar socio en LinkedIn antes; si no aparece, escribir igual*
+> Hola, soy Gabriel de Influence Chile. Vi que Urbana trabaja arriendo de temporada en Tongoy y La Serena, y se viene el verano: consultas a cualquier hora preguntando lo mismo (fechas, precio, cuántas personas). ¿Esas consultas de noche y fin de semana las alcanzan a tomar al tiro? Trabajo con corredoras en que eso se conteste solo y la reserva quede encaminada.
+
+**Fornerod Propiedades** · +56 9 8536 2107 (WhatsApp del sitio)
+> Hola, soy Gabriel de Influence Chile. Vi que Fornerod tiene propiedades desde La Serena hasta Antofagasta y Puerto Varas, todo entrando al mismo WhatsApp. Con interesados en otras ciudades, la primera respuesta es la que decide si siguen. ¿Cómo hacen hoy para contestar rápido las consultas de propiedades que están lejos? Trabajo justo en esa primera respuesta.
+
+**BPM Contadores Auditores (Contadores Curicó)** · +56 9 6170 2215 (el "Cotizar ahora" del sitio lleva acá) · asesorias@contadorescurico.cl — *identificar socio*
+> Hola, soy Gabriel de Influence Chile. Vi que en BPM auditan a contratistas, condominios, sindicatos y colegios, además de llevar pymes, y que todas las cotizaciones entran por este WhatsApp. Cada rubro se cotiza distinto. ¿Cuánto tiempo se les va armando cotizaciones a mano? Trabajo con estudios contables en que las preguntas iniciales y la cotización base salgan solas.
+
+**ServicioDTE** · +56 9 9178 8639 (el "Cotizar por WhatsApp" del sitio) — *confirmar tamaño de equipo*
+> Hola, soy Gabriel de Influence Chile. Vi que ServicioDTE atiende 100 % online a clínicas, restaurantes, constructoras y transporte, y que la cotización parte por WhatsApp. ¿Cada cotización la arman a mano según el rubro? Trabajo con estudios contables online en que las primeras preguntas y el precio base salgan solos, y ustedes entren cuando el cliente ya está calificado.
+
+**Alevarre Propiedades** · +56 9 4411 6374 · alevarrepropiedades@gmail.com — ***verificar antes:*** *el sitio no cargó. Confirmar las ~134 propiedades y que sigan activos*
+> Hola, soy Gabriel de Influence Chile. Vi que Alevarre tiene más de 130 propiedades entre La Serena y Coquimbo, y que todo el contacto llega a un celular y un Gmail. Con ese volumen, contestar "¿sigue disponible?" se come el día. ¿Cuántas consultas les entran a la semana? Trabajo con corredoras en que esa parte se conteste sola y les llegue la visita puesta.
+
+### Email
+
+**Yung y Asociados** · yungyasoc@yungyasoc.cl · +56 55 255 6640 — ***verificar antes:*** *el sitio no cargó. Confirmar cantidad de abogados y que Fernando Yung Moraga siga como socio*
+> **Asunto:** Las consultas que llegan a yungyasoc@
+>
+> Estimado Fernando, Yung y Asociados atiende laboral, comercial, civil, tributario, penal y recursos naturales desde Antofagasta. Con seis áreas, cada consulta que llega al correo general tiene que leerla alguien, entender de qué se trata y pasarla al abogado correcto antes de que empiece el trabajo de verdad.
+>
+> Trabajo con estudios en que esa primera capa corra sola: la consulta llega clasificada por área, con los antecedentes básicos pedidos, y el abogado entra directo a evaluar.
+>
+> ¿Cómo distribuyen hoy las consultas nuevas entre las áreas? Con eso te digo en 15 minutos si aplica.
+>
+> Gabriel · Influence Chile · influencechile.cl
+
+### Llamada
+
+**Droppelmann & Binimelis Propiedades — Sandra Droppelmann** · +56 9 7614 5960 (celular publicado) — *son dos socias; confirmar actividad reciente*
+> Dato: "venden parcelas en Puerto Octay, Puerto Klocker y Riachuelo; el que compra suele estar en Santiago y pregunta de noche, y hoy no tienen WhatsApp publicado". Si contesta Sandra: preguntar cómo les llegan las consultas de compradores de afuera y pedir 15 minutos. Si no, pedir su correo y escribir con ese mismo dato.
+
+**Clínica Dental Dentistatemuco** · +56 45 273 1700 — *confirmar cuántos dentistas atienden*
+> Dato: "el botón 'Reservar ahora' del sitio lleva a este teléfono, y atienden de 10:00 a 13:00 y de 15:00 a 20:00; el que quiere reservar a las 14:00 o un domingo, no encuentra a nadie". Pedir el nombre y correo del dueño o dueña. También calza para redes: es la primera clínica de salud del pipeline.
+
+### Verificar antes de cualquier mensaje
+
+**Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo desde un navegador, ver equipo y canal de contacto, y recién ahí escribir el mensaje. Si es una sola persona, pasa a C.
+
+---
+
 ## Resumen
 
-| Canal | A | B | Total |
-|---|---|---|---|
-| WhatsApp | 7 | 14 | 21 |
-| Email | 8 | 9 | 17 |
-| Llamada (y luego email) | 4 | 1 | 5 |
-| LinkedIn | 1 | 2 | 3 |
-| **Total A + B** | **20** | **26** | **46** |
+| Canal | A | B | Nuevas 12-oct (B) | Total |
+|---|---|---|---|---|
+| WhatsApp | 7 | 14 | 6 | 27 |
+| Email | 8 | 9 | 1 | 18 |
+| Llamada (y luego email) | 4 | 1 | 2 | 7 |
+| LinkedIn | 1 | 2 | 0 | 3 |
+| Verificar antes | 0 | 0 | 1 | 1 |
+| **Total** | **20** | **26** | **10** | **56** |
 
 La columna `canal` de `pipeline-automatizacion.csv` tiene esta misma asignación, con el número o
 correo al lado, para no tener que abrir este archivo cada vez.
