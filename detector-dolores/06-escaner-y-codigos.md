@@ -204,6 +204,34 @@ sabe qué le duele.
 
 ---
 
+## Posibles soluciones (15)
+
+Cada solución repara varios códigos. El escáner las ordena **de la mejor a la peor para el negocio escaneado** y muestra las 5 primeras:
+
+- **Impacto** = suma de la gravedad (3/2/1) de los códigos detectados que repara; un código confirmado por 2 o más fuentes pesa 1,5 veces.
+- **Puntaje** = impacto × (4 − esfuerzo). Esfuerzo 1 = esta semana (×3), 2 = 2 a 4 semanas (×2), 3 = 1 a 3 meses (×1). Lo rápido pesa más.
+- Se eligen **de a una**, contando solo los códigos que aún no cubre una solución anterior. Así la Top 2 no repite lo que ya arregla la Top 1 y las cinco juntas cubren lo máximo posible.
+
+| Id | Solución | Esfuerzo | Costo | Quién | Repara | Qué cambia |
+|---|---|---|---|---|---|---|
+| **S01** | Perfil de Google completo y 10 reseñas | Esta semana | Gratis | Dueño | CAP-01, CON-04, RET-04, CAP-05 | Aparecer cuando buscan el rubro en la comuna y tener prueba social en 2 semanas. |
+| **S02** | Flujo de WhatsApp que responde y hace seguimiento | Esta semana | Bajo | Influence | CON-01, CON-02, CON-03, CON-05, PER-04 | Cerrar las consultas que hoy se pierden por demora o silencio. |
+| **S03** | Aceptar todos los medios de pago | Esta semana | Bajo | Dueño | CAJ-02 | Dejar de perder la venta completa del que no anda con efectivo. |
+| **S04** | Lista de clientes y un mensaje semanal | Esta semana | Bajo | Influence | RET-01, RET-02, RET-03, RET-05, CAP-02 | Que los que ya compraron vuelvan sin gastar en captación. |
+| **S05** | Tablero de 5 números cada lunes | Esta semana | Gratis | Dueño | DAT-01, DAT-02, DAT-03, DAT-04 | Ver las fugas antes de que duelan y saber qué canal trae clientes. |
+| **S06** | Ordenar la caja | 2 a 4 semanas | Gratis | Se deriva | CAJ-01, CAJ-03, CAJ-04, CAJ-05 | Que la plata de las ventas esté en la cuenta y no en el cuaderno ni en la bodega. |
+| **S07** | Un solo lugar para los pedidos | 2 a 4 semanas | Bajo | Influence | OPE-01, OPE-02, OPE-03, OPE-05 | Menos pedidos perdidos, atrasados o con error cada semana. |
+| **S08** | Costeo, precios y carta con destacados | 2 a 4 semanas | Bajo | Se deriva | MAR-01, MAR-02, MAR-03, MAR-04, MAR-05 | Que quede más plata de las mismas ventas. |
+| **S09** | Presencia constante en redes con sistema | 2 a 4 semanas | Medio | Influence | CAP-03, CAP-02, PER-04, CAP-05 | Un segundo canal de clientes nuevos que no depende del dueño. |
+| **S10** | Campaña de captación medida | 2 a 4 semanas | Medio | Influence | CAP-04, CAP-05, DAT-02, DAT-05 | Saber cuánto cuesta cada cliente nuevo y comprar más de los que convienen. |
+| **S11** | Landing, tienda online o agenda online | 1 a 3 meses | Medio | Influence | CON-03, CON-05, CON-04, OPE-01, CAJ-02 | Que se pueda comprar o reservar sin llamar y sin esperar un DM. |
+| **S12** | Delegar un área completa con procedimiento | 2 a 4 semanas | Medio | Influence | PER-01, PER-02, PER-04, PER-05 | Que el negocio funcione una semana sin el dueño y que él recupere horas para pensar. |
+| **S13** | Radiografía de proceso y refuerzo en hora punta | 2 a 4 semanas | Bajo | Influence | OPE-02, OPE-04, PER-02 | Saber en qué paso exacto se frena y cuánto cuesta, y destrabarlo sin contratar. |
+| **S14** | Cargo escrito e inducción de una semana | 2 a 4 semanas | Bajo | Se deriva | PER-03, PER-05 | Que la gente nueva rinda en una semana y se quede. |
+| **S15** | Punto de venta con inventario | 1 a 3 meses | Medio | Se deriva | OPE-03, CAJ-03, DAT-03, DAT-01 | Ventas, margen y stock al día sin planillas. |
+
+---
+
 ## Del código a la reparación
 
 - **Reparación rápida** es lo que el dueño puede hacer esta semana, con o sin Influence.
@@ -220,7 +248,8 @@ sabe qué le duele.
 
 ## Agregar o cambiar códigos
 
-Todo vive en `escaner/codigos.js`: sistemas, códigos, lecturas y señales. Para agregar
-un código: una línea en `CODIGOS` y al menos un sensor que lo dispare (una opción de
-lectura o una señal). Después regenerar este documento con `codigos-a-md.js`.
+Todo vive en `escaner/codigos.js`: sistemas, códigos, lecturas, señales y soluciones. Para
+agregar un código: una línea en `CODIGOS`, al menos un sensor que lo dispare (una opción
+de lectura o una señal) y una solución que lo repare. Después regenerar este documento
+con `codigos-a-md.js`.
 

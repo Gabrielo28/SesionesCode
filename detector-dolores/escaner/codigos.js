@@ -151,5 +151,81 @@
   var porId = {};
   CODIGOS.forEach(function (c) { c.sistema = c.id.slice(0, 3); porId[c.id] = c; });
 
-  return { SISTEMAS: SISTEMAS, CODIGOS: CODIGOS, PREGUNTAS: PREGUNTAS, SENALES: SENALES, porId: porId };
+  // Catálogo de soluciones. Cada una repara varios códigos. esfuerzo: 1 = esta semana, 2 = 2 a 4 semanas, 3 = 1 a 3 meses.
+  // El escáner las ordena de la mejor a la peor para el negocio escaneado (ver rankearSoluciones).
+  var SOLUCIONES = [
+    { id: 'S01', nombre: 'Perfil de Google completo y 10 reseñas', esfuerzo: 1, costo: 'Gratis', quien: 'dueño',
+      que: 'Reclamar el perfil, fotos reales, horario, categoría, botón de WhatsApp; QR de reseñas en el mesón y en el mensaje post-venta; responder todas las reseñas.',
+      resultado: 'Aparecer cuando buscan el rubro en la comuna y tener prueba social en 2 semanas.', codigos: ['CAP-01', 'CON-04', 'RET-04', 'CAP-05'] },
+    { id: 'S02', nombre: 'Flujo de WhatsApp que responde y hace seguimiento', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
+      que: 'WhatsApp Business con respuesta automática inmediata, respuestas rápidas con precio y siguiente paso, catálogo, regla de 15 minutos en horario y mensaje de seguimiento fijo a las 48 horas.',
+      resultado: 'Cerrar las consultas que hoy se pierden por demora o silencio.', codigos: ['CON-01', 'CON-02', 'CON-03', 'CON-05', 'PER-04'] },
+    { id: 'S03', nombre: 'Aceptar todos los medios de pago', esfuerzo: 1, costo: 'Bajo', quien: 'dueño',
+      que: 'Máquina de tarjeta y QR de transferencia en el mesón, sin mínimo ni recargo; cartel nuevo; anunciarlo en el barrio y en redes.',
+      resultado: 'Dejar de perder la venta completa del que no anda con efectivo.', codigos: ['CAJ-02'] },
+    { id: 'S04', nombre: 'Lista de clientes y un mensaje semanal', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
+      que: 'Pedir el teléfono en cada compra con una razón; lista de difusión de WhatsApp; un mensaje a la semana con oferta para clientes anteriores; mensaje post-compra con gracias y reseña; una mecánica simple para volver.',
+      resultado: 'Que los que ya compraron vuelvan sin gastar en captación.', codigos: ['RET-01', 'RET-02', 'RET-03', 'RET-05', 'CAP-02'] },
+    { id: 'S05', nombre: 'Tablero de 5 números cada lunes', esfuerzo: 1, costo: 'Gratis', quien: 'dueño',
+      que: 'Planilla con ventas, clientes nuevos, consultas, cierres y caja, 10 minutos a la semana; preguntar "¿cómo llegaste?" en cada venta; un link distinto por canal.',
+      resultado: 'Ver las fugas antes de que duelan y saber qué canal trae clientes.', codigos: ['DAT-01', 'DAT-02', 'DAT-03', 'DAT-04'] },
+    { id: 'S06', nombre: 'Ordenar la caja', esfuerzo: 2, costo: 'Gratis', quien: 'partner',
+      que: 'Lista de quién debe cuánto desde cuándo; tope y día de pago por cliente; cobrar lo vencido; liquidar el stock muerto con una promoción; anticipo en pedidos grandes; cuenta separada y sueldo fijo del dueño.',
+      resultado: 'Que la plata de las ventas esté en la cuenta y no en el cuaderno ni en la bodega.', codigos: ['CAJ-01', 'CAJ-03', 'CAJ-04', 'CAJ-05'] },
+    { id: 'S07', nombre: 'Un solo lugar para los pedidos', esfuerzo: 2, costo: 'Bajo', quien: 'influence',
+      que: 'Planilla compartida o formulario de pedidos que llega a un panel o a WhatsApp, con estado; checklist de apertura y cierre; lista fija de reposición semanal con mínimos; responder las reseñas que reclaman demora y arreglar la causa más repetida.',
+      resultado: 'Menos pedidos perdidos, atrasados o con error cada semana.', codigos: ['OPE-01', 'OPE-02', 'OPE-03', 'OPE-05'] },
+    { id: 'S08', nombre: 'Costeo, precios y carta con destacados', esfuerzo: 2, costo: 'Bajo', quien: 'partner',
+      que: 'Costear los 5 productos más vendidos; subir 5 a 8% en lo que el cliente no compara; destacar los 3 de mayor margen en la carta o catálogo; un combo y una pregunta fija en caja; descuentos solo a cambio de algo.',
+      resultado: 'Que quede más plata de las mismas ventas.', codigos: ['MAR-01', 'MAR-02', 'MAR-03', 'MAR-04', 'MAR-05'] },
+    { id: 'S09', nombre: 'Presencia constante en redes con sistema', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Bio y destacadas que digan qué, dónde y cómo comprar; calendario mensual; 3 publicaciones por semana; community management que responde en el día. Plan Presencia o Crecimiento.',
+      resultado: 'Un segundo canal de clientes nuevos que no depende del dueño.', codigos: ['CAP-03', 'CAP-02', 'PER-04', 'CAP-05'] },
+    { id: 'S10', nombre: 'Campaña de captación medida', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Una campaña en Meta con un objetivo, un público y un mensaje; landing o WhatsApp como destino; píxel y analytics instalados; costo por consulta medido cada semana.',
+      resultado: 'Saber cuánto cuesta cada cliente nuevo y comprar más de los que convienen.', codigos: ['CAP-04', 'CAP-05', 'DAT-02', 'DAT-05'] },
+    { id: 'S11', nombre: 'Landing, tienda online o agenda online', esfuerzo: 3, costo: 'Medio', quien: 'influence',
+      que: 'Una página con prueba social, precios y un solo botón; o tienda con catálogo, carrito y pago; o agenda online. Link en la bio y en Google.',
+      resultado: 'Que se pueda comprar o reservar sin llamar y sin esperar un DM.', codigos: ['CON-03', 'CON-05', 'CON-04', 'OPE-01', 'CAJ-02'] },
+    { id: 'S12', nombre: 'Delegar un área completa con procedimiento', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Elegir la tarea que más horas quita al dueño y no necesita que sea él (redes, WhatsApp, cobranza); escribirla en 10 pasos; asignar un responsable interno o externo; revisar una vez por semana.',
+      resultado: 'Que el negocio funcione una semana sin el dueño y que él recupere horas para pensar.', codigos: ['PER-01', 'PER-02', 'PER-04', 'PER-05'] },
+    { id: 'S13', nombre: 'Radiografía de proceso y refuerzo en hora punta', esfuerzo: 2, costo: 'Bajo', quien: 'influence',
+      que: 'Mapear el proceso que más duele paso a paso (proceso/index.html), encontrar el paso que no da abasto, liberarlo con las 4 jugadas; refuerzo en las 2 horas punta; pedidos anticipados por WhatsApp.',
+      resultado: 'Saber en qué paso exacto se frena y cuánto cuesta, y destrabarlo sin contratar.', codigos: ['OPE-02', 'OPE-04', 'PER-02'] },
+    { id: 'S14', nombre: 'Cargo escrito e inducción de una semana', esfuerzo: 2, costo: 'Bajo', quien: 'partner',
+      que: 'Descripción de cargo de una página; checklist de inducción; incentivo simple ligado a ventas o a reseñas.',
+      resultado: 'Que la gente nueva rinda en una semana y se quede.', codigos: ['PER-03', 'PER-05'] },
+    { id: 'S15', nombre: 'Punto de venta con inventario', esfuerzo: 3, costo: 'Medio', quien: 'partner',
+      que: 'Software de caja con stock, reportes de venta por producto y rotación; reposición con mínimos automáticos.',
+      resultado: 'Ventas, margen y stock al día sin planillas.', codigos: ['OPE-03', 'CAJ-03', 'DAT-03', 'DAT-01'] }
+  ];
+
+  // Ordena las soluciones de la mejor a la peor para un escaneo.
+  // detectados: { 'CAP-01': fuentes[] , ... }. Devuelve hasta `max` soluciones con su explicación.
+  // Regla: impacto = suma de la gravedad de los códigos detectados que repara (x1.5 si el código
+  // está confirmado por 2 o más fuentes); puntaje = impacto x (4 - esfuerzo): lo rápido pesa más.
+  // Se eligen de a una, contando solo los códigos que aún no cubre una solución anterior.
+  function rankearSoluciones(detectados, max) {
+    max = max || 5;
+    var cubiertos = {}, out = [];
+    var peso = function (id) { return porId[id].g * (detectados[id] && detectados[id].length > 1 ? 1.5 : 1); };
+    for (var k = 0; k < max; k++) {
+      var mejor = null;
+      SOLUCIONES.forEach(function (s) {
+        if (out.some(function (o) { return o.s === s; })) return;
+        var nuevos = s.codigos.filter(function (id) { return detectados[id] && !cubiertos[id]; });
+        if (!nuevos.length) return;
+        var impacto = nuevos.reduce(function (a, id) { return a + peso(id); }, 0);
+        var puntaje = impacto * (4 - s.esfuerzo);
+        if (!mejor || puntaje > mejor.puntaje) mejor = { s: s, nuevos: nuevos, impacto: impacto, puntaje: puntaje, tambien: s.codigos.filter(function (id) { return detectados[id] && cubiertos[id]; }) };
+      });
+      if (!mejor) break;
+      mejor.nuevos.forEach(function (id) { cubiertos[id] = true; });
+      out.push(mejor);
+    }
+    return out;
+  }
+
+  return { SISTEMAS: SISTEMAS, CODIGOS: CODIGOS, PREGUNTAS: PREGUNTAS, SENALES: SENALES, SOLUCIONES: SOLUCIONES, porId: porId, rankearSoluciones: rankearSoluciones };
 });

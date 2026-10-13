@@ -75,6 +75,9 @@ out.push(`\n---\n\n## Los sensores: qué dispara cada código\n\n### Lecturas (p
 C.PREGUNTAS.forEach((q, i) => out.push(`| ${i + 1} | ${C.SISTEMAS[q.s].id} | ${q.t} | ${q.c[1].join(', ') || '—'} | ${q.c[2].join(', ') || '—'} |`));
 out.push(`\n### Señales observadas (modo taller)\n\n| Fuente | Señal | Dispara |\n|---|---|---|`);
 C.SENALES.forEach(g => g.items.forEach(it => out.push(`| ${g.grupo} | ${it.t} | ${it.c.join(', ')} |`)));
+out.push(`\n---\n\n## Posibles soluciones (${C.SOLUCIONES.length})\n\nCada solución repara varios códigos. El escáner las ordena **de la mejor a la peor para el negocio escaneado** y muestra las 5 primeras:\n\n- **Impacto** = suma de la gravedad (3/2/1) de los códigos detectados que repara; un código confirmado por 2 o más fuentes pesa 1,5 veces.\n- **Puntaje** = impacto × (4 − esfuerzo). Esfuerzo 1 = esta semana (×3), 2 = 2 a 4 semanas (×2), 3 = 1 a 3 meses (×1). Lo rápido pesa más.\n- Se eligen **de a una**, contando solo los códigos que aún no cubre una solución anterior. Así la Top 2 no repite lo que ya arregla la Top 1 y las cinco juntas cubren lo máximo posible.\n\n| Id | Solución | Esfuerzo | Costo | Quién | Repara | Qué cambia |\n|---|---|---|---|---|---|---|`);
+const ESF = { 1: 'Esta semana', 2: '2 a 4 semanas', 3: '1 a 3 meses' };
+C.SOLUCIONES.forEach(s => out.push(`| **${s.id}** | ${s.nombre} | ${ESF[s.esfuerzo]} | ${s.costo} | ${Q[s.quien]} | ${s.codigos.join(', ')} | ${s.resultado} |`));
 out.push(`
 ---
 
@@ -94,8 +97,9 @@ out.push(`
 
 ## Agregar o cambiar códigos
 
-Todo vive en \`escaner/codigos.js\`: sistemas, códigos, lecturas y señales. Para agregar
-un código: una línea en \`CODIGOS\` y al menos un sensor que lo dispare (una opción de
-lectura o una señal). Después regenerar este documento con \`codigos-a-md.js\`.
+Todo vive en \`escaner/codigos.js\`: sistemas, códigos, lecturas, señales y soluciones. Para
+agregar un código: una línea en \`CODIGOS\`, al menos un sensor que lo dispare (una opción
+de lectura o una señal) y una solución que lo repare. Después regenerar este documento
+con \`codigos-a-md.js\`.
 `);
 console.log(out.join('\n'));

@@ -115,6 +115,24 @@
   .quien { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
   .quien.influence { background: rgba(46,196,204,.14); color: var(--teal); } .quien.partner { background: rgba(255,255,255,.08); color: var(--ink-2); } .quien.dueño { background: rgba(255,255,255,.08); color: var(--ink-2); }
 
+
+  .sol { display: grid; grid-template-columns: 56px 1fr; gap: 12px; border: 1.5px solid var(--line); border-radius: 11px; background: var(--panel-2); padding: 14px; margin-bottom: 10px; }
+  .sol.top1 { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
+  .sol .rank { font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: .08em; text-align: center; color: var(--muted); padding-top: 2px; }
+  .sol .rank b { display: block; font-size: 24px; line-height: 1; color: var(--ink); margin-top: 2px; }
+  .sol.top1 .rank, .sol.top1 .rank b { color: var(--teal); }
+  .sol .nom { font-weight: 700; font-size: 15.5px; line-height: 1.25; }
+  .sol .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+  .sol .badges span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,.07); color: var(--ink-2); }
+  .sol .badges .rep { background: var(--g3-wash); color: var(--g3); }
+  .sol .badges .rep.g2 { background: var(--g2-wash); color: var(--g2); } .sol .badges .rep.g1 { background: var(--g1-wash); color: var(--g1); }
+  .sol p { font-size: 13.5px; margin-bottom: 6px; }
+  .sol .porque { font-size: 12.5px; color: var(--muted); }
+  .sol .porque b { color: var(--ink-2); font-weight: 600; }
+  .sol .res { font-size: 13px; color: var(--ink); }
+  .sol .res b { color: var(--teal); font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; margin-right: 6px; }
+  @media (max-width: 480px) { .sol { grid-template-columns: 44px 1fr; gap: 10px; padding: 12px; } .sol .rank b { font-size: 20px; } }
+
   .nota { background: rgba(46,196,204,.08); border: 1px solid rgba(46,196,204,.25); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; color: var(--ink-2); margin-top: 14px; }
   .nota b { color: var(--teal); }
   .cta { background: linear-gradient(135deg, #123638, #12959C); border-radius: 14px; padding: 22px 20px; margin-top: 14px; text-align: center; }
@@ -137,7 +155,7 @@
     .resumen, .sistemas { break-inside: avoid; }
     .det .f { padding: 4px 0; font-size: 11.5px; grid-template-columns: 95px 1fr; } .codigo .cab { padding: 8px 12px; } .codigo .det { padding: 0 12px 8px; } .codigo { margin-bottom: 6px; } .codigo .nom { font-size: 13px; }
     .codigo { break-inside: avoid; } .codigo .det { display: block !important; } .codigo .flecha { display: none; }
-    .sis .luz, .stat, .codigo { box-shadow: none; }
+    .sis .luz, .stat, .codigo, .sol { box-shadow: none; } .sol { break-inside: avoid; margin-bottom: 6px; padding: 10px 12px; }
     .cta { background: #e6f1f1; } .cta h2 { color: #12959C; } .cta p { color: #2c4a4c; } .cta .btn { display: none; }
     header .led { display: none; }
   }
@@ -213,6 +231,11 @@
       <h2>Códigos de falla <small>ordenados por gravedad · toca uno para ver la reparación</small></h2>
       <div id="r-codigos"></div>
       <div class="nota"><b>Cómo leer esto.</b> Rojo: parar y reparar, está costando ventas hoy. Ámbar: reparar este mes. Azul: revisar en el próximo servicio. El escáner dice <b>qué</b> falla; cuánto cuesta y la reparación exacta se cotizan en el taller: diagnóstico completo y radiografía de proceso.</div>
+    </div>
+    <div class="panel">
+      <h2>Posibles soluciones <small>de la mejor a la peor para este negocio</small></h2>
+      <p>Cada solución repara varios códigos a la vez. El orden sale de cuántos códigos repara, qué tan graves son y qué tan rápido se hace. La Top 2 no repite lo que ya arregla la Top 1.</p>
+      <div id="r-soluciones"></div>
     </div>
     <div class="cta">
       <h2>Agendar la reparación</h2>
@@ -363,9 +386,26 @@
     }).join('');
     Array.prototype.forEach.call(cont.querySelectorAll('.codigo .cab'), function (cab) { cab.addEventListener('click', function () { cab.parentNode.classList.toggle('abierto'); }); });
 
+
+    // Posibles soluciones, de la mejor a la peor
+    var det = {}; R.lista.forEach(function (x) { det[x.c.id] = x.fuentes; });
+    var top = C.rankearSoluciones(det, 5);
+    var ESF = { 1: 'esta semana', 2: '2 a 4 semanas', 3: '1 a 3 meses' };
+    var QUIEN = { influence: 'Lo hace Influence', partner: 'Se deriva a un partner', 'dueño': 'Lo hace el dueño' };
+    $('r-soluciones').innerHTML = top.length ? top.map(function (t, i) {
+      var s = t.s, crit = t.nuevos.filter(function (id) { return C.porId[id].g === 3; }).length;
+      return '<div class="sol' + (i === 0 ? ' top1' : '') + '"><div class="rank">TOP<b>' + (i + 1) + '</b></div><div>' +
+        '<div class="nom">' + esc(s.nombre) + '</div>' +
+        '<div class="badges">' + t.nuevos.map(function (id) { return '<span class="rep g' + C.porId[id].g + '">' + id + '</span>'; }).join('') +
+        '<span>' + ESF[s.esfuerzo] + '</span><span>' + esc(s.costo) + '</span><span>' + QUIEN[s.quien] + '</span></div>' +
+        '<p>' + esc(s.que) + '</p>' +
+        '<div class="res"><b>Qué cambia</b>' + esc(s.resultado) + '</div>' +
+        '<div class="porque" style="margin-top:6px"><b>Por qué va ' + (i === 0 ? 'primero' : 'en el puesto ' + (i + 1)) + ':</b> repara ' + t.nuevos.length + (t.nuevos.length === 1 ? ' código' : ' códigos') + (crit ? ' (' + crit + ' crítico' + (crit > 1 ? 's' : '') + ')' : '') + ' y se hace ' + ESF[s.esfuerzo] + (t.tambien.length ? '. También refuerza ' + t.tambien.join(', ') : '') + '.</div>' +
+        '</div></div>';
+    }).join('') : '<p>Sin códigos no hay nada que reparar. El siguiente paso es elegir qué sistema empujar.</p>';
     var criticos = R.lista.filter(function (x) { return x.c.g === 3; }).map(function (x) { return x.c.id + ' ' + x.c.nombre; });
     var msg = 'Hola Gabriel, pasé el Escáner de Negocio.\nNegocio: ' + nombre + (est.rubro ? ' (' + est.rubro + ')' : '') + '.\n' +
-      R.lista.length + ' códigos detectados' + (criticos.length ? ', críticos: ' + criticos.join(', ') : '') + '.\nQuiero agendar la reparación.';
+      R.lista.length + ' códigos detectados' + (criticos.length ? ', críticos: ' + criticos.join(', ') : '') + '.\n' + (top.length ? 'Solución Top 1: ' + top[0].s.nombre + '.\n' : '') + 'Quiero agendar la reparación.';
     $('r-wa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
   }
 

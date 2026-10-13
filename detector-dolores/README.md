@@ -80,7 +80,9 @@ desde la bio). Cuatro pantallas: **Conectar** (negocio, rubro, modo), **Lectura*
 preguntas, 2 por sistema, más la lista de señales observadas en modo taller),
 **Escaneando** (la consola recorre los 8 sistemas) y **Códigos de falla** (ID de
 escaneo, totales por gravedad, estado de los sistemas, cada código con síntoma, causa,
-reparación rápida, reparación en taller, quién y qué sensor lo detectó).
+reparación rápida, reparación en taller, quién y qué sensor lo detectó, y las
+**posibles soluciones de la Top 1 a la Top 5**, ordenadas de la mejor a la peor para ese
+negocio según cuántos códigos repara cada una, qué tan graves son y qué tan rápido se hace).
 
 Botones: WhatsApp con los códigos críticos ya escritos, imprimir informe, copiar el
 link del escaneo (reabre el resultado), borrar códigos.
@@ -91,9 +93,9 @@ node imprimir.js ejemplo-minimarket.json    # escaneo-minimarket-don-lucho.pdf s
 node codigos-a-md.js > ../06-escaner-y-codigos.md   # regenerar el catálogo en markdown
 ```
 
-El catálogo completo (sistemas, códigos, lecturas y señales) vive en
-`escaner/codigos.js`. Para agregar un código: una línea en `CODIGOS` y un sensor que
-lo dispare.
+El catálogo completo (sistemas, códigos, lecturas, señales y soluciones) vive en
+`escaner/codigos.js`. Para agregar un código: una línea en `CODIGOS`, un sensor que lo
+dispare y una solución que lo repare.
 
 ## Publicarlo en Railway
 

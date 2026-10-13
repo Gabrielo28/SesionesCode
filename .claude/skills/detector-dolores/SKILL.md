@@ -54,7 +54,10 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
    calce. Lista los códigos detectados por sistema, con gravedad y la evidencia que lo
    disparó. Si tienes las 16 lecturas, puedes producir el informe del escáner:
    escribe `escaner/<slug>.json` como `ejemplo-minimarket.json` y corre
-   `node imprimir.js <slug>.json`.
+   `node imprimir.js <slug>.json`. Para las soluciones ordenadas de la mejor a la peor
+   usa el mismo ranking del escáner: `node -e "const C=require('./codigos.js');
+   console.log(C.rankearSoluciones({'CAP-01':['x'],...},5))"` (clave = código, valor =
+   lista de fuentes; dos o más fuentes pesan 1,5).
 3. **Ficha de las 8 áreas.** Para cada una: estado (`bien` / `alerta` / `critico`, el
    peor código del sistema manda), un hallazgo de una o dos frases, su evidencia y los
    códigos en `codigos`. Si no hay información de un área, es
@@ -113,7 +116,8 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
 
 En este orden, corto:
 
-1. Los códigos de falla detectados, por sistema, con gravedad (los críticos primero).
+1. Los códigos de falla detectados, por sistema, con gravedad (los críticos primero),
+   y las 5 soluciones ordenadas de la mejor a la peor con qué códigos repara cada una.
 2. El cuello de botella en una frase, con el costo mensual y la evidencia principal.
 3. Dolor sentido vs. dolor real, si difieren.
 4. Los 2 dolores secundarios en una línea cada uno.
