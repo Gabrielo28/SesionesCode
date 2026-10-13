@@ -4,25 +4,25 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Encuesta de 3 meses</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--teal:#12959C;--ink:#123638;--soft:#2c4a4c;--muted:#6B8B8C;--line:#D7EBEB;--wash:#E6F1F1;--coral:#FF7B7B}
-  *{box-sizing:border-box} body{margin:0;font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:#F3F8F8;line-height:1.55}
+  *{box-sizing:border-box} body{margin:0;font-family:'Barlow','Helvetica Neue',Arial,sans-serif;color:var(--ink);background:#F3F8F8;line-height:1.55}
   .wrap{max-width:560px;margin:0 auto;padding:28px 16px 60px}
-  h1{font-size:26px;margin:0 0 6px;line-height:1.15} .sub{color:var(--soft);margin:0 0 20px;font-size:15px}
+  h1{font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-size:40px;font-weight:800;margin:0 0 6px;line-height:1} .sub{color:var(--soft);margin:0 0 20px;font-size:15px}
   form{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:20px}
-  .q label{display:block;font-weight:700;font-size:14.5px;margin-bottom:8px}
+  .q label{display:block;font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-size:16px;font-weight:700;letter-spacing:.06em;margin-bottom:8px}
   .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}
   .scale label{display:grid;place-items:center;height:38px;border:1.5px solid var(--line);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;margin:0}
   .scale input{display:none} .scale label:has(input:checked){background:var(--teal);color:#fff;border-color:var(--teal)}
   .ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:4px}
   textarea,input[type=text]{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px}
   textarea{min-height:70px;resize:vertical}
-  .opts{display:grid;gap:8px} .opts label{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;margin:0}
+  .opts{display:grid;gap:8px} .opts label{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:Barlow,sans-serif;text-transform:none;letter-spacing:0;font-weight:500;font-size:15px;cursor:pointer;margin:0}
   .opts label:has(input:checked){background:var(--wash);border-color:var(--teal)}
-  button{font:inherit;font-weight:700;font-size:15px;padding:13px 22px;border-radius:999px;border:0;background:var(--coral);color:#fff;cursor:pointer}
+  button{font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:16px;letter-spacing:.06em;padding:13px 26px;border-radius:999px;border:0;background:var(--coral);color:var(--ink);cursor:pointer}
   .done{display:none;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:28px;text-align:center}
-  .done.show{display:block} .done h2{margin:0 0 8px}
+  .done.show{display:block} .done h2{font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-size:34px;font-weight:800;margin:0 0 8px}
 </style></head>
 <body><div class="wrap">
   <h1>3 meses entrenando juntos</h1>

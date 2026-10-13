@@ -5,51 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ficha de onboarding</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root { --teal:#12959C; --teal-dark:#0E7177; --ink:#123638; --soft:#2c4a4c; --muted:#6B8B8C; --line:#D7EBEB; --wash:#E6F1F1; --wash-2:#F3F8F8; --coral:#FF7B7B; --paper:#fff; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:'Montserrat',system-ui,sans-serif; color:var(--ink); background:var(--wash-2); line-height:1.55; }
+  body { margin:0; font-family:'Barlow','Helvetica Neue',Arial,sans-serif; color:var(--ink); background:var(--wash-2); line-height:1.55; }
   body.embed { background:transparent; }
   .wrap { max-width:720px; margin:0 auto; padding:28px 16px 60px; }
   header { margin-bottom:22px; }
-  header .coach { font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); }
-  h1 { font-size:clamp(24px,4vw,32px); margin:6px 0 8px; line-height:1.15; letter-spacing:-.01em; }
+  header .coach { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-size:14px; font-weight:700; letter-spacing:.14em; color:var(--coral); }
+  h1 { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-size:clamp(34px,6vw,48px); font-weight:800; margin:6px 0 8px; line-height:1; }
   header p { color:var(--soft); margin:0; font-size:15px; }
   .progress { height:6px; background:var(--line); border-radius:999px; margin:18px 0 0; overflow:hidden; }
   .progress i { display:block; height:100%; width:0; background:var(--teal); transition:width .3s; }
   form { background:var(--paper); border:1.5px solid var(--line); border-radius:14px; padding:24px; }
   fieldset { border:0; padding:0; margin:0 0 8px; display:none; }
   fieldset.active { display:grid; gap:16px; }
-  legend { font-size:18px; font-weight:800; margin-bottom:14px; }
-  legend small { display:block; font-size:13px; font-weight:500; color:var(--muted); margin-top:2px; }
+  legend { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-size:24px; font-weight:700; margin-bottom:14px; }
+  legend small { display:block; font-family:Barlow,sans-serif; text-transform:none; letter-spacing:0; font-size:14px; font-weight:400; color:var(--muted); margin-top:4px; }
   .field { display:grid; gap:6px; }
   .row { display:grid; gap:14px; }
   @media (min-width:560px) { .row { grid-template-columns:1fr 1fr; } .row.r3 { grid-template-columns:1fr 1fr 1fr; } }
-  label { font-size:13.5px; font-weight:700; }
-  label .opt { font-weight:500; color:var(--muted); }
+  label { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-size:14px; font-weight:700; letter-spacing:.08em; }
+  label .opt { font-family:Barlow,sans-serif; text-transform:none; letter-spacing:0; font-weight:400; color:var(--muted); }
   input, select, textarea { width:100%; font:inherit; font-size:15px; padding:11px 13px; border:1.5px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); }
   input:focus, select:focus, textarea:focus { outline:2px solid #33C7CE; border-color:var(--teal); }
   textarea { min-height:80px; resize:vertical; }
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
-  .chips label { display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border:1.5px solid var(--line); border-radius:999px; font-weight:600; font-size:13.5px; cursor:pointer; background:#fff; }
+  .chips label { display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border:1.5px solid var(--line); border-radius:999px; font-family:Barlow,sans-serif; text-transform:none; letter-spacing:0; font-weight:500; font-size:14px; cursor:pointer; background:#fff; }
   .chips label:has(input:checked) { background:var(--wash); border-color:var(--teal); color:var(--teal-dark); }
   .chips input { width:auto; margin:0; }
   .hint { font-size:12.5px; color:var(--muted); }
   .nav { display:flex; justify-content:space-between; gap:12px; margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
-  .btn { font:inherit; font-weight:700; font-size:15px; padding:12px 22px; border-radius:999px; border:0; cursor:pointer; }
+  .btn { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-weight:700; font-size:16px; letter-spacing:.06em; padding:12px 24px; border-radius:999px; border:0; cursor:pointer; }
   .btn-teal { background:var(--teal); color:#fff; }
   .btn-teal:hover { background:var(--teal-dark); }
   .btn-ghost { background:#fff; color:var(--soft); border:1.5px solid var(--line); }
-  .btn-coral { background:var(--coral); color:#fff; }
-  .consent { display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--soft); font-weight:500; background:var(--wash-2); padding:12px; border-radius:10px; }
+  .btn-coral { background:var(--coral); color:var(--ink); }
+  .consent { display:flex; gap:10px; align-items:flex-start; font-family:Barlow,sans-serif; text-transform:none; letter-spacing:0; font-size:13px; color:var(--soft); font-weight:400; background:var(--wash-2); padding:12px; border-radius:10px; }
   .consent input { width:auto; margin-top:3px; }
   .status { display:none; font-size:14px; padding:12px 14px; border-radius:10px; margin-top:14px; }
   .status.ok { display:block; background:#E4F5EC; color:#176A3D; }
   .status.err { display:block; background:#FBE9EF; color:#B12851; }
   .done { display:none; text-align:center; padding:30px 10px; }
   .done.show { display:block; }
-  .done h2 { margin:0 0 8px; }
+  .done h2 { font-family:'Barlow Condensed','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em; font-size:34px; font-weight:800; margin:0 0 8px; }
   .done p { color:var(--soft); }
   .done .acciones { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
   pre { display:none; text-align:left; background:#123638; color:#cfe6e7; padding:14px; border-radius:10px; font-size:12px; overflow:auto; max-height:260px; }

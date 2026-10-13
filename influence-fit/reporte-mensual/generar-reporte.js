@@ -163,29 +163,30 @@ const tile = (label, valor, extra = '') => `<div class="tile"><span class="label
 // ---------- HTML ----------
 const s = slug(cfg.cliente);
 const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Reporte ${esc(cfg.cliente)} — ${esc(nombreMes)}</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif; color: ${INK}; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Barlow', 'Segoe UI', system-ui, sans-serif; color: ${INK}; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .pagina { width: 210mm; min-height: 297mm; padding: 16mm 16mm; page-break-after: always; position: relative; margin: 0 auto; }
   .pagina:last-child { page-break-after: auto; }
-  .cab { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid ${TEAL}; padding-bottom: 4mm; margin-bottom: 8mm; }
-  .cab .marca { font-weight: 800; font-size: 14pt; } .cab .marca span { color: ${TEAL}; }
+  .cab { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid ${INK}; padding-bottom: 4mm; margin-bottom: 8mm; }
+  h1, h2, h3, .cab .marca, .cab .mes b, .tile b, .tile .label, .stat b, th { font-family: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+  .cab .marca { font-weight: 800; font-size: 16pt; } .cab .marca span { color: #FF7B7B; }
   .cab .mes { text-align: right; font-size: 9.5pt; color: ${MUTED}; } .cab .mes b { display: block; color: ${INK}; font-size: 12pt; }
-  h1 { font-size: 22pt; font-weight: 800; line-height: 1.15; margin-bottom: 2mm; } .sub { color: ${MUTED}; font-size: 10.5pt; margin-bottom: 8mm; }
-  h2 { font-size: 14pt; color: ${TEAL}; margin: 8mm 0 4mm; font-weight: 800; }
+  h1 { font-size: 34pt; font-weight: 800; line-height: 1; margin-bottom: 2mm; } .sub { color: ${MUTED}; font-size: 10.5pt; margin-bottom: 8mm; }
+  h2 { font-size: 20pt; color: ${INK}; margin: 8mm 0 4mm; font-weight: 800; }
   .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
   .tile { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm 5mm; }
   .tile .label { display: block; font-size: 8.5pt; color: ${MUTED}; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-bottom: 1.5mm; }
-  .tile b { display: block; font-size: 19pt; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
-  .tile.hero { grid-column: span 3; background: linear-gradient(135deg, ${INK}, ${TEAL}); color: #fff; border: 0; } .tile.hero .label { color: rgba(255,255,255,.75); } .tile.hero b { font-size: 30pt; }
+  .tile b { display: block; font-size: 24pt; font-weight: 800; line-height: 1; }
+  .tile.hero { grid-column: span 3; background: ${INK}; color: #fff; border: 0; } .tile.hero .label { color: rgba(255,255,255,.75); } .tile.hero b { font-size: 40pt; color: #FF7B7B; }
   .delta, .meta { display: block; font-size: 8.5pt; margin-top: 1.5mm; color: ${MUTED}; }
   .delta.up { color: #176A3D; } .delta.down { color: #B12851; } .hero .delta.up { color: #9FE8B5; } .hero .delta.down { color: #FFB3C1; } .hero .meta { color: rgba(255,255,255,.8); }
   .meta.ok::before { content: '✓ '; color: #176A3D; } .meta.no::before { content: '○ '; }
   .resumen { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-top: 6mm; }
-  .fig { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm; margin-bottom: 4mm; } .fig h3 { font-size: 10.5pt; margin-bottom: 1mm; } .fig p { font-size: 8.5pt; color: ${MUTED}; margin-bottom: 3mm; }
+  .fig { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm; margin-bottom: 4mm; } .fig h3 { font-size: 14pt; margin-bottom: 1mm; } .fig p { font-size: 8.5pt; color: ${MUTED}; margin-bottom: 3mm; }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
-  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 4mm; } th { background: ${TEAL}; color: #fff; padding: 2.5mm; text-align: left; font-size: 8.5pt; } td { padding: 2.5mm; border-bottom: 1px solid #d7ebeb; } td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 4mm; } th { background: ${INK}; color: #fff; padding: 2.5mm; text-align: left; font-size: 10pt; font-weight: 600; letter-spacing: .06em; } td { padding: 2.5mm; border-bottom: 1px solid #d7ebeb; } td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
   ul.pasos { list-style: none; font-size: 10.5pt; line-height: 1.7; } ul.pasos li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
   .pie { position: absolute; bottom: 9mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
   .nota { font-size: 8.5pt; color: ${MUTED}; margin-top: 3mm; }

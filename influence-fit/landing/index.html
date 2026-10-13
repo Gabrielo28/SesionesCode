@@ -10,156 +10,180 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --teal: #12959C; --teal-dark: #0E7177; --ink: #123638; --ink-soft: #2c4a4c;
-    --coral: #FF7B7B; --coral-dark: #E35F5F; --cyan: #33C7CE;
-    --paper: #FFFFFF; --wash: #E6F1F1; --wash-2: #F3F8F8; --line: #D7EBEB; --muted: #6B8B8C;
-    --radius: 14px; --max: 1100px;
-    --font: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --ink: #123638;            /* carbón de Influence */
+    --ink-2: #0E2B2D;          /* franjas sobre carbón */
+    --ink-line: #24494B;
+    --ink-muted: #9FBABB;
+    --accent: #FF7B7B;         /* coral: el único acento */
+    --accent-ink: #123638;     /* texto sobre coral */
+    --accent-hover: #FF6666;
+    --accent-soft: #FFE9E9;
+    --teal: #12959C;           /* secundario: links, checks */
+    --teal-dark: #0E7177;
+    --bg: #FFFFFF; --bg-2: #F3F6F6;
+    --text: #123638; --text-2: #3F5D5E; --muted: #6E8A8B; --line: #DCE5E5;
+    --wa: #25D366;
+    --font-display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+    --font-body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+    --radius: 16px; --pill: 999px; --max: 1120px;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
-  img { max-width: 100%; display: block; }
+  body { margin: 0; font-family: var(--font-body); font-size: 16px; line-height: 1.55; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
-  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
   section { padding: 72px 0; }
-  h1, h2, h3 { line-height: 1.15; margin: 0 0 16px; letter-spacing: -.01em; }
-  h1 { font-size: clamp(32px, 5.2vw, 56px); font-weight: 800; }
-  h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 800; }
-  h3 { font-size: 20px; font-weight: 700; }
+  h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em; line-height: 1; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(46px, 7.2vw, 88px); font-weight: 800; }
+  h1 .hl, h2 .hl { color: var(--accent); }
+  h2 { font-size: clamp(34px, 4.6vw, 52px); font-weight: 800; margin-bottom: 18px; }
+  h3 { font-size: 24px; font-weight: 700; }
   p { margin: 0 0 14px; }
-  .kicker { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
-  .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-soft); max-width: 60ch; }
-  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border-radius: 999px; font-weight: 700; font-size: 16px; text-decoration: none; border: 0; cursor: pointer; transition: transform .15s, background .15s; font-family: inherit; }
-  .btn:hover { transform: translateY(-1px); }
-  .btn-coral { background: var(--coral); color: #fff; }
-  .btn-coral:hover { background: var(--coral-dark); }
-  .btn-teal { background: var(--teal); color: #fff; }
-  .btn-teal:hover { background: var(--teal-dark); }
-  .btn-ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); }
-  .btn-ghost:hover { border-color: var(--teal); color: var(--teal-dark); }
-  .btn-wa { background: #25D366; color: #fff; }
+  .eyebrow { font-family: var(--font-display); font-weight: 700; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 16px; }
+  .lede { font-size: 18px; color: var(--text-2); max-width: 60ch; }
+  .dark { background: var(--ink); color: #fff; }
+  .dark .lede { color: var(--ink-muted); }
+  .dark h2 { color: #fff; }
+
+  /* botones */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; padding: 13px 24px; border-radius: var(--pill); text-decoration: none; border: 1.5px solid transparent; cursor: pointer; white-space: nowrap; transition: background .15s, color .15s, border-color .15s; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-outline { background: transparent; color: var(--text); border-color: var(--line); }
+  .btn-outline:hover { border-color: var(--text); }
+  .btn-outline-inv { background: transparent; color: #fff; border-color: var(--ink-line); }
+  .btn-outline-inv:hover { border-color: #fff; }
+  .btn-wa { background: var(--wa); color: #fff; border-color: var(--wa); }
   .btn-wa:hover { background: #1EBE5A; }
+  .btn-sm { padding: 9px 16px; font-size: 14px; }
 
   /* nav */
-  nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { font-weight: 800; font-size: 20px; letter-spacing: -.02em; text-decoration: none; }
-  .logo span { color: var(--teal); }
-  nav ul { display: none; gap: 26px; list-style: none; margin: 0; padding: 0; font-size: 14.5px; font-weight: 600; }
-  nav ul a { text-decoration: none; color: var(--ink-soft); }
-  nav ul a:hover { color: var(--teal); }
-  nav .btn { padding: 10px 18px; font-size: 14px; }
-  @media (min-width: 860px) { nav ul { display: flex; } }
+  nav { background: var(--ink); color: #fff; border-bottom: 1px solid var(--ink-line); position: sticky; top: 0; z-index: 20; }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .04em; text-transform: uppercase; }
+  .logo i { width: 32px; height: 32px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; border-radius: 6px; font-style: normal; font-size: 18px; }
+  .logo span { color: var(--accent); }
+  nav ul { display: none; gap: 24px; list-style: none; margin: 0; padding: 0; font-size: 15px; font-weight: 500; }
+  nav ul a { text-decoration: none; color: #fff; opacity: .85; } nav ul a:hover { opacity: 1; }
+  @media (min-width: 900px) { nav ul { display: flex; } }
 
   /* hero */
-  .hero { background: linear-gradient(160deg, var(--ink) 0%, var(--teal) 100%); color: #fff; padding: 88px 0 80px; position: relative; overflow: hidden; }
-  .hero::after { content: ""; position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 50%; background: rgba(51,199,206,.18); }
-  .hero .kicker { color: var(--cyan); }
-  .hero .lede { color: rgba(255,255,255,.88); }
-  .hero-grid { display: grid; gap: 36px; align-items: center; position: relative; z-index: 1; }
-  @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.25fr 1fr; } }
-  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-  .hero-note { font-size: 13.5px; opacity: .8; margin-top: 14px; }
-  .proof { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius); padding: 24px; }
-  .proof h3 { color: #fff; font-size: 16px; margin-bottom: 14px; }
-  .proof ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
-  .proof li { display: flex; gap: 12px; font-size: 15px; line-height: 1.45; }
-  .proof li::before { content: "✓"; color: var(--cyan); font-weight: 800; flex: 0 0 auto; }
+  .hero { padding: 96px 0 64px; }
+  .hero-grid { display: grid; gap: 40px; align-items: end; }
+  @media (min-width: 960px) { .hero-grid { grid-template-columns: 1.3fr 1fr; } }
+  .hero .lede { margin: 22px 0 28px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chip { font-size: 14px; font-weight: 500; padding: 7px 14px; border-radius: var(--pill); border: 1px solid var(--ink-line); color: #fff; text-decoration: none; }
+  .chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .why { border: 1px solid var(--ink-line); border-radius: var(--radius); padding: 26px; }
+  .why h3 { font-size: 20px; margin-bottom: 14px; color: #fff; }
+  .why ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .why li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; font-size: 15px; color: var(--ink-muted); line-height: 1.45; }
+  .why li::before { content: "✓"; color: var(--accent); font-weight: 700; }
 
-  /* pains */
-  .grid-3 { display: grid; gap: 20px; }
-  @media (min-width: 760px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-  .card { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; }
-  .card .num { font-size: 13px; font-weight: 800; color: var(--coral); letter-spacing: .1em; margin-bottom: 10px; }
-  .card p { color: var(--ink-soft); font-size: 15.5px; margin: 0; }
-  .card .fix { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14.5px; }
-  .card .fix strong { color: var(--teal-dark); }
+  /* stats strip */
+  .strip { background: var(--ink-2); color: #fff; border-top: 1px solid var(--ink-line); border-bottom: 1px solid var(--ink-line); padding: 26px 0; }
+  .strip .wrap { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 24px; }
+  @media (min-width: 760px) { .strip .wrap { grid-template-columns: repeat(4, 1fr); } }
+  .stat b { display: block; font-family: var(--font-display); font-size: 40px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat span { display: block; font-family: var(--font-display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); margin-top: 6px; }
 
-  /* ladder */
-  .ladder { background: var(--wash-2); }
-  .plans { display: grid; gap: 20px; margin-top: 8px; }
-  @media (min-width: 900px) { .plans { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
-  .plan { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; position: relative; }
-  .plan.rec { border: 2.5px solid var(--coral); box-shadow: 0 14px 40px rgba(18,149,156,.12); }
-  .plan .badge { position: absolute; top: -13px; left: 24px; background: var(--coral); color: #fff; font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
-  .plan .lvl { font-size: 12.5px; font-weight: 700; color: var(--teal); letter-spacing: .12em; text-transform: uppercase; }
-  .plan h3 { margin: 6px 0 4px; font-size: 22px; }
-  .plan .tag { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
-  .plan .price { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
-  .plan .price small { display: block; font-size: 13px; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-top: 2px; }
-  .plan ul { list-style: none; margin: 18px 0 22px; padding: 0; display: grid; gap: 9px; font-size: 14.5px; color: var(--ink-soft); flex: 1; }
-  .plan li { display: flex; gap: 10px; }
-  .plan li::before { content: "▪"; color: var(--teal); }
-  .plan .btn { justify-content: center; }
+  /* cards */
+  .grid-3 { display: grid; gap: 18px; }
+  @media (min-width: 800px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+  .card .num { font-family: var(--font-display); font-size: 40px; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 10px; }
+  .card h3 { margin-bottom: 8px; }
+  .card p { color: var(--text-2); font-size: 15px; margin: 0; }
+  .card .fix { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14.5px; }
+  .card .fix b { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--teal-dark); display: block; margin-bottom: 2px; }
+
+  /* planes */
+  .plans { display: grid; gap: 18px; }
+  @media (min-width: 960px) { .plans { grid-template-columns: repeat(3, 1fr); } }
+  .plan { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; }
+  .plan.rec { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .plan .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .plan .lvl { font-family: var(--font-display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .plan.rec .lvl { color: var(--ink-muted); }
+  .plan .tag { font-family: var(--font-display); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; background: var(--accent); color: var(--accent-ink); padding: 4px 10px; border-radius: var(--pill); }
+  .plan h3 { font-size: 28px; }
+  .plan .bajada { font-size: 14.5px; color: var(--muted); margin: 4px 0 16px; }
+  .plan.rec .bajada { color: var(--ink-muted); }
+  .plan .price { font-family: var(--font-display); font-size: 36px; font-weight: 800; line-height: 1; }
+  .plan .price small { display: block; font-family: var(--font-body); font-size: 13.5px; font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 6px; line-height: 1.4; }
+  .plan.rec .price small { color: var(--ink-muted); }
+  .plan ul { list-style: none; margin: 20px 0 24px; padding: 0; display: grid; gap: 9px; font-size: 14.5px; color: var(--text-2); flex: 1; }
+  .plan.rec ul { color: #DCE8E8; }
+  .plan li { display: grid; grid-template-columns: 16px 1fr; gap: 9px; }
+  .plan li::before { content: "✓"; color: var(--teal); font-weight: 700; }
+  .plan.rec li::before { color: var(--accent); }
   .plan .fine { font-size: 12.5px; color: var(--muted); margin-top: 12px; }
-  .free { margin-top: 26px; background: var(--wash); border-radius: var(--radius); padding: 22px 26px; display: grid; gap: 14px; align-items: center; }
-  @media (min-width: 760px) { .free { grid-template-columns: 1fr auto; } }
-  .free strong { color: var(--teal-dark); }
-  .free p { margin: 0; font-size: 15px; }
+  .plan.rec .fine { color: var(--ink-muted); }
+  .nivel0 { margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 26px; display: grid; gap: 14px; align-items: center; background: var(--bg); }
+  @media (min-width: 760px) { .nivel0 { grid-template-columns: 1fr auto; } }
+  .nivel0 p { margin: 0; font-size: 15px; color: var(--text-2); }
+  .nivel0 b { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .06em; font-size: 17px; color: var(--text); display: block; margin-bottom: 2px; }
 
-  /* case */
-  .case-grid { display: grid; gap: 28px; align-items: center; }
-  @media (min-width: 900px) { .case-grid { grid-template-columns: 1fr 1fr; } }
-  .case-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .stat { background: var(--wash-2); border-radius: 12px; padding: 18px; }
-  .stat b { display: block; font-size: 26px; font-weight: 800; color: var(--teal-dark); letter-spacing: -.02em; line-height: 1.1; }
-  .stat span { font-size: 13.5px; color: var(--muted); }
-  .quote { border-left: 4px solid var(--coral); padding: 6px 0 6px 18px; font-size: 17px; color: var(--ink-soft); font-style: italic; margin: 20px 0 0; }
-  .quote cite { display: block; font-style: normal; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  /* caso propio */
+  .case { border-radius: 24px; padding: 48px 40px; display: grid; gap: 32px; }
+  @media (min-width: 960px) { .case { grid-template-columns: 1.1fr 1fr; align-items: center; } }
+  .case-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--ink-line); border: 1px solid var(--ink-line); border-radius: 12px; overflow: hidden; }
+  .case-stats .stat { background: var(--ink); padding: 18px 16px; }
+  .case-stats .stat b { font-size: 34px; }
+  .quote { border-left: 3px solid var(--accent); padding: 4px 0 4px 18px; font-size: 17px; color: #DCE8E8; margin: 22px 0 0; }
+  .quote cite { display: block; font-style: normal; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--ink-muted); margin-top: 10px; }
 
-  /* founders */
-  .founders { background: linear-gradient(160deg, var(--teal) 0%, var(--ink) 100%); color: #fff; }
-  .founders .kicker { color: var(--cyan); }
-  .founders .lede { color: rgba(255,255,255,.88); }
-  .founders-grid { display: grid; gap: 20px; margin-top: 28px; }
-  @media (min-width: 760px) { .founders-grid { grid-template-columns: repeat(3, 1fr); } }
-  .fcard { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius); padding: 22px; }
-  .fcard b { display: block; font-size: 15px; margin-bottom: 6px; color: var(--cyan); }
-  .fcard p { margin: 0; font-size: 14.5px; color: rgba(255,255,255,.9); }
-  .cupos { display: inline-flex; gap: 8px; margin: 18px 0 0; }
-  .cupos i { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--cyan); display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; }
-  .cupos i.taken { background: var(--cyan); color: var(--ink); }
+  /* fundadores */
+  .cupos { display: inline-flex; gap: 8px; margin: 22px 0 0; }
+  .cupos i { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--muted); }
+  .cupos i.taken { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .fcard b { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: 20px; display: block; margin-bottom: 6px; }
+  .fcard p { color: var(--text-2); font-size: 15px; margin: 0; }
 
   /* form */
-  .form-wrap { display: grid; gap: 30px; }
-  @media (min-width: 900px) { .form-wrap { grid-template-columns: 1fr 1.15fr; } }
-  form { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; display: grid; gap: 16px; }
+  .form-wrap { display: grid; gap: 32px; }
+  @media (min-width: 960px) { .form-wrap { grid-template-columns: 1fr 1.15fr; align-items: start; } }
+  form { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; display: grid; gap: 16px; }
   .field { display: grid; gap: 6px; }
   .row { display: grid; gap: 16px; }
   @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
-  label { font-size: 13.5px; font-weight: 700; }
-  label .opt { font-weight: 500; color: var(--muted); }
-  input, select, textarea { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
-  input:focus, select:focus, textarea:focus { outline: 2px solid var(--cyan); border-color: var(--teal); }
+  label { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  label .opt { font-family: var(--font-body); font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; }
+  input, select, textarea { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--text); }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--teal); border-color: var(--teal); }
   textarea { min-height: 90px; resize: vertical; }
-  .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); font-weight: 500; }
+  .consent { display: flex; gap: 10px; align-items: flex-start; font-family: var(--font-body); font-size: 13px; color: var(--text-2); font-weight: 400; text-transform: none; letter-spacing: 0; }
   .consent input { width: auto; margin-top: 3px; }
   .status { font-size: 14px; padding: 12px 14px; border-radius: 10px; display: none; }
   .status.ok { display: block; background: #E4F5EC; color: #176A3D; }
-  .status.err { display: block; background: #FBE9EF; color: #B12851; }
-  .after { display: none; gap: 12px; flex-wrap: wrap; }
-  .after.show { display: flex; }
-  .steps { display: grid; gap: 14px; margin-top: 18px; }
-  .step { display: grid; grid-template-columns: 36px 1fr; gap: 14px; align-items: start; }
-  .step i { width: 34px; height: 34px; border-radius: 50%; background: var(--wash); color: var(--teal-dark); display: grid; place-items: center; font-style: normal; font-weight: 800; }
-  .step b { display: block; }
-  .step span { color: var(--ink-soft); font-size: 14.5px; }
+  .status.err { display: block; background: var(--accent-soft); color: #B12851; }
+  .after { display: none; gap: 12px; flex-wrap: wrap; } .after.show { display: flex; }
+  .steps { display: grid; gap: 16px; margin-top: 22px; }
+  .step { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .step i { font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 30px; color: var(--accent); line-height: 1; }
+  .step b { display: block; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: 19px; }
+  .step span { color: var(--text-2); font-size: 15px; }
 
   /* faq */
-  details { border-bottom: 1px solid var(--line); padding: 14px 0; }
-  summary { cursor: pointer; font-weight: 700; font-size: 16px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
-  summary::after { content: "+"; color: var(--teal); font-weight: 800; }
+  details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 16.5px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::after { content: "+"; font-family: var(--font-display); font-size: 22px; color: var(--accent); font-weight: 700; line-height: 1; }
   details[open] summary::after { content: "–"; }
-  details p { color: var(--ink-soft); font-size: 15px; margin: 10px 0 0; }
+  details p { color: var(--text-2); font-size: 15px; margin: 10px 0 0; max-width: 70ch; }
 
-  footer { background: var(--ink); color: rgba(255,255,255,.8); padding: 40px 0; font-size: 14px; }
-  footer .wrap { display: grid; gap: 14px; }
-  footer a { color: var(--cyan); text-decoration: none; }
-  .wa-float { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: grid; place-items: center; box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+  footer { background: var(--ink); color: var(--ink-muted); padding: 56px 0 28px; font-size: 14px; }
+  footer .cols { display: grid; gap: 28px; }
+  @media (min-width: 760px) { footer .cols { grid-template-columns: 1.4fr 1fr 1fr; } }
+  footer h4 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: #fff; font-size: 15px; margin: 0 0 10px; }
+  footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  footer a { color: var(--ink-muted); text-decoration: none; } footer a:hover { color: #fff; }
+  footer .legal { border-top: 1px solid var(--ink-line); margin-top: 36px; padding-top: 18px; font-size: 12.5px; }
+  .wa-float { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: 56px; height: 56px; border-radius: 50%; background: var(--wa); display: grid; place-items: center; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
   .wa-float svg { width: 30px; height: 30px; fill: #fff; }
 </style>
 </head>
@@ -167,80 +191,94 @@
 
 <nav>
   <div class="wrap">
-    <a class="logo" href="#top">influence<span>fit</span></a>
+    <a class="logo" href="#top"><i>IF</i>Influence<span>Fit</span></a>
     <ul>
       <li><a href="#dolores">Problemas</a></li>
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#caso">Caso real</a></li>
       <li><a href="#fundadores">Cupos fundadores</a></li>
     </ul>
-    <a class="btn btn-coral" href="#diagnostico">Diagnóstico gratis</a>
+    <a class="btn btn-primary btn-sm" href="#diagnostico">Diagnóstico gratis</a>
   </div>
 </nav>
 
-<header class="hero" id="top">
+<header class="hero dark" id="top">
   <div class="wrap hero-grid">
     <div>
-      <span class="kicker">Para coaches, gimnasios boutique y profesionales del movimiento</span>
-      <h1>Marketing y sistemas para profesionales del entrenamiento, hecho por un coach.</h1>
-      <p class="lede">Más clientes, menos administración y mayor retención, con sistemas que tú no tienes tiempo de construir. Nosotros sí, y entendemos tu negocio porque llevamos 15 años en sala.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-coral" href="#diagnostico">Quiero mi diagnóstico gratis</a>
-        <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.4)" href="#servicios">Ver servicios</a>
+      <p class="eyebrow">Marketing y sistemas para profesionales del entrenamiento · Chile</p>
+      <h1>Más clientes.<br>Menos administración.<br><span class="hl">Hecho por un coach.</span></h1>
+      <p class="lede">Sistemas de captación, onboarding y retención que un coach no tiene tiempo de construir. Nosotros sí, y entendemos tu negocio porque llevamos 15 años en sala.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#diagnostico">Quiero mi diagnóstico gratis</a>
+        <a class="btn btn-outline-inv" href="#servicios">Ver servicios</a>
       </div>
-      <p class="hero-note">20 minutos, sin compromiso. Te vas con 3 problemas detectados y 3 acciones concretas.</p>
+      <div class="chips">
+        <a class="chip on" href="#diagnostico">Coach online / PT</a>
+        <a class="chip" href="#diagnostico">Gimnasio boutique / box</a>
+        <a class="chip" href="#diagnostico">Kinesiología deportiva</a>
+        <a class="chip" href="#diagnostico">Nutrición deportiva</a>
+      </div>
     </div>
-    <aside class="proof">
+    <aside class="why">
       <h3>Por qué un coach y no otra agencia</h3>
       <ul>
         <li>15 años entrenando personas: hipertrofia, biomecánica, RPE/RIR, periodización.</li>
         <li>Sabemos qué pregunta un cliente antes de pagar y por qué se va al tercer mes.</li>
-        <li>Agente de WhatsApp, Meta Ads y automatización ya probados en nuestros propios canales.</li>
-        <li>Zona inicial: Litoral Central, Valparaíso y Viña. Online para todo Chile.</li>
+        <li>Agente de WhatsApp, Meta Ads y automatización probados en nuestros propios canales.</li>
+        <li>Presencial en Litoral Central, Valparaíso y Viña. Online para todo Chile.</li>
       </ul>
     </aside>
   </div>
 </header>
 
-<section id="dolores">
+<div class="strip">
   <div class="wrap">
-    <span class="kicker">Lo que vemos todas las semanas</span>
-    <h2>Tres cosas que te están costando clientes</h2>
-    <p class="lede">No es falta de conocimiento técnico. Es que el negocio del entrenamiento tiene tres fugas que nadie te enseñó a tapar.</p>
+    <div class="stat"><b>15</b><span>Años como coach</span></div>
+    <div class="stat"><b>20 min</b><span>Diagnóstico gratis</span></div>
+    <div class="stat"><b>7 días</b><span>Hasta tener el sistema andando</span></div>
+    <div class="stat"><b>0</b><span>Ejecutivos de cuenta entre tú y el coach</span></div>
+  </div>
+</div>
+
+<section id="dolores" style="background:var(--bg-2)">
+  <div class="wrap">
+    <p class="eyebrow">Lo que vemos todas las semanas</p>
+    <h2>Tres cosas que te están <span class="hl">costando clientes</span></h2>
+    <p class="lede">No es falta de conocimiento técnico. El negocio del entrenamiento tiene tres fugas que nadie te enseñó a tapar.</p>
     <div class="grid-3" style="margin-top:32px">
       <article class="card">
         <div class="num">01</div>
         <h3>Clientes inestables</h3>
         <p>Un mes lleno, el siguiente con dos horas libres. Dependes de que alguien te recomiende o de que un reel pegue.</p>
-        <div class="fix"><strong>Lo arreglamos con:</strong> anuncios que llevan a evaluaciones agendadas, no a "info por DM".</div>
+        <div class="fix"><b>Lo arreglamos con</b>Anuncios que llevan a evaluaciones agendadas, no a "info por DM".</div>
       </article>
       <article class="card">
         <div class="num">02</div>
         <h3>Administración por WhatsApp</h3>
-        <p>Cobros, recordatorios, cambios de hora, formularios de lesiones… horas que no entrenan a nadie ni te pagan.</p>
-        <div class="fix"><strong>Lo arreglamos con:</strong> onboarding automático, recordatorios y cobros que salen solos.</div>
+        <p>Cobros, recordatorios, cambios de hora, fichas de lesiones. Horas que no entrenan a nadie ni te pagan.</p>
+        <div class="fix"><b>Lo arreglamos con</b>Onboarding automático, recordatorios y cobros que salen solos.</div>
       </article>
       <article class="card">
         <div class="num">03</div>
         <h3>Se van al tercer mes</h3>
         <p>Entran motivados, el resultado tarda, y nadie les habla hasta que dejan de ir. Captar cuesta 5 veces más que retener.</p>
-        <div class="fix"><strong>Lo arreglamos con:</strong> secuencia de retención en semanas 2, 6 y 10 y programa de referidos.</div>
+        <div class="fix"><b>Lo arreglamos con</b>Secuencia de retención en semanas 2, 6 y 10 y programa de referidos.</div>
       </article>
     </div>
   </div>
 </section>
 
-<section class="ladder" id="servicios">
+<section id="servicios">
   <div class="wrap">
-    <span class="kicker">Escalera de servicios</span>
-    <h2>Parte por lo que te duele hoy, escala cuando tenga sentido</h2>
+    <p class="eyebrow">Escalera de servicios</p>
+    <h2>Parte por lo que te duele hoy. <span class="hl">Escala cuando tenga sentido.</span></h2>
     <p class="lede">Precios de referencia en pesos chilenos, IVA no incluido. Se ajustan en la propuesta según la complejidad de tu caso.</p>
 
-    <div class="plans">
+    <div class="plans" style="margin-top:32px">
       <article class="plan">
-        <div class="lvl">Nivel 1 · Pago único</div>
+        <div class="top"><span class="lvl">Nivel 1 · Pago único</span></div>
         <h3>Sistema de Clientes</h3>
-        <div class="tag">Ordena la casa en 7 días.</div>
+        <p class="bajada">Ordena la casa en 7 días.</p>
         <div class="price">$490.000 – $890.000<small>pago único según complejidad</small></div>
         <ul>
           <li>Formulario de onboarding (anamnesis, lesiones, objetivos, disponibilidad) conectado a tu base de datos</li>
@@ -250,14 +288,13 @@
           <li>Panel simple de clientes (Google Sheets o Airtable)</li>
           <li>Capacitación de 1 hora</li>
         </ul>
-        <a class="btn btn-ghost" href="#diagnostico" data-nivel="1">Quiero este nivel</a>
+        <a class="btn btn-outline" href="#diagnostico" data-nivel="1">Quiero este nivel</a>
       </article>
 
       <article class="plan rec">
-        <div class="badge">Más pedido</div>
-        <div class="lvl">Nivel 2 · Mensual</div>
+        <div class="top"><span class="lvl">Nivel 2 · Mensual</span><span class="tag">Más pedido</span></div>
         <h3>Clientes Nuevos</h3>
-        <div class="tag">Adquisición predecible todos los meses.</div>
+        <p class="bajada">Adquisición predecible todos los meses.</p>
         <div class="price">$350.000 – $600.000<small>por mes + inversión en medios (mín. sugerido $200.000/mes)</small></div>
         <ul>
           <li>Meta Ads (Instagram y Facebook) con creativos producidos por nosotros</li>
@@ -265,86 +302,84 @@
           <li>Agente de WhatsApp conectado a los anuncios</li>
           <li>Reporte mensual: leads, costo por lead, evaluaciones agendadas, cierres</li>
         </ul>
-        <a class="btn btn-coral" href="#diagnostico" data-nivel="2">Quiero este nivel</a>
+        <a class="btn btn-primary" href="#diagnostico" data-nivel="2">Quiero este nivel</a>
         <div class="fine">Compromiso mínimo 3 meses. La inversión en medios se paga directo a Meta.</div>
       </article>
 
       <article class="plan">
-        <div class="lvl">Nivel 3 · Mensual</div>
+        <div class="top"><span class="lvl">Nivel 3 · Mensual</span></div>
         <h3>Marca + Retención</h3>
-        <div class="tag">Crecer y que los clientes se queden.</div>
+        <p class="bajada">Crecer y que los clientes se queden.</p>
         <div class="price">$750.000 – $1.400.000<small>por mes + inversión en medios</small></div>
         <ul>
           <li>Todo el Nivel 2</li>
           <li>12 a 16 piezas de contenido al mes (reels, carruseles, guiones) con enfoque técnico supervisado por un coach</li>
-          <li>Secuencia de retención: check-ins automáticos en semanas 2, 6 y 10, encuesta de satisfacción y oferta de renovación</li>
+          <li>Secuencia de retención: check-ins en semanas 2, 6 y 10, encuesta de satisfacción y oferta de renovación</li>
           <li>Programa de referidos</li>
           <li>Newsletter o canal de WhatsApp Comunidad</li>
         </ul>
-        <a class="btn btn-ghost" href="#diagnostico" data-nivel="3">Quiero este nivel</a>
+        <a class="btn btn-outline" href="#diagnostico" data-nivel="3">Quiero este nivel</a>
       </article>
     </div>
 
-    <div class="free">
-      <div>
-        <p><strong>Nivel 0 · Diagnóstico gratuito.</strong> Auditoría de 20 minutos de tu perfil, oferta, funnel y retención. Te entregamos 1 página con 3 problemas y 3 acciones, la contrates o no.</p>
-      </div>
-      <a class="btn btn-teal" href="#diagnostico">Agendar diagnóstico</a>
+    <div class="nivel0">
+      <p><b>Nivel 0 · Diagnóstico gratuito</b>Auditoría de 20 minutos de tu perfil, oferta, funnel y retención. Te entregamos 1 página con 3 problemas y 3 acciones, la contrates o no.</p>
+      <a class="btn btn-primary" href="#diagnostico">Agendar diagnóstico</a>
     </div>
   </div>
 </section>
 
-<section id="caso">
-  <div class="wrap case-grid">
-    <div>
-      <span class="kicker">Prueba viva</span>
-      <h2>Esto es lo que hacemos con nuestros propios canales</h2>
-      <p class="lede">No te vendemos un sistema que no usamos. Los canales de fitness de Gabriel (Instagram, TikTok, YouTube) y su entrenamiento presencial en el Litoral Central corren con el mismo agente, los mismos anuncios y la misma secuencia de retención que instalamos en tu negocio.</p>
-      <blockquote class="quote">
-        "Una agencia que no ha tenido que llenar una agenda de evaluaciones un lunes a las 7 de la mañana no entiende tu problema. Yo lo he hecho durante 15 años."
-        <cite>Gabriel Meza, coach y fundador de Influence Chile</cite>
-      </blockquote>
-    </div>
-    <div>
-      <!-- Reemplaza los valores data-value con las cifras reales de los canales propios antes de publicar. -->
-      <div class="case-stats">
-        <div class="stat"><b data-value="evaluaciones_mes">—</b><span>evaluaciones agendadas al mes</span></div>
-        <div class="stat"><b data-value="costo_evaluacion">—</b><span>costo por evaluación agendada</span></div>
-        <div class="stat"><b data-value="renovacion_m3">—</b><span>renovación al mes 3</span></div>
-        <div class="stat"><b data-value="horas_admin">—</b><span>horas de administración por semana</span></div>
-      </div>
-      <p style="font-size:13px;color:var(--muted);margin-top:12px">Cifras de los canales propios. Se actualizan cada mes con el mismo reporte que recibe cada cliente.</p>
-    </div>
-  </div>
-</section>
-
-<section class="founders" id="fundadores">
+<section id="caso" style="padding-top:0">
   <div class="wrap">
-    <span class="kicker">Oferta de lanzamiento · primeros 90 días</span>
-    <h2>5 cupos fundadores</h2>
+    <div class="case dark">
+      <div>
+        <p class="eyebrow">Prueba viva</p>
+        <h2>Esto es lo que hacemos <span class="hl">con nuestros propios canales</span></h2>
+        <p class="lede">Los canales de fitness de Gabriel (Instagram, TikTok, YouTube) y su entrenamiento presencial en el Litoral Central corren con el mismo agente, los mismos anuncios y la misma secuencia de retención que instalamos en tu negocio.</p>
+        <blockquote class="quote">
+          "Una agencia que no ha tenido que llenar una agenda de evaluaciones un lunes a las 7 de la mañana no entiende tu problema. Yo lo he hecho durante 15 años."
+          <cite>Gabriel Meza · coach y fundador de Influence Chile</cite>
+        </blockquote>
+      </div>
+      <div>
+        <!-- Reemplaza los valores data-value con las cifras reales de los canales propios antes de publicar. -->
+        <div class="case-stats">
+          <div class="stat"><b data-value="evaluaciones_mes">—</b><span>Evaluaciones agendadas al mes</span></div>
+          <div class="stat"><b data-value="costo_evaluacion">—</b><span>Costo por evaluación agendada</span></div>
+          <div class="stat"><b data-value="renovacion_m3">—</b><span>Renovación al mes 3</span></div>
+          <div class="stat"><b data-value="horas_admin">—</b><span>Horas de admin por semana</span></div>
+        </div>
+        <p style="font-size:13px;color:var(--ink-muted);margin:12px 0 0">Cifras de los canales propios. Se actualizan cada mes con el mismo reporte que recibe cada cliente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fundadores" style="background:var(--bg-2)">
+  <div class="wrap">
+    <p class="eyebrow">Oferta de lanzamiento · primeros 90 días</p>
+    <h2>5 cupos <span class="hl">fundadores</span></h2>
     <p class="lede">Para los primeros cinco coaches o gimnasios que partan con nosotros. A cambio, un testimonio en video y un caso de estudio con números reales.</p>
-    <div class="founders-grid">
-      <div class="fcard"><b>Nivel 1 incluido gratis</b><p>Entras al Nivel 2 (Clientes Nuevos) y el Sistema de Clientes completo, valorado desde $490.000, va sin costo.</p></div>
-      <div class="fcard"><b>Garantía de resultados</b><p>Si en 60 días no tienes al menos 15 evaluaciones agendadas, el mes siguiente de gestión corre por nuestra cuenta.</p></div>
-      <div class="fcard"><b>Trato directo con el coach</b><p>La estrategia, los creativos y la supervisión técnica los hace Gabriel. No pasas por un ejecutivo de cuentas.</p></div>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card fcard"><b>Nivel 1 incluido gratis</b><p>Entras al Nivel 2 (Clientes Nuevos) y el Sistema de Clientes completo, valorado desde $490.000, va sin costo.</p></div>
+      <div class="card fcard"><b>Garantía de resultados</b><p>Si en 60 días no tienes al menos 15 evaluaciones agendadas, el mes siguiente de gestión corre por nuestra cuenta.</p></div>
+      <div class="card fcard"><b>Trato directo con el coach</b><p>La estrategia, los creativos y la supervisión técnica los hace Gabriel. No pasas por un ejecutivo de cuentas.</p></div>
     </div>
-    <div class="cupos" aria-label="Cupos fundadores disponibles" data-cupos-tomados="0">
-      <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i>
-    </div>
-    <div style="margin-top:28px"><a class="btn btn-coral" href="#diagnostico">Postular a un cupo fundador</a></div>
+    <div class="cupos" aria-label="Cupos fundadores disponibles" data-cupos-tomados="0"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i></div>
+    <div style="margin-top:24px"><a class="btn btn-primary" href="#diagnostico">Postular a un cupo fundador</a></div>
   </div>
 </section>
 
 <section id="diagnostico">
   <div class="wrap form-wrap">
     <div>
-      <span class="kicker">Nivel 0 · Gratis</span>
-      <h2>Pide tu diagnóstico de 20 minutos</h2>
+      <p class="eyebrow">Nivel 0 · Gratis</p>
+      <h2>Pide tu diagnóstico <span class="hl">de 20 minutos</span></h2>
       <p class="lede">Rellena esto en 1 minuto. Te escribimos por WhatsApp para coordinar el horario.</p>
       <div class="steps">
-        <div class="step"><i>1</i><div><b>Revisamos tu perfil antes de hablar</b><span>Oferta, bio, destacadas, anuncios activos y cómo agendas hoy.</span></div></div>
-        <div class="step"><i>2</i><div><b>20 minutos por videollamada o WhatsApp</b><span>Te preguntamos cómo captas, cómo cobras y por qué se van.</span></div></div>
-        <div class="step"><i>3</i><div><b>Te entregamos 1 página</b><span>3 problemas, 3 acciones. Si quieres que las hagamos nosotros, propuesta en 24 horas.</span></div></div>
+        <div class="step"><i>01</i><div><b>Revisamos tu perfil antes de hablar</b><span>Oferta, bio, destacadas, anuncios activos y cómo agendas hoy.</span></div></div>
+        <div class="step"><i>02</i><div><b>20 minutos por videollamada o WhatsApp</b><span>Te preguntamos cómo captas, cómo cobras y por qué se van.</span></div></div>
+        <div class="step"><i>03</i><div><b>Te entregamos 1 página</b><span>3 problemas, 3 acciones. Si quieres que las hagamos nosotros, propuesta en 24 horas.</span></div></div>
       </div>
     </div>
 
@@ -405,18 +440,16 @@
       <div class="field"><label for="mensaje">Algo más que debamos saber <span class="opt">(opcional)</span></label><textarea id="mensaje" name="mensaje" placeholder="Ej: tengo 25 clientes online y 3 presenciales, cobro por transferencia y pierdo 2 horas al día coordinando."></textarea></div>
       <label class="consent"><input type="checkbox" name="consentimiento" required> Autorizo a Influence Chile SpA a contactarme por WhatsApp o correo para coordinar el diagnóstico. No compartimos tus datos con terceros.</label>
       <input type="text" name="empresa_web" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
-      <button class="btn btn-coral" type="submit" id="btnEnviar">Pedir diagnóstico gratis</button>
+      <button class="btn btn-primary" type="submit" id="btnEnviar">Pedir diagnóstico gratis</button>
       <div class="status" id="status" role="status"></div>
-      <div class="after" id="after">
-        <a class="btn btn-wa" id="btnWa" target="_blank" rel="noopener">Abrir WhatsApp ahora</a>
-      </div>
+      <div class="after" id="after"><a class="btn btn-wa" id="btnWa" target="_blank" rel="noopener">Abrir WhatsApp ahora</a></div>
     </form>
   </div>
 </section>
 
 <section style="padding-top:0">
-  <div class="wrap" style="max-width:760px">
-    <h2 style="font-size:26px">Preguntas frecuentes</h2>
+  <div class="wrap" style="max-width:800px">
+    <h2 style="font-size:36px">Preguntas frecuentes</h2>
     <details><summary>¿Trabajan con coaches que recién parten?</summary><p>Sí, pero con honestidad: el Nivel 2 requiere poder sostener 3 meses de gestión más medios. Si todavía no tienes 10 clientes, el Nivel 1 te ordena la casa y el diagnóstico gratis te dice por dónde partir.</p></details>
     <details><summary>¿La inversión en medios va incluida en el precio?</summary><p>No. El presupuesto de anuncios se paga directo a Meta desde tu cuenta publicitaria. Sugerimos un mínimo de $200.000 al mes para tener datos que sirvan.</p></details>
     <details><summary>¿Necesito tener sitio web?</summary><p>No. Con un perfil de Instagram bien armado y el agente de WhatsApp se puede partir. Si hace falta una landing, la hacemos nosotros.</p></details>
@@ -427,9 +460,21 @@
 
 <footer>
   <div class="wrap">
-    <div><strong style="color:#fff">Influence Fit</strong> es la vertical fitness de <a href="https://influencechile.cl" target="_blank" rel="noopener">Influence Chile SpA</a> · El Tabo, Región de Valparaíso.</div>
-    <div>WhatsApp <a id="footWa" href="#">+56 9 6545 0723</a> · Instagram <a href="https://instagram.com/influence.chile" target="_blank" rel="noopener">@influence.chile</a></div>
-    <div style="font-size:12.5px;opacity:.7">Precios de referencia 2026, IVA no incluido. Garantía fundadores sujeta a la inversión mínima en medios y a la implementación del agente de WhatsApp dentro de los primeros 7 días.</div>
+    <div class="cols">
+      <div>
+        <a class="logo" href="#top" style="color:#fff"><i>IF</i>Influence<span>Fit</span></a>
+        <p style="margin-top:12px;max-width:34ch">La vertical fitness de <a href="https://influencechile.cl" target="_blank" rel="noopener">Influence Chile SpA</a>. Marketing y sistemas para profesionales del entrenamiento, hecho por un coach.</p>
+      </div>
+      <div>
+        <h4>Servicios</h4>
+        <ul><li><a href="#servicios">Nivel 1 · Sistema de Clientes</a></li><li><a href="#servicios">Nivel 2 · Clientes Nuevos</a></li><li><a href="#servicios">Nivel 3 · Marca + Retención</a></li><li><a href="#diagnostico">Diagnóstico gratis</a></li></ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul><li><a id="footWa" href="#">WhatsApp +56 9 6545 0723</a></li><li><a href="https://instagram.com/influence.chile" target="_blank" rel="noopener">Instagram @influence.chile</a></li><li>El Tabo, Región de Valparaíso</li></ul>
+      </div>
+    </div>
+    <div class="legal">© 2026 Influence Chile SpA. Precios de referencia 2026, IVA no incluido. Garantía fundadores sujeta a la inversión mínima en medios y a la implementación del agente de WhatsApp dentro de los primeros 7 días.</div>
   </div>
 </footer>
 

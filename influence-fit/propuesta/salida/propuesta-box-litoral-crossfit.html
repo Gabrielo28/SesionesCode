@@ -1,43 +1,44 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><title>Propuesta Box Litoral CrossFit — Influence Fit</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Barlow', 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1, h2, h3, h4, .marca, .kicker, .badge, .lvl, .periodo, .boton, .plan .precio, .kpi b { font-family: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif; text-transform: uppercase; letter-spacing: .02em; }
   .pagina { width: 210mm; min-height: 297mm; padding: 18mm 16mm; page-break-after: always; position: relative; }
   .pagina:last-child { page-break-after: auto; }
-  .portada { background: linear-gradient(155deg, #123638 0%, #12959C 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; }
-  .portada .marca { font-size: 22pt; font-weight: 800; margin-bottom: 18mm; letter-spacing: -.02em; } .portada .marca span { color: #33C7CE; }
+  .portada { background: #123638; color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .portada .marca { font-size: 22pt; font-weight: 800; margin-bottom: 18mm; } .portada .marca span { color: #FF7B7B; }
   .portada .kicker { text-transform: uppercase; letter-spacing: .28em; font-size: 9pt; opacity: .75; margin-bottom: 6mm; }
-  .portada h1 { font-size: 32pt; line-height: 1.1; font-weight: 800; margin-bottom: 4mm; }
-  .portada h2 { font-size: 14pt; font-weight: 400; opacity: .9; margin-bottom: 14mm; line-height: 1.5; }
+  .portada h1 { font-size: 44pt; line-height: 1; font-weight: 800; margin-bottom: 5mm; }
+  .portada h2 { font-family: Barlow, sans-serif; text-transform: none; letter-spacing: 0; font-size: 14pt; font-weight: 400; opacity: .9; margin-bottom: 14mm; line-height: 1.5; }
   .portada .meta { font-size: 10pt; opacity: .8; line-height: 1.9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; }
-  h3.seccion { font-size: 20pt; color: #12959C; margin-bottom: 3mm; font-weight: 800; }
+  h3.seccion { font-size: 26pt; color: #123638; margin-bottom: 3mm; font-weight: 800; }
   h3.seccion + .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 8mm; }
   p.intro { font-size: 11pt; line-height: 1.65; color: #2c4a4c; margin-bottom: 8mm; }
   .hallazgo { border-left: 3px solid #FF7B7B; padding: 0 0 0 6mm; margin-bottom: 7mm; }
-  .hallazgo h4 { font-size: 12.5pt; margin-bottom: 2mm; } .hallazgo p { font-size: 10.5pt; line-height: 1.6; color: #2c4a4c; }
+  .hallazgo h4 { font-size: 15pt; margin-bottom: 2mm; } .hallazgo p { font-size: 10.5pt; line-height: 1.6; color: #2c4a4c; }
   .hallazgo .impacto { display: inline-block; margin-top: 3mm; font-size: 9.5pt; background: #ffeaea; color: #c0392b; padding: 1.5mm 3mm; border-radius: 3px; }
   .planes { display: flex; gap: 4mm; margin-bottom: 8mm; }
   .plan { flex: 1; border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 5mm; }
   .plan.rec { border-color: #FF7B7B; border-width: 2.5px; background: #fffafa; }
-  .plan .badge { display: inline-block; background: #FF7B7B; color: #fff; font-size: 7.5pt; padding: 1mm 2.5mm; border-radius: 3px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2mm; }
+  .plan .badge { display: inline-block; background: #FF7B7B; color: #123638; font-size: 7.5pt; padding: 1mm 2.5mm; border-radius: 3px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2mm; }
   .plan .lvl { font-size: 8pt; color: #12959C; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
-  .plan h4 { font-size: 12.5pt; color: #123638; }
-  .plan .precio { font-size: 13pt; font-weight: 800; margin: 1mm 0 3mm; } .plan .precio small { display:block; font-size: 8pt; font-weight: 400; color: #6b8b8c; }
+  .plan h4 { font-size: 15pt; color: #123638; }
+  .plan .precio { font-size: 15pt; font-weight: 800; margin: 1mm 0 3mm; } .plan .precio small { display:block; font-family: Barlow, sans-serif; text-transform: none; letter-spacing: 0; font-size: 8pt; font-weight: 400; color: #6b8b8c; }
   .plan ul { list-style: none; font-size: 8.5pt; line-height: 1.6; color: #2c4a4c; } .plan li::before { content: '▪'; color: #12959C; margin-right: 2mm; }
   .nota { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; } .nota strong { color: #12959C; }
   .fundador { background: #fff1f1; border: 1.5px solid #FF7B7B; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; }
   .fundador strong { color: #c0392b; }
-  .fase { display: flex; gap: 5mm; margin-bottom: 6mm; } .fase .periodo { flex: 0 0 32mm; font-weight: 700; color: #12959C; font-size: 10.5pt; padding-top: 1mm; }
+  .fase { display: flex; gap: 5mm; margin-bottom: 6mm; } .fase .periodo { flex: 0 0 32mm; font-weight: 700; color: #FF7B7B; font-size: 12pt; padding-top: 1mm; }
   .fase ul { flex: 1; list-style: none; font-size: 10.5pt; line-height: 1.7; color: #2c4a4c; } .fase li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
-  .total { background: linear-gradient(135deg, #123638, #12959C); color: #fff; border-radius: 6px; padding: 8mm; margin-bottom: 8mm; }
+  .total { background: #123638; color: #fff; border-radius: 6px; padding: 8mm; margin-bottom: 8mm; }
   .total .fila { display: flex; justify-content: space-between; padding: 2.5mm 0; font-size: 11pt; border-bottom: 1px solid rgba(255,255,255,.18); }
   .total .fila:last-child { border: 0; padding-top: 5mm; font-size: 15pt; font-weight: 700; }
   .total .fila.tachado span:last-child { text-decoration: line-through; opacity: .7; }
   .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin-bottom: 8mm; }
-  .kpi { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm; font-size: 9.5pt; color: #2c4a4c; } .kpi b { display: block; color: #12959C; font-size: 10.5pt; margin-bottom: 1mm; }
-  .cta { text-align: center; padding: 6mm 0 0; } .cta h3 { font-size: 20pt; color: #12959C; margin-bottom: 3mm; } .cta p { font-size: 11pt; color: #2c4a4c; line-height: 1.7; margin-bottom: 6mm; }
-  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
+  .kpi { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm; font-size: 9.5pt; color: #2c4a4c; } .kpi b { display: block; color: #123638; font-size: 12pt; margin-bottom: 1mm; }
+  .cta { text-align: center; padding: 6mm 0 0; } .cta h3 { font-size: 28pt; color: #123638; margin-bottom: 3mm; } .cta p { font-size: 11pt; color: #2c4a4c; line-height: 1.7; margin-bottom: 6mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #123638; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
   .firma { margin-top: 9mm; padding-top: 5mm; border-top: 1px solid #d7ebeb; font-size: 10pt; color: #2c4a4c; line-height: 1.8; text-align: center; }
   .pie { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
 </style></head><body>
