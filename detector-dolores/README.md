@@ -1,9 +1,15 @@
-# Detector de Dolores — encontrar el cuello de botella de cualquier negocio
+# Escáner de Negocio — el detector de dolores y cuellos de botella
 
-Un sistema para captar negocios, diagnosticar qué les duele (kiosco, restaurante,
-clínica, tienda, servicio profesional, pyme B2B) y convertir ese dolor en una oferta
+Un sistema para captar negocios, detectar qué les falla (kiosco, restaurante, clínica,
+tienda, servicio profesional, fábrica, pyme B2B) y convertir eso en una oferta
 concreta. Complementa el sistema de prospección (`../prospeccion-ventas/`), que está
 centrado en redes sociales: este mira el negocio completo.
+
+**La metáfora que lo gobierna: el escáner de un auto.** Se conecta al negocio, lee los
+8 sistemas y entrega **códigos de falla** con gravedad, síntoma, causa y reparación.
+El escáner dice *qué* falla (3 minutos, gratis, desde el celular). El **taller** dice
+*cuánto cuesta y cómo se repara* con los números del dueño: diagnóstico completo y
+radiografía de proceso.
 
 **La idea central:** todo negocio es la misma cadena (se enteran → llegan → compran →
 entregas → cobras → vuelven), sostenida por personas y datos. Siempre hay una tranca
@@ -23,23 +29,28 @@ oferta que la destraba.
 | [02-senales-desde-afuera.md](02-senales-desde-afuera.md) | Diagnóstico de 15 min sin hablar con nadie: Google Maps, Instagram, web, Meta Ads, empleo, comprador misterioso. Checklists por rubro y ficha de observación |
 | [03-entrevista-de-diagnostico.md](03-entrevista-de-diagnostico.md) | La conversación de 20 min: pregunta llave por área, 5 porqués, cómo cuantificar, ficha de entrevista |
 | [04-de-dolor-a-oferta.md](04-de-dolor-a-oferta.md) | Catálogo de soluciones, matriz dolor → oferta de 30 días → estructural, priorización y cómo presentar |
+| [06-escaner-y-codigos.md](06-escaner-y-codigos.md) | **El escáner**: cómo funciona, los 8 sistemas, el catálogo de 40 códigos de falla con síntoma, causa y reparación, y qué sensor dispara cada uno. Se genera desde `escaner/codigos.js` |
+| [escaner/](escaner/) | **La app del escáner**: conectar → 16 lecturas (+ señales en modo taller) → escaneo por sistema → códigos de falla → informe imprimible y WhatsApp. Es la puerta de entrada y el captador de leads |
 | [05-radiografia-de-proceso.md](05-radiografia-de-proceso.md) | Mapear un proceso paso a paso: las 5 preguntas, cómo leer el cuello de botella, las 7 fugas de tiempo, las 4 jugadas para destrabarlo, y el formato del servicio express de 90 minutos |
 | [proceso/](proceso/) | **Radiografía de proceso**: herramienta web para mapear en vivo con el dueño y ver al instante el paso que frena, el tiempo perdido y los pesos al mes. Imprime a PDF |
 | [diagnostico/](diagnostico/) | Generador del diagnóstico en PDF (`node generar.js negocio.json`) |
-| [formulario/](formulario/) | Autodiagnóstico web: el dueño responde 16 preguntas y recibe su mapa + CTA a WhatsApp. Es el captador de leads |
-| `.claude/skills/detector-dolores/` | Skill de Claude Code: `/detector-dolores` hace el análisis y produce el diagnóstico |
+| `.claude/skills/detector-dolores/` | Skill de Claude Code: `/detector-dolores` lee códigos a partir de lo que le des y produce el diagnóstico |
 
 ---
 
 ## El flujo
 
 ```
-CAPTAR        El negocio llega por dos vías:
-              a) tú lo eliges (CSV de leads, lo viste en la calle, te lo refirieron)
-              b) él llega solo por el formulario web (formulario/index.html)
+ESCANEAR      El negocio pasa por el escáner (escaner/index.html):
+              a) el dueño solo, en modo rápido: le llega el link, responde 16 lecturas
+                 y manda sus códigos por WhatsApp (captación de leads)
+              b) tú, en modo taller: 16 lecturas + las señales que observaste
+                 (02-senales-desde-afuera.md, comprador misterioso siempre)
+              Resultado: códigos de falla por sistema, con gravedad y reparación.
 
-OBSERVAR      15 min con 02-senales-desde-afuera.md → ficha de observación
-(sin hablar)  Comprador misterioso siempre. Hipótesis del cuello de botella.
+OBSERVAR      Si entró por (a), completar con 15 min de señales desde afuera y
+(sin hablar)  reescanear en modo taller: los códigos "confirmados por 2 fuentes"
+              son los que van en la conversación.
 
 CONVERSAR     20 min con 03-entrevista-de-diagnostico.md → ficha de entrevista
               Confirmar, cuantificar en pesos, agendar la revisión.
@@ -62,6 +73,28 @@ radiografía cuando el dolor está en un proceso.
 
 ---
 
+## El escáner
+
+`escaner/index.html` es una página estática (se sube a cualquier hosting o se enlaza
+desde la bio). Cuatro pantallas: **Conectar** (negocio, rubro, modo), **Lectura** (16
+preguntas, 2 por sistema, más la lista de señales observadas en modo taller),
+**Escaneando** (la consola recorre los 8 sistemas) y **Códigos de falla** (ID de
+escaneo, totales por gravedad, estado de los sistemas, cada código con síntoma, causa,
+reparación rápida, reparación en taller, quién y qué sensor lo detectó).
+
+Botones: WhatsApp con los códigos críticos ya escritos, imprimir informe, copiar el
+link del escaneo (reabre el resultado), borrar códigos.
+
+```bash
+cd escaner
+node imprimir.js ejemplo-minimarket.json    # escaneo-minimarket-don-lucho.pdf sin abrir el navegador
+node codigos-a-md.js > ../06-escaner-y-codigos.md   # regenerar el catálogo en markdown
+```
+
+El catálogo completo (sistemas, códigos, lecturas y señales) vive en
+`escaner/codigos.js`. Para agregar un código: una línea en `CODIGOS` y un sensor que
+lo dispare.
+
 ## Usar el skill (Claude Code)
 
 ```
@@ -69,10 +102,11 @@ radiografía cuando el dolor está en un proceso.
 Fui a comprar: solo efectivo, cuaderno de fiado, el dueño solo en caja.
 ```
 
-O pegando las notas de una conversación, o las respuestas del formulario. El skill lee
-los cuatro documentos, clasifica lo que encuentra por área con su evidencia, calcula el
-costo con los datos que haya (marcando lo que es supuesto), escribe el `negocio.json`,
-corre el generador y propone la oferta y el primer mensaje.
+O pegando las notas de una conversación, o el link del escaneo. El skill lee los
+documentos, traduce lo que encuentra a códigos de falla con su evidencia, elige el
+cuello de botella, calcula el costo con los datos que haya (marcando lo que es
+supuesto), escribe el `negocio.json`, corre el generador y propone la oferta y el
+primer mensaje.
 
 ---
 
@@ -90,10 +124,12 @@ se abre el HTML en Chrome y se imprime a PDF.
 
 **Campos del JSON:**
 - `fortalezas` — 2 cosas que hacen bien, textuales. Obligatorio.
-- `areas` — las 8, cada una con `estado` (`bien` / `alerta` / `critico`), `hallazgo`
-  y `evidencia` (de dónde salió: reseña, comprador misterioso, lo que dijo el dueño).
+- `areas` — las 8, cada una con `estado` (`bien` / `alerta` / `critico`), `hallazgo`,
+  `evidencia` (de dónde salió: reseña, comprador misterioso, lo que dijo el dueño) y
+  opcionalmente `codigos` (los códigos de falla del escáner, ej. `["CAJ-01", "CAJ-02"]`).
 - `cuellos` — el cuello de botella primero, después 2 dolores secundarios. Cada uno con
-  `cuanto_cuesta` (el número que aceptó el dueño) y `como_se_arregla`.
+  `cuanto_cuesta` (el número que aceptó el dueño), `como_se_arregla` y opcionalmente
+  `codigo`.
 - `plan_30_dias` — semana a semana, sin precios.
 - `siguiente_paso` — una sola acción con fecha.
 
@@ -116,13 +152,3 @@ node imprimir.js ejemplo-muebles.json     # radiografia-muebles-araya.pdf, sin a
 El método completo y el formato del servicio de 90 minutos están en
 `05-radiografia-de-proceso.md`.
 
-## El formulario de autodiagnóstico
-
-`formulario/index.html` es una página estática: 16 preguntas (2 por área), scoring en
-el navegador, resultado con el mapa de 8 áreas y los 3 cuellos de botella, y un botón
-de WhatsApp con el resultado ya escrito en el mensaje. No necesita servidor: se sube a
-cualquier hosting o se enlaza desde la bio de Instagram.
-
-El mensaje de WhatsApp llega con el nombre del negocio, rubro y los 3 dolores. Es la
-entrada perfecta para el comprador misterioso y la entrevista: el dueño ya levantó la
-mano y ya dijo qué le duele.

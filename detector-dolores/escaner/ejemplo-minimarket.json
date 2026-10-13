@@ -1,0 +1,7 @@
+{
+  "negocio": "Minimarket Don Lucho",
+  "rubro": "Almacén / Minimarket / Kiosco",
+  "modo": "taller",
+  "r": [1, 2, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 2],
+  "s": ["g1", "g4", "v1", "v2", "v3", "v6", "v7", "v9"]
+}

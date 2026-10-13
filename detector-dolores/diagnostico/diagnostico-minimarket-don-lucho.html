@@ -34,6 +34,8 @@
   .area .estado { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: .8mm 2.2mm; border-radius: 3px; }
   .area p { font-size: 8.6pt; line-height: 1.45; color: #2c4a4c; }
   .area .ev { font-size: 7.6pt; color: #6b8b8c; margin-top: 1.2mm; font-style: italic; }
+  .chip { display: inline-block; font-family: Consolas, 'Courier New', monospace; font-size: 7.2pt; font-weight: 700; letter-spacing: .04em; padding: .5mm 1.6mm; border-radius: 2px; background: #e6f1f1; color: #12959C; margin-left: 1.2mm; vertical-align: 1.5px; }
+  .area.critico .chip { background: #FDE8E8; color: #D64545; } .area.alerta .chip { background: #FFF4DE; color: #B06F00; }
 
 
   .cuello { border: 2px solid #d7ebeb; border-radius: 6px; padding: 5mm 6mm; margin-bottom: 5mm; page-break-inside: avoid; }
@@ -94,43 +96,43 @@
   </div>
   <div class="mapa">
     
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">1</span><h4>Captación</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">1</span><h4>Captación</h4> <span class="chip">CAP-01</span><span class="chip">CAP-02</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Depende de la gente que pasa por la cuadra. No aparece al buscar "minimarket Maipú" en Google y el perfil no está reclamado.</p>
       <div class="ev">Búsqueda en Google Maps; Luis: "todo es gente del barrio"</div>
     </div>
-    <div class="area" style="border-left-color:#2E9E6B">
+    <div class="area bien" style="border-left-color:#2E9E6B">
       <div class="cab"><div><span class="num">2</span><h4>Conversión</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
       <p>El que entra, compra. Atención rápida y cercana.</p>
       <div class="ev">Visita: 0 personas se fueron sin comprar en 20 min</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4> <span class="chip">MAR-01</span><span class="chip">MAR-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Bajó precios en bebidas y abarrotes para competir con la cadena. En esos productos ya no deja margen; el margen está en panadería y fiambrería, que no destaca.</p>
       <div class="ev">Luis: "la Coca la vendo casi a lo que me cuesta"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">4</span><h4>Operación</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">4</span><h4>Operación</h4> <span class="chip">OPE-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Quiebres de stock en pan y bebidas en la tarde. El pedido al proveedor se hace de memoria.</p>
       <div class="ev">Visita sábado 13:00: sin marraqueta ni bebida de 3 L; Luis: "pido cuando veo que falta"</div>
     </div>
-    <div class="area" style="border-left-color:#D64545">
-      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4> <span class="chip">CAJ-01</span><span class="chip">CAJ-02</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
       <p>Solo efectivo y transferencia a mano. $780.000 en fiado, parte de hace más de 6 meses. Dejó de fiar y perdió clientes que compraban a crédito.</p>
       <div class="ev">Cuaderno de fiado; cartel "no aceptamos tarjeta"; Luis: "me quedaron debiendo como ochocientas lucas"</div>
     </div>
-    <div class="area" style="border-left-color:#D64545">
-      <div class="cab"><div><span class="num">6</span><h4>Retención</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">6</span><h4>Retención</h4> <span class="chip">RET-01</span><span class="chip">RET-02</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
       <p>Perdió la compra grande de la semana de 30 a 40 familias que ahora van a la cadena. No tiene cómo contactarlas: no tiene teléfonos ni ofrece pedido a domicilio.</p>
       <div class="ev">Luis: "vienen por el pan y lo que se les olvidó, la compra la hacen allá"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4> <span class="chip">PER-01</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Luis atiende solo de 7:30 a 22:00. Su señora cubre dos horas al almuerzo. No hay quien reparta ni quien responda un WhatsApp.</p>
       <div class="ev">Visita; Luis: "si me enfermo cierro"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">8</span><h4>Datos y control</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">8</span><h4>Datos y control</h4> <span class="chip">DAT-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Sabe cuánto vende al día (lo cuenta en caja) pero no por categoría. No sabe cuánto deja cada línea.</p>
       <div class="ev">Respondió la venta de ayer al tiro; no supo la venta de panadería</div>
     </div>
@@ -143,7 +145,7 @@
   <p class="intro">De todo lo anterior, hay una tranca que limita más que las otras. Es por donde conviene partir: la que más cuesta hoy y la que se puede destrabar más rápido.</p>
   
   <div class="cuello principal">
-    <span class="tag">Cuello de botella · Retención</span>
+    <span class="tag">Cuello de botella · Retención · RET-01</span>
     <h4>Perdió la compra grande del barrio y no tiene cómo recuperarla</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>Unas 35 familias que hacían la compra semanal en Don Lucho hoy la hacen en la cadena y vienen solo por lo que se les olvidó. La cadena gana en precio; Don Lucho ganaba en cercanía y crédito, y dejó de ofrecer ambas cosas sin reemplazarlas por nada.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$1.400.000 al mes<small>35 familias × $40.000 de compra semanal × 4 semanas = $5.600.000 de venta que se fue. Al margen de abarrotes (25%) son $1.400.000 al mes. Número conversado con Luis.</small></span></p></div>
@@ -151,14 +153,14 @@
   </div>
   <div class="secundarios">
   <div class="cuello sec">
-    <span class="tag">Dolor secundario 1 · Caja y cobro</span>
+    <span class="tag">Dolor secundario 1 · Caja y cobro · CAJ-02</span>
     <h4>Solo efectivo: pierde la venta de todos los que pagan con tarjeta</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>El cartel de "no aceptamos tarjeta" manda a la cadena a quien no anda con efectivo. Luis no quiere pagar la comisión, pero la comisión es menor que la venta que no entra.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$360.000 al mes<small>Supuesto conservador: 10 ventas al día perdidas × $4.000 × 30 días = $1.200.000 en venta, $300.000 de margen, más el fiado que no se recupera ($780.000, del cual Luis estima que la mitad no vuelve).</small></span></p></div>
     <div class="fila"><div class="et">Cómo se arregla</div><p>Máquina de tarjeta y QR de transferencia en el mesón, con el cartel cambiado a "aceptamos todo medio de pago". Anunciarlo en el barrio con el mismo mensaje del pedido por WhatsApp. <span class="plazo">· 1 semana</span></p></div>
   </div>
   <div class="cuello sec">
-    <span class="tag">Dolor secundario 2 · Ticket y margen</span>
+    <span class="tag">Dolor secundario 2 · Ticket y margen · MAR-03</span>
     <h4>Compite en precio en lo que no deja margen y esconde lo que sí deja</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>Bajó bebidas y abarrotes para igualar a la cadena. Pero lo que la cadena no tiene (pan recién salido, fiambre al corte, almuerzo del día) está sin destacar, sin cartel y sin combo.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$250.000 al mes<small>Estimación: 20 clientes al día que compran solo pan y se les podría vender un combo de desayuno (+$1.500 de margen) = $900.000 al mes de venta adicional, $250.000 de margen. Supuesto a validar en el primer mes.</small></span></p></div>

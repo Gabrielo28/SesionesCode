@@ -34,6 +34,8 @@
   .area .estado { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: .8mm 2.2mm; border-radius: 3px; }
   .area p { font-size: 8.6pt; line-height: 1.45; color: #2c4a4c; }
   .area .ev { font-size: 7.6pt; color: #6b8b8c; margin-top: 1.2mm; font-style: italic; }
+  .chip { display: inline-block; font-family: Consolas, 'Courier New', monospace; font-size: 7.2pt; font-weight: 700; letter-spacing: .04em; padding: .5mm 1.6mm; border-radius: 2px; background: #e6f1f1; color: #12959C; margin-left: 1.2mm; vertical-align: 1.5px; }
+  .area.critico .chip { background: #FDE8E8; color: #D64545; } .area.alerta .chip { background: #FFF4DE; color: #B06F00; }
 
 
   .cuello { border: 2px solid #d7ebeb; border-radius: 6px; padding: 5mm 6mm; margin-bottom: 5mm; page-break-inside: avoid; }
@@ -94,42 +96,42 @@
   </div>
   <div class="mapa">
     
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">1</span><h4>Captación</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">1</span><h4>Captación</h4> <span class="chip">CAP-02</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Casi todo el pedido nuevo llega por las apps. Instagram crece, pero el link de la bio lleva a la app, no a un canal propio.</p>
       <div class="ev">Javiera: "el 70% es por app"; bio con link a app de delivery</div>
     </div>
-    <div class="area" style="border-left-color:#D64545">
-      <div class="cab"><div><span class="num">2</span><h4>Conversión</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">2</span><h4>Conversión</h4> <span class="chip">CON-01</span><span class="chip">CON-02</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
       <p>El WhatsApp propio responde en 40 minutos un viernes a las 20:30. A esa hora el cliente ya pidió en la app.</p>
       <div class="ev">Comprador misterioso: 7 min el martes a las 11:00, 42 min el viernes a las 20:30; sin seguimiento al día siguiente</div>
     </div>
-    <div class="area" style="border-left-color:#D64545">
-      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4> <span class="chip">MAR-01</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
       <p>La comisión de las apps (30%) se come casi todo el margen del pedido. El mismo pedido por WhatsApp deja el doble.</p>
       <div class="ev">Javiera: "por app me queda como $2.000 por pedido, por WhatsApp $6.000"</div>
     </div>
-    <div class="area" style="border-left-color:#2E9E6B">
+    <div class="area bien" style="border-left-color:#2E9E6B">
       <div class="cab"><div><span class="num">4</span><h4>Operación</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
       <p>Cocina ordenada, tiempos de preparación consistentes. Las reseñas negativas (3) son todas por demora del repartidor de la app, no de la cocina.</p>
       <div class="ev">Reseñas 1-2 estrellas: "llegó tarde", "el repartidor se perdió"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4> <span class="chip">CAJ-04</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Las apps pagan a 7-15 días; los proveedores de pescado cobran al contado. Hay semanas apretadas.</p>
       <div class="ev">Javiera: "a veces tengo que esperar el pago de la app para comprar el salmón"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">6</span><h4>Retención</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">6</span><h4>Retención</h4> <span class="chip">RET-01</span><span class="chip">RET-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>No tiene los datos de los clientes de las apps (la app se los queda). De los de WhatsApp tiene unos 300 números y nunca les ha escrito.</p>
       <div class="ev">Javiera: "tengo los números pero no sé qué mandarles"</div>
     </div>
-    <div class="area" style="border-left-color:#D98E04">
-      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4> <span class="chip">PER-02</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
       <p>Javiera cocina y responde el WhatsApp al mismo tiempo. En hora punta gana la cocina.</p>
       <div class="ev">Comprador misterioso; Javiera: "el viernes no alcanzo a mirar el teléfono"</div>
     </div>
-    <div class="area" style="border-left-color:#2E9E6B">
+    <div class="area bien" style="border-left-color:#2E9E6B">
       <div class="cab"><div><span class="num">8</span><h4>Datos y control</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
       <p>Sabe ventas por canal y por día gracias a los reportes de las apps y una planilla propia.</p>
       <div class="ev">Respondió venta semanal y proporción por canal sin dudar</div>
@@ -143,7 +145,7 @@
   <p class="intro">De todo lo anterior, hay una tranca que limita más que las otras. Es por donde conviene partir: la que más cuesta hoy y la que se puede destrabar más rápido.</p>
   
   <div class="cuello principal">
-    <span class="tag">Cuello de botella · Conversión</span>
+    <span class="tag">Cuello de botella · Conversión · CON-01</span>
     <h4>El canal propio pierde el pedido justo cuando el cliente quiere pedir</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>Un viernes a las 20:30 el WhatsApp de Sakura demora 42 minutos en responder. El cliente escribe, no recibe respuesta y pide por la app, donde Sakura gana un tercio. El canal que más margen deja es el que peor atiende.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$960.000 al mes<small>60 consultas semanales por WhatsApp en hora punta; hoy se convierten 20. Con respuesta en menos de 5 min se convertirían 40: +80 pedidos al mes × $6.000 de margen propio = $480.000, más $320.000 de diferencia de margen en los que hoy van por app y $160.000 de clientes que no pidieron en ningún lado.</small></span></p></div>
@@ -151,14 +153,14 @@
   </div>
   <div class="secundarios">
   <div class="cuello sec">
-    <span class="tag">Dolor secundario 1 · Ticket y margen</span>
+    <span class="tag">Dolor secundario 1 · Ticket y margen · CAP-02</span>
     <h4>Depende de las apps, que se quedan con el margen y con los clientes</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>El 70% de la venta paga 30% de comisión. Y la app se queda con los datos del cliente: Sakura no sabe quién le compró ni puede volver a escribirle.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$1.100.000 al mes<small>Venta por apps $5.500.000 × 30% = $1.650.000 de comisión al mes. Si un tercio migra al canal propio en 90 días, se recuperan $550.000 de comisión y $550.000 de margen.</small></span></p></div>
     <div class="fila"><div class="et">Cómo se arregla</div><p>Migración gradual: inserto en cada pedido de app ("la próxima pídelo directo y te regalamos X"), link propio en bio y Google, oferta exclusiva por WhatsApp. Las apps quedan para captar clientes nuevos. <span class="plazo">· 90 días</span></p></div>
   </div>
   <div class="cuello sec">
-    <span class="tag">Dolor secundario 2 · Retención</span>
+    <span class="tag">Dolor secundario 2 · Retención · RET-01</span>
     <h4>300 clientes con teléfono y ningún mensaje enviado</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>Tiene la lista más valiosa del negocio (gente que ya pidió por canal propio) y no la usa. Un sushi se pide cada 2 a 4 semanas: sin recordatorio, piden donde les aparezca primero.</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$360.000 al mes<small>Si el 10% de los 300 clientes hace un pedido extra al mes por una difusión semanal: 30 × $12.000 × 50% de margen = $180.000 el primer mes, el doble a los 60 días.</small></span></p></div>

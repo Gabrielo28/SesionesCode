@@ -68,7 +68,7 @@ const pie = n => `<div class="pie"><span>Influence Chile · Diagnóstico de ${es
 
 const renderCuello = (c, i) => `
   <div class="cuello ${i === 0 ? 'principal' : 'sec'}">
-    <span class="tag">${i === 0 ? 'Cuello de botella' : `Dolor secundario ${i}`}${c.area && AREAS[c.area] ? ' · ' + AREAS[c.area].nombre : ''}</span>
+    <span class="tag">${i === 0 ? 'Cuello de botella' : `Dolor secundario ${i}`}${c.area && AREAS[c.area] ? ' · ' + AREAS[c.area].nombre : ''}${c.codigo ? ' · ' + esc(c.codigo) : ''}</span>
     <h4>${esc(c.titulo)}</h4>
     <div class="fila"><div class="et">Qué pasa</div><p>${esc(c.que_pasa)}</p></div>
     <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">${esc(c.cuanto_cuesta)}${c.detalle_costo ? `<small>${esc(c.detalle_costo)}</small>` : ''}</span></p></div>
@@ -111,6 +111,8 @@ const html = `<!doctype html>
   .area .estado { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: .8mm 2.2mm; border-radius: 3px; }
   .area p { font-size: 8.6pt; line-height: 1.45; color: #2c4a4c; }
   .area .ev { font-size: 7.6pt; color: #6b8b8c; margin-top: 1.2mm; font-style: italic; }
+  .chip { display: inline-block; font-family: Consolas, 'Courier New', monospace; font-size: 7.2pt; font-weight: 700; letter-spacing: .04em; padding: .5mm 1.6mm; border-radius: 2px; background: #e6f1f1; color: #12959C; margin-left: 1.2mm; vertical-align: 1.5px; }
+  .area.critico .chip { background: #FDE8E8; color: #D64545; } .area.alerta .chip { background: #FFF4DE; color: #B06F00; }
 
 
   .cuello { border: 2px solid #d7ebeb; border-radius: 6px; padding: 5mm 6mm; margin-bottom: 5mm; page-break-inside: avoid; }
@@ -171,8 +173,8 @@ const html = `<!doctype html>
   </div>
   <div class="mapa">
     ${areasOrdenadas.map(a => { const A = AREAS[a.id], E = ESTADOS[a.estado]; return `
-    <div class="area" style="border-left-color:${E.color}">
-      <div class="cab"><div><span class="num">${A.n}</span><h4>${A.nombre}</h4></div><span class="estado" style="background:${E.fondo};color:${E.color}">${E.etiqueta}</span></div>
+    <div class="area ${a.estado}" style="border-left-color:${E.color}">
+      <div class="cab"><div><span class="num">${A.n}</span><h4>${A.nombre}</h4>${a.codigos && a.codigos.length ? ' ' + a.codigos.map(c => `<span class="chip">${esc(c)}</span>`).join('') : ''}</div><span class="estado" style="background:${E.fondo};color:${E.color}">${E.etiqueta}</span></div>
       <p>${esc(a.hallazgo)}</p>
       ${a.evidencia ? `<div class="ev">${esc(a.evidencia)}</div>` : ''}
     </div>`; }).join('')}
