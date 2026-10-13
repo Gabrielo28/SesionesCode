@@ -1,0 +1,65 @@
+{
+  "negocio": "Minimarket Don Lucho",
+  "contacto": "Luis Aravena",
+  "cargo": "Dueño",
+  "rubro": "Almacén / Minimarket",
+  "ciudad": "Maipú, Santiago",
+  "fuentes": ["Visita al local (martes 12:30 y sábado 13:00)", "Google Maps", "Instagram @donlucho.maipu", "Conversación de 20 minutos con Luis"],
+
+  "resumen": "Llega gente, pero el minimarket de cadena que abrió a dos cuadras se llevó la compra grande y Don Lucho perdió la ventaja que tenía: la cercanía, el crédito y el pedido rápido. Hoy compite en precio, que es donde no puede ganar.",
+
+  "fortalezas": [
+    "Luis conoce por nombre a la mayoría de sus clientes y ellos lo prefieren cuando pueden: las 9 reseñas de Google hablan de la atención.",
+    "Tiene surtido de panadería y fiambrería al corte que la cadena no ofrece, y es lo que más vende por la mañana."
+  ],
+
+  "areas": [
+    { "id": "captacion",  "estado": "alerta",  "hallazgo": "Depende de la gente que pasa por la cuadra. No aparece al buscar \"minimarket Maipú\" en Google y el perfil no está reclamado.", "evidencia": "Búsqueda en Google Maps; Luis: \"todo es gente del barrio\"" },
+    { "id": "conversion", "estado": "bien",    "hallazgo": "El que entra, compra. Atención rápida y cercana.", "evidencia": "Visita: 0 personas se fueron sin comprar en 20 min" },
+    { "id": "margen",     "estado": "alerta",  "hallazgo": "Bajó precios en bebidas y abarrotes para competir con la cadena. En esos productos ya no deja margen; el margen está en panadería y fiambrería, que no destaca.", "evidencia": "Luis: \"la Coca la vendo casi a lo que me cuesta\"" },
+    { "id": "operacion",  "estado": "alerta",  "hallazgo": "Quiebres de stock en pan y bebidas en la tarde. El pedido al proveedor se hace de memoria.", "evidencia": "Visita sábado 13:00: sin marraqueta ni bebida de 3 L; Luis: \"pido cuando veo que falta\"" },
+    { "id": "caja",       "estado": "critico", "hallazgo": "Solo efectivo y transferencia a mano. $780.000 en fiado, parte de hace más de 6 meses. Dejó de fiar y perdió clientes que compraban a crédito.", "evidencia": "Cuaderno de fiado; cartel \"no aceptamos tarjeta\"; Luis: \"me quedaron debiendo como ochocientas lucas\"" },
+    { "id": "retencion",  "estado": "critico", "hallazgo": "Perdió la compra grande de la semana de 30 a 40 familias que ahora van a la cadena. No tiene cómo contactarlas: no tiene teléfonos ni ofrece pedido a domicilio.", "evidencia": "Luis: \"vienen por el pan y lo que se les olvidó, la compra la hacen allá\"" },
+    { "id": "personas",   "estado": "alerta",  "hallazgo": "Luis atiende solo de 7:30 a 22:00. Su señora cubre dos horas al almuerzo. No hay quien reparta ni quien responda un WhatsApp.", "evidencia": "Visita; Luis: \"si me enfermo cierro\"" },
+    { "id": "datos",      "estado": "alerta",  "hallazgo": "Sabe cuánto vende al día (lo cuenta en caja) pero no por categoría. No sabe cuánto deja cada línea.", "evidencia": "Respondió la venta de ayer al tiro; no supo la venta de panadería" }
+  ],
+
+  "cuellos": [
+    {
+      "titulo": "Perdió la compra grande del barrio y no tiene cómo recuperarla",
+      "area": "retencion",
+      "que_pasa": "Unas 35 familias que hacían la compra semanal en Don Lucho hoy la hacen en la cadena y vienen solo por lo que se les olvidó. La cadena gana en precio; Don Lucho ganaba en cercanía y crédito, y dejó de ofrecer ambas cosas sin reemplazarlas por nada.",
+      "cuanto_cuesta": "$1.400.000 al mes",
+      "detalle_costo": "35 familias × $40.000 de compra semanal × 4 semanas = $5.600.000 de venta que se fue. Al margen de abarrotes (25%) son $1.400.000 al mes. Número conversado con Luis.",
+      "como_se_arregla": "Recuperar la ventaja de cercanía con pedido por WhatsApp y entrega en el barrio el mismo día. Lista de difusión con las familias del sector. Crédito formal: tope de $30.000 por familia, se paga el día de pago, registrado.",
+      "plazo": "4 semanas"
+    },
+    {
+      "titulo": "Solo efectivo: pierde la venta de todos los que pagan con tarjeta",
+      "area": "caja",
+      "que_pasa": "El cartel de \"no aceptamos tarjeta\" manda a la cadena a quien no anda con efectivo. Luis no quiere pagar la comisión, pero la comisión es menor que la venta que no entra.",
+      "cuanto_cuesta": "$360.000 al mes",
+      "detalle_costo": "Supuesto conservador: 10 ventas al día perdidas × $4.000 × 30 días = $1.200.000 en venta, $300.000 de margen, más el fiado que no se recupera ($780.000, del cual Luis estima que la mitad no vuelve).",
+      "como_se_arregla": "Máquina de tarjeta y QR de transferencia en el mesón, con el cartel cambiado a \"aceptamos todo medio de pago\". Anunciarlo en el barrio con el mismo mensaje del pedido por WhatsApp.",
+      "plazo": "1 semana"
+    },
+    {
+      "titulo": "Compite en precio en lo que no deja margen y esconde lo que sí deja",
+      "area": "margen",
+      "que_pasa": "Bajó bebidas y abarrotes para igualar a la cadena. Pero lo que la cadena no tiene (pan recién salido, fiambre al corte, almuerzo del día) está sin destacar, sin cartel y sin combo.",
+      "cuanto_cuesta": "$250.000 al mes",
+      "detalle_costo": "Estimación: 20 clientes al día que compran solo pan y se les podría vender un combo de desayuno (+$1.500 de margen) = $900.000 al mes de venta adicional, $250.000 de margen. Supuesto a validar en el primer mes.",
+      "como_se_arregla": "Volver a precio normal en bebidas (nadie va a la cadena por una Coca). Combo desayuno y combo once con cartel grande. Pizarra con \"hoy salió\" para panadería.",
+      "plazo": "2 semanas"
+    }
+  ],
+
+  "plan_30_dias": [
+    { "periodo": "Semana 1", "acciones": ["Máquina de tarjeta y QR instalados, cartel nuevo", "Perfil de Google reclamado con fotos reales y horario", "Número de WhatsApp Business del negocio con catálogo de 20 productos"] },
+    { "periodo": "Semana 2", "acciones": ["Volante al barrio: \"pide por WhatsApp, te lo llevamos hoy\" + medios de pago", "Combo desayuno y combo once en pizarra", "Lista de clientes: pedir el teléfono a cada compra con una rifa de una caja de mercadería"] },
+    { "periodo": "Semana 3", "acciones": ["Primera difusión por WhatsApp: oferta de la semana a las familias registradas", "Crédito formal: tope y día de pago, registrado en el teléfono", "Pedido a proveedores con lista fija según lo que se quebró las últimas 2 semanas"] },
+    { "periodo": "Semana 4", "acciones": ["Medir: pedidos por WhatsApp, ventas con tarjeta, familias en la lista, combos vendidos", "Pedir reseñas en Google con QR en el mesón", "Revisar números con Luis y decidir el mes 2"] }
+  ],
+
+  "siguiente_paso": "Revisar este diagnóstico con Luis el jueves a las 16:00 en el local y definir si partimos la semana siguiente."
+}

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detector de cuellos de botella · Influence Chile</title>
+<meta name="description" content="16 preguntas, 3 minutos. Descubre dónde se tranca tu negocio y qué hacer primero.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #123638; --teal: #12959C; --teal-dark: #0E7A80; --coral: #FF7B7B; --coral-dark: #E85F5F;
+    --paper: #F4F8F8; --card: #FFFFFF; --line: #D7EBEB; --muted: #5E7A7B; --wash: #E6F1F1;
+    --ok: #2E9E6B; --ok-wash: #E6F5EC; --warn: #D98E04; --warn-wash: #FFF4DE; --bad: #D64545; --bad-wash: #FDE8E8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: 'Montserrat', system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.5; min-height: 100vh; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  header .marca { font-weight: 800; font-size: 20px; letter-spacing: -.02em; color: var(--teal); }
+  header .marca span { color: var(--ink); font-weight: 500; }
+  .progreso { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 24px; }
+  .progreso i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--teal), var(--coral)); transition: width .3s; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px 20px; box-shadow: 0 6px 24px rgba(18,54,56,.06); }
+  h1 { font-size: 28px; line-height: 1.15; font-weight: 800; letter-spacing: -.02em; margin-bottom: 12px; }
+  h2 { font-size: 20px; line-height: 1.25; font-weight: 700; margin-bottom: 16px; }
+  p { color: var(--muted); margin-bottom: 14px; }
+  p.lead { font-size: 17px; color: var(--ink); }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+  input, select { width: 100%; font: inherit; font-size: 16px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+  input:focus, select:focus { outline: 2px solid var(--teal); outline-offset: 1px; border-color: var(--teal); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 700; font-size: 16px; padding: 14px 24px; border-radius: 40px; border: 0; cursor: pointer; text-decoration: none; transition: transform .1s, background .15s; width: 100%; }
+  .btn:active { transform: scale(.98); }
+  .btn-coral { background: var(--coral); color: #fff; }
+  .btn-coral:hover { background: var(--coral-dark); }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-teal:hover { background: var(--teal-dark); }
+  .btn-ghost { background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; padding: 10px; }
+  .btn-wa { background: #25D366; color: #fff; }
+  .btn-wa:hover { background: #1DB954; }
+  .btn-wa svg { width: 22px; height: 22px; fill: #fff; }
+  .area-tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--teal); background: var(--wash); padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+  .opciones { display: grid; gap: 10px; margin: 8px 0 20px; }
+  .opcion { display: flex; align-items: center; gap: 12px; text-align: left; font: inherit; font-size: 15px; font-weight: 500; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); cursor: pointer; transition: border-color .15s, background .15s; }
+  .opcion:hover { border-color: var(--teal); background: var(--wash); }
+  .opcion .letra { flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--wash); color: var(--teal); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
+  .nav { display: flex; justify-content: space-between; align-items: center; }
+  .contador { font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .hidden { display: none !important; }
+
+  .mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 24px; }
+  .area { border: 1.5px solid var(--line); border-left-width: 5px; border-radius: 10px; padding: 12px 12px 10px; background: #fff; }
+  .area .n { font-size: 11px; color: #9ab5b6; font-weight: 700; }
+  .area h4 { font-size: 14px; font-weight: 700; line-height: 1.2; margin: 2px 0 6px; }
+  .area .estado { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  .area.bien { border-left-color: var(--ok); } .area.bien .estado { background: var(--ok-wash); color: var(--ok); }
+  .area.alerta { border-left-color: var(--warn); } .area.alerta .estado { background: var(--warn-wash); color: var(--warn); }
+  .area.critico { border-left-color: var(--bad); } .area.critico .estado { background: var(--bad-wash); color: var(--bad); }
+
+  .cuello { border: 2px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; background: #fff; }
+  .cuello.principal { border-color: var(--coral); background: #FFFAFA; }
+  .cuello .tag { display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; padding: 4px 10px; border-radius: 4px; background: var(--wash); color: var(--teal); margin-bottom: 10px; }
+  .cuello.principal .tag { background: var(--coral); color: #fff; }
+  .cuello h3 { font-size: 18px; line-height: 1.25; margin-bottom: 8px; }
+  .cuello p { font-size: 14.5px; margin-bottom: 10px; }
+  .cuello .paso { background: var(--wash); border-radius: 10px; padding: 12px 14px; font-size: 14px; color: var(--ink); }
+  .cuello .paso strong { color: var(--teal); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 4px; }
+  .cta { background: linear-gradient(135deg, var(--ink), var(--teal)); color: #fff; border-radius: 14px; padding: 24px 20px; margin-top: 24px; text-align: center; }
+  .cta h2 { color: #fff; margin-bottom: 8px; }
+  .cta p { color: rgba(255,255,255,.85); margin-bottom: 18px; }
+  .pie { text-align: center; font-size: 12px; color: #9ab5b6; margin-top: 28px; line-height: 1.7; }
+  .pie a { color: var(--teal); text-decoration: none; font-weight: 600; }
+  .sano { background: var(--ok-wash); border-radius: 12px; padding: 16px; color: var(--ink); margin-bottom: 16px; }
+  @media (min-width: 560px) { .btn { width: auto; } h1 { font-size: 34px; } .card { padding: 32px 28px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="marca">influence <span>· detector</span></div>
+  </header>
+
+  <!-- INICIO -->
+  <section id="inicio" class="card">
+    <h1>¿Dónde se tranca tu negocio?</h1>
+    <p class="lead">16 preguntas, 3 minutos. Al final ves el mapa completo de tu negocio y las 3 trancas que más te están costando.</p>
+    <p>Sirve para cualquier negocio que venda algo: un almacén, un restaurante, una clínica, una tienda, un servicio. Sin registro, sin correo.</p>
+    <label for="negocio">Nombre del negocio</label>
+    <input id="negocio" type="text" placeholder="Ej: Minimarket Don Lucho" autocomplete="organization">
+    <label for="rubro">Rubro</label>
+    <select id="rubro">
+      <option value="">Elige uno…</option>
+      <option>Almacén / Minimarket / Kiosco</option>
+      <option>Restaurante / Cafetería / Delivery</option>
+      <option>Clínica / Dental / Estética</option>
+      <option>Tienda / Retail / Moda</option>
+      <option>Servicios profesionales</option>
+      <option>Gimnasio / Academia / Deporte</option>
+      <option>Tienda online</option>
+      <option>Pyme B2B / Distribuidor / Fábrica</option>
+      <option>Otro</option>
+    </select>
+    <div style="margin-top:22px"><button class="btn btn-coral" id="empezar">Empezar →</button></div>
+  </section>
+
+  <!-- PREGUNTAS -->
+  <section id="preguntas" class="hidden">
+    <div class="progreso"><i id="barra"></i></div>
+    <div class="card">
+      <div class="area-tag" id="q-area"></div>
+      <h2 id="q-texto"></h2>
+      <div class="opciones" id="q-opciones"></div>
+      <div class="nav">
+        <button class="btn btn-ghost" id="atras">← Atrás</button>
+        <span class="contador" id="contador"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="resultado" class="hidden">
+    <div class="card">
+      <h1 id="r-titulo">El mapa de tu negocio</h1>
+      <p class="lead" id="r-resumen"></p>
+      <div class="mapa" id="r-mapa"></div>
+      <div id="r-sano" class="sano hidden"></div>
+      <h2 id="r-cuellos-titulo">Por dónde partir</h2>
+      <div id="r-cuellos"></div>
+      <div class="cta">
+        <h2>¿Quieres el diagnóstico completo?</h2>
+        <p>Revisamos tu negocio desde afuera (Google, redes, cómo responden) y conversamos 20 minutos. Te llega un diagnóstico escrito con números. Gratis, sin compromiso.</p>
+        <a class="btn btn-wa" id="r-wa" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1s-.5-.1-.7.1-.8 1-.9 1.2-.3.2-.6.1c-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4c1.4.8 3.1 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3C4 15 3.7 13.5 3.7 12c0-4.6 3.7-8.3 8.3-8.3s8.3 3.7 8.3 8.3-3.7 8.2-8.3 8.2z"/></svg>
+          Pedir mi diagnóstico por WhatsApp
+        </a>
+      </div>
+      <div style="text-align:center;margin-top:16px"><button class="btn btn-ghost" id="reiniciar">Hacer el test de nuevo</button></div>
+    </div>
+  </section>
+
+  <div class="pie">
+    <a href="https://influencechile.cl">Influence Chile</a> · Agencia de marketing y crecimiento para pymes<br>
+    @influence.chile · +56 9 6545 0723
+  </div>
+</div>
+
+<script>
+(function () {
+  var WHATSAPP = '56965450723';
+
+  // Las 8 áreas en el orden de la cadena del dinero (ver 01-mapa-de-dolores.md).
+  var AREAS = [
+    { id: 'captacion',  nombre: 'Captación',        titulo: 'No llega suficiente gente nueva',
+      significa: 'Dependes de un solo canal o de la ubicación. Si ese canal cambia (abre un competidor, baja el flujo de la calle), la venta cae y no tienes de dónde reponerla.',
+      paso: 'Reclama y completa tu perfil de Google con fotos reales y horario, y consigue 10 reseñas en 2 semanas. Es gratis y es donde la gente ya te está buscando.' },
+    { id: 'conversion', nombre: 'Conversión',       titulo: 'Llegan y se te van sin comprar',
+      significa: 'Cada consulta que esperas horas en responder es una venta que se va al que respondió primero. En hora punta el cliente no espera: compra donde le contestan.',
+      paso: 'Respuestas rápidas en WhatsApp Business con precio y siguiente paso, y una regla: responder en menos de 15 minutos dentro del horario.' },
+    { id: 'margen',     nombre: 'Ticket y margen',  titulo: 'Vendes, pero no sabes cuánto te queda',
+      significa: 'Sin saber el margen de cada producto, probablemente estás empujando lo que menos deja y regalando descuentos por reflejo. Trabajar más no arregla esto.',
+      paso: 'Calcula el margen real de tus 5 productos más vendidos. Destaca los 3 que más dejan y arma un combo con ellos.' },
+    { id: 'operacion',  nombre: 'Operación',        titulo: 'Se te caen pedidos y tareas',
+      significa: 'Lo que vive en la cabeza o en un cuaderno se olvida en hora punta. Cada error cuesta la reposición y, casi siempre, el cliente.',
+      paso: 'Un solo lugar para todos los pedidos del día (una planilla compartida o una app simple) y un checklist de apertura y cierre.' },
+    { id: 'caja',       nombre: 'Caja y cobro',     titulo: 'Vendes, pero la plata no está',
+      significa: 'Fiado sin control, cobros a plazo o solo efectivo: la venta existe en el papel, no en la cuenta. Es el dolor que más negocios cierra, porque no se ve hasta que falta.',
+      paso: 'Acepta tarjeta y transferencia con QR hoy mismo, y haz una lista de quién te debe cuánto y desde cuándo.' },
+    { id: 'retencion',  nombre: 'Retención',        titulo: 'Compran una vez y no vuelven',
+      significa: 'Conseguir un cliente nuevo cuesta 5 a 7 veces más que hacer volver a uno que ya compró. Sin sus datos, cada mes partes de cero.',
+      paso: 'Pide el teléfono en cada compra (con una razón: una oferta, una rifa) y arma una lista de difusión de WhatsApp. Un mensaje a la semana.' },
+    { id: 'personas',   nombre: 'Personas y dueño', titulo: 'Todo pasa por ti',
+      significa: 'Si el negocio se para cuando no estás, no tienes un negocio: tienes un trabajo. Las horas que gastas apagando incendios son las que no gastas en hacerlo crecer.',
+      paso: 'Elige la tarea completa que más horas te quita y que no necesita que seas tú (redes, WhatsApp, cobranza) y sácala de tus manos este mes.' },
+    { id: 'datos',      nombre: 'Datos y control',  titulo: 'Decides a ojo',
+      significa: 'Sin números semanales, todos los otros problemas son invisibles hasta que duelen. No puedes arreglar lo que no mides.',
+      paso: 'Cinco números cada lunes en una planilla: ventas, clientes nuevos, consultas, cierres y caja. Diez minutos a la semana.' }
+  ];
+
+  // 2 preguntas por área. Cada opción vale 0 (bien), 1 (alerta) o 2 (dolor).
+  var PREGUNTAS = [
+    { a: 0, t: '¿De dónde llegan tus clientes nuevos?', o: ['De varios canales, y sé cuánto trae cada uno', 'Casi todo es boca a boca o gente que pasa', 'No lo sé, o cada vez llegan menos'] },
+    { a: 0, t: 'Si alguien busca en Google tu rubro y tu comuna, ¿apareces?', o: ['Sí, con fotos y reseñas recientes', 'Aparezco, pero el perfil está incompleto', 'No aparezco, o nunca lo he revisado'] },
+    { a: 1, t: 'Cuando te escriben por WhatsApp o Instagram en hora punta, ¿cuánto demoras en responder?', o: ['Menos de 15 minutos', 'Entre 15 minutos y 2 horas', 'Más de 2 horas, o cuando puedo'] },
+    { a: 1, t: 'De cada 10 personas que preguntan precio, ¿cuántas terminan comprando?', o: ['4 o más', 'Entre 2 y 3', '1 o ninguna, o no lo sé'] },
+    { a: 2, t: '¿Sabes cuánto te deja cada producto o servicio después de todos los costos?', o: ['Sí, lo tengo calculado', 'Más o menos, a ojo', 'No'] },
+    { a: 2, t: '¿Cuándo subiste precios por última vez?', o: ['Hace menos de un año, con cálculo', 'Hace más de un año', 'No me atrevo a subirlos'] },
+    { a: 3, t: 'En una semana normal, ¿cuántos pedidos o atenciones salen mal o atrasados?', o: ['Casi ninguno', 'Algunos, se arreglan sobre la marcha', 'Varios, es parte del día a día'] },
+    { a: 3, t: '¿Dónde se anotan los pedidos y las tareas del día?', o: ['En un sistema o app que todos ven', 'Cuaderno, Excel o WhatsApp', 'En la cabeza de alguien'] },
+    { a: 4, t: '¿Cuánta plata te deben hoy tus clientes (fiado, facturas por cobrar)?', o: ['Nada o muy poco, y controlado', 'Algo, pero sé cuánto y de quién', 'Harto, o no sé exactamente cuánto'] },
+    { a: 4, t: '¿Aceptas tarjeta y transferencia sin monto mínimo?', o: ['Sí, todos los medios de pago', 'Sí, pero con mínimo o recargo', 'Solo efectivo, o transferencia a mano'] },
+    { a: 5, t: '¿Tienes el teléfono o correo de tus clientes y les escribes?', o: ['Sí, y les escribo con regularidad', 'Tengo algunos, pero no les escribo', 'No tengo sus datos'] },
+    { a: 5, t: 'De tus ventas del mes, ¿qué parte viene de clientes que ya habían comprado antes?', o: ['Más de la mitad', 'Entre un cuarto y la mitad', 'Menos de un cuarto, o no lo sé'] },
+    { a: 6, t: 'Si te enfermas una semana, ¿qué pasa con el negocio?', o: ['Sigue funcionando igual', 'Funciona a medias', 'Se para, o se cae'] },
+    { a: 6, t: '¿Cuántas horas a la semana se te van apagando incendios en vez de mejorar el negocio?', o: ['Menos de 5', 'Entre 5 y 15', 'Más de 15'] },
+    { a: 7, t: '¿Cuánto vendiste la semana pasada?', o: ['Lo sé exacto, ahora mismo', 'Lo puedo calcular en un rato', 'No lo sé'] },
+    { a: 7, t: '¿Mides qué te trae cada peso que gastas en publicidad o promociones?', o: ['Sí, sé cuánto cuesta cada cliente', 'A veces, a ojo', 'No, o no hago publicidad'] }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var respuestas = [];
+  var actual = 0;
+  var negocio = '', rubro = '';
+
+  function mostrar(id) {
+    ['inicio', 'preguntas', 'resultado'].forEach(function (s) { $(s).classList.toggle('hidden', s !== id); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function pintarPregunta() {
+    var q = PREGUNTAS[actual];
+    $('q-area').textContent = (q.a + 1) + ' · ' + AREAS[q.a].nombre;
+    $('q-texto').textContent = q.t;
+    $('contador').textContent = (actual + 1) + ' de ' + PREGUNTAS.length;
+    $('barra').style.width = (actual / PREGUNTAS.length * 100) + '%';
+    $('atras').style.visibility = actual === 0 ? 'hidden' : 'visible';
+    var cont = $('q-opciones'); cont.innerHTML = '';
+    q.o.forEach(function (texto, i) {
+      var b = document.createElement('button');
+      b.className = 'opcion'; b.type = 'button';
+      b.innerHTML = '<span class="letra">' + 'ABC'[i] + '</span><span></span>';
+      b.lastChild.textContent = texto;
+      b.addEventListener('click', function () { responder(i); });
+      cont.appendChild(b);
+    });
+  }
+
+  function responder(valor) {
+    respuestas[actual] = valor;
+    if (actual < PREGUNTAS.length - 1) { actual++; pintarPregunta(); }
+    else { calcular(); }
+  }
+
+  function estadoDe(p) { return p <= 1 ? 'bien' : p === 2 ? 'alerta' : 'critico'; }
+  function etiqueta(e) { return e === 'bien' ? 'Bien' : e === 'alerta' ? 'Alerta' : 'Crítico'; }
+
+  function calcular() {
+    var puntos = AREAS.map(function () { return 0; });
+    PREGUNTAS.forEach(function (q, i) { puntos[q.a] += respuestas[i] || 0; });
+
+    var orden = AREAS.map(function (a, i) { return { i: i, p: puntos[i] }; })
+      .sort(function (x, y) { return y.p - x.p || x.i - y.i; });
+    var cuellos = orden.filter(function (x) { return x.p >= 2; }).slice(0, 3);
+    var criticos = puntos.filter(function (p) { return p >= 3; }).length;
+    var alertas = puntos.filter(function (p) { return p === 2; }).length;
+
+    var nombre = negocio || 'tu negocio';
+    $('r-titulo').textContent = 'El mapa de ' + nombre;
+    $('r-resumen').textContent = criticos + (criticos === 1 ? ' área en rojo, ' : ' áreas en rojo, ') + alertas + ' en amarillo. ' +
+      (cuellos.length ? 'Abajo, las ' + cuellos.length + ' trancas por donde conviene partir.' : 'Las 8 áreas están en orden.');
+
+    var mapa = $('r-mapa'); mapa.innerHTML = '';
+    AREAS.forEach(function (a, i) {
+      var e = estadoDe(puntos[i]);
+      var div = document.createElement('div'); div.className = 'area ' + e;
+      div.innerHTML = '<div class="n">' + (i + 1) + '</div><h4></h4><span class="estado">' + etiqueta(e) + '</span>';
+      div.querySelector('h4').textContent = a.nombre;
+      mapa.appendChild(div);
+    });
+
+    var cont = $('r-cuellos'); cont.innerHTML = '';
+    $('r-sano').classList.toggle('hidden', cuellos.length > 0);
+    $('r-cuellos-titulo').classList.toggle('hidden', cuellos.length === 0);
+    if (!cuellos.length) {
+      $('r-sano').textContent = 'Según tus respuestas, no hay una tranca evidente. Eso es raro y es buena señal. El siguiente nivel es crecer con intención: elegir un área y empujarla con un plan. Si quieres, lo conversamos.';
+    }
+    cuellos.forEach(function (c, k) {
+      var a = AREAS[c.i];
+      var div = document.createElement('div'); div.className = 'cuello' + (k === 0 ? ' principal' : '');
+      div.innerHTML = '<span class="tag"></span><h3></h3><p></p><div class="paso"><strong>Primer paso</strong><span></span></div>';
+      div.querySelector('.tag').textContent = (k === 0 ? 'Cuello de botella' : 'Tranca ' + (k + 1)) + ' · ' + a.nombre;
+      div.querySelector('h3').textContent = a.titulo;
+      div.querySelector('p').textContent = a.significa;
+      div.querySelector('.paso span').textContent = a.paso;
+      cont.appendChild(div);
+    });
+
+    var lista = cuellos.map(function (c, k) { return (k + 1) + ') ' + AREAS[c.i].titulo; }).join(', ');
+    var msg = 'Hola Gabriel, hice el detector de cuellos de botella.\n' +
+      'Negocio: ' + nombre + (rubro ? ' (' + rubro + ')' : '') + '.\n' +
+      (cuellos.length ? 'Mis trancas: ' + lista + '.\n' : 'Salió todo en orden.\n') +
+      'Quiero el diagnóstico completo.';
+    $('r-wa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+
+    // Enlace reproducible del resultado (para compartirlo o revisarlo después).
+    try {
+      var r = respuestas.join('');
+      var url = new URL(location.href);
+      url.searchParams.set('r', r);
+      if (negocio) url.searchParams.set('n', negocio); else url.searchParams.delete('n');
+      if (rubro) url.searchParams.set('b', rubro); else url.searchParams.delete('b');
+      history.replaceState(null, '', url);
+    } catch (e) {}
+
+    $('barra').style.width = '100%';
+    mostrar('resultado');
+  }
+
+  $('empezar').addEventListener('click', function () {
+    negocio = $('negocio').value.trim();
+    rubro = $('rubro').value;
+    respuestas = []; actual = 0;
+    pintarPregunta();
+    mostrar('preguntas');
+  });
+  $('atras').addEventListener('click', function () { if (actual > 0) { actual--; pintarPregunta(); } });
+  $('reiniciar').addEventListener('click', function () {
+    try { var u = new URL(location.href); u.search = ''; history.replaceState(null, '', u); } catch (e) {}
+    mostrar('inicio');
+  });
+
+  // ?r=0120...  (16 dígitos) reproduce un resultado sin pasar por las preguntas.
+  try {
+    var params = new URLSearchParams(location.search);
+    var r = params.get('r');
+    if (r && /^[012]{16}$/.test(r)) {
+      respuestas = r.split('').map(Number);
+      negocio = params.get('n') || ''; rubro = params.get('b') || '';
+      calcular();
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

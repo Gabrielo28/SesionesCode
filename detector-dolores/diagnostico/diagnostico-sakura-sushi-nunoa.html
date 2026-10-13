@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Diagnóstico Sakura Sushi Ñuñoa — Influence Chile</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pagina { width: 210mm; min-height: 297mm; padding: 18mm 16mm 22mm; page-break-after: always; position: relative; }
+  .pagina:last-child { page-break-after: auto; }
+
+  .portada { background: linear-gradient(155deg, #123638 0%, #12959C 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .portada img { width: 52mm; margin-bottom: 16mm; filter: brightness(0) invert(1); }
+  .portada .marca { font-size: 26pt; font-weight: 700; margin-bottom: 16mm; letter-spacing: -.02em; }
+  .portada .kicker { text-transform: uppercase; letter-spacing: .28em; font-size: 9pt; opacity: .75; margin-bottom: 6mm; }
+  .portada h1 { font-size: 34pt; line-height: 1.1; font-weight: 700; margin-bottom: 6mm; }
+  .portada h2 { font-size: 13.5pt; font-weight: 400; opacity: .92; line-height: 1.55; margin-bottom: 14mm; max-width: 150mm; }
+  .portada .meta { font-size: 10pt; opacity: .8; line-height: 1.9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; }
+
+  h3.seccion { font-size: 20pt; color: #12959C; margin-bottom: 3mm; }
+  h3.seccion + .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 7mm; }
+  p.intro { font-size: 10.8pt; line-height: 1.6; color: #2c4a4c; margin-bottom: 6mm; }
+  p.intro strong { color: #123638; }
+
+  .fortalezas { background: #e6f1f1; border-radius: 5px; padding: 4mm 5mm; margin-bottom: 6mm; }
+  .fortalezas h4 { font-size: 10pt; text-transform: uppercase; letter-spacing: .12em; color: #12959C; margin-bottom: 2.5mm; }
+  .fortalezas li { font-size: 10pt; line-height: 1.6; color: #2c4a4c; list-style: none; padding-left: 5mm; position: relative; margin-bottom: 1.5mm; }
+  .fortalezas li::before { content: '✓'; position: absolute; left: 0; color: #2E9E6B; font-weight: 700; }
+
+  .mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .area { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 3mm 3.5mm; border-left-width: 4px; }
+  .area .cab { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5mm; }
+  .area .num { font-size: 8pt; color: #9ab5b6; font-weight: 600; margin-right: 1.5mm; }
+  .area h4 { font-size: 10.5pt; display: inline; }
+  .area .estado { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: .8mm 2.2mm; border-radius: 3px; }
+  .area p { font-size: 8.6pt; line-height: 1.45; color: #2c4a4c; }
+  .area .ev { font-size: 7.6pt; color: #6b8b8c; margin-top: 1.2mm; font-style: italic; }
+
+
+  .cuello { border: 2px solid #d7ebeb; border-radius: 6px; padding: 5mm 6mm; margin-bottom: 5mm; page-break-inside: avoid; }
+  .secundarios { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .cuello.sec { padding: 4mm 4.5mm; margin-bottom: 0; }
+  .cuello.sec .fila { display: block; }
+  .cuello.sec .fila .et { margin-bottom: .6mm; }
+  .cuello.principal { border-color: #FF7B7B; background: #fffafa; }
+  .cuello .tag { display: inline-block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; padding: 1mm 2.5mm; border-radius: 3px; margin-bottom: 2.5mm; background: #e6f1f1; color: #12959C; }
+  .cuello.principal .tag { background: #FF7B7B; color: #fff; }
+  .cuello h4 { font-size: 13.5pt; line-height: 1.25; margin-bottom: 3mm; }
+  .cuello.sec h4 { font-size: 11.5pt; margin-bottom: 2mm; }
+  .cuello .fila { display: flex; gap: 5mm; margin-bottom: 2.5mm; }
+  .cuello.sec .fila { margin-bottom: 1.8mm; }
+  .cuello .fila .et { flex: 0 0 28mm; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .1em; color: #12959C; font-weight: 700; padding-top: .8mm; }
+  .cuello .fila p { flex: 1; font-size: 9.8pt; line-height: 1.5; color: #2c4a4c; }
+  .cuello.sec .fila p { font-size: 8.6pt; line-height: 1.42; }
+  .cuello .costo { font-size: 16pt; font-weight: 700; color: #c0392b; }
+  .cuello.sec .costo { font-size: 12pt; }
+  .cuello .costo small { display: block; font-size: 8.3pt; font-weight: 400; color: #6b8b8c; line-height: 1.45; margin-top: 1mm; }
+  .cuello.sec .costo small { font-size: 7.4pt; }
+  .cuello .plazo { font-size: 9pt; color: #6b8b8c; }
+
+  .fase { display: flex; gap: 5mm; margin-bottom: 4mm; }
+  .fase .periodo { flex: 0 0 30mm; font-weight: 700; color: #12959C; font-size: 10.5pt; padding-top: 1mm; }
+  .fase ul { flex: 1; list-style: none; font-size: 10.2pt; line-height: 1.6; color: #2c4a4c; }
+  .fase li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
+
+  .nota { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; }
+  .nota strong { color: #12959C; }
+
+  .cta { text-align: center; padding: 2mm 0 0; }
+  .cta h3 { font-size: 18pt; color: #12959C; margin-bottom: 2mm; }
+  .cta p { font-size: 10.5pt; color: #2c4a4c; line-height: 1.6; margin-bottom: 4mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
+  .firma { margin-top: 5mm; padding-top: 4mm; border-top: 1px solid #d7ebeb; font-size: 10pt; color: #2c4a4c; line-height: 1.8; text-align: center; }
+  .pie { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
+</style></head><body>
+
+<section class="pagina portada">
+  <div class="marca">influence</div>
+  <div class="kicker">Diagnóstico de negocio</div>
+  <h1>Sakura Sushi Ñuñoa</h1>
+  <h2>Sakura tiene buen producto y buenas reseñas, pero el 70% de la venta entra por apps de delivery que se llevan el 30% de comisión, y el canal propio (WhatsApp) responde tarde justo en la hora en que la gente pide.</h2>
+  <div class="meta">
+    Preparado para Javiera Soto, Dueña<br>
+    Gastronomía / Delivery · Ñuñoa, Santiago<br>
+    octubre de 2026<br><br>Fuentes: Google Maps (41 reseñas) · Instagram @sakurasushinunoa · Comprador misterioso por WhatsApp (martes 11:00 y viernes 20:30) · Conversación de 20 minutos con Javiera
+  </div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">El mapa del negocio</h3><div class="linea"></div>
+  <p class="intro">Todo negocio es la misma cadena: alguien se entera, llega, compra, se le entrega, se cobra y vuelve. Revisamos las 8 áreas de Sakura Sushi Ñuñoa. <strong>2 en rojo, 4 en amarillo.</strong> Pero primero, lo que funciona.</p>
+  <div class="fortalezas">
+    <h4>Lo que Sakura Sushi Ñuñoa hace bien</h4>
+    <ul><li>El producto se defiende solo: 4,6 estrellas en Google y las reseñas repiten "fresco" y "porciones generosas".</li><li>Javiera publica reels del proceso en la cocina que tienen 3 a 5 veces el alcance de sus fotos: ya encontró el formato que funciona.</li></ul>
+  </div>
+  <div class="mapa">
+    
+    <div class="area" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">1</span><h4>Captación</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Casi todo el pedido nuevo llega por las apps. Instagram crece, pero el link de la bio lleva a la app, no a un canal propio.</p>
+      <div class="ev">Javiera: "el 70% es por app"; bio con link a app de delivery</div>
+    </div>
+    <div class="area" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">2</span><h4>Conversión</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+      <p>El WhatsApp propio responde en 40 minutos un viernes a las 20:30. A esa hora el cliente ya pidió en la app.</p>
+      <div class="ev">Comprador misterioso: 7 min el martes a las 11:00, 42 min el viernes a las 20:30; sin seguimiento al día siguiente</div>
+    </div>
+    <div class="area" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+      <p>La comisión de las apps (30%) se come casi todo el margen del pedido. El mismo pedido por WhatsApp deja el doble.</p>
+      <div class="ev">Javiera: "por app me queda como $2.000 por pedido, por WhatsApp $6.000"</div>
+    </div>
+    <div class="area" style="border-left-color:#2E9E6B">
+      <div class="cab"><div><span class="num">4</span><h4>Operación</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
+      <p>Cocina ordenada, tiempos de preparación consistentes. Las reseñas negativas (3) son todas por demora del repartidor de la app, no de la cocina.</p>
+      <div class="ev">Reseñas 1-2 estrellas: "llegó tarde", "el repartidor se perdió"</div>
+    </div>
+    <div class="area" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Las apps pagan a 7-15 días; los proveedores de pescado cobran al contado. Hay semanas apretadas.</p>
+      <div class="ev">Javiera: "a veces tengo que esperar el pago de la app para comprar el salmón"</div>
+    </div>
+    <div class="area" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">6</span><h4>Retención</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>No tiene los datos de los clientes de las apps (la app se los queda). De los de WhatsApp tiene unos 300 números y nunca les ha escrito.</p>
+      <div class="ev">Javiera: "tengo los números pero no sé qué mandarles"</div>
+    </div>
+    <div class="area" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Javiera cocina y responde el WhatsApp al mismo tiempo. En hora punta gana la cocina.</p>
+      <div class="ev">Comprador misterioso; Javiera: "el viernes no alcanzo a mirar el teléfono"</div>
+    </div>
+    <div class="area" style="border-left-color:#2E9E6B">
+      <div class="cab"><div><span class="num">8</span><h4>Datos y control</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
+      <p>Sabe ventas por canal y por día gracias a los reportes de las apps y una planilla propia.</p>
+      <div class="ev">Respondió venta semanal y proporción por canal sin dudar</div>
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Sakura Sushi Ñuñoa · confidencial</span><span>2 / 4</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">El cuello de botella</h3><div class="linea"></div>
+  <p class="intro">De todo lo anterior, hay una tranca que limita más que las otras. Es por donde conviene partir: la que más cuesta hoy y la que se puede destrabar más rápido.</p>
+  
+  <div class="cuello principal">
+    <span class="tag">Cuello de botella · Conversión</span>
+    <h4>El canal propio pierde el pedido justo cuando el cliente quiere pedir</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>Un viernes a las 20:30 el WhatsApp de Sakura demora 42 minutos en responder. El cliente escribe, no recibe respuesta y pide por la app, donde Sakura gana un tercio. El canal que más margen deja es el que peor atiende.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$960.000 al mes<small>60 consultas semanales por WhatsApp en hora punta; hoy se convierten 20. Con respuesta en menos de 5 min se convertirían 40: +80 pedidos al mes × $6.000 de margen propio = $480.000, más $320.000 de diferencia de margen en los que hoy van por app y $160.000 de clientes que no pidieron en ningún lado.</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Respuesta automática inmediata con el menú y el link de pedido; una persona dedicada al WhatsApp de 19:30 a 22:30 viernes y sábado (puede ser remota); catálogo de WhatsApp Business con los 15 rolls más pedidos y pago por transferencia o link. <span class="plazo">· 2 semanas</span></p></div>
+  </div>
+  <div class="secundarios">
+  <div class="cuello sec">
+    <span class="tag">Dolor secundario 1 · Ticket y margen</span>
+    <h4>Depende de las apps, que se quedan con el margen y con los clientes</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>El 70% de la venta paga 30% de comisión. Y la app se queda con los datos del cliente: Sakura no sabe quién le compró ni puede volver a escribirle.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$1.100.000 al mes<small>Venta por apps $5.500.000 × 30% = $1.650.000 de comisión al mes. Si un tercio migra al canal propio en 90 días, se recuperan $550.000 de comisión y $550.000 de margen.</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Migración gradual: inserto en cada pedido de app ("la próxima pídelo directo y te regalamos X"), link propio en bio y Google, oferta exclusiva por WhatsApp. Las apps quedan para captar clientes nuevos. <span class="plazo">· 90 días</span></p></div>
+  </div>
+  <div class="cuello sec">
+    <span class="tag">Dolor secundario 2 · Retención</span>
+    <h4>300 clientes con teléfono y ningún mensaje enviado</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>Tiene la lista más valiosa del negocio (gente que ya pidió por canal propio) y no la usa. Un sushi se pide cada 2 a 4 semanas: sin recordatorio, piden donde les aparezca primero.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$360.000 al mes<small>Si el 10% de los 300 clientes hace un pedido extra al mes por una difusión semanal: 30 × $12.000 × 50% de margen = $180.000 el primer mes, el doble a los 60 días.</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Lista de difusión segmentada; un mensaje semanal (jueves 18:00) con oferta de canal propio; mensaje post-pedido pidiendo reseña en Google. <span class="plazo">· 1 semana</span></p></div>
+  </div></div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Sakura Sushi Ñuñoa · confidencial</span><span>3 / 4</span></div>
+</section>
+
+
+<section class="pagina">
+  <h3 class="seccion">Los primeros 30 días</h3><div class="linea"></div>
+  <p class="intro">Qué haríamos, semana a semana, para destrabar el cuello de botella. Sin precios: eso se conversa cuando el plan tenga sentido.</p>
+  
+    <div class="fase">
+      <div class="periodo">Semana 1</div>
+      <ul><li>WhatsApp Business configurado: respuesta automática, catálogo de 15 rolls, link de pago</li><li>Primera difusión a los 300 clientes con oferta de canal propio</li><li>Link de la bio y botón de Google apuntando al WhatsApp propio</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 2</div>
+      <ul><li>Persona dedicada al WhatsApp viernes y sábado 19:30-22:30</li><li>Inserto impreso en cada pedido de app: "pídelo directo"</li><li>Reel semanal del proceso (el formato que ya funciona) con CTA al WhatsApp</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 3</div>
+      <ul><li>Segundo comprador misterioso: medir tiempo de respuesta en hora punta</li><li>Mensaje post-pedido con QR de reseña</li><li>Ajustar el catálogo según lo más pedido</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 4</div>
+      <ul><li>Medir: pedidos por canal propio vs. app, tiempo de respuesta, pedidos desde difusión</li><li>Revisar con Javiera y fijar meta del mes 2: 40% por canal propio</li></ul>
+    </div>
+  <div class="nota" style="margin-top:4mm;margin-bottom:6mm"><strong>Siguiente paso:</strong> Revisar este diagnóstico con Javiera el lunes a las 16:00 (antes del turno) y partir con la semana 1 el mismo lunes si hay acuerdo.</div>
+  <div class="cta">
+    <h3>¿Lo conversamos?</h3>
+    <p>Este diagnóstico es gratis y es tuyo, lo trabajemos juntos o no.<br>Si tiene sentido, el siguiente paso son 30 minutos para definir cómo partimos.</p>
+    <div class="boton">+56 9 6545 0723</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong> · Influence Chile<br>
+      influencechile.cl · +56 9 6545 0723<br>
+      Instagram: @influence.chile
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Sakura Sushi Ñuñoa · confidencial</span><span>4 / 4</span></div>
+</section>
+
+</body></html>
