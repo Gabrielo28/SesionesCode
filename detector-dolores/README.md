@@ -7,7 +7,10 @@ centrado en redes sociales: este mira el negocio completo.
 
 **La idea central:** todo negocio es la misma cadena (se enteran → llegan → compran →
 entregas → cobras → vuelven), sostenida por personas y datos. Siempre hay una tranca
-más angosta que las otras. El detector la encuentra, le pone número en pesos y arma la
+más angosta que las otras. El detector la encuentra en dos niveles: **el mapa de
+dolores** dice en qué área está (captación, conversión, operación, caja…) y **la
+radiografía de proceso** dice en qué paso exacto se pierde el tiempo o se caen las
+ventas, y cuánto cuesta eso al mes con los números del propio dueño. De ahí sale la
 oferta que la destraba.
 
 ---
@@ -20,6 +23,8 @@ oferta que la destraba.
 | [02-senales-desde-afuera.md](02-senales-desde-afuera.md) | Diagnóstico de 15 min sin hablar con nadie: Google Maps, Instagram, web, Meta Ads, empleo, comprador misterioso. Checklists por rubro y ficha de observación |
 | [03-entrevista-de-diagnostico.md](03-entrevista-de-diagnostico.md) | La conversación de 20 min: pregunta llave por área, 5 porqués, cómo cuantificar, ficha de entrevista |
 | [04-de-dolor-a-oferta.md](04-de-dolor-a-oferta.md) | Catálogo de soluciones, matriz dolor → oferta de 30 días → estructural, priorización y cómo presentar |
+| [05-radiografia-de-proceso.md](05-radiografia-de-proceso.md) | Mapear un proceso paso a paso: las 5 preguntas, cómo leer el cuello de botella, las 7 fugas de tiempo, las 4 jugadas para destrabarlo, y el formato del servicio express de 90 minutos |
+| [proceso/](proceso/) | **Radiografía de proceso**: herramienta web para mapear en vivo con el dueño y ver al instante el paso que frena, el tiempo perdido y los pesos al mes. Imprime a PDF |
 | [diagnostico/](diagnostico/) | Generador del diagnóstico en PDF (`node generar.js negocio.json`) |
 | [formulario/](formulario/) | Autodiagnóstico web: el dueño responde 16 preguntas y recibe su mapa + CTA a WhatsApp. Es el captador de leads |
 | `.claude/skills/detector-dolores/` | Skill de Claude Code: `/detector-dolores` hace el análisis y produce el diagnóstico |
@@ -39,6 +44,10 @@ OBSERVAR      15 min con 02-senales-desde-afuera.md → ficha de observación
 CONVERSAR     20 min con 03-entrevista-de-diagnostico.md → ficha de entrevista
               Confirmar, cuantificar en pesos, agendar la revisión.
 
+RADIOGRAFIAR  Si la tranca está en un proceso (ventas, producción, atención, cobranza):
+              90 minutos con el dueño mapeando paso a paso en proceso/index.html.
+              Resultado en vivo: el paso que frena, tiempo perdido, pesos al mes. PDF.
+
 DIAGNOSTICAR  Llenar diagnostico/negocio.json → node generar.js
               Sale un PDF de 3 páginas: mapa de 8 áreas, el cuello de botella con
               número, plan de 30 días. Sin precios.
@@ -48,7 +57,8 @@ OFRECER       Con 04-de-dolor-a-oferta.md elegir la oferta.
 ```
 
 Tiempo total por negocio: **40 minutos de trabajo y una espera de un día** (el
-comprador misterioso necesita ver si hacen seguimiento).
+comprador misterioso necesita ver si hacen seguimiento), más los 90 minutos de la
+radiografía cuando el dolor está en un proceso.
 
 ---
 
@@ -88,6 +98,23 @@ se abre el HTML en Chrome y se imprime a PDF.
 - `siguiente_paso` — una sola acción con fecha.
 
 ---
+
+## La radiografía de proceso
+
+`proceso/index.html` se abre en el navegador (sin servidor) y se llena con el dueño al
+lado: los pasos en orden, quién los hace, minutos de trabajo, horas de espera, % que
+se repite y % que se pierde. Calcula capacidad y carga de cada paso, el cuello de
+botella, el tiempo total contra el trabajo real, las fugas y los pesos por semana y
+mes. Tiene tres ejemplos cargables (ventas, producción, creación de contenido),
+guarda y abre JSON, e imprime a PDF.
+
+```bash
+cd proceso
+node imprimir.js ejemplo-muebles.json     # radiografia-muebles-araya.pdf, sin abrir el navegador
+```
+
+El método completo y el formato del servicio de 90 minutos están en
+`05-radiografia-de-proceso.md`.
 
 ## El formulario de autodiagnóstico
 

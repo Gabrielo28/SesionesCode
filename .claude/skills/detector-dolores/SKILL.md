@@ -18,6 +18,7 @@ Lee estos cuatro archivos del repo. Son la base; no improvises categorías ni f�
 2. `detector-dolores/02-senales-desde-afuera.md` — qué se puede observar sin hablar con el dueño, checklists por rubro
 3. `detector-dolores/03-entrevista-de-diagnostico.md` — preguntas llave, cuantificación, ficha
 4. `detector-dolores/04-de-dolor-a-oferta.md` — catálogo de soluciones, matriz dolor → oferta, cómo presentar
+5. `detector-dolores/05-radiografia-de-proceso.md` — mapear un proceso paso a paso, leer el cuello de botella, las 4 jugadas, el servicio de 90 minutos
 
 Si el negocio vende principalmente por Instagram, lee además
 `prospeccion-ventas/03-auditoria-express.md` para la parte de redes.
@@ -33,6 +34,7 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
   dígitos (2 por área, en el orden de las 8 áreas; 0 bien, 1 alerta, 2 dolor) o el
   mensaje de WhatsApp que llegó con las 3 trancas
 - Una **ficha de observación** o **ficha de entrevista** ya llenada
+- **Un proceso descrito paso a paso** (quién hace qué, cuánto demora, cuánto espera, qué se repite, qué se pierde), o un JSON de `detector-dolores/proceso/`
 
 ## Procedimiento
 
@@ -57,16 +59,24 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
    esto el diagnóstico no se produce (el generador lo rechaza).
 6. **Plan de 30 días** semana a semana, sin precios, con acciones que Influence pueda
    ejecutar o que el dueño pueda hacer solo.
-7. **Escribir el JSON** en `detector-dolores/diagnostico/<slug-del-negocio>.json` con la
+7. **Radiografía de proceso, si corresponde.** Si el cuello de botella está en un
+   proceso (cotizar, producir, atender, cobrar, crear) y tienes los tiempos por paso,
+   escribe `detector-dolores/proceso/<slug>.json` con la estructura de
+   `ejemplo-muebles.json` y corre `node imprimir.js <slug>.json` para obtener el PDF.
+   Reporta el cuello (paso y % de carga), tiempo total vs. trabajo real, la fuga más
+   grande y los pesos al mes. Si faltan tiempos, lista las 5 preguntas por paso de
+   `05-radiografia-de-proceso.md` para que el usuario las haga en la sesión de 90 min.
+   Valor por unidad en ventas = margen de un cierre × probabilidad de cerrar.
+8. **Escribir el JSON** en `detector-dolores/diagnostico/<slug-del-negocio>.json` con la
    estructura de `negocio.json` y correr:
    ```
    cd detector-dolores/diagnostico && node generar.js <slug-del-negocio>.json
    ```
    Si el PDF no se genera (sin Chrome), entregar el HTML.
-8. **Proponer la oferta** con `04-de-dolor-a-oferta.md`: primera oferta de 30 días,
+9. **Proponer la oferta** con `04-de-dolor-a-oferta.md`: primera oferta de 30 días,
    lo estructural para el mes 2-3, y si algo hay que derivar. Comprobar que la
    inversión sea claramente menor que el costo mensual del dolor; si no, replantear.
-9. **Escribir el primer mensaje** al dueño (DM o WhatsApp), con el tono de
+10. **Escribir el primer mensaje** al dueño (DM o WhatsApp), con el tono de
    `prospeccion-ventas/02-guiones-de-contacto.md`: un hallazgo concreto en una línea,
    cero precio, pedir permiso para mandar el diagnóstico.
 
@@ -92,6 +102,6 @@ En este orden, corto:
 2. Dolor sentido vs. dolor real, si difieren.
 3. Los 2 dolores secundarios en una línea cada uno.
 4. Qué falta confirmar (las 2 o 3 preguntas de la entrevista que más cambian el diagnóstico).
-5. Ruta del PDF/HTML generado.
+5. Ruta del PDF/HTML generado (diagnóstico y, si hubo, radiografía de proceso).
 6. Oferta recomendada (primera oferta de 30 días + mes 2-3) y qué se deriva.
 7. El primer mensaje, listo para copiar.
