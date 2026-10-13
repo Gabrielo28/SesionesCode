@@ -1,0 +1,10 @@
+{
+  "name": "escaner-de-negocio",
+  "version": "1.0.0",
+  "description": "Escáner de Negocio y Radiografía de proceso — Influence Chile",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=18" }
+}

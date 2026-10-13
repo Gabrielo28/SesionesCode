@@ -95,6 +95,28 @@ El catálogo completo (sistemas, códigos, lecturas y señales) vive en
 `escaner/codigos.js`. Para agregar un código: una línea en `CODIGOS` y un sensor que
 lo dispare.
 
+## Publicarlo en Railway
+
+La carpeta trae `server.js` (servidor estático Node, sin dependencias), `package.json`
+y `railway.json`. Sirve el escáner en `/` y la radiografía de proceso en `/proceso`.
+
+1. Railway → **New Project → Deploy from GitHub repo** → `Gabrielo28/SesionesCode`.
+2. En el servicio: **Settings → Source → Root Directory** = `detector-dolores`
+   (el repo tiene varios proyectos; esto le dice a Railway cuál es).
+3. **Settings → Networking → Generate Domain.** Listo: cada push a la rama
+   configurada redespliega solo.
+
+Para probarlo en local:
+
+```bash
+cd detector-dolores
+npm start          # http://localhost:5180  y  http://localhost:5180/proceso
+```
+
+El link que se manda a los dueños es el dominio de Railway tal cual (abre el escáner en
+modo rápido). El link con `?d=` que genera "Copiar link del escaneo" reabre un
+resultado puntual.
+
 ## Usar el skill (Claude Code)
 
 ```
