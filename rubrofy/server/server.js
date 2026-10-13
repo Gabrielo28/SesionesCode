@@ -3764,11 +3764,18 @@ const server = http.createServer(async (req, res) => {
               if (enCola) programar(it, cuando, req);
             };
           } else if (accion === 'editar' && req.method === 'PUT') {
+            // Se edita por aprobar o ya aprobada (programada): al publicar se
+            // usa lo último guardado. Publicada o publicándose, ya no.
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
+            if (seEstaPublicando) return ocupada();
             const body = await readBody(req);
             if (typeof body.caption !== 'string') return sendJSON(res, 400, { error: 'Falta el texto' });
             const hashtagsNuevos = body.hashtags === undefined ? null : limpiarHashtags(body.hashtags);
             aplicar = (it) => {
-              if (hashtagsNuevos) { if (hashtagsNuevos.length) it.hashtags = hashtagsNuevos; else delete it.hashtags; }
+              if (hashtagsNuevos) {
+                if ((it.hashtags || []).join(' ') !== hashtagsNuevos.join(' ')) it.hashtagsEditados = true;
+                if (hashtagsNuevos.length) it.hashtags = hashtagsNuevos; else delete it.hashtags;
+              }
               const anterior = it.variants[it.variantIndex];
               if (body.caption === anterior) return;
               // Se guarda lo que escribió la IA la primera vez que el dueño lo

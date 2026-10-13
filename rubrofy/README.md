@@ -108,7 +108,18 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   foto cargada para su categoría, un `<canvas>` la compone con logo y texto
   encima (igual que el programa original); si no, muestra un degradé de
   marcador. Aprobar, rechazar, deshacer, pedir otra versión y editar el
-  texto a mano funcionan de verdad contra la API.
+  texto a mano funcionan de verdad contra la API. Arriba, filtros **Por
+  aprobar · Aprobadas · Rechazadas · Todas** (con cuántas hay; por defecto
+  Por aprobar si queda alguna). "Aprobadas" reúne todo lo aprobado
+  (programado, publicado o con error) con el texto y los hashtags que se
+  publican y su origen ("Texto: de la IA / escrito por ti / de Rubrofy",
+  "Hashtags: …"; `editado` y `hashtagsEditados` en la pieza). Los contadores
+  Pendientes y Aprobados de arriba llevan a cada filtro. Si la pieza está
+  abierta en "Editar", aprobar, publicar ahora, reintentar o deshacer
+  guardan antes lo escrito (antes se perdía si no se pulsaba "Guardar").
+  Una aprobada se sigue editando ("Editar texto") hasta que se publica: el
+  publicador arma el texto al publicar, así que usa lo último guardado. Una
+  publicada o publicándose ya no se edita (409).
 - **Calendario** (`public/app/calendario.js`) — vista **Semana** (por
   defecto: 7 columnas con la foto, la hora, el formato y el estado de cada
   publicación; en celular, una lista por día) o **Mes**, con flechas y

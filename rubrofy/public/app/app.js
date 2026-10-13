@@ -13,6 +13,7 @@
   const editingIds = new Set();
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
   const pedirCambioIds = new Set(); // piezas con el campo "Pedir cambio" abierto
+  let filtroCola = null; // 'pendientes' | 'aprobadas' | 'rechazadas' | 'todas' (null: según lo que haya)
 
   const $ = (sel) => document.querySelector(sel);
   const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
@@ -254,6 +255,13 @@
     return item.diseno ? `/fotos/${negocioActual.id}/_marca/${encodeURIComponent(item.diseno.archivo)}` : null;
   }
 
+  // De dónde salió lo que se va a publicar: la IA, la plantilla de Rubrofy o el dueño.
+  function origenTextoHTML(item) {
+    const texto = item.editado ? 'escrito por ti' : item.generadoConIA ? 'de la IA' : 'de Rubrofy';
+    const tags = item.hashtags && item.hashtags.length ? (item.hashtagsEditados ? 'tuyos' : item.generadoConIA ? 'de la IA' : 'de Rubrofy') : null;
+    return `<p class="card-origen${item.editado || item.hashtagsEditados ? ' tuyo' : ''}"><span>Texto: <b>${texto}</b></span>${tags ? `<span>Hashtags: <b>${tags}</b></span>` : ''}</p>`;
+  }
+
   function cardHTML(item) {
     const meta = statusMeta(item.status);
     const caption = item.variants[item.variantIndex];
@@ -329,6 +337,7 @@
                <label class="card-hashtags-edit">Hashtags<input data-hashtags-id="${item.id}" value="${escapeHtml((item.hashtags || []).join(' '))}" placeholder="#tunegocio #tuciudad"></label>`
             : `<p class="card-caption" data-action="expandir" title="Toca para ver el texto completo">${escapeHtml(caption)}</p>`}
           ${!isEditing && item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
+          ${!isEditing ? origenTextoHTML(item) : ''}
           ${!isEditing ? `<button class="btn-text card-copiar" data-action="copiar" data-id="${item.id}" title="Copia el texto y los hashtags tal como se publican">Copiar texto${item.hashtags && item.hashtags.length ? ' y hashtags' : ''}</button>` : ''}
           ${item.prueba ? `<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen${item.prueba.origen && item.prueba.origen.permalink ? ` · <a href="${escapeHtml(item.prueba.origen.permalink)}" target="_blank" rel="noopener">ver el original</a>` : ''} ${AY('reels-prueba')}</p>` : ''}
           ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
@@ -351,6 +360,7 @@
             <div class="card-note">
               <span class="note-text" style="color:${notaAprobacion(item).color}">${notaAprobacion(item).texto}</span>
               <span class="note-actions">
+                ${item.status === 'aprobado' && !publicada && !publicando ? `<button data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar texto'}</button>` : ''}
                 ${pub && pub.estado === 'programada' && !publicada && negocioActual.instagramEstado === 'ok' ? `<button data-action="publish-now" data-id="${item.id}">Publicar ahora</button>` : ''}
                 ${pub && pub.estado === 'fallida' ? `<button data-action="retry" data-id="${item.id}">Reintentar</button>` : ''}
                 ${publicando ? '' : `<button data-action="undo" data-id="${item.id}">Deshacer</button>`}
@@ -373,12 +383,49 @@
     vigilarVideos();
     if (window.RubrofyBrief) window.RubrofyBrief.pintarCola($('#cola-brief'));
     const grid = $('#cola-grid');
+    const filtros = $('#cola-filtros');
     if (!contenido.length) {
+      filtros.innerHTML = '';
       grid.innerHTML = '<p class="empty-state">Sin contenido todavía. Usa "Generar más contenido" para crear el primer lote.</p>';
       return;
     }
-    grid.innerHTML = contenido.map(cardHTML).join('');
+    const n = {};
+    Object.keys(FILTROS_COLA).forEach((f) => { n[f] = contenido.filter(FILTROS_COLA[f].incluye).length; });
+    const filtro = filtroColaActual();
+    filtros.innerHTML = Object.keys(FILTROS_COLA).map((f) => `<button type="button" role="tab" data-cola-filtro="${f}" aria-selected="${f === filtro}" class="${f === filtro ? 'on' : ''}">${FILTROS_COLA[f].nombre} <i>${n[f]}</i></button>`).join('');
+    const lista = contenido.filter(FILTROS_COLA[filtro].incluye);
+    grid.innerHTML = lista.length ? lista.map(cardHTML).join('') : `<p class="empty-state">${FILTROS_COLA[filtro].vacio}</p>`;
     grid.querySelectorAll('.card-canvas').forEach(drawCardCanvas);
+  }
+
+  // Por aprobar, todo lo aprobado (programado, publicado o con error) y lo rechazado.
+  const estaPublicada = (it) => !!((it.publicacion && it.publicacion.estado === 'publicada') || (it.instagram && it.instagram.ok));
+  const FILTROS_COLA = {
+    pendientes: { nombre: 'Por aprobar', incluye: (it) => it.status === 'pendiente', vacio: 'No tienes publicaciones por aprobar. Cuando generes tu semana, aparecen aquí.' },
+    aprobadas: { nombre: 'Aprobadas', incluye: (it) => it.status === 'aprobado' || estaPublicada(it), vacio: 'Todavía no apruebas ninguna publicación.' },
+    rechazadas: { nombre: 'Rechazadas', incluye: (it) => it.status === 'rechazado' && !estaPublicada(it), vacio: 'No tienes publicaciones rechazadas.' },
+    todas: { nombre: 'Todas', incluye: () => true, vacio: 'Sin contenido todavía.' },
+  };
+  function filtroColaActual() {
+    if (filtroCola && FILTROS_COLA[filtroCola]) return filtroCola;
+    if (contenido.some(FILTROS_COLA.pendientes.incluye)) return 'pendientes';
+    return contenido.some(FILTROS_COLA.aprobadas.incluye) ? 'aprobadas' : 'todas';
+  }
+  function verCola(filtro) {
+    filtroCola = filtro;
+    if (vistaActual !== 'cola') irAVista('cola'); else renderCola();
+  }
+
+  // Aviso breve abajo (ej: "Aprobada ✓ · Ver aprobadas").
+  let avisoColaTimer = null;
+  function avisoCola(texto, boton, alPulsar) {
+    const el = $('#cola-aviso');
+    clearTimeout(avisoColaTimer);
+    el.innerHTML = `<span>${escapeHtml(texto)}</span>${boton ? `<button type="button">${escapeHtml(boton)}</button>` : ''}`;
+    el.hidden = false;
+    const b = el.querySelector('button');
+    if (b) b.onclick = () => { el.hidden = true; alPulsar(); };
+    avisoColaTimer = setTimeout(() => { el.hidden = true; }, 7000);
   }
 
   // ---------- render: calendario ----------
@@ -1378,6 +1425,26 @@
     await refreshContenido();
   }
 
+  // Si la pieza está abierta en "Editar", guarda lo escrito antes de otra
+  // acción (aprobar sin pulsar "Guardar" perdía lo editado). false si falló.
+  async function guardarSiEdita(id) {
+    if (!editingIds.has(id)) return true;
+    const textarea = document.querySelector(`textarea[data-id="${id}"]`);
+    const tags = document.querySelector(`input[data-hashtags-id="${id}"]`);
+    if (!textarea) { editingIds.delete(id); return true; }
+    try {
+      await api(`/api/negocios/${negocioActual.id}/contenido/${id}/editar`, {
+        method: 'PUT',
+        body: JSON.stringify(tags ? { caption: textarea.value, hashtags: tags.value } : { caption: textarea.value }),
+      });
+      editingIds.delete(id);
+      return true;
+    } catch (err) {
+      alert(err.mensaje || 'No se pudo guardar el texto. Revísalo y vuelve a intentar.');
+      return false;
+    }
+  }
+
   async function generarMas() {
     const btn = $('#dlg-generar-ok');
     const btnTop = $('#btn-generar');
@@ -1704,6 +1771,23 @@
       mostrarGuias();
     }));
 
+    // Por aprobar: filtros (por aprobar, aprobadas, rechazadas, todas). Los
+    // contadores de arriba llevan directo a cada uno.
+    $('#cola-filtros').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-cola-filtro]');
+      if (b) verCola(b.dataset.colaFiltro);
+    });
+    [['#stat-pendientes', 'pendientes'], ['#stat-aprobados', 'aprobadas']].forEach(([sel, filtro]) => {
+      const stat = $(sel).closest('.stat');
+      stat.classList.add('stat-ir');
+      stat.setAttribute('role', 'button');
+      stat.tabIndex = 0;
+      stat.title = filtro === 'aprobadas' ? 'Ver todo lo aprobado' : 'Ver lo que falta aprobar';
+      const ir = () => verCola(filtro);
+      stat.addEventListener('click', ir);
+      stat.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ir(); } });
+    });
+
     // navegación entre vistas
     document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
       btn.addEventListener('click', () => irAVista(btn.dataset.view, btn.dataset.tab));
@@ -1990,9 +2074,18 @@
         }
         return;
       }
+      if (['approve', 'publish-now', 'retry', 'undo'].includes(accion)) {
+        btn.disabled = true;
+        if (!(await guardarSiEdita(id))) { btn.disabled = false; return; }
+      }
       if (accion === 'approve') {
-        btn.disabled = true; // la publicación en Instagram puede tardar unos segundos
-        return accionConAviso('aprobar', id);
+        // la publicación en Instagram puede tardar unos segundos
+        await accionConAviso('aprobar', id);
+        const it = contenido.find((x) => x.id === id);
+        if (it && it.status === 'aprobado' && filtroColaActual() === 'pendientes') {
+          avisoCola(it.publicacion && it.publicacion.estado === 'programada' ? `Aprobada ✓ Se publica el ${fechaCorta(it.publicarEl || it.publicacion.proximoIntento)}.` : 'Aprobada ✓', 'Ver aprobadas', () => verCola('aprobadas'));
+        }
+        return;
       }
       if (accion === 'reject') return accionConAviso('rechazar', id);
       if (accion === 'publish-now') {
@@ -2023,7 +2116,7 @@
         const item = contenido.find((i) => i.id === id);
         if (item && item.instagram && item.instagram.ok) {
           const seguir = confirm('Esta pieza ya está publicada en Instagram. Deshacer la devuelve a pendiente en Rubrofy, pero NO la borra de Instagram (eso se hace desde la app de Instagram). Si la vuelves a aprobar, no se publicará de nuevo.');
-          if (!seguir) return;
+          if (!seguir) { btn.disabled = false; return; }
         }
         return accionConAviso('deshacer', id);
       }
