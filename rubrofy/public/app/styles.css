@@ -2078,3 +2078,11 @@ textarea.bv2-input { resize: vertical; line-height: 1.45; }
 .stat-ir { cursor: pointer; border-radius: 8px; }
 .stat-ir:hover b, .stat-ir:focus-visible b { text-decoration: underline; }
 .stat-ir:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* Imagen o video de cada pieza (junto al formato) */
+.card-medio { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card-medio button { background: none; border: 0; color: var(--ink-dim); font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+.card-medio button + button { border-left: 1px solid var(--border); }
+.card-medio button.on { background: rgba(255, 77, 148, .14); color: var(--ink); font-weight: 700; }
+.card-medio button:disabled { opacity: .5; }
+.card-idea-nota { display: block; margin-top: 5px; font-size: 11.5px; color: var(--amber); }

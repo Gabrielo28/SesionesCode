@@ -120,6 +120,14 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   Una aprobada se sigue editando ("Editar texto") hasta que se publica: el
   publicador arma el texto al publicar, así que usa lo último guardado. Una
   publicada o publicándose ya no se edita (409).
+  Junto al formato, **🖼 Imagen / 🎬 Video**: en una historia se elige
+  (`PUT …/contenido/:id/medio { medio }`, queda en `item.medio`; la idea se
+  rehace para ese medio y se publica con lo elegido: con video sin video,
+  falla y explica qué falta); en un post, "Video" lo pasa a Reel, y en un
+  Reel, "Imagen" lo pasa a Post (con confirmación, vía el cambio de formato).
+  Las historias nuevas quedan en Imagen salvo que la idea de la IA pida
+  video; las antiguas sin elección siguen como antes (video si tienen uno,
+  si no foto). Subir o crear un video para una historia la deja en Video.
 - **Calendario** (`public/app/calendario.js`) — vista **Semana** (por
   defecto: 7 columnas con la foto, la hora, el formato y el estado de cada
   publicación; en celular, una lista por día) o **Mes**, con flechas y

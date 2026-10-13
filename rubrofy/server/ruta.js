@@ -42,7 +42,10 @@ function faltaMaterial(item, fotos, hayFotosIA) {
   const enCategoria = (item.categoriaFoto && fotos[item.categoriaFoto]) || [];
   if (f === 'reel') return item.video ? null : 'reel';
   if (f === 'carrusel') return enCategoria.length >= 2 ? null : 'carrusel';
-  if (f === 'historia' && item.video) return null;
+  if (f === 'historia') {
+    const medio = item.medio === 'imagen' || item.medio === 'video' ? item.medio : (item.video ? 'video' : 'imagen');
+    if (medio === 'video') return item.video ? null : 'historia';
+  }
   if (item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo)) return null;
   return enCategoria.length || hayFotosIA ? null : 'foto';
 }
@@ -119,6 +122,7 @@ function calcular(input) {
   const cuenta = (t) => sinMaterial.filter((x) => x.falta === t).length;
   const partesMaterial = [
     cuenta('reel') && plural(cuenta('reel'), 'reel sin video', 'reels sin video'),
+    cuenta('historia') && plural(cuenta('historia'), 'historia sin video', 'historias sin video'),
     cuenta('carrusel') && plural(cuenta('carrusel'), 'carrusel con menos de 2 fotos', 'carruseles con menos de 2 fotos'),
     cuenta('foto') && plural(cuenta('foto'), 'publicación sin foto', 'publicaciones sin foto'),
   ].filter(Boolean);
@@ -167,8 +171,8 @@ function calcular(input) {
         : 'Todo lo de las próximas 2 semanas tiene su foto o video.',
       estado: partesMaterial.length ? 'pendiente' : 'hecho',
       prioridad: sinMaterial.some((x) => pronto(x.i, 3)) ? 1 : 4,
-      accion: { tipo: 'vista', vista: cuenta('reel') ? 'cola' : 'fotos' },
-      boton: cuenta('reel') ? 'Ver cuáles' : 'Subir fotos',
+      accion: { tipo: 'vista', vista: cuenta('reel') || cuenta('historia') ? 'cola' : 'fotos' },
+      boton: cuenta('reel') || cuenta('historia') ? 'Ver cuáles' : 'Subir fotos',
     },
   );
 

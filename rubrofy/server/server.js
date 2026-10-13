@@ -217,6 +217,16 @@ function formatoDe(item) {
   return item.aspect && item.aspect.trim().startsWith('9') ? 'historia' : 'post';
 }
 
+// Imagen o video: un Reel siempre es video; una historia, lo que el dueño
+// elija (si no eligió: video si tiene uno, si no imagen); post y carrusel, imagen.
+function medioDe(item) {
+  const f = formatoDe(item);
+  if (f === 'reel') return 'video';
+  if (f !== 'historia') return 'imagen';
+  if (item.medio === 'imagen' || item.medio === 'video') return item.medio;
+  return item.video ? 'video' : 'imagen';
+}
+
 // Un contenedor ya creado en Instagram queda obsoleto si cambia lo que se va
 // a publicar (formato o video): se descarta para crear uno nuevo.
 function descartarContenedor(it) {
@@ -695,6 +705,7 @@ function ponerVideoEnItem(negocioId, it, fila) {
   if (it.videoOriginal) store.borrarVideo(negocioId, it.videoOriginal.archivo);
   delete it.videoOriginal; delete it.edicion; delete it.videoIA; delete it.union;
   it.video = { archivo, bytes, subidoEl: new Date().toISOString(), desdeBiblioteca: fila.id, editado: fila.origen === 'editado' || undefined };
+  if (formatoDe(it) === 'historia') it.medio = 'video';
   descartarContenedor(it);
 }
 
@@ -788,7 +799,8 @@ async function prepararPublicacion(negocio, item) {
     if (!video) return { motivo: 'Este Reel no tiene video. Súbelo en la tarjeta y usa "Reintentar".' };
     return { tipo: 'reel', videoUrl: enlaceVideo(video), caption, prueba: item.prueba ? item.prueba.graduacion : undefined };
   }
-  if (formato === 'historia' && video) {
+  if (formato === 'historia' && medioDe(item) === 'video') {
+    if (!video) return { motivo: 'Esta historia es con video y no tiene video. Súbelo en la tarjeta (o cámbiala a Imagen) y usa "Reintentar".' };
     return { tipo: 'historia', videoUrl: enlaceVideo(video) };
   }
   // Diseño con la marca (server/marca.js): reemplaza la foto de la pieza.
@@ -1272,6 +1284,7 @@ const sondeoMedios = medios.crearSondeo(async (t, r) => {
   if (r.ok && !(it.video && !it.video.generadoIA)) {
     if (it.video && it.video.archivo !== r.archivo) store.borrarVideo(t.negocio_id, it.video.archivo);
     it.video = { archivo: r.archivo, bytes: r.bytes, subidoEl: new Date().toISOString(), generadoIA: true };
+    if (formatoDe(it) === 'historia') it.medio = 'video';
     const deBiblio = videos.desdeReel(t.negocio_id, r.archivo, { nombre: 'Video creado con IA', duracion: t.segundos, origen: 'ia' });
     if (deBiblio) it.video.desdeBiblioteca = deBiblio;
     it.videoIA = { estado: 'listo', terminadoEl: new Date().toISOString() };
@@ -3648,6 +3661,7 @@ const server = http.createServer(async (req, res) => {
             delete fresco.edicion;
             fs.renameSync(temporal, destino);
             fresco.video = { archivo, bytes, subidoEl: new Date().toISOString() };
+            if (formatoDe(fresco) === 'historia') fresco.medio = 'video';
             // También queda en "Mis videos" (Estudio de reels).
             const deBiblio = videos.desdeReel(negocioId, archivo, { nombre: nombreSubido(req) || 'Video de un reel', duracion: req.headers['x-duracion'] });
             if (deBiblio) fresco.video.desdeBiblioteca = deBiblio;
@@ -3741,10 +3755,28 @@ const server = http.createServer(async (req, res) => {
             aplicar = (it) => {
               it.formato = body.formato;
               it.aspect = FORMATOS[body.formato].aspect;
+              if (body.formato === 'historia') it.medio = it.video ? 'video' : 'imagen'; else delete it.medio;
               const enfoque = (negocio.estrategia.enfoques || []).find((e) => e.id === it.enfoqueId) || { label: it.tag || 'la publicación', categoriaFoto: it.categoriaFoto };
-              it.idea = ideaGenerica(body.formato, enfoque);
+              it.idea = ideaGenerica(body.formato, enfoque, it.medio);
               programacion.asegurarPublicarEl(it);
               it.date = programacion.etiquetaFecha(it.publicarEl, FORMATOS[body.formato].etiqueta);
+              descartarContenedor(it);
+            };
+          } else if (accion === 'medio' && req.method === 'PUT') {
+            // PUT /api/negocios/:id/contenido/:item/medio { medio: 'imagen' | 'video' }
+            // Solo en historias (un Reel siempre es video; post y carrusel,
+            // imagen: para eso se cambia el formato). El video, si había, se guarda.
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
+            if (seEstaPublicando) return ocupada();
+            const body = await readBody(req);
+            if (!['imagen', 'video'].includes(body.medio)) return sendJSON(res, 400, { error: 'Elige imagen o video' });
+            if (formatoDe(item) !== 'historia') return sendJSON(res, 400, { error: 'Solo las historias pueden ser imagen o video; para lo demás cambia el formato' });
+            aplicar = (it) => {
+              if (medioDe(it) === body.medio) return;
+              it.medio = body.medio;
+              const enfoque = (negocio.estrategia.enfoques || []).find((e) => e.id === it.enfoqueId) || { label: it.tag || 'la publicación', categoriaFoto: it.categoriaFoto };
+              it.idea = ideaGenerica('historia', enfoque, body.medio);
+              if (body.medio === 'video') delete it.diseno; // el diseño con la marca es para imágenes
               descartarContenedor(it);
             };
           } else if (accion === 'reprogramar' && req.method === 'PUT') {

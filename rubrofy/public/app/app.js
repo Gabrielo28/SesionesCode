@@ -210,6 +210,16 @@
     return item.aspect && item.aspect.trim().startsWith('9') ? 'historia' : 'post';
   }
 
+  // Imagen o video (igual que el servidor): un Reel es video; una historia, lo
+  // que el dueño elija; post y carrusel, imagen.
+  function medioDe(item) {
+    const f = formatoDe(item);
+    if (f === 'reel') return 'video';
+    if (f !== 'historia') return 'imagen';
+    if (item.medio === 'imagen' || item.medio === 'video') return item.medio;
+    return item.video ? 'video' : 'imagen';
+  }
+
   async function subirVideo(id, file) {
     const res = await fetch(`/api/negocios/${negocioActual.id}/contenido/${id}/video`, {
       method: 'POST',
@@ -273,17 +283,18 @@
     const publicando = !!(pub && pub.estado === 'publicando');
     const puedeCambiarFecha = !publicada && !publicando && item.status !== 'rechazado';
     const formato = formatoDe(item);
-    const conVideo = formato === 'reel' || formato === 'historia';
+    const medio = medioDe(item);
+    const conVideo = medio === 'video';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
 
     const fotoUrl = fotoDe(item);
     // Diseño con la marca: la tarjeta muestra la imagen diseñada.
     const disenoUrl = disenoDe(item);
-    const puedeDisenar = !!fotoUrl && !publicada && (formato === 'post' || formato === 'carrusel' || (formato === 'historia' && !item.video));
+    const puedeDisenar = !!fotoUrl && !publicada && medio === 'imagen';
     // Lo que le falta para publicarse, a la vista en la imagen de la tarjeta.
     const uniendoClips = !!(item.union && item.union.estado === 'uniendo');
-    const faltaVideo = !publicada && formato === 'reel' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando') && !uniendoClips;
-    const faltaFoto = !publicada && !disenoUrl && !fotoUrl && !item.video && formato !== 'reel';
+    const faltaVideo = !publicada && medio === 'video' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando') && !uniendoClips;
+    const faltaFoto = !publicada && !disenoUrl && !fotoUrl && medio === 'imagen';
     const mediosIA = negocioActual.mediosIA || {};
     const videoIA = item.videoIA || null;
     const canvasW = 480;
@@ -297,7 +308,7 @@
             : disenoUrl
             ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
             : faltaVideo
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de este reel</b><p>Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.</p><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">🎬 Elegir video</button></div>`
+            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de ${formato === 'historia' ? 'esta historia' : 'este reel'}</b><p>${formato === 'historia' ? 'Un video vertical corto, de 5 a 15 segundos. ¿Prefieres una foto? Elige "Imagen" abajo.' : 'Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.'}</p><div class="card-vacia-acc"><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">🎬 Elegir video</button>${(negocioActual.mediosIA || {}).video && !negocioActual.sinPlan ? `<button class="btn-ia card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear con IA</button>` : ''}</div></div>`
             : fotoUrl
             ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
             : faltaFoto
@@ -321,12 +332,15 @@
               <select data-formato-id="${item.id}" aria-label="Formato de publicación">
                 ${Object.keys(FORMATOS).map((f) => `<option value="${f}"${f === formato ? ' selected' : ''}>${FORMATOS[f]}</option>`).join('')}
               </select>
+              <span class="card-medio" role="group" aria-label="¿Imagen o video?">
+                <button type="button" data-action="medio" data-medio="imagen" data-id="${item.id}" class="${medio === 'imagen' ? 'on' : ''}" aria-pressed="${medio === 'imagen'}">🖼 Imagen</button><button type="button" data-action="medio" data-medio="video" data-id="${item.id}" class="${medio === 'video' ? 'on' : ''}" aria-pressed="${medio === 'video'}">🎬 Video</button>
+              </span>
               ${AY('pieza-formato')}
               ${conVideo ? (videoIA && videoIA.estado === 'generando'
                 ? `<span class="card-video-ok card-video-ia">Generando video con IA… suele tardar 1 a 3 minutos</span>`
                 : (item.video
                   ? `<span class="card-video-ok">${item.video.generadoIA ? 'Video con IA' : 'Video cargado'} (${(item.video.bytes / 1048576).toFixed(1)} MB)</span>${item.video.generadoIA ? `<a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>` : ''}<button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
-                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video (opcional)'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
+                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
               ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
               ${conVideo && item.video ? edicionHTML(item) : ''}
               ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
@@ -340,7 +354,7 @@
           ${!isEditing ? origenTextoHTML(item) : ''}
           ${!isEditing ? `<button class="btn-text card-copiar" data-action="copiar" data-id="${item.id}" title="Copia el texto y los hashtags tal como se publican">Copiar texto${item.hashtags && item.hashtags.length ? ' y hashtags' : ''}</button>` : ''}
           ${item.prueba ? `<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen${item.prueba.origen && item.prueba.origen.permalink ? ` · <a href="${escapeHtml(item.prueba.origen.permalink)}" target="_blank" rel="noopener">ver el original</a>` : ''} ${AY('reels-prueba')}</p>` : ''}
-          ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
+          ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}${formato === 'historia' && medio === 'imagen' && /\bvideo\b/i.test(item.idea) ? '<span class="card-idea-nota">Esta idea es para video, pero está elegida "Imagen": se publica con una foto. Si prefieres video, elige 🎬 Video.</span>' : ''}</p>` : ''}
           ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span>${AY('voz-puntaje')}</div>` : ''}
           ${isPending && pedirCambioIds.has(item.id) ? `<form class="card-pedir" data-pedir-id="${item.id}"><input name="indicacion" maxlength="500" placeholder="Ej: más corto, menciona el despacho gratis" required><button class="btn-approve">Pedir</button><button type="button" class="btn-text" data-action="cancelar-pedir" data-id="${item.id}">Cancelar</button></form>` : ''}
           ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}<li class="alerta-ayuda">Qué hacer ${AY('alertas')}</li></ul>` : ''}
@@ -2033,6 +2047,31 @@
         return;
       }
       if (accion === 'expandir') return btn.classList.toggle('abierta');
+      if (accion === 'medio') {
+        const it = contenido.find((x) => x.id === id);
+        const nuevo = btn.dataset.medio;
+        if (!it || medioDe(it) === nuevo) return;
+        const f = formatoDe(it);
+        let ruta = 'medio';
+        let cuerpo = { medio: nuevo };
+        // Post y carrusel son de imagen y un Reel es video: se cambia el formato.
+        if (f !== 'historia') {
+          const msg = nuevo === 'video'
+            ? `En Instagram, un video en el feed se publica como Reel. ¿Cambiar ${f === 'carrusel' ? 'este carrusel' : 'este post'} a Reel?`
+            : 'Un Reel siempre es video. ¿Cambiarlo a Post con imagen?';
+          if (!confirm(msg)) return;
+          ruta = 'formato';
+          cuerpo = { formato: nuevo === 'video' ? 'reel' : 'post' };
+        }
+        btn.disabled = true;
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/${ruta}`, { method: 'PUT', body: JSON.stringify(cuerpo) });
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo cambiar.');
+        }
+        await refreshContenido().catch(() => {});
+        return;
+      }
       if (accion === 'elegir-video') {
         const it = contenido.find((x) => x.id === id);
         if (it) window.RubrofyVideos.elegirParaReel(it);

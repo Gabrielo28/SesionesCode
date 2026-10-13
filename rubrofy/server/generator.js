@@ -19,8 +19,11 @@ const costos = require('./costos');
 const ASPECTO = { post: '4 / 5', carrusel: '4 / 5', reel: '9 / 16', historia: '9 / 16' };
 
 // Idea de respaldo (sin IA) de qué mostrar en cada formato.
-function ideaGenerica(formato, enfoque) {
+// medio (solo historias): 'imagen' o 'video' si el dueño ya eligió.
+function ideaGenerica(formato, enfoque, medio) {
   const tema = enfoque.label.toLowerCase();
+  if (formato === 'historia' && medio === 'imagen') return `Foto vertical sobre "${tema}" con el titular y un sticker de encuesta o de enlace.`;
+  if (formato === 'historia' && medio === 'video') return `Video vertical de 5 a 15 s sobre "${tema}", con el titular en pantalla y un sticker de encuesta o de enlace.`;
   if (formato === 'reel') return `Video vertical de 10-20 s sobre "${tema}": una toma general, un detalle de cerca y cierre con el titular en pantalla.`;
   if (formato === 'carrusel') return `3 a 5 láminas sobre "${tema}": portada con el titular, 2-3 láminas con fotos o datos, y una última con el llamado a la acción.`;
   if (formato === 'historia') return `Foto o video vertical sobre "${tema}" con el titular y un sticker de encuesta o de enlace.`;
@@ -142,7 +145,8 @@ async function generarLoteConClaude(negocio, piezas, ctx, indicaciones, opciones
     `usando los canales reales del negocio si los hay. Entre 250 y 600 caracteres en posts, carruseles y reels; máximo 150 en historias. Sin hashtags dentro del caption.\n` +
     `- "hashtags": entre 5 y 10 hashtags específicos del rubro, del tema y de la ciudad o zona si se conoce, en minúsculas, sin genéricos vacíos como #love o #instagood (en historias, máximo 3).\n` +
     `- "idea": en máximo 250 caracteres qué mostrar: qué foto usar en un post, qué va en cada lámina de un carrusel, ` +
-    `las tomas de un reel (y qué dice el gancho en pantalla) o qué mostrar y qué sticker usar en una historia.`;
+    `las tomas de un reel (y qué dice el gancho en pantalla) o qué mostrar y qué sticker usar en una historia ` +
+    `(en las historias, por defecto una foto vertical; propone video solo si la idea de verdad lo necesita, y entonces dilo: "Video de…").`;
 
   try {
     const r = await claude.llamar({ maxTokens: 700 * enfoquesDelLote.length, content: prompt, negocioId: negocio.id, uso: 'contenido' });
@@ -250,7 +254,7 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       formato: p.formato,
       // Una obligatoria del brief conserva la idea del dueño; el resto, la de la IA.
       idea: p.obligatoria ? p.obligatoria : (generado && typeof generado.idea === 'string' && generado.idea.trim()
-        ? generado.idea.trim().slice(0, 300) : ideaGenerica(p.formato, p.enfoque)),
+        ? generado.idea.trim().slice(0, 300) : ideaGenerica(p.formato, p.enfoque, p.formato === 'historia' ? 'imagen' : undefined)),
       briefPunto: generado && typeof generado.punto === 'string' && generado.punto.trim() ? generado.punto.trim().slice(0, 80) : (p.obligatoria ? 'Pedido en el brief' : undefined),
       briefSemana: opciones.brief && opciones.brief.brief ? opciones.brief.brief.semana : undefined,
       headline,
@@ -267,6 +271,8 @@ async function generarBanco(negocio, cantidad = 6, startIndex = 0, opciones = {}
       alertas: guardian.revisar(caption, negocio), // qué verificar antes de aprobar
       voz: voz.puntuar(caption, negocio) || undefined, // fidelidad a la voz de marca
       generadoConIA: !!generado, // para descontar de la cuota mensual de textos con IA
+      // Historias: imagen salvo que la idea pida video; el dueño lo cambia en la tarjeta.
+      medio: p.formato === 'historia' ? (generado && /\bvideo\b/i.test(generado.idea || '') ? 'video' : 'imagen') : undefined,
     };
   });
 }
