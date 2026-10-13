@@ -11,6 +11,7 @@
 | [05-secuencias-completas.md](05-secuencias-completas.md) | Copy completo de las 3 secuencias de seguimiento |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas |
 | [propuesta/](propuesta/) | Generador de propuestas PDF personalizadas |
+| [../detector-dolores/](../detector-dolores/) | Detector de dolores: diagnóstico del negocio completo (no solo redes) y generador del diagnóstico PDF |
 
 ---
 

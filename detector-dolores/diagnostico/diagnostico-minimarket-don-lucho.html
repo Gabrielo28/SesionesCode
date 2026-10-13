@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Diagnóstico Minimarket Don Lucho — Influence Chile</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pagina { width: 210mm; min-height: 297mm; padding: 18mm 16mm 22mm; page-break-after: always; position: relative; }
+  .pagina:last-child { page-break-after: auto; }
+
+  .portada { background: linear-gradient(155deg, #123638 0%, #12959C 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .portada img { width: 52mm; margin-bottom: 16mm; filter: brightness(0) invert(1); }
+  .portada .marca { font-size: 26pt; font-weight: 700; margin-bottom: 16mm; letter-spacing: -.02em; }
+  .portada .kicker { text-transform: uppercase; letter-spacing: .28em; font-size: 9pt; opacity: .75; margin-bottom: 6mm; }
+  .portada h1 { font-size: 34pt; line-height: 1.1; font-weight: 700; margin-bottom: 6mm; }
+  .portada h2 { font-size: 13.5pt; font-weight: 400; opacity: .92; line-height: 1.55; margin-bottom: 14mm; max-width: 150mm; }
+  .portada .meta { font-size: 10pt; opacity: .8; line-height: 1.9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; }
+
+  h3.seccion { font-size: 20pt; color: #12959C; margin-bottom: 3mm; }
+  h3.seccion + .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 7mm; }
+  p.intro { font-size: 10.8pt; line-height: 1.6; color: #2c4a4c; margin-bottom: 6mm; }
+  p.intro strong { color: #123638; }
+
+  .fortalezas { background: #e6f1f1; border-radius: 5px; padding: 4mm 5mm; margin-bottom: 6mm; }
+  .fortalezas h4 { font-size: 10pt; text-transform: uppercase; letter-spacing: .12em; color: #12959C; margin-bottom: 2.5mm; }
+  .fortalezas li { font-size: 10pt; line-height: 1.6; color: #2c4a4c; list-style: none; padding-left: 5mm; position: relative; margin-bottom: 1.5mm; }
+  .fortalezas li::before { content: '✓'; position: absolute; left: 0; color: #2E9E6B; font-weight: 700; }
+
+  .mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .area { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 3mm 3.5mm; border-left-width: 4px; }
+  .area .cab { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5mm; }
+  .area .num { font-size: 8pt; color: #9ab5b6; font-weight: 600; margin-right: 1.5mm; }
+  .area h4 { font-size: 10.5pt; display: inline; }
+  .area .estado { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: .8mm 2.2mm; border-radius: 3px; }
+  .area p { font-size: 8.6pt; line-height: 1.45; color: #2c4a4c; }
+  .area .ev { font-size: 7.6pt; color: #6b8b8c; margin-top: 1.2mm; font-style: italic; }
+  .chip { display: inline-block; font-family: Consolas, 'Courier New', monospace; font-size: 7.2pt; font-weight: 700; letter-spacing: .04em; padding: .5mm 1.6mm; border-radius: 2px; background: #e6f1f1; color: #12959C; margin-left: 1.2mm; vertical-align: 1.5px; }
+  .area.critico .chip { background: #FDE8E8; color: #D64545; } .area.alerta .chip { background: #FFF4DE; color: #B06F00; }
+
+
+  .cuello { border: 2px solid #d7ebeb; border-radius: 6px; padding: 5mm 6mm; margin-bottom: 5mm; page-break-inside: avoid; }
+  .secundarios { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .cuello.sec { padding: 4mm 4.5mm; margin-bottom: 0; }
+  .cuello.sec .fila { display: block; }
+  .cuello.sec .fila .et { margin-bottom: .6mm; }
+  .cuello.principal { border-color: #FF7B7B; background: #fffafa; }
+  .cuello .tag { display: inline-block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; padding: 1mm 2.5mm; border-radius: 3px; margin-bottom: 2.5mm; background: #e6f1f1; color: #12959C; }
+  .cuello.principal .tag { background: #FF7B7B; color: #fff; }
+  .cuello h4 { font-size: 13.5pt; line-height: 1.25; margin-bottom: 3mm; }
+  .cuello.sec h4 { font-size: 11.5pt; margin-bottom: 2mm; }
+  .cuello .fila { display: flex; gap: 5mm; margin-bottom: 2.5mm; }
+  .cuello.sec .fila { margin-bottom: 1.8mm; }
+  .cuello .fila .et { flex: 0 0 28mm; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .1em; color: #12959C; font-weight: 700; padding-top: .8mm; }
+  .cuello .fila p { flex: 1; font-size: 9.8pt; line-height: 1.5; color: #2c4a4c; }
+  .cuello.sec .fila p { font-size: 8.6pt; line-height: 1.42; }
+  .cuello .costo { font-size: 16pt; font-weight: 700; color: #c0392b; }
+  .cuello.sec .costo { font-size: 12pt; }
+  .cuello .costo small { display: block; font-size: 8.3pt; font-weight: 400; color: #6b8b8c; line-height: 1.45; margin-top: 1mm; }
+  .cuello.sec .costo small { font-size: 7.4pt; }
+  .cuello .plazo { font-size: 9pt; color: #6b8b8c; }
+
+  .fase { display: flex; gap: 5mm; margin-bottom: 4mm; }
+  .fase .periodo { flex: 0 0 30mm; font-weight: 700; color: #12959C; font-size: 10.5pt; padding-top: 1mm; }
+  .fase ul { flex: 1; list-style: none; font-size: 10.2pt; line-height: 1.6; color: #2c4a4c; }
+  .fase li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
+
+  .nota { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; }
+  .nota strong { color: #12959C; }
+
+  .cta { text-align: center; padding: 2mm 0 0; }
+  .cta h3 { font-size: 18pt; color: #12959C; margin-bottom: 2mm; }
+  .cta p { font-size: 10.5pt; color: #2c4a4c; line-height: 1.6; margin-bottom: 4mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
+  .firma { margin-top: 5mm; padding-top: 4mm; border-top: 1px solid #d7ebeb; font-size: 10pt; color: #2c4a4c; line-height: 1.8; text-align: center; }
+  .pie { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
+</style></head><body>
+
+<section class="pagina portada">
+  <div class="marca">influence</div>
+  <div class="kicker">Diagnóstico de negocio</div>
+  <h1>Minimarket Don Lucho</h1>
+  <h2>Llega gente, pero el minimarket de cadena que abrió a dos cuadras se llevó la compra grande y Don Lucho perdió la ventaja que tenía: la cercanía, el crédito y el pedido rápido. Hoy compite en precio, que es donde no puede ganar.</h2>
+  <div class="meta">
+    Preparado para Luis Aravena, Dueño<br>
+    Almacén / Minimarket · Maipú, Santiago<br>
+    octubre de 2026<br><br>Fuentes: Visita al local (martes 12:30 y sábado 13:00) · Google Maps · Instagram @donlucho.maipu · Conversación de 20 minutos con Luis
+  </div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">El mapa del negocio</h3><div class="linea"></div>
+  <p class="intro">Todo negocio es la misma cadena: alguien se entera, llega, compra, se le entrega, se cobra y vuelve. Revisamos las 8 áreas de Minimarket Don Lucho. <strong>2 en rojo, 5 en amarillo.</strong> Pero primero, lo que funciona.</p>
+  <div class="fortalezas">
+    <h4>Lo que Minimarket Don Lucho hace bien</h4>
+    <ul><li>Luis conoce por nombre a la mayoría de sus clientes y ellos lo prefieren cuando pueden: las 9 reseñas de Google hablan de la atención.</li><li>Tiene surtido de panadería y fiambrería al corte que la cadena no ofrece, y es lo que más vende por la mañana.</li></ul>
+  </div>
+  <div class="mapa">
+    
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">1</span><h4>Captación</h4> <span class="chip">CAP-01</span><span class="chip">CAP-02</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Depende de la gente que pasa por la cuadra. No aparece al buscar "minimarket Maipú" en Google y el perfil no está reclamado.</p>
+      <div class="ev">Búsqueda en Google Maps; Luis: "todo es gente del barrio"</div>
+    </div>
+    <div class="area bien" style="border-left-color:#2E9E6B">
+      <div class="cab"><div><span class="num">2</span><h4>Conversión</h4></div><span class="estado" style="background:#E6F5EC;color:#2E9E6B">Bien</span></div>
+      <p>El que entra, compra. Atención rápida y cercana.</p>
+      <div class="ev">Visita: 0 personas se fueron sin comprar en 20 min</div>
+    </div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">3</span><h4>Ticket y margen</h4> <span class="chip">MAR-01</span><span class="chip">MAR-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Bajó precios en bebidas y abarrotes para competir con la cadena. En esos productos ya no deja margen; el margen está en panadería y fiambrería, que no destaca.</p>
+      <div class="ev">Luis: "la Coca la vendo casi a lo que me cuesta"</div>
+    </div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">4</span><h4>Operación</h4> <span class="chip">OPE-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Quiebres de stock en pan y bebidas en la tarde. El pedido al proveedor se hace de memoria.</p>
+      <div class="ev">Visita sábado 13:00: sin marraqueta ni bebida de 3 L; Luis: "pido cuando veo que falta"</div>
+    </div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">5</span><h4>Caja y cobro</h4> <span class="chip">CAJ-01</span><span class="chip">CAJ-02</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+      <p>Solo efectivo y transferencia a mano. $780.000 en fiado, parte de hace más de 6 meses. Dejó de fiar y perdió clientes que compraban a crédito.</p>
+      <div class="ev">Cuaderno de fiado; cartel "no aceptamos tarjeta"; Luis: "me quedaron debiendo como ochocientas lucas"</div>
+    </div>
+    <div class="area critico" style="border-left-color:#D64545">
+      <div class="cab"><div><span class="num">6</span><h4>Retención</h4> <span class="chip">RET-01</span><span class="chip">RET-02</span></div><span class="estado" style="background:#FDE8E8;color:#D64545">Crítico</span></div>
+      <p>Perdió la compra grande de la semana de 30 a 40 familias que ahora van a la cadena. No tiene cómo contactarlas: no tiene teléfonos ni ofrece pedido a domicilio.</p>
+      <div class="ev">Luis: "vienen por el pan y lo que se les olvidó, la compra la hacen allá"</div>
+    </div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">7</span><h4>Personas y dueño</h4> <span class="chip">PER-01</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Luis atiende solo de 7:30 a 22:00. Su señora cubre dos horas al almuerzo. No hay quien reparta ni quien responda un WhatsApp.</p>
+      <div class="ev">Visita; Luis: "si me enfermo cierro"</div>
+    </div>
+    <div class="area alerta" style="border-left-color:#D98E04">
+      <div class="cab"><div><span class="num">8</span><h4>Datos y control</h4> <span class="chip">DAT-03</span></div><span class="estado" style="background:#FFF4DE;color:#D98E04">Alerta</span></div>
+      <p>Sabe cuánto vende al día (lo cuenta en caja) pero no por categoría. No sabe cuánto deja cada línea.</p>
+      <div class="ev">Respondió la venta de ayer al tiro; no supo la venta de panadería</div>
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Minimarket Don Lucho · confidencial</span><span>2 / 4</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">El cuello de botella</h3><div class="linea"></div>
+  <p class="intro">De todo lo anterior, hay una tranca que limita más que las otras. Es por donde conviene partir: la que más cuesta hoy y la que se puede destrabar más rápido.</p>
+  
+  <div class="cuello principal">
+    <span class="tag">Cuello de botella · Retención · RET-01</span>
+    <h4>Perdió la compra grande del barrio y no tiene cómo recuperarla</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>Unas 35 familias que hacían la compra semanal en Don Lucho hoy la hacen en la cadena y vienen solo por lo que se les olvidó. La cadena gana en precio; Don Lucho ganaba en cercanía y crédito, y dejó de ofrecer ambas cosas sin reemplazarlas por nada.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$1.400.000 al mes<small>35 familias × $40.000 de compra semanal × 4 semanas = $5.600.000 de venta que se fue. Al margen de abarrotes (25%) son $1.400.000 al mes. Número conversado con Luis.</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Recuperar la ventaja de cercanía con pedido por WhatsApp y entrega en el barrio el mismo día. Lista de difusión con las familias del sector. Crédito formal: tope de $30.000 por familia, se paga el día de pago, registrado. <span class="plazo">· 4 semanas</span></p></div>
+  </div>
+  <div class="secundarios">
+  <div class="cuello sec">
+    <span class="tag">Dolor secundario 1 · Caja y cobro · CAJ-02</span>
+    <h4>Solo efectivo: pierde la venta de todos los que pagan con tarjeta</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>El cartel de "no aceptamos tarjeta" manda a la cadena a quien no anda con efectivo. Luis no quiere pagar la comisión, pero la comisión es menor que la venta que no entra.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$360.000 al mes<small>Supuesto conservador: 10 ventas al día perdidas × $4.000 × 30 días = $1.200.000 en venta, $300.000 de margen, más el fiado que no se recupera ($780.000, del cual Luis estima que la mitad no vuelve).</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Máquina de tarjeta y QR de transferencia en el mesón, con el cartel cambiado a "aceptamos todo medio de pago". Anunciarlo en el barrio con el mismo mensaje del pedido por WhatsApp. <span class="plazo">· 1 semana</span></p></div>
+  </div>
+  <div class="cuello sec">
+    <span class="tag">Dolor secundario 2 · Ticket y margen · MAR-03</span>
+    <h4>Compite en precio en lo que no deja margen y esconde lo que sí deja</h4>
+    <div class="fila"><div class="et">Qué pasa</div><p>Bajó bebidas y abarrotes para igualar a la cadena. Pero lo que la cadena no tiene (pan recién salido, fiambre al corte, almuerzo del día) está sin destacar, sin cartel y sin combo.</p></div>
+    <div class="fila"><div class="et">Cuánto cuesta</div><p><span class="costo">$250.000 al mes<small>Estimación: 20 clientes al día que compran solo pan y se les podría vender un combo de desayuno (+$1.500 de margen) = $900.000 al mes de venta adicional, $250.000 de margen. Supuesto a validar en el primer mes.</small></span></p></div>
+    <div class="fila"><div class="et">Cómo se arregla</div><p>Volver a precio normal en bebidas (nadie va a la cadena por una Coca). Combo desayuno y combo once con cartel grande. Pizarra con "hoy salió" para panadería. <span class="plazo">· 2 semanas</span></p></div>
+  </div></div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Minimarket Don Lucho · confidencial</span><span>3 / 4</span></div>
+</section>
+
+
+<section class="pagina">
+  <h3 class="seccion">Los primeros 30 días</h3><div class="linea"></div>
+  <p class="intro">Qué haríamos, semana a semana, para destrabar el cuello de botella. Sin precios: eso se conversa cuando el plan tenga sentido.</p>
+  
+    <div class="fase">
+      <div class="periodo">Semana 1</div>
+      <ul><li>Máquina de tarjeta y QR instalados, cartel nuevo</li><li>Perfil de Google reclamado con fotos reales y horario</li><li>Número de WhatsApp Business del negocio con catálogo de 20 productos</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 2</div>
+      <ul><li>Volante al barrio: "pide por WhatsApp, te lo llevamos hoy" + medios de pago</li><li>Combo desayuno y combo once en pizarra</li><li>Lista de clientes: pedir el teléfono a cada compra con una rifa de una caja de mercadería</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 3</div>
+      <ul><li>Primera difusión por WhatsApp: oferta de la semana a las familias registradas</li><li>Crédito formal: tope y día de pago, registrado en el teléfono</li><li>Pedido a proveedores con lista fija según lo que se quebró las últimas 2 semanas</li></ul>
+    </div>
+    <div class="fase">
+      <div class="periodo">Semana 4</div>
+      <ul><li>Medir: pedidos por WhatsApp, ventas con tarjeta, familias en la lista, combos vendidos</li><li>Pedir reseñas en Google con QR en el mesón</li><li>Revisar números con Luis y decidir el mes 2</li></ul>
+    </div>
+  <div class="nota" style="margin-top:4mm;margin-bottom:6mm"><strong>Siguiente paso:</strong> Revisar este diagnóstico con Luis el jueves a las 16:00 en el local y definir si partimos la semana siguiente.</div>
+  <div class="cta">
+    <h3>¿Lo conversamos?</h3>
+    <p>Este diagnóstico es gratis y es tuyo, lo trabajemos juntos o no.<br>Si tiene sentido, el siguiente paso son 30 minutos para definir cómo partimos.</p>
+    <div class="boton">+56 9 6545 0723</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong> · Influence Chile<br>
+      influencechile.cl · +56 9 6545 0723<br>
+      Instagram: @influence.chile
+    </div>
+  </div>
+  <div class="pie"><span>Influence Chile · Diagnóstico de Minimarket Don Lucho · confidencial</span><span>4 / 4</span></div>
+</section>
+
+</body></html>

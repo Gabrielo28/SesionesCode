@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radiografía de proceso · Influence Chile</title>
+<meta name="description" content="Mapea un proceso paso a paso y descubre dónde se frena: el cuello de botella, el tiempo que se pierde y cuánto cuesta en pesos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #123638; --ink-2: #2c4a4c; --muted: #5E7A7B; --faint: #9AB5B6;
+    --teal: #12959C; --teal-dark: #0E7A80; --coral: #FF7B7B; --coral-dark: #E85F5F;
+    --paper: #F4F8F8; --card: #FFFFFF; --line: #D7EBEB; --wash: #E6F1F1;
+    --c-trabajo: #12959C; --c-espera: #B07A3A; --c-espera-wash: #F6EBDD;
+    --bad: #D64545; --bad-wash: #FDE8E8; --warn: #D98E04; --warn-wash: #FFF4DE; --ok: #2E9E6B; --ok-wash: #E6F5EC;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.5; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  header .marca { font-weight: 800; font-size: 20px; letter-spacing: -.02em; color: var(--teal); }
+  header .marca span { color: var(--ink); font-weight: 500; }
+  .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-weight: 700; font-size: 13px; padding: 9px 14px; border-radius: 30px; border: 1.5px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  .btn:hover { border-color: var(--teal); background: var(--wash); }
+  .btn-coral { background: var(--coral); border-color: var(--coral); color: #fff; } .btn-coral:hover { background: var(--coral-dark); border-color: var(--coral-dark); }
+  .btn-teal { background: var(--teal); border-color: var(--teal); color: #fff; } .btn-teal:hover { background: var(--teal-dark); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h1 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; margin-bottom: 6px; }
+  h2 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+  h2 small { font-weight: 500; color: var(--muted); font-size: 13px; margin-left: 6px; }
+  p { color: var(--muted); margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 4px; }
+  input, select, textarea { width: 100%; font: inherit; font-size: 14px; padding: 9px 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); }
+  input:focus, select:focus { outline: 2px solid var(--teal); outline-offset: 1px; border-color: var(--teal); }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .hint { font-size: 11.5px; color: var(--faint); margin-top: 3px; }
+
+  table.pasos { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.pasos th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 6px 6px; border-bottom: 1.5px solid var(--line); white-space: nowrap; }
+  table.pasos td { padding: 5px 4px; vertical-align: middle; border-bottom: 1px solid var(--line); }
+  table.pasos input { padding: 7px 8px; font-size: 13px; }
+  table.pasos td.n { color: var(--faint); font-weight: 700; width: 24px; text-align: center; }
+  table.pasos td.num { width: 84px; }
+  table.pasos td.quien { width: 130px; }
+  table.pasos td.borrar { width: 32px; text-align: center; }
+  .x { background: none; border: 0; color: var(--faint); font-size: 18px; cursor: pointer; line-height: 1; } .x:hover { color: var(--bad); }
+  .tabla-scroll { overflow-x: auto; margin: 0 -8px; padding: 0 8px; }
+  .fila-botones { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  .tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 16px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .tile .l { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .tile .v { font-size: 26px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin: 4px 0 2px; }
+  .tile .d { font-size: 12px; color: var(--muted); }
+  .tile.hero { grid-column: 1 / -1; border: 2px solid var(--coral); background: #FFFAFA; }
+  .tile.hero .v { font-size: 30px; }
+  .tile.hero .v .ico { color: var(--bad); margin-right: 6px; }
+
+  .flujo { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 6px 0 10px; }
+  .paso-box { flex: 1 0 150px; max-width: 220px; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; position: relative; }
+  .paso-box .t { font-weight: 700; font-size: 13.5px; line-height: 1.25; }
+  .paso-box .q { font-size: 11.5px; color: var(--muted); margin: 2px 0 6px; }
+  .paso-box .m { font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+  .paso-box .m b { font-weight: 700; }
+  .paso-box.cuello { border-color: var(--bad); border-width: 2.5px; background: var(--bad-wash); }
+  .paso-box .badge { position: absolute; top: -10px; left: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; background: var(--bad); color: #fff; padding: 2px 8px; border-radius: 4px; }
+  .flecha { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: var(--faint); font-size: 18px; }
+
+  .chart { margin-top: 6px; }
+  .chart .fila { display: grid; grid-template-columns: 150px 1fr 64px; align-items: center; gap: 10px; padding: 4px 0; font-size: 12.5px; }
+  .chart .fila .et { color: var(--ink-2); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart .fila .et .ico { color: var(--bad); margin-right: 3px; }
+  .chart .track { position: relative; height: 18px; background: transparent; }
+  .chart .seg { position: absolute; top: 0; height: 18px; }
+  .chart .seg.trabajo { background: var(--c-trabajo); }
+  .chart .seg.espera { background: var(--c-espera); }
+  .chart .seg.util { background: var(--c-trabajo); border-radius: 0 4px 4px 0; }
+  .chart .seg.util.cuello { background: var(--bad); }
+  .chart .seg.espera { border-radius: 0 4px 4px 0; }
+  .chart .seg:hover { filter: brightness(1.08); }
+  .chart .linea100 { position: absolute; top: -4px; bottom: -4px; width: 1.5px; background: var(--ink-2); }
+  .chart .fila .val { color: var(--ink-2); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .leyenda { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin: 8px 0 2px; flex-wrap: wrap; }
+  .leyenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+  .tip { position: fixed; pointer-events: none; background: var(--ink); color: #fff; font-size: 12px; padding: 6px 9px; border-radius: 6px; z-index: 10; max-width: 240px; display: none; line-height: 1.4; }
+
+  .hallazgo { border-left: 4px solid var(--bad); padding: 2px 0 2px 14px; margin-bottom: 14px; }
+  .hallazgo.sec { border-left-color: var(--warn); }
+  .hallazgo h3 { font-size: 15px; margin-bottom: 4px; }
+  .hallazgo p { color: var(--ink-2); font-size: 13.5px; margin-bottom: 4px; }
+  .hallazgo .fix { background: var(--wash); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--ink); margin-top: 6px; }
+  .hallazgo .fix strong { color: var(--teal); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 2px; }
+
+  .tabla-detalle { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tabla-detalle th { text-align: right; font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 6px; border-bottom: 1.5px solid var(--line); }
+  .tabla-detalle th:first-child, .tabla-detalle td:first-child { text-align: left; }
+  .tabla-detalle td { padding: 6px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+  .tabla-detalle tr.cuello td { background: var(--bad-wash); font-weight: 700; }
+  .pie { text-align: center; font-size: 12px; color: var(--faint); margin-top: 24px; line-height: 1.7; }
+  .solo-print { display: none; }
+  .hidden { display: none !important; }
+
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap { max-width: none; padding: 0; }
+    .no-print, header, #entrada { display: none !important; }
+    .solo-print { display: block; }
+    .card, .tile { box-shadow: none; break-inside: avoid; }
+    .flujo { overflow: visible; flex-wrap: wrap; gap: 6px 0; }
+    .paso-box { flex: 0 0 auto; width: 31%; max-width: none; }
+    .flecha { flex: 0 0 3.5%; }
+    .tile .v { font-size: 20px; } .tile.hero .v { font-size: 24px; }
+    #resultado { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="marca">influence <span>· radiografía de proceso</span></div>
+    <div class="acciones">
+      <select id="ejemplo" class="btn" style="padding-right:28px"><option value="">Cargar ejemplo…</option></select>
+      <button class="btn" id="cargar">Abrir JSON</button>
+      <input type="file" id="archivo" accept="application/json" class="hidden">
+      <button class="btn" id="guardar">Guardar JSON</button>
+      <button class="btn btn-teal" id="imprimir">Imprimir / PDF</button>
+    </div>
+  </header>
+
+  <section id="entrada">
+    <div class="card">
+      <h1>¿En qué paso se frena?</h1>
+      <p>Mapea el proceso con el dueño, paso a paso, y ve en vivo dónde se acumula el trabajo, cuánto tiempo espera cada unidad y cuánto cuesta eso al mes. Sirve para ventas, producción, atención, administración o lo que sea que fluya por pasos.</p>
+      <div class="grid">
+        <div><label>Empresa</label><input id="empresa" placeholder="Ej: Muebles Araya"></div>
+        <div><label>Proceso</label><input id="proceso" placeholder="Ej: De la consulta al anticipo"></div>
+        <div><label>Tipo</label><select id="tipo"><option>Ventas</option><option>Producción</option><option>Servicio / atención</option><option>Administración / cobranza</option><option>Creación / desarrollo</option></select></div>
+        <div><label>Qué fluye (unidad)</label><input id="unidad" placeholder="Ej: cotización, pedido, paciente"></div>
+      </div>
+      <div class="grid" style="margin-top:12px">
+        <div><label>Unidades que entran por semana</label><input id="volumen" type="number" min="0" step="1" value="40"><div class="hint">Consultas, pedidos, pacientes…</div></div>
+        <div><label>Valor de una unidad perdida ($)</label><input id="valor" type="number" min="0" step="1000" value="50000"><div class="hint">Producción: margen de la unidad. Ventas: margen de un cierre × probabilidad de cerrar (ej: $180.000 × 30% = $54.000)</div></div>
+        <div><label>Costo hora del equipo ($)</label><input id="costohora" type="number" min="0" step="500" value="8000"><div class="hint">Sueldo + imposiciones ÷ horas</div></div>
+        <div><label>Horas disponibles por persona / semana</label><input id="horas" type="number" min="1" step="1" value="45"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Los pasos <small>en orden, tal como ocurre hoy</small></h2>
+      <div class="tabla-scroll">
+      <table class="pasos">
+        <thead><tr>
+          <th>#</th><th>Paso</th><th>Quién lo hace</th><th>Personas</th><th>Trabajo<br>(min / unidad)</th><th>Espera antes<br>(horas)</th><th>Se repite<br>(% retrabajo)</th><th>Se pierde aquí<br>(% unidades)</th><th></th>
+        </tr></thead>
+        <tbody id="filas"></tbody>
+      </table>
+      </div>
+      <div class="fila-botones">
+        <button class="btn" id="agregar">+ Agregar paso</button>
+        <button class="btn btn-coral" id="calcular">Ver dónde se frena →</button>
+      </div>
+      <p class="hint" style="margin-top:10px">Trabajo: minutos de manos en la unidad. Espera: horas que la unidad queda parada antes de este paso (en una bandeja, esperando aprobación, al cliente, al proveedor). Retrabajo: de cada 100 unidades, cuántas hay que volver a hacer en este paso. Se pierde: de cada 100 que llegan, cuántas se caen aquí (no responden, se rechazan, se botan).</p>
+    </div>
+  </section>
+
+  <section id="resultado" class="hidden">
+    <div class="solo-print" style="margin-bottom:14px">
+      <div class="marca" style="font-weight:800;font-size:18px;color:#12959C">influence <span style="color:#123638;font-weight:500">· radiografía de proceso</span></div>
+    </div>
+    <div class="card">
+      <h1 id="r-titulo"></h1>
+      <p id="r-sub"></p>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="card">
+      <h2>El flujo <small>así pasa hoy una unidad por el proceso</small></h2>
+      <div class="flujo" id="flujo"></div>
+    </div>
+
+    <div class="card">
+      <h2>Tiempo por unidad en cada paso <small>horas: trabajo real vs. espera</small></h2>
+      <div class="leyenda"><span><i style="background:var(--c-trabajo)"></i>Trabajo</span><span><i style="background:var(--c-espera)"></i>Espera antes del paso</span></div>
+      <div class="chart" id="chart-tiempo"></div>
+    </div>
+
+    <div class="card">
+      <h2>Carga de cada paso <small>horas que le llegan por semana vs. horas que tiene</small></h2>
+      <p>Sobre 100% el paso no alcanza: ahí se acumula el trabajo y todo lo que viene después espera. Sobre 85% ya no tiene holgura.</p>
+      <div class="chart" id="chart-carga"></div>
+    </div>
+
+    <div class="card">
+      <h2>Dónde se frena y qué hacer primero</h2>
+      <div id="hallazgos"></div>
+    </div>
+
+    <div class="card">
+      <h2>El detalle <small>por paso y por semana</small></h2>
+      <div class="tabla-scroll">
+      <table class="tabla-detalle" id="detalle"></table>
+      </div>
+    </div>
+
+    <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="editar">← Editar los pasos</button>
+      <button class="btn btn-teal" id="imprimir2">Imprimir / PDF</button>
+    </div>
+    <div class="pie">Influence Chile · influencechile.cl · +56 9 6545 0723 · @influence.chile</div>
+  </section>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n, d) { return (Math.round(n * Math.pow(10, d || 0)) / Math.pow(10, d || 0)).toLocaleString('es-CL'); };
+  var clp = function (n) { return '$' + Math.round(n).toLocaleString('es-CL'); };
+  var horasTxt = function (h) {
+    if (h >= 48) return fmt(h / 24, 1) + ' días';
+    if (h >= 1) return fmt(h, 1) + ' h';
+    return fmt(h * 60) + ' min';
+  };
+
+  var EJEMPLOS = {
+    'Ventas · Fábrica de muebles a medida': {
+      empresa: 'Muebles Araya', proceso: 'De la consulta al anticipo', tipo: 'Ventas', unidad: 'cotización', volumen: 40, valor: 54000, costohora: 8000, horas: 45,
+      pasos: [
+        { nombre: 'Responder la consulta', quien: 'Dueño', personas: 1, trabajo: 5, espera: 6, retrabajo: 0, perdida: 15 },
+        { nombre: 'Visita y medición', quien: 'Dueño', personas: 1, trabajo: 90, espera: 48, retrabajo: 5, perdida: 20 },
+        { nombre: 'Armar la cotización', quien: 'Dueño', personas: 1, trabajo: 45, espera: 72, retrabajo: 30, perdida: 10 },
+        { nombre: 'Seguimiento al cliente', quien: 'Nadie fijo', personas: 1, trabajo: 10, espera: 120, retrabajo: 0, perdida: 35 },
+        { nombre: 'Cierre y anticipo', quien: 'Dueño', personas: 1, trabajo: 15, espera: 24, retrabajo: 0, perdida: 5 }
+      ]
+    },
+    'Producción · Delivery de restaurante': {
+      empresa: 'Sakura Sushi', proceso: 'Del pedido a la puerta del cliente', tipo: 'Producción', unidad: 'pedido', volumen: 600, valor: 4500, costohora: 4500, horas: 45,
+      pasos: [
+        { nombre: 'Tomar el pedido', quien: 'Cajera', personas: 1, trabajo: 3, espera: 0.3, retrabajo: 5, perdida: 3 },
+        { nombre: 'Preparar en cocina', quien: 'Sushiman', personas: 2, trabajo: 14, espera: 0.4, retrabajo: 6, perdida: 0 },
+        { nombre: 'Empacar y verificar', quien: 'Ayudante', personas: 1, trabajo: 3, espera: 0.2, retrabajo: 3, perdida: 0 },
+        { nombre: 'Despacho', quien: 'Repartidor', personas: 2, trabajo: 28, espera: 0.6, retrabajo: 0, perdida: 4 }
+      ]
+    },
+    'Creación · Contenido de una agencia': {
+      empresa: 'Agencia Influence', proceso: 'De la idea al post publicado', tipo: 'Creación / desarrollo', unidad: 'post', volumen: 60, valor: 15000, costohora: 9000, horas: 45,
+      pasos: [
+        { nombre: 'Brief y copy', quien: 'Estratega', personas: 1, trabajo: 20, espera: 24, retrabajo: 10, perdida: 0 },
+        { nombre: 'Diseño o edición', quien: 'Diseñador', personas: 1, trabajo: 50, espera: 48, retrabajo: 35, perdida: 0 },
+        { nombre: 'Aprobación del cliente', quien: 'Cliente', personas: 1, trabajo: 5, espera: 96, retrabajo: 25, perdida: 8 },
+        { nombre: 'Programar y publicar', quien: 'Community', personas: 1, trabajo: 8, espera: 12, retrabajo: 0, perdida: 0 }
+      ]
+    }
+  };
+  Object.keys(EJEMPLOS).forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = k; $('ejemplo').appendChild(o); });
+
+  // ---------- entrada ----------
+  function filaHtml(p) {
+    p = p || {};
+    return '<td class="n"></td>' +
+      '<td><input class="f-nombre" placeholder="Qué se hace" value="' + esc(p.nombre) + '"></td>' +
+      '<td class="quien"><input class="f-quien" placeholder="Quién" value="' + esc(p.quien) + '"></td>' +
+      '<td class="num"><input class="f-personas" type="number" min="1" step="1" value="' + (p.personas || 1) + '"></td>' +
+      '<td class="num"><input class="f-trabajo" type="number" min="0" step="1" value="' + (p.trabajo != null ? p.trabajo : '') + '"></td>' +
+      '<td class="num"><input class="f-espera" type="number" min="0" step="0.5" value="' + (p.espera != null ? p.espera : '') + '"></td>' +
+      '<td class="num"><input class="f-retrabajo" type="number" min="0" max="100" step="1" value="' + (p.retrabajo != null ? p.retrabajo : 0) + '"></td>' +
+      '<td class="num"><input class="f-perdida" type="number" min="0" max="100" step="1" value="' + (p.perdida != null ? p.perdida : 0) + '"></td>' +
+      '<td class="borrar"><button class="x" title="Quitar paso">×</button></td>';
+  }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+  function agregarFila(p) {
+    var tr = document.createElement('tr'); tr.innerHTML = filaHtml(p);
+    tr.querySelector('.x').addEventListener('click', function () { tr.remove(); numerar(); });
+    $('filas').appendChild(tr); numerar();
+  }
+  function numerar() { Array.prototype.forEach.call($('filas').querySelectorAll('td.n'), function (td, i) { td.textContent = i + 1; }); }
+
+  function leer() {
+    var pasos = Array.prototype.map.call($('filas').querySelectorAll('tr'), function (tr) {
+      var g = function (c, num) { var v = tr.querySelector('.' + c).value; return num ? (parseFloat(v) || 0) : v.trim(); };
+      return { nombre: g('f-nombre'), quien: g('f-quien'), personas: Math.max(1, g('f-personas', 1)), trabajo: g('f-trabajo', 1), espera: g('f-espera', 1), retrabajo: g('f-retrabajo', 1), perdida: g('f-perdida', 1) };
+    }).filter(function (p) { return p.nombre; });
+    return {
+      empresa: $('empresa').value.trim(), proceso: $('proceso').value.trim(), tipo: $('tipo').value, unidad: $('unidad').value.trim() || 'unidad',
+      volumen: parseFloat($('volumen').value) || 0, valor: parseFloat($('valor').value) || 0, costohora: parseFloat($('costohora').value) || 0, horas: parseFloat($('horas').value) || 45,
+      pasos: pasos
+    };
+  }
+  function escribir(d) {
+    $('empresa').value = d.empresa || ''; $('proceso').value = d.proceso || ''; $('tipo').value = d.tipo || 'Ventas'; $('unidad').value = d.unidad || '';
+    $('volumen').value = d.volumen != null ? d.volumen : 40; $('valor').value = d.valor != null ? d.valor : 50000; $('costohora').value = d.costohora != null ? d.costohora : 8000; $('horas').value = d.horas || 45;
+    $('filas').innerHTML = ''; (d.pasos || []).forEach(agregarFila);
+    if (!(d.pasos || []).length) { agregarFila(); agregarFila(); agregarFila(); }
+  }
+
+  // ---------- cálculo ----------
+  function calcular(d) {
+    var entrantes = d.volumen;
+    var pasos = d.pasos.map(function (p, i) {
+      var carga = p.trabajo * (1 + p.retrabajo / 100);                 // min por unidad, con retrabajo
+      var disponibles = p.personas * d.horas;                          // horas / semana
+      var capacidad = carga > 0 ? disponibles * 60 / carga : Infinity; // unidades / semana
+      var horasSem = entrantes * carga / 60;
+      var util = disponibles > 0 ? horasSem / disponibles : 0;
+      var horasRetrabajo = entrantes * p.trabajo * (p.retrabajo / 100) / 60;
+      var perdidas = entrantes * p.perdida / 100;
+      var r = { i: i, nombre: p.nombre, quien: p.quien, personas: p.personas, trabajo: p.trabajo, espera: p.espera, retrabajo: p.retrabajo, perdida: p.perdida,
+        entrantes: entrantes, carga: carga, capacidad: capacidad, horasSem: horasSem, util: util, horasRetrabajo: horasRetrabajo, perdidas: perdidas,
+        faltan: Math.max(0, entrantes - capacidad) };
+      entrantes = entrantes - perdidas;
+      return r;
+    });
+    var salen = entrantes;
+    var leadH = pasos.reduce(function (s, p) { return s + p.espera + p.trabajo / 60; }, 0);
+    var trabajoH = pasos.reduce(function (s, p) { return s + p.trabajo / 60; }, 0);
+    var eficiencia = leadH > 0 ? trabajoH / leadH : 0;
+    var cuello = pasos.reduce(function (a, b) { return b.util > a.util ? b : a; }, pasos[0]);
+    var mayorEspera = pasos.reduce(function (a, b) { return b.espera > a.espera ? b : a; }, pasos[0]);
+    var mayorFuga = pasos.reduce(function (a, b) { return b.perdidas > a.perdidas ? b : a; }, pasos[0]);
+    var mayorRetrabajo = pasos.reduce(function (a, b) { return b.horasRetrabajo > a.horasRetrabajo ? b : a; }, pasos[0]);
+    var horasRetrabajoSem = pasos.reduce(function (s, p) { return s + p.horasRetrabajo; }, 0);
+    var perdidasSem = pasos.reduce(function (s, p) { return s + p.perdidas; }, 0);
+    // Unidades que no se alcanzan a procesar en el cuello (demanda > capacidad): se pierden o se atrasan.
+    var noAlcanza = cuello ? Math.max(0, cuello.entrantes - cuello.capacidad) : 0;
+    var pesosRetrabajo = horasRetrabajoSem * d.costohora;
+    var pesosFugas = perdidasSem * d.valor;
+    var pesosCuello = noAlcanza * d.valor;
+    var totalSem = pesosRetrabajo + pesosFugas + pesosCuello;
+    return { d: d, pasos: pasos, salen: salen, leadH: leadH, trabajoH: trabajoH, eficiencia: eficiencia, cuello: cuello, mayorEspera: mayorEspera, mayorFuga: mayorFuga, mayorRetrabajo: mayorRetrabajo,
+      horasRetrabajoSem: horasRetrabajoSem, perdidasSem: perdidasSem, noAlcanza: noAlcanza, pesosRetrabajo: pesosRetrabajo, pesosFugas: pesosFugas, pesosCuello: pesosCuello, totalSem: totalSem, totalMes: totalSem * 4.33 };
+  }
+
+  // ---------- hallazgos (texto) ----------
+  function hallazgos(R) {
+    var d = R.d, u = d.unidad, out = [], c = R.cuello;
+    if (!c) return out;
+    var pct = Math.round(c.util * 100);
+    if (c.util > 1) {
+      out.push({ tipo: 'cuello', titulo: 'El paso "' + c.nombre + '" no da abasto: le llegan ' + fmt(c.entrantes) + ' ' + u + (c.entrantes === 1 ? '' : 's') + ' a la semana y alcanza a hacer ' + fmt(c.capacidad),
+        texto: (c.quien ? c.quien + ' tiene' : 'Hay') + ' ' + fmt(c.personas * d.horas) + ' horas a la semana y este paso necesita ' + fmt(c.horasSem) + ' (' + pct + '% de carga). Todo lo que entra de más se atrasa o se pierde: ' + fmt(R.noAlcanza) + ' ' + u + (R.noAlcanza === 1 ? '' : 's') + ' por semana, ' + clp(R.pesosCuello) + '.',
+        fix: 'Liberar el cuello de botella antes de cualquier otra cosa: quitarle a ' + (c.quien || 'quien lo hace') + ' todo lo que no requiere que sea esa persona (otra persona o una plantilla lo hace), eliminar el retrabajo que entra a este paso, y que nunca le falte trabajo listo para empezar. Sumar capacidad (otra persona, automatizar) recién después.' });
+    } else if (c.util > 0.85) {
+      out.push({ tipo: 'cuello', titulo: 'El paso "' + c.nombre + '" va al ' + pct + '%: cualquier semana fuerte lo desborda',
+        texto: 'Es el paso con más carga del proceso. Hoy alcanza (' + fmt(c.capacidad) + ' ' + u + 's de capacidad, llegan ' + fmt(c.entrantes) + '), pero sin holgura: una semana con más demanda, una licencia o un retrabajo extra y se atrasa todo lo que viene después.',
+        fix: 'Proteger este paso: sacarle tareas que otro pueda hacer, y bajar el retrabajo que le entra. Es el que define cuánto puede vender o producir la empresa.' });
+    } else {
+      out.push({ tipo: 'cuello', titulo: 'La capacidad no es el problema: el paso más cargado ("' + c.nombre + '") va al ' + pct + '%',
+        texto: 'El proceso tiene espacio para más volumen. El freno está en otra parte: en lo que espera, lo que se repite o lo que se pierde.',
+        fix: 'Mirar las esperas y las fugas de abajo antes de contratar o comprar capacidad.' });
+    }
+    var e = R.mayorEspera;
+    if (e && e.espera > 0 && (e.espera / Math.max(R.leadH, 0.01)) > 0.2) {
+      out.push({ tipo: 'sec', titulo: 'Cada ' + u + ' queda parada ' + horasTxt(e.espera) + ' antes de "' + e.nombre + '"',
+        texto: 'De las ' + horasTxt(R.leadH) + ' que demora una ' + u + ' en salir, solo ' + horasTxt(R.trabajoH) + ' son trabajo real (' + fmt(R.eficiencia * 100, 1) + '%). El resto es espera, y la espera más larga está aquí.' + (d.tipo === 'Ventas' ? ' En ventas, cada día de espera es un cliente que cotizó en otro lado.' : ''),
+        fix: 'Definir un plazo máximo para este paso y hacerlo visible (una bandeja, una lista, una alerta). Si la espera es por una aprobación o una persona, preguntarse si ese paso puede decidirse con una regla en vez de con una persona.' });
+    }
+    var f = R.mayorFuga;
+    if (f && f.perdidas > 0) {
+      out.push({ tipo: 'sec', titulo: 'En "' + f.nombre + '" se caen ' + fmt(f.perdidas, 1) + ' ' + u + 's a la semana (' + f.perdida + '% de las que llegan)',
+        texto: 'Son ' + clp(f.perdidas * d.valor) + ' a la semana. De las ' + fmt(d.volumen) + ' ' + u + 's que entran al proceso, salen ' + fmt(R.salen, 1) + ' (' + fmt(R.salen / Math.max(d.volumen, 1) * 100) + '%).',
+        fix: 'Medir por qué se caen aquí (preguntarle a 10 que se fueron) y poner un seguimiento fijo: quién, cuándo y con qué mensaje. Lo que no tiene dueño no se hace.' });
+    }
+    var r = R.mayorRetrabajo;
+    if (r && r.horasRetrabajo > 0 && r.retrabajo >= 10) {
+      out.push({ tipo: 'sec', titulo: 'El ' + r.retrabajo + '% de "' + r.nombre + '" se hace dos veces: ' + fmt(r.horasRetrabajo, 1) + ' horas a la semana',
+        texto: 'Son ' + clp(r.horasRetrabajo * d.costohora) + ' a la semana en volver a hacer lo mismo, y ese tiempo sale justo del paso que menos sobra.',
+        fix: 'El retrabajo casi siempre nace un paso antes: la información llegó incompleta o mal. Una lista de requisitos a la entrada (qué tiene que venir listo para que este paso empiece) elimina la mayoría.' });
+    }
+    return out;
+  }
+
+  // ---------- render ----------
+  function tile(l, v, d, hero) { return '<div class="tile' + (hero ? ' hero' : '') + '"><div class="l">' + l + '</div><div class="v">' + v + '</div><div class="d">' + d + '</div></div>'; }
+  var tip = $('tip');
+  function conTip(el, texto) {
+    el.addEventListener('mousemove', function (ev) { tip.textContent = texto; tip.style.display = 'block'; tip.style.left = (ev.clientX + 12) + 'px'; tip.style.top = (ev.clientY + 12) + 'px'; });
+    el.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
+  }
+
+  function render(R) {
+    var d = R.d, u = d.unidad;
+    $('r-titulo').textContent = (d.empresa || 'Empresa') + ' · ' + (d.proceso || 'Proceso');
+    $('r-sub').textContent = d.tipo + ' · entran ' + fmt(d.volumen) + ' ' + u + 's por semana · ' + d.pasos.length + ' pasos · ' + new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    var c = R.cuello;
+    var heroTxt = c.util > 1 ? 'No da abasto: ' + Math.round(c.util * 100) + '% de carga' : c.util > 0.85 ? 'Al límite: ' + Math.round(c.util * 100) + '% de carga' : Math.round(c.util * 100) + '% de carga, el más cargado';
+    $('tiles').innerHTML =
+      tile('Cuello de botella', '<span class="ico">⚠</span>' + esc(c.nombre), heroTxt + (c.quien ? ' · lo hace ' + esc(c.quien) : ''), true) +
+      tile('Se pierde al mes', clp(R.totalMes), clp(R.totalSem) + ' por semana: fugas ' + clp(R.pesosFugas) + ', retrabajo ' + clp(R.pesosRetrabajo) + (R.pesosCuello ? ', no alcanza ' + clp(R.pesosCuello) : '')) +
+      tile('Una ' + esc(u) + ' demora', horasTxt(R.leadH), 'de las cuales ' + horasTxt(R.trabajoH) + ' son trabajo real (' + fmt(R.eficiencia * 100, 1) + '%)') +
+      tile('Llegan al final', fmt(R.salen, 1) + ' de ' + fmt(d.volumen), 'por semana · se caen ' + fmt(R.perdidasSem, 1) + ' en el camino (' + fmt(R.perdidasSem / Math.max(d.volumen, 1) * 100) + '%)') +
+      tile('Horas de retrabajo', fmt(R.horasRetrabajoSem, 1) + ' h / sem', 'equivalen a ' + fmt(R.horasRetrabajoSem / d.horas * 100) + '% de una persona');
+
+    $('flujo').innerHTML = R.pasos.map(function (p, i) {
+      return (i ? '<div class="flecha">→</div>' : '') +
+        '<div class="paso-box' + (p === c ? ' cuello' : '') + '">' + (p === c ? '<span class="badge">⚠ Cuello</span>' : '') +
+        '<div class="t">' + (i + 1) + '. ' + esc(p.nombre) + '</div><div class="q">' + esc(p.quien || '—') + (p.personas > 1 ? ' × ' + p.personas : '') + '</div>' +
+        '<div class="m">Trabajo <b>' + fmt(p.trabajo) + ' min</b><br>Espera antes <b>' + horasTxt(p.espera) + '</b>' + (p.retrabajo ? '<br>Retrabajo <b>' + p.retrabajo + '%</b>' : '') + (p.perdida ? '<br>Se pierde <b>' + p.perdida + '%</b>' : '') + '</div></div>';
+    }).join('');
+
+    var maxH = Math.max.apply(null, R.pasos.map(function (p) { return p.espera + p.trabajo / 60; })) || 1;
+    $('chart-tiempo').innerHTML = R.pasos.map(function (p) {
+      var w1 = (p.trabajo / 60) / maxH * 100, w2 = p.espera / maxH * 100;
+      return '<div class="fila"><div class="et" title="' + esc(p.nombre) + '">' + (p === c ? '<span class="ico">⚠</span>' : '') + esc(p.nombre) + '</div>' +
+        '<div class="track"><div class="seg trabajo" data-t="Trabajo: ' + fmt(p.trabajo) + ' min por ' + esc(u) + '" style="left:0;width:' + Math.max(w1, p.trabajo ? 0.6 : 0) + '%"></div>' +
+        '<div class="seg espera" data-t="Espera antes de este paso: ' + horasTxt(p.espera) + '" style="left:calc(' + Math.max(w1, p.trabajo ? 0.6 : 0) + '% + 2px);width:' + w2 + '%"></div></div>' +
+        '<div class="val">' + horasTxt(p.espera + p.trabajo / 60) + '</div></div>';
+    }).join('');
+
+    var maxU = Math.max(1.15, Math.max.apply(null, R.pasos.map(function (p) { return p.util; })) * 1.05);
+    $('chart-carga').innerHTML = R.pasos.map(function (p) {
+      return '<div class="fila"><div class="et" title="' + esc(p.nombre) + '">' + (p === c ? '<span class="ico">⚠</span>' : '') + esc(p.nombre) + '</div>' +
+        '<div class="track"><div class="seg util' + (p === c ? ' cuello' : '') + '" data-t="' + esc(p.nombre) + ': necesita ' + fmt(p.horasSem, 1) + ' h/sem, tiene ' + fmt(p.personas * d.horas) + ' h/sem. Capacidad ' + fmt(p.capacidad) + ' ' + esc(u) + 's/sem, llegan ' + fmt(p.entrantes, 1) + '" style="left:0;width:' + (p.util / maxU * 100) + '%"></div>' +
+        '<div class="linea100" style="left:' + (1 / maxU * 100) + '%" title="100%"></div></div>' +
+        '<div class="val">' + Math.round(p.util * 100) + '%</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('.seg[data-t]'), function (el) { conTip(el, el.getAttribute('data-t')); });
+
+    $('hallazgos').innerHTML = hallazgos(R).map(function (h, i) {
+      return '<div class="hallazgo ' + (h.tipo === 'cuello' ? '' : 'sec') + '"><h3>' + (i + 1) + '. ' + esc(h.titulo) + '</h3><p>' + esc(h.texto) + '</p><div class="fix"><strong>Qué hacer</strong>' + esc(h.fix) + '</div></div>';
+    }).join('');
+
+    $('detalle').innerHTML = '<thead><tr><th>Paso</th><th>Llegan / sem</th><th>Capacidad / sem</th><th>Horas / sem</th><th>Carga</th><th>Espera</th><th>Retrabajo h</th><th>Se pierden</th><th>$ / sem</th></tr></thead><tbody>' +
+      R.pasos.map(function (p) {
+        var pesos = p.horasRetrabajo * d.costohora + p.perdidas * d.valor + (p === c ? R.pesosCuello : 0);
+        return '<tr class="' + (p === c ? 'cuello' : '') + '"><td>' + esc(p.nombre) + '</td><td>' + fmt(p.entrantes, 1) + '</td><td>' + (isFinite(p.capacidad) ? fmt(p.capacidad) : '—') + '</td><td>' + fmt(p.horasSem, 1) + '</td><td>' + Math.round(p.util * 100) + '%</td><td>' + horasTxt(p.espera) + '</td><td>' + fmt(p.horasRetrabajo, 1) + '</td><td>' + fmt(p.perdidas, 1) + '</td><td>' + clp(pesos) + '</td></tr>';
+      }).join('') + '</tbody>';
+
+    $('resultado').classList.remove('hidden');
+    $('resultado').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function correr() {
+    var d = leer();
+    if (d.pasos.length < 2) { alert('Agrega al menos 2 pasos con nombre.'); return null; }
+    var R = calcular(d); render(R);
+    try { localStorage.setItem('radiografia', JSON.stringify(d)); } catch (e) {}
+    return R;
+  }
+
+  // ---------- eventos ----------
+  $('agregar').addEventListener('click', function () { agregarFila(); });
+  $('calcular').addEventListener('click', correr);
+  $('editar').addEventListener('click', function () { $('entrada').scrollIntoView({ behavior: 'smooth' }); });
+  $('imprimir').addEventListener('click', function () { if (correr()) setTimeout(function () { window.print(); }, 300); });
+  $('imprimir2').addEventListener('click', function () { window.print(); });
+  $('ejemplo').addEventListener('change', function () { if (EJEMPLOS[this.value]) { escribir(EJEMPLOS[this.value]); correr(); } this.value = ''; });
+  $('guardar').addEventListener('click', function () {
+    var d = leer(); var blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'proceso-' + (d.empresa || 'empresa').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.json'; a.click();
+  });
+  $('cargar').addEventListener('click', function () { $('archivo').click(); });
+  $('archivo').addEventListener('change', function () {
+    var f = this.files[0]; if (!f) return; var fr = new FileReader();
+    fr.onload = function () { try { escribir(JSON.parse(fr.result)); correr(); } catch (e) { alert('El archivo no es un JSON válido.'); } };
+    fr.readAsText(f); this.value = '';
+  });
+
+  // ---------- arranque ----------
+  // ?d=<json en base64> carga datos y muestra el resultado (lo usa imprimir.js). ?print=1 queda listo para imprimir.
+  var cargado = false;
+  try {
+    var q = new URLSearchParams(location.search), b = q.get('d');
+    if (b) { escribir(JSON.parse(decodeURIComponent(escape(atob(b.replace(/-/g, '+').replace(/_/g, '/')))))); cargado = !!correr(); }
+  } catch (e) {}
+  if (!cargado) {
+    var prev = null; try { prev = JSON.parse(localStorage.getItem('radiografia')); } catch (e) {}
+    if (prev && prev.pasos && prev.pasos.length) escribir(prev); else escribir({});
+  }
+})();
+</script>
+</body>
+</html>

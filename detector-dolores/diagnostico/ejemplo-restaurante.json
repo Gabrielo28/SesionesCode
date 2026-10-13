@@ -1,0 +1,154 @@
+{
+  "negocio": "Sakura Sushi Ñuñoa",
+  "contacto": "Javiera Soto",
+  "cargo": "Dueña",
+  "rubro": "Gastronomía / Delivery",
+  "ciudad": "Ñuñoa, Santiago",
+  "fuentes": [
+    "Google Maps (41 reseñas)",
+    "Instagram @sakurasushinunoa",
+    "Comprador misterioso por WhatsApp (martes 11:00 y viernes 20:30)",
+    "Conversación de 20 minutos con Javiera"
+  ],
+  "resumen": "Sakura tiene buen producto y buenas reseñas, pero el 70% de la venta entra por apps de delivery que se llevan el 30% de comisión, y el canal propio (WhatsApp) responde tarde justo en la hora en que la gente pide.",
+  "fortalezas": [
+    "El producto se defiende solo: 4,6 estrellas en Google y las reseñas repiten \"fresco\" y \"porciones generosas\".",
+    "Javiera publica reels del proceso en la cocina que tienen 3 a 5 veces el alcance de sus fotos: ya encontró el formato que funciona."
+  ],
+  "areas": [
+    {
+      "id": "captacion",
+      "estado": "alerta",
+      "hallazgo": "Casi todo el pedido nuevo llega por las apps. Instagram crece, pero el link de la bio lleva a la app, no a un canal propio.",
+      "evidencia": "Javiera: \"el 70% es por app\"; bio con link a app de delivery",
+      "codigos": [
+        "CAP-02"
+      ]
+    },
+    {
+      "id": "conversion",
+      "estado": "critico",
+      "hallazgo": "El WhatsApp propio responde en 40 minutos un viernes a las 20:30. A esa hora el cliente ya pidió en la app.",
+      "evidencia": "Comprador misterioso: 7 min el martes a las 11:00, 42 min el viernes a las 20:30; sin seguimiento al día siguiente",
+      "codigos": [
+        "CON-01",
+        "CON-02"
+      ]
+    },
+    {
+      "id": "margen",
+      "estado": "critico",
+      "hallazgo": "La comisión de las apps (30%) se come casi todo el margen del pedido. El mismo pedido por WhatsApp deja el doble.",
+      "evidencia": "Javiera: \"por app me queda como $2.000 por pedido, por WhatsApp $6.000\"",
+      "codigos": [
+        "MAR-01"
+      ]
+    },
+    {
+      "id": "operacion",
+      "estado": "bien",
+      "hallazgo": "Cocina ordenada, tiempos de preparación consistentes. Las reseñas negativas (3) son todas por demora del repartidor de la app, no de la cocina.",
+      "evidencia": "Reseñas 1-2 estrellas: \"llegó tarde\", \"el repartidor se perdió\""
+    },
+    {
+      "id": "caja",
+      "estado": "alerta",
+      "hallazgo": "Las apps pagan a 7-15 días; los proveedores de pescado cobran al contado. Hay semanas apretadas.",
+      "evidencia": "Javiera: \"a veces tengo que esperar el pago de la app para comprar el salmón\"",
+      "codigos": [
+        "CAJ-04"
+      ]
+    },
+    {
+      "id": "retencion",
+      "estado": "alerta",
+      "hallazgo": "No tiene los datos de los clientes de las apps (la app se los queda). De los de WhatsApp tiene unos 300 números y nunca les ha escrito.",
+      "evidencia": "Javiera: \"tengo los números pero no sé qué mandarles\"",
+      "codigos": [
+        "RET-01",
+        "RET-03"
+      ]
+    },
+    {
+      "id": "personas",
+      "estado": "alerta",
+      "hallazgo": "Javiera cocina y responde el WhatsApp al mismo tiempo. En hora punta gana la cocina.",
+      "evidencia": "Comprador misterioso; Javiera: \"el viernes no alcanzo a mirar el teléfono\"",
+      "codigos": [
+        "PER-02"
+      ]
+    },
+    {
+      "id": "datos",
+      "estado": "bien",
+      "hallazgo": "Sabe ventas por canal y por día gracias a los reportes de las apps y una planilla propia.",
+      "evidencia": "Respondió venta semanal y proporción por canal sin dudar"
+    }
+  ],
+  "cuellos": [
+    {
+      "titulo": "El canal propio pierde el pedido justo cuando el cliente quiere pedir",
+      "area": "conversion",
+      "que_pasa": "Un viernes a las 20:30 el WhatsApp de Sakura demora 42 minutos en responder. El cliente escribe, no recibe respuesta y pide por la app, donde Sakura gana un tercio. El canal que más margen deja es el que peor atiende.",
+      "cuanto_cuesta": "$960.000 al mes",
+      "detalle_costo": "60 consultas semanales por WhatsApp en hora punta; hoy se convierten 20. Con respuesta en menos de 5 min se convertirían 40: +80 pedidos al mes × $6.000 de margen propio = $480.000, más $320.000 de diferencia de margen en los que hoy van por app y $160.000 de clientes que no pidieron en ningún lado.",
+      "como_se_arregla": "Respuesta automática inmediata con el menú y el link de pedido; una persona dedicada al WhatsApp de 19:30 a 22:30 viernes y sábado (puede ser remota); catálogo de WhatsApp Business con los 15 rolls más pedidos y pago por transferencia o link.",
+      "plazo": "2 semanas",
+      "codigo": "CON-01"
+    },
+    {
+      "titulo": "Depende de las apps, que se quedan con el margen y con los clientes",
+      "area": "margen",
+      "que_pasa": "El 70% de la venta paga 30% de comisión. Y la app se queda con los datos del cliente: Sakura no sabe quién le compró ni puede volver a escribirle.",
+      "cuanto_cuesta": "$1.100.000 al mes",
+      "detalle_costo": "Venta por apps $5.500.000 × 30% = $1.650.000 de comisión al mes. Si un tercio migra al canal propio en 90 días, se recuperan $550.000 de comisión y $550.000 de margen.",
+      "como_se_arregla": "Migración gradual: inserto en cada pedido de app (\"la próxima pídelo directo y te regalamos X\"), link propio en bio y Google, oferta exclusiva por WhatsApp. Las apps quedan para captar clientes nuevos.",
+      "plazo": "90 días",
+      "codigo": "CAP-02"
+    },
+    {
+      "titulo": "300 clientes con teléfono y ningún mensaje enviado",
+      "area": "retencion",
+      "que_pasa": "Tiene la lista más valiosa del negocio (gente que ya pidió por canal propio) y no la usa. Un sushi se pide cada 2 a 4 semanas: sin recordatorio, piden donde les aparezca primero.",
+      "cuanto_cuesta": "$360.000 al mes",
+      "detalle_costo": "Si el 10% de los 300 clientes hace un pedido extra al mes por una difusión semanal: 30 × $12.000 × 50% de margen = $180.000 el primer mes, el doble a los 60 días.",
+      "como_se_arregla": "Lista de difusión segmentada; un mensaje semanal (jueves 18:00) con oferta de canal propio; mensaje post-pedido pidiendo reseña en Google.",
+      "plazo": "1 semana",
+      "codigo": "RET-01"
+    }
+  ],
+  "plan_30_dias": [
+    {
+      "periodo": "Semana 1",
+      "acciones": [
+        "WhatsApp Business configurado: respuesta automática, catálogo de 15 rolls, link de pago",
+        "Primera difusión a los 300 clientes con oferta de canal propio",
+        "Link de la bio y botón de Google apuntando al WhatsApp propio"
+      ]
+    },
+    {
+      "periodo": "Semana 2",
+      "acciones": [
+        "Persona dedicada al WhatsApp viernes y sábado 19:30-22:30",
+        "Inserto impreso en cada pedido de app: \"pídelo directo\"",
+        "Reel semanal del proceso (el formato que ya funciona) con CTA al WhatsApp"
+      ]
+    },
+    {
+      "periodo": "Semana 3",
+      "acciones": [
+        "Segundo comprador misterioso: medir tiempo de respuesta en hora punta",
+        "Mensaje post-pedido con QR de reseña",
+        "Ajustar el catálogo según lo más pedido"
+      ]
+    },
+    {
+      "periodo": "Semana 4",
+      "acciones": [
+        "Medir: pedidos por canal propio vs. app, tiempo de respuesta, pedidos desde difusión",
+        "Revisar con Javiera y fijar meta del mes 2: 40% por canal propio"
+      ]
+    }
+  ],
+  "siguiente_paso": "Revisar este diagnóstico con Javiera el lunes a las 16:00 (antes del turno) y partir con la semana 1 el mismo lunes si hay acuerdo."
+}

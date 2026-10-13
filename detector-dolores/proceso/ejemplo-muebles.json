@@ -1,0 +1,57 @@
+{
+  "empresa": "Muebles Araya",
+  "proceso": "De la consulta al anticipo",
+  "tipo": "Ventas",
+  "unidad": "cotización",
+  "volumen": 40,
+  "valor": 54000,
+  "costohora": 8000,
+  "horas": 45,
+  "pasos": [
+    {
+      "nombre": "Responder la consulta",
+      "quien": "Dueño",
+      "personas": 1,
+      "trabajo": 5,
+      "espera": 6,
+      "retrabajo": 0,
+      "perdida": 15
+    },
+    {
+      "nombre": "Visita y medición",
+      "quien": "Dueño",
+      "personas": 1,
+      "trabajo": 90,
+      "espera": 48,
+      "retrabajo": 5,
+      "perdida": 20
+    },
+    {
+      "nombre": "Armar la cotización",
+      "quien": "Dueño",
+      "personas": 1,
+      "trabajo": 45,
+      "espera": 72,
+      "retrabajo": 30,
+      "perdida": 10
+    },
+    {
+      "nombre": "Seguimiento al cliente",
+      "quien": "Nadie fijo",
+      "personas": 1,
+      "trabajo": 10,
+      "espera": 120,
+      "retrabajo": 0,
+      "perdida": 35
+    },
+    {
+      "nombre": "Cierre y anticipo",
+      "quien": "Dueño",
+      "personas": 1,
+      "trabajo": 15,
+      "espera": 24,
+      "retrabajo": 0,
+      "perdida": 5
+    }
+  ]
+}
