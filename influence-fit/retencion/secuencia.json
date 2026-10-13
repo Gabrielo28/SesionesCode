@@ -1,0 +1,34 @@
+{
+  "_comentario": "Versión máquina de secuencia.md. La lee retencion.gs. 'dia' cuenta desde fecha_inicio (día 0). 'manual': true deja el mensaje en Pendientes para que el coach complete {{dato_progreso}} y lo mande él.",
+  "pasos": [
+    { "id": "bienvenida", "dia": 0, "manual": false,
+      "texto": "{{nombre}}, bienvenido/a. Ya tengo tu ficha y tu programa está armado para {{meta}}.\nLas primeras dos semanas son de técnica y adaptación: vas a terminar con energía, no destruido/a. Eso es a propósito.\n¿Alguna duda antes de la primera sesión?" },
+    { "id": "s2", "dia": 14, "manual": false,
+      "texto": "{{nombre}}, van dos semanas. Por lo general aquí aparecen dos cosas: dolor muscular raro y la sensación de que \"esto es muy poco\".\nLas dos son normales. El volumen sube desde la semana 3.\nDel 1 al 10, ¿cómo te has sentido en las sesiones?" },
+    { "id": "s2_empujon", "dia": 16, "manual": false, "solo_si_no_respondio": "s2",
+      "texto": "Un número nomás, {{nombre}}: del 1 al 10 cómo vas. Con eso ajusto la semana que viene." },
+    { "id": "s6", "dia": 42, "manual": true,
+      "texto": "{{nombre}}, mes y medio. Revisé tus registros: {{dato_progreso}}.\nEsta semana cambiamos ejercicios para que no se vuelva rutina. Si hay alguno que odias, es el momento de decirlo.\n¿Qué ejercicio te está costando más?" },
+    { "id": "s6_empujon", "dia": 44, "manual": false, "solo_si_no_respondio": "s6",
+      "texto": "{{nombre}}, ¿seguimos con el mismo horario esta semana? Te dejo la sesión del martes lista." },
+    { "id": "s10", "dia": 70, "manual": false,
+      "texto": "{{nombre}}, quedan dos semanas del primer ciclo. Antes de que se acabe quiero mostrarte dónde partiste y dónde estás.\n¿Te acomoda 15 minutos esta semana para revisarlo juntos? Es por videollamada o al final de una sesión." },
+    { "id": "s10_empujon", "dia": 72, "manual": false, "solo_si_no_respondio": "s10",
+      "texto": "{{nombre}}, ¿jueves o viernes para revisar tus avances? Son 15 minutos." },
+    { "id": "m3_encuesta", "dia": 84, "manual": false,
+      "texto": "{{nombre}}, se cumplen 3 meses. Te pido 2 minutos para responder 5 preguntas, es lo que uso para mejorar el programa: {{link_encuesta}}\nY lo importante: si renuevas antes del {{fecha_limite}}, {{oferta_renovacion}}." },
+    { "id": "m3_empujon", "dia": 87, "manual": false, "solo_si_no_respondio": "m3_encuesta",
+      "texto": "{{nombre}}, ¿pudiste ver la encuesta? Es corta de verdad. Y me dices si seguimos." },
+    { "id": "referidos", "dia": 90, "manual": false, "solo_si_estado": "renovado",
+      "texto": "{{nombre}}, gracias por seguir. Una cosa: si conoces a alguien que quiera partir, por cada persona que entre con tu nombre {{beneficio_referido}}.\nNo necesitas vender nada, solo pásale mi número." }
+  ],
+  "inactividad": {
+    "dias_sin_sesion": 7,
+    "texto": "{{nombre}}, no te he visto esta semana. Sin reproches: ¿pasó algo o se desordenó la semana?\nSi quieres, bajamos a 2 días por un tiempo. Mejor eso que cero."
+  },
+  "variables_por_defecto": {
+    "oferta_renovacion": "mantienes el precio actual por 6 meses más",
+    "beneficio_referido": "te regalo una semana",
+    "link_encuesta": "https://TU-DOMINIO/retencion/encuesta-mes-3.html?coach=gabriel"
+  }
+}

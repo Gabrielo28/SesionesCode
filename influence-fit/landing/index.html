@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Influence Fit — Marketing y sistemas para coaches, hecho por un coach</title>
+<meta name="description" content="Más clientes, menos administración y mayor retención para coaches, gimnasios boutique y profesionales del movimiento. Diagnóstico gratuito de 20 minutos.">
+<meta property="og:title" content="Influence Fit — Marketing y sistemas para profesionales del entrenamiento">
+<meta property="og:description" content="Sistemas de captación, onboarding y retención que un coach no tiene tiempo de construir. Hecho por un coach con 15 años en sala.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #12959C; --teal-dark: #0E7177; --ink: #123638; --ink-soft: #2c4a4c;
+    --coral: #FF7B7B; --coral-dark: #E35F5F; --cyan: #33C7CE;
+    --paper: #FFFFFF; --wash: #E6F1F1; --wash-2: #F3F8F8; --line: #D7EBEB; --muted: #6B8B8C;
+    --radius: 14px; --max: 1100px;
+    --font: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  section { padding: 72px 0; }
+  h1, h2, h3 { line-height: 1.15; margin: 0 0 16px; letter-spacing: -.01em; }
+  h1 { font-size: clamp(32px, 5.2vw, 56px); font-weight: 800; }
+  h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 800; }
+  h3 { font-size: 20px; font-weight: 700; }
+  p { margin: 0 0 14px; }
+  .kicker { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
+  .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-soft); max-width: 60ch; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border-radius: 999px; font-weight: 700; font-size: 16px; text-decoration: none; border: 0; cursor: pointer; transition: transform .15s, background .15s; font-family: inherit; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-coral { background: var(--coral); color: #fff; }
+  .btn-coral:hover { background: var(--coral-dark); }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-teal:hover { background: var(--teal-dark); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .btn-wa { background: #25D366; color: #fff; }
+  .btn-wa:hover { background: #1EBE5A; }
+
+  /* nav */
+  nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-weight: 800; font-size: 20px; letter-spacing: -.02em; text-decoration: none; }
+  .logo span { color: var(--teal); }
+  nav ul { display: none; gap: 26px; list-style: none; margin: 0; padding: 0; font-size: 14.5px; font-weight: 600; }
+  nav ul a { text-decoration: none; color: var(--ink-soft); }
+  nav ul a:hover { color: var(--teal); }
+  nav .btn { padding: 10px 18px; font-size: 14px; }
+  @media (min-width: 860px) { nav ul { display: flex; } }
+
+  /* hero */
+  .hero { background: linear-gradient(160deg, var(--ink) 0%, var(--teal) 100%); color: #fff; padding: 88px 0 80px; position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 50%; background: rgba(51,199,206,.18); }
+  .hero .kicker { color: var(--cyan); }
+  .hero .lede { color: rgba(255,255,255,.88); }
+  .hero-grid { display: grid; gap: 36px; align-items: center; position: relative; z-index: 1; }
+  @media (min-width: 900px) { .hero-grid { grid-template-columns: 1.25fr 1fr; } }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .hero-note { font-size: 13.5px; opacity: .8; margin-top: 14px; }
+  .proof { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius); padding: 24px; }
+  .proof h3 { color: #fff; font-size: 16px; margin-bottom: 14px; }
+  .proof ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+  .proof li { display: flex; gap: 12px; font-size: 15px; line-height: 1.45; }
+  .proof li::before { content: "✓"; color: var(--cyan); font-weight: 800; flex: 0 0 auto; }
+
+  /* pains */
+  .grid-3 { display: grid; gap: 20px; }
+  @media (min-width: 760px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; }
+  .card .num { font-size: 13px; font-weight: 800; color: var(--coral); letter-spacing: .1em; margin-bottom: 10px; }
+  .card p { color: var(--ink-soft); font-size: 15.5px; margin: 0; }
+  .card .fix { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14.5px; }
+  .card .fix strong { color: var(--teal-dark); }
+
+  /* ladder */
+  .ladder { background: var(--wash-2); }
+  .plans { display: grid; gap: 20px; margin-top: 8px; }
+  @media (min-width: 900px) { .plans { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
+  .plan { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; position: relative; }
+  .plan.rec { border: 2.5px solid var(--coral); box-shadow: 0 14px 40px rgba(18,149,156,.12); }
+  .plan .badge { position: absolute; top: -13px; left: 24px; background: var(--coral); color: #fff; font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+  .plan .lvl { font-size: 12.5px; font-weight: 700; color: var(--teal); letter-spacing: .12em; text-transform: uppercase; }
+  .plan h3 { margin: 6px 0 4px; font-size: 22px; }
+  .plan .tag { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .plan .price { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+  .plan .price small { display: block; font-size: 13px; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-top: 2px; }
+  .plan ul { list-style: none; margin: 18px 0 22px; padding: 0; display: grid; gap: 9px; font-size: 14.5px; color: var(--ink-soft); flex: 1; }
+  .plan li { display: flex; gap: 10px; }
+  .plan li::before { content: "▪"; color: var(--teal); }
+  .plan .btn { justify-content: center; }
+  .plan .fine { font-size: 12.5px; color: var(--muted); margin-top: 12px; }
+  .free { margin-top: 26px; background: var(--wash); border-radius: var(--radius); padding: 22px 26px; display: grid; gap: 14px; align-items: center; }
+  @media (min-width: 760px) { .free { grid-template-columns: 1fr auto; } }
+  .free strong { color: var(--teal-dark); }
+  .free p { margin: 0; font-size: 15px; }
+
+  /* case */
+  .case-grid { display: grid; gap: 28px; align-items: center; }
+  @media (min-width: 900px) { .case-grid { grid-template-columns: 1fr 1fr; } }
+  .case-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .stat { background: var(--wash-2); border-radius: 12px; padding: 18px; }
+  .stat b { display: block; font-size: 26px; font-weight: 800; color: var(--teal-dark); letter-spacing: -.02em; line-height: 1.1; }
+  .stat span { font-size: 13.5px; color: var(--muted); }
+  .quote { border-left: 4px solid var(--coral); padding: 6px 0 6px 18px; font-size: 17px; color: var(--ink-soft); font-style: italic; margin: 20px 0 0; }
+  .quote cite { display: block; font-style: normal; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+
+  /* founders */
+  .founders { background: linear-gradient(160deg, var(--teal) 0%, var(--ink) 100%); color: #fff; }
+  .founders .kicker { color: var(--cyan); }
+  .founders .lede { color: rgba(255,255,255,.88); }
+  .founders-grid { display: grid; gap: 20px; margin-top: 28px; }
+  @media (min-width: 760px) { .founders-grid { grid-template-columns: repeat(3, 1fr); } }
+  .fcard { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius); padding: 22px; }
+  .fcard b { display: block; font-size: 15px; margin-bottom: 6px; color: var(--cyan); }
+  .fcard p { margin: 0; font-size: 14.5px; color: rgba(255,255,255,.9); }
+  .cupos { display: inline-flex; gap: 8px; margin: 18px 0 0; }
+  .cupos i { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--cyan); display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; }
+  .cupos i.taken { background: var(--cyan); color: var(--ink); }
+
+  /* form */
+  .form-wrap { display: grid; gap: 30px; }
+  @media (min-width: 900px) { .form-wrap { grid-template-columns: 1fr 1.15fr; } }
+  form { background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 28px; display: grid; gap: 16px; }
+  .field { display: grid; gap: 6px; }
+  .row { display: grid; gap: 16px; }
+  @media (min-width: 560px) { .row { grid-template-columns: 1fr 1fr; } }
+  label { font-size: 13.5px; font-weight: 700; }
+  label .opt { font-weight: 500; color: var(--muted); }
+  input, select, textarea { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--cyan); border-color: var(--teal); }
+  textarea { min-height: 90px; resize: vertical; }
+  .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); font-weight: 500; }
+  .consent input { width: auto; margin-top: 3px; }
+  .status { font-size: 14px; padding: 12px 14px; border-radius: 10px; display: none; }
+  .status.ok { display: block; background: #E4F5EC; color: #176A3D; }
+  .status.err { display: block; background: #FBE9EF; color: #B12851; }
+  .after { display: none; gap: 12px; flex-wrap: wrap; }
+  .after.show { display: flex; }
+  .steps { display: grid; gap: 14px; margin-top: 18px; }
+  .step { display: grid; grid-template-columns: 36px 1fr; gap: 14px; align-items: start; }
+  .step i { width: 34px; height: 34px; border-radius: 50%; background: var(--wash); color: var(--teal-dark); display: grid; place-items: center; font-style: normal; font-weight: 800; }
+  .step b { display: block; }
+  .step span { color: var(--ink-soft); font-size: 14.5px; }
+
+  /* faq */
+  details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+  summary { cursor: pointer; font-weight: 700; font-size: 16px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::after { content: "+"; color: var(--teal); font-weight: 800; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--ink-soft); font-size: 15px; margin: 10px 0 0; }
+
+  footer { background: var(--ink); color: rgba(255,255,255,.8); padding: 40px 0; font-size: 14px; }
+  footer .wrap { display: grid; gap: 14px; }
+  footer a { color: var(--cyan); text-decoration: none; }
+  .wa-float { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: grid; place-items: center; box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+  .wa-float svg { width: 30px; height: 30px; fill: #fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top">influence<span>fit</span></a>
+    <ul>
+      <li><a href="#dolores">Problemas</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#caso">Caso real</a></li>
+      <li><a href="#fundadores">Cupos fundadores</a></li>
+    </ul>
+    <a class="btn btn-coral" href="#diagnostico">Diagnóstico gratis</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">Para coaches, gimnasios boutique y profesionales del movimiento</span>
+      <h1>Marketing y sistemas para profesionales del entrenamiento, hecho por un coach.</h1>
+      <p class="lede">Más clientes, menos administración y mayor retención, con sistemas que tú no tienes tiempo de construir. Nosotros sí, y entendemos tu negocio porque llevamos 15 años en sala.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-coral" href="#diagnostico">Quiero mi diagnóstico gratis</a>
+        <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.4)" href="#servicios">Ver servicios</a>
+      </div>
+      <p class="hero-note">20 minutos, sin compromiso. Te vas con 3 problemas detectados y 3 acciones concretas.</p>
+    </div>
+    <aside class="proof">
+      <h3>Por qué un coach y no otra agencia</h3>
+      <ul>
+        <li>15 años entrenando personas: hipertrofia, biomecánica, RPE/RIR, periodización.</li>
+        <li>Sabemos qué pregunta un cliente antes de pagar y por qué se va al tercer mes.</li>
+        <li>Agente de WhatsApp, Meta Ads y automatización ya probados en nuestros propios canales.</li>
+        <li>Zona inicial: Litoral Central, Valparaíso y Viña. Online para todo Chile.</li>
+      </ul>
+    </aside>
+  </div>
+</header>
+
+<section id="dolores">
+  <div class="wrap">
+    <span class="kicker">Lo que vemos todas las semanas</span>
+    <h2>Tres cosas que te están costando clientes</h2>
+    <p class="lede">No es falta de conocimiento técnico. Es que el negocio del entrenamiento tiene tres fugas que nadie te enseñó a tapar.</p>
+    <div class="grid-3" style="margin-top:32px">
+      <article class="card">
+        <div class="num">01</div>
+        <h3>Clientes inestables</h3>
+        <p>Un mes lleno, el siguiente con dos horas libres. Dependes de que alguien te recomiende o de que un reel pegue.</p>
+        <div class="fix"><strong>Lo arreglamos con:</strong> anuncios que llevan a evaluaciones agendadas, no a "info por DM".</div>
+      </article>
+      <article class="card">
+        <div class="num">02</div>
+        <h3>Administración por WhatsApp</h3>
+        <p>Cobros, recordatorios, cambios de hora, formularios de lesiones… horas que no entrenan a nadie ni te pagan.</p>
+        <div class="fix"><strong>Lo arreglamos con:</strong> onboarding automático, recordatorios y cobros que salen solos.</div>
+      </article>
+      <article class="card">
+        <div class="num">03</div>
+        <h3>Se van al tercer mes</h3>
+        <p>Entran motivados, el resultado tarda, y nadie les habla hasta que dejan de ir. Captar cuesta 5 veces más que retener.</p>
+        <div class="fix"><strong>Lo arreglamos con:</strong> secuencia de retención en semanas 2, 6 y 10 y programa de referidos.</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="ladder" id="servicios">
+  <div class="wrap">
+    <span class="kicker">Escalera de servicios</span>
+    <h2>Parte por lo que te duele hoy, escala cuando tenga sentido</h2>
+    <p class="lede">Precios de referencia en pesos chilenos, IVA no incluido. Se ajustan en la propuesta según la complejidad de tu caso.</p>
+
+    <div class="plans">
+      <article class="plan">
+        <div class="lvl">Nivel 1 · Pago único</div>
+        <h3>Sistema de Clientes</h3>
+        <div class="tag">Ordena la casa en 7 días.</div>
+        <div class="price">$490.000 – $890.000<small>pago único según complejidad</small></div>
+        <ul>
+          <li>Formulario de onboarding (anamnesis, lesiones, objetivos, disponibilidad) conectado a tu base de datos</li>
+          <li>Agente de WhatsApp: responde preguntas frecuentes, califica y agenda la evaluación</li>
+          <li>Recordatorios automáticos de sesión y de cobro</li>
+          <li>Plantilla de contrato, consentimiento informado y política de cancelación</li>
+          <li>Panel simple de clientes (Google Sheets o Airtable)</li>
+          <li>Capacitación de 1 hora</li>
+        </ul>
+        <a class="btn btn-ghost" href="#diagnostico" data-nivel="1">Quiero este nivel</a>
+      </article>
+
+      <article class="plan rec">
+        <div class="badge">Más pedido</div>
+        <div class="lvl">Nivel 2 · Mensual</div>
+        <h3>Clientes Nuevos</h3>
+        <div class="tag">Adquisición predecible todos los meses.</div>
+        <div class="price">$350.000 – $600.000<small>por mes + inversión en medios (mín. sugerido $200.000/mes)</small></div>
+        <ul>
+          <li>Meta Ads (Instagram y Facebook) con creativos producidos por nosotros</li>
+          <li>Landing o perfil optimizado para convertir</li>
+          <li>Agente de WhatsApp conectado a los anuncios</li>
+          <li>Reporte mensual: leads, costo por lead, evaluaciones agendadas, cierres</li>
+        </ul>
+        <a class="btn btn-coral" href="#diagnostico" data-nivel="2">Quiero este nivel</a>
+        <div class="fine">Compromiso mínimo 3 meses. La inversión en medios se paga directo a Meta.</div>
+      </article>
+
+      <article class="plan">
+        <div class="lvl">Nivel 3 · Mensual</div>
+        <h3>Marca + Retención</h3>
+        <div class="tag">Crecer y que los clientes se queden.</div>
+        <div class="price">$750.000 – $1.400.000<small>por mes + inversión en medios</small></div>
+        <ul>
+          <li>Todo el Nivel 2</li>
+          <li>12 a 16 piezas de contenido al mes (reels, carruseles, guiones) con enfoque técnico supervisado por un coach</li>
+          <li>Secuencia de retención: check-ins automáticos en semanas 2, 6 y 10, encuesta de satisfacción y oferta de renovación</li>
+          <li>Programa de referidos</li>
+          <li>Newsletter o canal de WhatsApp Comunidad</li>
+        </ul>
+        <a class="btn btn-ghost" href="#diagnostico" data-nivel="3">Quiero este nivel</a>
+      </article>
+    </div>
+
+    <div class="free">
+      <div>
+        <p><strong>Nivel 0 · Diagnóstico gratuito.</strong> Auditoría de 20 minutos de tu perfil, oferta, funnel y retención. Te entregamos 1 página con 3 problemas y 3 acciones, la contrates o no.</p>
+      </div>
+      <a class="btn btn-teal" href="#diagnostico">Agendar diagnóstico</a>
+    </div>
+  </div>
+</section>
+
+<section id="caso">
+  <div class="wrap case-grid">
+    <div>
+      <span class="kicker">Prueba viva</span>
+      <h2>Esto es lo que hacemos con nuestros propios canales</h2>
+      <p class="lede">No te vendemos un sistema que no usamos. Los canales de fitness de Gabriel (Instagram, TikTok, YouTube) y su entrenamiento presencial en el Litoral Central corren con el mismo agente, los mismos anuncios y la misma secuencia de retención que instalamos en tu negocio.</p>
+      <blockquote class="quote">
+        "Una agencia que no ha tenido que llenar una agenda de evaluaciones un lunes a las 7 de la mañana no entiende tu problema. Yo lo he hecho durante 15 años."
+        <cite>Gabriel Meza, coach y fundador de Influence Chile</cite>
+      </blockquote>
+    </div>
+    <div>
+      <!-- Reemplaza los valores data-value con las cifras reales de los canales propios antes de publicar. -->
+      <div class="case-stats">
+        <div class="stat"><b data-value="evaluaciones_mes">—</b><span>evaluaciones agendadas al mes</span></div>
+        <div class="stat"><b data-value="costo_evaluacion">—</b><span>costo por evaluación agendada</span></div>
+        <div class="stat"><b data-value="renovacion_m3">—</b><span>renovación al mes 3</span></div>
+        <div class="stat"><b data-value="horas_admin">—</b><span>horas de administración por semana</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:12px">Cifras de los canales propios. Se actualizan cada mes con el mismo reporte que recibe cada cliente.</p>
+    </div>
+  </div>
+</section>
+
+<section class="founders" id="fundadores">
+  <div class="wrap">
+    <span class="kicker">Oferta de lanzamiento · primeros 90 días</span>
+    <h2>5 cupos fundadores</h2>
+    <p class="lede">Para los primeros cinco coaches o gimnasios que partan con nosotros. A cambio, un testimonio en video y un caso de estudio con números reales.</p>
+    <div class="founders-grid">
+      <div class="fcard"><b>Nivel 1 incluido gratis</b><p>Entras al Nivel 2 (Clientes Nuevos) y el Sistema de Clientes completo, valorado desde $490.000, va sin costo.</p></div>
+      <div class="fcard"><b>Garantía de resultados</b><p>Si en 60 días no tienes al menos 15 evaluaciones agendadas, el mes siguiente de gestión corre por nuestra cuenta.</p></div>
+      <div class="fcard"><b>Trato directo con el coach</b><p>La estrategia, los creativos y la supervisión técnica los hace Gabriel. No pasas por un ejecutivo de cuentas.</p></div>
+    </div>
+    <div class="cupos" aria-label="Cupos fundadores disponibles" data-cupos-tomados="0">
+      <i>1</i><i>2</i><i>3</i><i>4</i><i>5</i>
+    </div>
+    <div style="margin-top:28px"><a class="btn btn-coral" href="#diagnostico">Postular a un cupo fundador</a></div>
+  </div>
+</section>
+
+<section id="diagnostico">
+  <div class="wrap form-wrap">
+    <div>
+      <span class="kicker">Nivel 0 · Gratis</span>
+      <h2>Pide tu diagnóstico de 20 minutos</h2>
+      <p class="lede">Rellena esto en 1 minuto. Te escribimos por WhatsApp para coordinar el horario.</p>
+      <div class="steps">
+        <div class="step"><i>1</i><div><b>Revisamos tu perfil antes de hablar</b><span>Oferta, bio, destacadas, anuncios activos y cómo agendas hoy.</span></div></div>
+        <div class="step"><i>2</i><div><b>20 minutos por videollamada o WhatsApp</b><span>Te preguntamos cómo captas, cómo cobras y por qué se van.</span></div></div>
+        <div class="step"><i>3</i><div><b>Te entregamos 1 página</b><span>3 problemas, 3 acciones. Si quieres que las hagamos nosotros, propuesta en 24 horas.</span></div></div>
+      </div>
+    </div>
+
+    <form id="formDiagnostico" novalidate>
+      <div class="row">
+        <div class="field"><label for="nombre">Tu nombre</label><input id="nombre" name="nombre" required autocomplete="name" placeholder="Ej: Camila Rojas"></div>
+        <div class="field"><label for="whatsapp">WhatsApp</label><input id="whatsapp" name="whatsapp" type="tel" required inputmode="tel" placeholder="+56 9 1234 5678"></div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="tipo">Qué eres</label>
+          <select id="tipo" name="tipo" required>
+            <option value="">Elige una opción</option>
+            <option>Coach online / personal trainer</option>
+            <option>Gimnasio boutique o box</option>
+            <option>Kinesiólogo/a o fisioterapeuta</option>
+            <option>Nutricionista deportivo</option>
+            <option>Preparador físico de club o academia</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="clientes">Clientes activos hoy</label>
+          <select id="clientes" name="clientes" required>
+            <option value="">Elige un rango</option>
+            <option>Menos de 10</option>
+            <option>10 a 40</option>
+            <option>40 a 100</option>
+            <option>Más de 100</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="instagram">Instagram o sitio web</label><input id="instagram" name="instagram" required placeholder="@tucuenta o tusitio.cl"></div>
+      <div class="field">
+        <label for="dolor">Qué te duele más hoy</label>
+        <select id="dolor" name="dolor" required>
+          <option value="">Elige una opción</option>
+          <option>Clientes inestables / no llegan suficientes</option>
+          <option>Demasiada administración por WhatsApp</option>
+          <option>Los clientes se van a los 3 meses</option>
+          <option>No sé qué publicar</option>
+          <option>Horarios con poca ocupación</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="field"><label for="comuna">Comuna <span class="opt">(opcional)</span></label><input id="comuna" name="comuna" placeholder="Ej: El Tabo, Viña del Mar"></div>
+        <div class="field">
+          <label for="nivel">Nivel que te interesa <span class="opt">(opcional)</span></label>
+          <select id="nivel" name="nivel">
+            <option value="">No lo sé todavía</option>
+            <option value="1">Nivel 1 · Sistema de Clientes</option>
+            <option value="2">Nivel 2 · Clientes Nuevos</option>
+            <option value="3">Nivel 3 · Marca + Retención</option>
+            <option value="fundador">Cupo fundador</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="mensaje">Algo más que debamos saber <span class="opt">(opcional)</span></label><textarea id="mensaje" name="mensaje" placeholder="Ej: tengo 25 clientes online y 3 presenciales, cobro por transferencia y pierdo 2 horas al día coordinando."></textarea></div>
+      <label class="consent"><input type="checkbox" name="consentimiento" required> Autorizo a Influence Chile SpA a contactarme por WhatsApp o correo para coordinar el diagnóstico. No compartimos tus datos con terceros.</label>
+      <input type="text" name="empresa_web" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+      <button class="btn btn-coral" type="submit" id="btnEnviar">Pedir diagnóstico gratis</button>
+      <div class="status" id="status" role="status"></div>
+      <div class="after" id="after">
+        <a class="btn btn-wa" id="btnWa" target="_blank" rel="noopener">Abrir WhatsApp ahora</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap" style="max-width:760px">
+    <h2 style="font-size:26px">Preguntas frecuentes</h2>
+    <details><summary>¿Trabajan con coaches que recién parten?</summary><p>Sí, pero con honestidad: el Nivel 2 requiere poder sostener 3 meses de gestión más medios. Si todavía no tienes 10 clientes, el Nivel 1 te ordena la casa y el diagnóstico gratis te dice por dónde partir.</p></details>
+    <details><summary>¿La inversión en medios va incluida en el precio?</summary><p>No. El presupuesto de anuncios se paga directo a Meta desde tu cuenta publicitaria. Sugerimos un mínimo de $200.000 al mes para tener datos que sirvan.</p></details>
+    <details><summary>¿Necesito tener sitio web?</summary><p>No. Con un perfil de Instagram bien armado y el agente de WhatsApp se puede partir. Si hace falta una landing, la hacemos nosotros.</p></details>
+    <details><summary>¿Qué pasa con mis datos y los de mis clientes?</summary><p>Los formularios de onboarding quedan en tu propia base (Google Sheets o Airtable de tu cuenta). Incluimos plantilla de consentimiento informado para que cumplas con la ley de protección de datos personales.</p></details>
+    <details><summary>¿Atienden fuera del Litoral Central?</summary><p>Sí. Lo presencial lo concentramos en Litoral Central, Valparaíso y Viña. Todo el resto de Chile se trabaja online sin diferencia en el servicio.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><strong style="color:#fff">Influence Fit</strong> es la vertical fitness de <a href="https://influencechile.cl" target="_blank" rel="noopener">Influence Chile SpA</a> · El Tabo, Región de Valparaíso.</div>
+    <div>WhatsApp <a id="footWa" href="#">+56 9 6545 0723</a> · Instagram <a href="https://instagram.com/influence.chile" target="_blank" rel="noopener">@influence.chile</a></div>
+    <div style="font-size:12.5px;opacity:.7">Precios de referencia 2026, IVA no incluido. Garantía fundadores sujeta a la inversión mínima en medios y a la implementación del agente de WhatsApp dentro de los primeros 7 días.</div>
+  </div>
+</footer>
+
+<a class="wa-float" id="floatWa" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9 3 3.3 8.7 3.3 15.7c0 2.5.7 4.9 2 7L3 29l6.5-2.1c2 1.1 4.2 1.6 6.5 1.6 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.2c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1.3 1.3-3.8-.3-.4a10.4 10.4 0 1 1 9 5zm5.7-7.8c-.3-.2-1.9-.9-2.1-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.6l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.3 1.4 3.5c.2.2 2.4 3.6 5.8 5 .8.4 1.4.6 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.1-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg>
+</a>
+
+<script>
+  // ====== CONFIGURACIÓN ======
+  // 1) WEBHOOK: pega aquí la URL del webhook de Make (módulo "Webhooks > Custom webhook")
+  //    o de SendPulse (Automation 360 > Evento externo). Si queda vacío, el formulario
+  //    igual funciona: abre WhatsApp con el resumen escrito.
+  // 2) WHATSAPP: número de Gabriel sin "+" ni espacios.
+  const CONFIG = {
+    WEBHOOK_URL: '',
+    WHATSAPP: '56965450723',
+    ORIGEN: 'landing-influence-fit'
+  };
+  // ===========================
+
+  const $ = s => document.querySelector(s);
+  const form = $('#formDiagnostico');
+  const status = $('#status');
+  const after = $('#after');
+  const btn = $('#btnEnviar');
+
+  const waLink = (texto) => `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(texto)}`;
+  $('#floatWa').href = waLink('Hola Gabriel, vengo de la página de Influence Fit y quiero un diagnóstico gratis.');
+  $('#footWa').href = waLink('Hola Gabriel, vengo de la página de Influence Fit.');
+
+  // Preselecciona el nivel al hacer clic en "Quiero este nivel"
+  document.querySelectorAll('[data-nivel]').forEach(a => {
+    a.addEventListener('click', () => { $('#nivel').value = a.dataset.nivel; });
+  });
+  if (location.hash === '#fundadores' || new URLSearchParams(location.search).get('fundador')) $('#nivel').value = 'fundador';
+
+  // Marca cupos tomados (edita data-cupos-tomados en el HTML)
+  const cupos = $('.cupos');
+  const tomados = parseInt(cupos.dataset.cuposTomados || '0', 10);
+  [...cupos.children].forEach((el, i) => { if (i < tomados) el.classList.add('taken'); });
+
+  const normalizaFono = v => {
+    let d = v.replace(/\D/g, '');
+    if (d.length === 9 && d.startsWith('9')) d = '56' + d;
+    if (d.length === 8) d = '569' + d;
+    return d;
+  };
+
+  const resumen = (d) => [
+    `Hola Gabriel, quiero un diagnóstico gratis de Influence Fit.`,
+    `Nombre: ${d.nombre}`,
+    `Soy: ${d.tipo}`,
+    `Clientes activos: ${d.clientes}`,
+    `Instagram/web: ${d.instagram}`,
+    `Me duele más: ${d.dolor}`,
+    d.comuna ? `Comuna: ${d.comuna}` : null,
+    d.nivel ? `Nivel que me interesa: ${d.nivel}` : null,
+    d.mensaje ? `Más info: ${d.mensaje}` : null
+  ].filter(Boolean).join('\n');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.className = 'status'; status.textContent = '';
+    if (form.empresa_web.value) return; // honeypot
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const d = Object.fromEntries(new FormData(form).entries());
+    delete d.empresa_web;
+    d.whatsapp = normalizaFono(d.whatsapp);
+    if (d.whatsapp.length !== 11) {
+      status.className = 'status err'; status.textContent = 'Revisa el WhatsApp: debe ser un número chileno de 9 dígitos (ej: 9 1234 5678).';
+      return;
+    }
+    d.origen = CONFIG.ORIGEN;
+    d.pagina = location.href;
+    d.fecha = new Date().toISOString();
+    const utm = new URLSearchParams(location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_content'].forEach(k => { if (utm.get(k)) d[k] = utm.get(k); });
+
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    let enviado = false;
+    if (CONFIG.WEBHOOK_URL) {
+      try {
+        const r = await fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+        enviado = r.ok;
+      } catch (err) {
+        // Algunos webhooks no devuelven CORS: reintento en modo opaco (no podemos leer la respuesta, pero llega).
+        try { await fetch(CONFIG.WEBHOOK_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(d) }); enviado = true; } catch (e2) { enviado = false; }
+      }
+    }
+
+    btn.disabled = false; btn.textContent = 'Pedir diagnóstico gratis';
+    $('#btnWa').href = waLink(resumen(d));
+    after.classList.add('show');
+
+    if (enviado) {
+      status.className = 'status ok';
+      status.textContent = `Listo, ${d.nombre.split(' ')[0]}. Te escribimos por WhatsApp dentro de las próximas 24 horas hábiles. Si quieres adelantar, abre WhatsApp ahora.`;
+      form.reset();
+    } else {
+      status.className = 'status ok';
+      status.textContent = `Un paso más, ${d.nombre.split(' ')[0]}: toca el botón verde y envía el mensaje que ya viene escrito. Así te llega directo al coach.`;
+      window.open($('#btnWa').href, '_blank', 'noopener');
+    }
+    if (window.fbq) fbq('track', 'Lead', { content_name: 'diagnostico-influence-fit' });
+  });
+</script>
+<!-- Pixel de Meta: pega aquí el snippet de tu píxel cuando lo tengas. El evento Lead ya se dispara al enviar el formulario. -->
+</body>
+</html>

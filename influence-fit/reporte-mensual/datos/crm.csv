@@ -1,0 +1,40 @@
+fecha,nombre,telefono,origen,calificacion,estado,valor
+2026-11-02,Camila R.,569XXXXXXX1,anuncio,A,cliente,95000
+2026-11-02,Jorge M.,569XXXXXXX2,anuncio,B,evaluación realizada,
+2026-11-03,Valentina P.,569XXXXXXX3,anuncio,A,cliente,120000
+2026-11-03,Rodrigo S.,569XXXXXXX4,anuncio,C,perdido,
+2026-11-04,Fernanda L.,569XXXXXXX5,reel,B,evaluación agendada,
+2026-11-04,Nicolás T.,569XXXXXXX6,anuncio,B,perdido,
+2026-11-05,Josefa A.,569XXXXXXX7,anuncio,A,cliente,95000
+2026-11-06,Tomás V.,569XXXXXXX8,recomendación,A,cliente,165000
+2026-11-07,Daniela C.,569XXXXXXX9,anuncio,B,evaluación realizada,
+2026-11-08,Ignacio H.,569XXXXXXX10,anuncio,C,perdido,
+2026-11-09,Antonia G.,569XXXXXXX11,anuncio,A,evaluación realizada,
+2026-11-10,Sebastián Q.,569XXXXXXX12,anuncio,B,conversando,
+2026-11-10,Constanza M.,569XXXXXXX13,reel,A,cliente,95000
+2026-11-11,Felipe D.,569XXXXXXX14,anuncio,C,perdido,
+2026-11-12,Martina O.,569XXXXXXX15,anuncio,B,evaluación agendada,
+2026-11-12,Cristóbal B.,569XXXXXXX16,anuncio,B,perdido,
+2026-11-13,Isidora N.,569XXXXXXX17,anuncio,A,evaluación realizada,
+2026-11-14,Matías E.,569XXXXXXX18,anuncio,C,perdido,
+2026-11-15,Catalina F.,569XXXXXXX19,anuncio,B,evaluación agendada,
+2026-11-16,Benjamín U.,569XXXXXXX20,recomendación,A,cliente,120000
+2026-11-16,Florencia Z.,569XXXXXXX21,anuncio,A,evaluación realizada,
+2026-11-17,Vicente K.,569XXXXXXX22,anuncio,B,conversando,
+2026-11-18,Emilia W.,569XXXXXXX23,anuncio,A,evaluación agendada,
+2026-11-18,Lucas J.,569XXXXXXX24,anuncio,C,perdido,
+2026-11-19,Sofía Y.,569XXXXXXX25,reel,B,evaluación realizada,
+2026-11-20,Diego X.,569XXXXXXX26,anuncio,B,perdido,
+2026-11-21,Maite I.,569XXXXXXX27,anuncio,A,evaluación agendada,
+2026-11-22,Agustín L.,569XXXXXXX28,anuncio,C,perdido,
+2026-11-23,Renata S.,569XXXXXXX29,anuncio,B,evaluación realizada,
+2026-11-24,Joaquín P.,569XXXXXXX30,anuncio,A,evaluación agendada,
+2026-11-24,Amanda R.,569XXXXXXX31,anuncio,B,conversando,
+2026-11-25,Gaspar M.,569XXXXXXX32,anuncio,C,perdido,
+2026-11-26,Trinidad C.,569XXXXXXX33,anuncio,A,evaluación agendada,
+2026-11-27,Bruno A.,569XXXXXXX34,recomendación,B,evaluación agendada,
+2026-11-28,Rafaela T.,569XXXXXXX35,anuncio,B,perdido,
+2026-11-28,Mateo V.,569XXXXXXX36,anuncio,A,evaluación agendada,
+2026-11-29,Paz D.,569XXXXXXX37,anuncio,B,nuevo,
+2026-11-30,Alonso G.,569XXXXXXX38,anuncio,B,nuevo,
+2026-10-29,Lead de octubre,569XXXXXXX00,anuncio,B,perdido,

@@ -1,0 +1,72 @@
+# Reporte mensual — datos del cliente y KPIs manuales
+#   node reporte-mensual/generar-reporte.js                → usa este archivo + datos/meta-ads.csv + datos/crm.csv
+#   node reporte-mensual/generar-reporte.js otro.yaml      → otro cliente (puede apuntar a otros CSV)
+
+cliente: Box Litoral CrossFit
+contacto: Matías Fuentes
+nivel: 2
+mes: 2026-11                         # mes del reporte (AAAA-MM). Filtra las filas de los CSV a ese mes.
+
+archivos:
+  meta_ads: datos/meta-ads.csv       # export de Meta Ads Manager (Informes > Exportar > CSV), desglose por día o por campaña
+  crm: datos/crm.csv                 # export del CRM de SendPulse o de la hoja "Evaluaciones"/"Leads"
+
+# Metas del mes (aparecen junto al real)
+metas:
+  evaluaciones_agendadas: 15
+  costo_por_evaluacion: 12000
+  cierres: 5
+
+# KPIs que no salen de Meta ni del CRM (sección 6 del brief). Deja en blanco los que no apliquen.
+manual:
+  horas_admin_semana_antes: 8        # medido en el diagnóstico
+  horas_admin_semana_ahora: 2.5
+  piezas_publicadas: 8               # Nivel 3: 12–16
+  alcance_organico: 24300
+  renovacion_mes3: 0.72              # fracción (0.72 = 72%). Nivel 3 o cuando haya dato.
+  renovacion_mes6:
+  valor_mensual_promedio: 95000      # ticket promedio por cliente nuevo; se usa si el CRM no trae "valor"
+
+# Mes anterior (opcional, para mostrar variación). Se puede copiar del reporte anterior.
+anterior:
+  inversion: 230000
+  leads: 41
+  evaluaciones_agendadas: 11
+  cierres: 3
+
+# Comentario del coach de la agencia (va en la primera página)
+resumen: >
+  Segundo mes de campaña. Bajó el costo por evaluación gracias al cambio de creativo (reel de testimonio de socia)
+  y a que el agente ahora ofrece horarios dentro de los 2 minutos. El cuello de botella pasó de "nadie responde"
+  a "la evaluación de las 20:00 se llena y la de las 7:00 no": el tercer mes se ajusta la pauta por horario.
+
+proximos_pasos:
+  - Duplicar presupuesto del público "mujeres 28–45 Litoral" que trae el 60% de las evaluaciones.
+  - Creativo nuevo para el horario de las 7:00 (reel "antes de la pega").
+  - Activar secuencia de retención con los 6 socios nuevos (check-in semana 2).
+
+# Mapeo de columnas del CSV de Meta (por si el export viene con otros nombres). Se busca sin distinguir mayúsculas ni tildes.
+columnas_meta:
+  campana: [Nombre de la campaña, Campaign name]
+  fecha: [Día, Day, Fecha de inicio del informe, Reporting starts]
+  gasto: [Importe gastado (CLP), Amount spent (CLP), Importe gastado]
+  impresiones: [Impresiones, Impressions]
+  alcance: [Alcance, Reach]
+  clics: [Clics en el enlace, Link clicks]
+  resultados: [Resultados, Results, Conversaciones de mensajes iniciadas, Messaging conversations started]
+
+# Mapeo del CSV del CRM
+columnas_crm:
+  fecha: [fecha, Fecha, created_at, Fecha de creación]
+  nombre: [nombre, Nombre, name]
+  origen: [origen, Origen, fuente, source]
+  calificacion: [calificacion, Calificación, score]
+  estado: [estado, Estado, etapa, stage, status]
+  valor: [valor, valor_mensual, Valor, amount]
+
+# Qué valores de "estado" cuentan como cada etapa del funnel (minúsculas)
+estados:
+  agendada: [evaluacion agendada, evaluación agendada, agendada, agendado]
+  realizada: [evaluacion realizada, evaluación realizada, realizada, realizado]
+  cliente: [cliente, cerrado, ganado, won]
+  perdido: [perdido, lost, frio, frío]

@@ -1,0 +1,50 @@
+# Datos del prospecto para generar propuesta + contrato.
+#   node propuesta/generar.js                 → usa este archivo
+#   node propuesta/generar.js otro.yaml       → otro prospecto
+# Salen: propuesta-<slug>.html/.pdf y contrato-<slug>.html/.pdf en propuesta/salida/
+
+empresa: Box Litoral CrossFit            # nombre comercial del coach o gimnasio
+razon_social: Box Litoral SpA            # para el contrato (dejar vacío si es persona natural)
+rut: 77.123.456-7
+contacto: Matías Fuentes
+cargo: Dueño y head coach
+email: matias@boxlitoral.cl
+whatsapp: "+56 9 8765 4321"
+domicilio: Av. del Mar 1234, El Quisco
+instagram: "@boxlitoral"
+ciudad: El Quisco, Litoral Central
+segmento: Gimnasio boutique / box       # coach online · gimnasio boutique / box · kinesiología · nutrición · club
+
+# En las palabras del cliente, tal como lo dijo en el diagnóstico
+objetivo: "Llenar los horarios de las 7:00 y de las 20:00, que hoy van a la mitad, y que la gente no se vaya después del tercer mes."
+
+# Los 3 hallazgos del diagnóstico (Nivel 0)
+diagnostico:
+  - titulo: Los anuncios llevan a "info por DM" y nadie contesta a tiempo
+    detalle: Tienen pauta activa con buen alcance, pero el CTA es escribir por DM. Revisamos 12 comentarios con pregunta de precio de los últimos 30 días; 7 sin respuesta y el resto respondidos después de 20 horas.
+    impacto: Pagan por leads que se enfrían antes de hablar con alguien
+  - titulo: No existe evaluación inicial como producto
+    detalle: La persona llega a una clase de prueba sin ficha, sin lesiones registradas y sin objetivo escrito. El coach de turno la recibe a ciegas y la conversión a membresía depende de quién esté ese día.
+    impacto: Conversión de prueba a socio irregular, sin dato para mejorarla
+  - titulo: Nadie habla con el socio entre la semana 2 y la renovación
+    detalle: El único contacto posterior es el cobro. Las bajas se concentran entre el mes 2 y 3, justo cuando el entusiasmo inicial se acaba y el resultado todavía no se ve.
+    impacto: Pierden socios que costó plata captar y que iban a renovar con un mensaje a tiempo
+
+# Nivel recomendado: 1, 2 o 3. Complejidad: baja | media | alta (fija el precio dentro del rango)
+nivel: 2
+complejidad: media
+fundador: true                           # true = cupo fundador (Nivel 1 incluido gratis + garantía)
+medios_mensual: 250000                   # inversión en Meta Ads sugerida, se paga directo a Meta
+
+porque_este_nivel: >
+  Ya tienen alcance pagado y clases que mostrar; lo que falta es el sistema que convierte ese alcance en evaluaciones agendadas y después en socios que se quedan. El Nivel 1 ordena la entrada (ficha, agente, recordatorios) y el Nivel 2 la llena todos los meses. El Nivel 3 tiene sentido en el mes 4, cuando haya datos de retención que optimizar.
+
+# Opcional: sobreescribe el roadmap por defecto del nivel
+# roadmap:
+#   - periodo: Semana 1
+#     hitos: [ ... ]
+
+# Contrato
+inicio: 2026-11-03                       # fecha de inicio del servicio
+duracion_meses: 3                        # compromiso mínimo (Nivel 2 y 3)
+dia_pago: 5                              # día del mes en que se factura

@@ -1,0 +1,120 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Propuesta Box Litoral CrossFit — Influence Fit</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet"><style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif; color: #123638; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pagina { width: 210mm; min-height: 297mm; padding: 18mm 16mm; page-break-after: always; position: relative; }
+  .pagina:last-child { page-break-after: auto; }
+  .portada { background: linear-gradient(155deg, #123638 0%, #12959C 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .portada .marca { font-size: 22pt; font-weight: 800; margin-bottom: 18mm; letter-spacing: -.02em; } .portada .marca span { color: #33C7CE; }
+  .portada .kicker { text-transform: uppercase; letter-spacing: .28em; font-size: 9pt; opacity: .75; margin-bottom: 6mm; }
+  .portada h1 { font-size: 32pt; line-height: 1.1; font-weight: 800; margin-bottom: 4mm; }
+  .portada h2 { font-size: 14pt; font-weight: 400; opacity: .9; margin-bottom: 14mm; line-height: 1.5; }
+  .portada .meta { font-size: 10pt; opacity: .8; line-height: 1.9; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; }
+  h3.seccion { font-size: 20pt; color: #12959C; margin-bottom: 3mm; font-weight: 800; }
+  h3.seccion + .linea { width: 18mm; height: 3px; background: #FF7B7B; margin-bottom: 8mm; }
+  p.intro { font-size: 11pt; line-height: 1.65; color: #2c4a4c; margin-bottom: 8mm; }
+  .hallazgo { border-left: 3px solid #FF7B7B; padding: 0 0 0 6mm; margin-bottom: 7mm; }
+  .hallazgo h4 { font-size: 12.5pt; margin-bottom: 2mm; } .hallazgo p { font-size: 10.5pt; line-height: 1.6; color: #2c4a4c; }
+  .hallazgo .impacto { display: inline-block; margin-top: 3mm; font-size: 9.5pt; background: #ffeaea; color: #c0392b; padding: 1.5mm 3mm; border-radius: 3px; }
+  .planes { display: flex; gap: 4mm; margin-bottom: 8mm; }
+  .plan { flex: 1; border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 5mm; }
+  .plan.rec { border-color: #FF7B7B; border-width: 2.5px; background: #fffafa; }
+  .plan .badge { display: inline-block; background: #FF7B7B; color: #fff; font-size: 7.5pt; padding: 1mm 2.5mm; border-radius: 3px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2mm; }
+  .plan .lvl { font-size: 8pt; color: #12959C; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+  .plan h4 { font-size: 12.5pt; color: #123638; }
+  .plan .precio { font-size: 13pt; font-weight: 800; margin: 1mm 0 3mm; } .plan .precio small { display:block; font-size: 8pt; font-weight: 400; color: #6b8b8c; }
+  .plan ul { list-style: none; font-size: 8.5pt; line-height: 1.6; color: #2c4a4c; } .plan li::before { content: '▪'; color: #12959C; margin-right: 2mm; }
+  .nota { background: #e6f1f1; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; } .nota strong { color: #12959C; }
+  .fundador { background: #fff1f1; border: 1.5px solid #FF7B7B; border-radius: 5px; padding: 5mm 6mm; font-size: 10.5pt; line-height: 1.6; margin-bottom: 8mm; }
+  .fundador strong { color: #c0392b; }
+  .fase { display: flex; gap: 5mm; margin-bottom: 6mm; } .fase .periodo { flex: 0 0 32mm; font-weight: 700; color: #12959C; font-size: 10.5pt; padding-top: 1mm; }
+  .fase ul { flex: 1; list-style: none; font-size: 10.5pt; line-height: 1.7; color: #2c4a4c; } .fase li::before { content: '→'; color: #FF7B7B; margin-right: 2.5mm; }
+  .total { background: linear-gradient(135deg, #123638, #12959C); color: #fff; border-radius: 6px; padding: 8mm; margin-bottom: 8mm; }
+  .total .fila { display: flex; justify-content: space-between; padding: 2.5mm 0; font-size: 11pt; border-bottom: 1px solid rgba(255,255,255,.18); }
+  .total .fila:last-child { border: 0; padding-top: 5mm; font-size: 15pt; font-weight: 700; }
+  .total .fila.tachado span:last-child { text-decoration: line-through; opacity: .7; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin-bottom: 8mm; }
+  .kpi { border: 1.5px solid #d7ebeb; border-radius: 5px; padding: 4mm; font-size: 9.5pt; color: #2c4a4c; } .kpi b { display: block; color: #12959C; font-size: 10.5pt; margin-bottom: 1mm; }
+  .cta { text-align: center; padding: 6mm 0 0; } .cta h3 { font-size: 20pt; color: #12959C; margin-bottom: 3mm; } .cta p { font-size: 11pt; color: #2c4a4c; line-height: 1.7; margin-bottom: 6mm; }
+  .cta .boton { display: inline-block; background: #FF7B7B; color: #fff; padding: 4mm 10mm; border-radius: 40px; font-size: 12pt; font-weight: 600; }
+  .firma { margin-top: 9mm; padding-top: 5mm; border-top: 1px solid #d7ebeb; font-size: 10pt; color: #2c4a4c; line-height: 1.8; text-align: center; }
+  .pie { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; font-size: 8pt; color: #9ab5b6; display: flex; justify-content: space-between; }
+</style></head><body>
+
+<section class="pagina portada">
+  <div class="marca">influence<span>fit</span></div>
+  <div class="kicker">Propuesta de servicios</div>
+  <h1>Box Litoral CrossFit</h1>
+  <h2>Llenar los horarios de las 7:00 y de las 20:00, que hoy van a la mitad, y que la gente no se vaya después del tercer mes.</h2>
+  <div class="meta">Preparada para Matías Fuentes, Dueño y head coach<br>Gimnasio boutique / box · El Quisco, Litoral Central<br>13 de octubre de 2026</div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Qué encontramos</h3><div class="linea"></div>
+  <p class="intro">Revisamos @boxlitoral, la oferta, el funnel y la retención de Box Litoral CrossFit. Estos son los tres puntos que hoy están costando clientes.</p>
+  <div class="hallazgo"><h4>1. Los anuncios llevan a &quot;info por DM&quot; y nadie contesta a tiempo</h4><p>Tienen pauta activa con buen alcance, pero el CTA es escribir por DM. Revisamos 12 comentarios con pregunta de precio de los últimos 30 días; 7 sin respuesta y el resto respondidos después de 20 horas.</p><span class="impacto">Pagan por leads que se enfrían antes de hablar con alguien</span></div><div class="hallazgo"><h4>2. No existe evaluación inicial como producto</h4><p>La persona llega a una clase de prueba sin ficha, sin lesiones registradas y sin objetivo escrito. El coach de turno la recibe a ciegas y la conversión a membresía depende de quién esté ese día.</p><span class="impacto">Conversión de prueba a socio irregular, sin dato para mejorarla</span></div><div class="hallazgo"><h4>3. Nadie habla con el socio entre la semana 2 y la renovación</h4><p>El único contacto posterior es el cobro. Las bajas se concentran entre el mes 2 y 3, justo cuando el entusiasmo inicial se acaba y el resultado todavía no se ve.</p><span class="impacto">Pierden socios que costó plata captar y que iban a renovar con un mensaje a tiempo</span></div>
+  <div class="nota"><strong>Por qué nosotros:</strong> la mayoría de las agencias que venden a coaches no entienden el negocio del entrenamiento. Influence Fit lo dirige un coach con 15 años en sala. Sabemos qué pregunta un cliente antes de pagar y por qué se va al tercer mes, y usamos este mismo sistema en nuestros propios canales.</div>
+  <div class="pie"><span>Influence Fit · Propuesta para Box Litoral CrossFit</span><span>2</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">La escalera de servicios</h3><div class="linea"></div>
+  <p class="intro">Tres niveles. Marcamos el que recomendamos para Box Litoral CrossFit. Precios de referencia sin IVA; el valor de esta propuesta está en la última página.</p>
+  <div class="planes">
+    <div class="plan ">
+      
+      <div class="lvl">Nivel 1 · pago único</div><h4>Sistema de Clientes</h4>
+      <div class="precio">$490.000 – $890.000<small>según complejidad</small></div>
+      <ul><li>Formulario de onboarding (anamnesis, lesiones, objetivos, disponibilidad) conectado a tu base de datos</li><li>Agente de WhatsApp: responde preguntas frecuentes, califica leads y agenda la evaluación</li><li>Recordatorios automáticos de sesión y de cobro</li><li>Plantilla de contrato, consentimiento informado y política de cancelación</li><li>Panel simple de clientes (Google Sheets o Airtable)</li><li>Capacitación de 1 hora</li></ul></div><div class="plan rec">
+      <div class="badge">Recomendado</div>
+      <div class="lvl">Nivel 2 · mensual</div><h4>Clientes Nuevos</h4>
+      <div class="precio">$350.000 – $600.000<small>por mes + medios</small></div>
+      <ul><li>Meta Ads (Instagram y Facebook) con creativos producidos por la agencia</li><li>Landing o perfil optimizado para convertir</li><li>Agente de WhatsApp conectado a los anuncios</li><li>Reporte mensual: leads, costo por lead, evaluaciones agendadas, cierres</li></ul></div><div class="plan ">
+      
+      <div class="lvl">Nivel 3 · mensual</div><h4>Marca + Retención</h4>
+      <div class="precio">$750.000 – $1.400.000<small>por mes + medios</small></div>
+      <ul><li>Todo el Nivel 2 (adquisición)</li><li>12 a 16 piezas de contenido al mes (reels, carruseles, guiones) con enfoque técnico supervisado por un coach</li><li>Secuencia de retención: check-ins automáticos en semanas 2, 6 y 10, encuesta de satisfacción y oferta de renovación</li><li>Programa de referidos</li><li>Newsletter o canal de WhatsApp Comunidad</li></ul></div>
+  </div>
+  <div class="nota"><strong>Por qué el Nivel 2 para Box Litoral CrossFit:</strong> Ya tienen alcance pagado y clases que mostrar; lo que falta es el sistema que convierte ese alcance en evaluaciones agendadas y después en socios que se quedan. El Nivel 1 ordena la entrada (ficha, agente, recordatorios) y el Nivel 2 la llena todos los meses. El Nivel 3 tiene sentido en el mes 4, cuando haya datos de retención que optimizar.
+</div>
+  <div class="fundador"><strong>Cupo fundador.</strong> Box Litoral CrossFit entra como uno de los 5 primeros clientes de Influence Fit: el Nivel 1 (Sistema de Clientes, valor $490.000 a $890.000) va incluido sin costo, y si en 60 días no hay al menos 15 evaluaciones agendadas, el mes siguiente de gestión corre por nuestra cuenta. A cambio pedimos un testimonio en video y un caso de estudio con sus números.</div>
+  <div class="pie"><span>Influence Fit · Propuesta para Box Litoral CrossFit</span><span>3</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">Cómo lo hacemos</h3><div class="linea"></div>
+  <p class="intro">Trabajo por fases con entregables definidos. Nada de "vamos viendo".</p>
+  <div class="fase"><div class="periodo">Semana 1</div><ul><li>Oferta de entrada definida (evaluación inicial como producto)</li><li>Perfil o landing optimizados</li><li>Agente de WhatsApp conectado</li></ul></div><div class="fase"><div class="periodo">Semana 2–4</div><ul><li>Producción de 6 creativos (3 reels, 3 estáticos)</li><li>Campaña activa con 2 públicos y test de creativos</li><li>Primer reporte de costo por evaluación</li></ul></div><div class="fase"><div class="periodo">Mes 2</div><ul><li>Optimización por costo por evaluación agendada</li><li>Nuevos creativos según lo que convirtió</li><li>Ajuste del guion del agente con objeciones reales</li></ul></div><div class="fase"><div class="periodo">Mes 3</div><ul><li>Escalado del público ganador</li><li>Reporte trimestral con cierres y proyección</li><li>Decisión: mantener, escalar o sumar retención (Nivel 3)</li></ul></div>
+  <h3 class="seccion" style="font-size:15pt;margin-top:8mm">Qué vamos a medir</h3><div class="linea"></div>
+  <div class="kpis">
+    <div class="kpi"><b>Costo por evaluación agendada</b>Inversión en medios dividida por evaluaciones agendadas. El número que manda.</div>
+    <div class="kpi"><b>Cierres y tasa de cierre</b>Evaluaciones que se convierten en cliente pagando.</div>
+    <div class="kpi"><b>Horas de administración por semana</b>Antes y después del sistema de clientes.</div>
+    
+  </div>
+  <div class="pie"><span>Influence Fit · Propuesta para Box Litoral CrossFit</span><span>4</span></div>
+</section>
+
+<section class="pagina">
+  <h3 class="seccion">La inversión</h3><div class="linea"></div>
+  <div class="total">
+    <div class="fila"><span>Nivel 2 · Clientes Nuevos</span><span>$475.000 / mes</span></div>
+    <div class="fila tachado"><span>Nivel 1 · Sistema de Clientes (incluido por cupo fundador)</span><span>$690.000</span></div>
+    <div class="fila"><span>Inversión en medios (se paga directo a Meta)</span><span>$250.000 / mes</span></div>
+    <div class="fila"><span>Fee Influence Fit</span><span>$475.000 / mes</span></div>
+  </div>
+  <div class="nota">
+    <strong>Condiciones:</strong> valores sin IVA. Facturación mensual anticipada. Compromiso mínimo de 3 meses: es lo que tarda en estabilizarse el costo por evaluación.
+     La inversión en medios no pasa por nosotros y se puede ajustar mes a mes.
+    Propuesta válida por 15 días.
+  </div>
+  <div class="cta">
+    <h3>¿Partimos?</h3>
+    <p>Confirmas por WhatsApp, te mandamos el contrato digital y en 7 días el sistema está operando.</p>
+    <div class="boton">+56 9 6545 0723</div>
+    <div class="firma"><strong>Gabriel Meza</strong> · coach y fundador, Influence Chile<br>influencechile.cl · +56 9 6545 0723<br>Instagram: @influence.chile</div>
+  </div>
+  <div class="pie"><span>Influence Fit · Propuesta para Box Litoral CrossFit</span><span>5</span></div>
+</section>
+</body></html>

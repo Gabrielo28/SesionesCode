@@ -1,0 +1,16 @@
+{
+  "name": "influence-fit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Herramientas de la vertical Influence Fit: generador de propuestas/contratos y reporte mensual",
+  "scripts": {
+    "propuesta": "node propuesta/generar.js",
+    "reporte": "node reporte-mensual/generar-reporte.js",
+    "prompt": "node agente-whatsapp/armar-prompt.js",
+    "landing": "npx --yes serve -l 5560 landing",
+    "pdf:instalar": "npm i playwright && npx playwright install chromium"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

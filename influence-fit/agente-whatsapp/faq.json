@@ -1,0 +1,31 @@
+{
+  "_comentario": "Rellena esto por cada coach. Los valores reemplazan los {{placeholders}} de prompt-agente.md. Ejecuta `node armar-prompt.js faq.json` para generar el prompt final listo para pegar.",
+  "coach_nombre": "Gabriel Meza",
+  "coach_nombre_corto": "Gabriel",
+  "coach_especialidad": "hipertrofia y biomecánica aplicada, 15 años entrenando personas",
+  "coach_zona": "El Tabo y Litoral Central, y online para todo Chile",
+  "evaluacion_formato": "una sesión de 45 minutos, presencial o por videollamada, donde revisamos tu objetivo, tu historial y cómo te mueves",
+  "evaluacion_precio_texto": "no tiene costo si después tomas el programa; si no, vale $25.000",
+  "modalidades": "Presencial en El Tabo (1 a 1), online con programa semanal y seguimiento por WhatsApp, o mixto",
+  "precios_texto": "Online $59.990/mes · Presencial 2 sesiones/semana $120.000/mes · Presencial 3 sesiones/semana $165.000/mes. Sin matrícula.",
+  "pagos": "Transferencia o link de pago con tarjeta (hasta 3 cuotas sin interés). Se paga al inicio de cada mes.",
+  "ubicacion_horarios": "Presencial: lunes a viernes 7:00 a 11:00 y 17:00 a 20:30 en El Tabo. Online: horario libre, revisión semanal los domingos.",
+  "incluye": "Evaluación inicial, programa personalizado ajustado cada semana por RPE, videos de técnica, seguimiento por WhatsApp y revisión mensual de progreso.",
+  "no_es_para": "quien busca una rutina genérica en PDF, quien no puede entrenar al menos 2 días a la semana, o quien necesita rehabilitación activa de una lesión reciente (primero kine).",
+  "min_dias": 2,
+  "que_llevar": "ropa cómoda, agua y, si tienes, exámenes o informes de kine recientes",
+  "horario_sugerido": "el jueves a las 18:00",
+  "recurso_gratis": "el video 'Los 3 errores que frenan tu progreso en el gimnasio' (link)",
+  "faq": [
+    { "p": "¿Cuánto cuesta?", "r": "Online $59.990 al mes; presencial desde $120.000 al mes según frecuencia. Sin matrícula ni permanencia." },
+    { "p": "¿Dónde entrenan?", "r": "Presencial en El Tabo. Online desde cualquier lugar de Chile." },
+    { "p": "¿Cómo es la evaluación?", "r": "45 minutos. Vemos tu objetivo, tu historial, lesiones y cómo te mueves en 4 o 5 ejercicios básicos. Con eso se arma tu programa." },
+    { "p": "¿Necesito experiencia?", "r": "No. Trabajamos desde cero. Lo único que necesitas es poder entrenar al menos 2 días a la semana." },
+    { "p": "¿Tengo una lesión, puedo entrenar?", "r": "Depende de la lesión. Si es antigua o con alta médica, sí: adaptamos los ejercicios. Si es reciente o con dolor fuerte, primero médico o kine." },
+    { "p": "¿Qué pasa si no puedo ir a una sesión?", "r": "Avisando con 12 horas de anticipación se recupera dentro de la misma semana. Sin aviso, se pierde." },
+    { "p": "¿En cuánto tiempo veo resultados?", "r": "Fuerza y técnica, desde la semana 2 o 3. Cambios visibles de composición corporal, entre 8 y 12 semanas si cuidas también la comida y el sueño." },
+    { "p": "¿Hacen plan de alimentación?", "r": "Doy lineamientos generales de nutrición. Un plan detallado lo hace un nutricionista; trabajo con uno al que puedo derivarte." },
+    { "p": "¿Puedo pagar en cuotas?", "r": "Sí, con link de pago hasta 3 cuotas sin interés." },
+    { "p": "¿Entrenas a mayores de 50 / embarazadas / adolescentes?", "r": "Mayores de 50, sí, es de lo que más hago. Embarazo y menores de 16, solo con autorización médica y lo conversamos en la evaluación." }
+  ]
+}

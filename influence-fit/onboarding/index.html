@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha de onboarding</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --teal:#12959C; --teal-dark:#0E7177; --ink:#123638; --soft:#2c4a4c; --muted:#6B8B8C; --line:#D7EBEB; --wash:#E6F1F1; --wash-2:#F3F8F8; --coral:#FF7B7B; --paper:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Montserrat',system-ui,sans-serif; color:var(--ink); background:var(--wash-2); line-height:1.55; }
+  body.embed { background:transparent; }
+  .wrap { max-width:720px; margin:0 auto; padding:28px 16px 60px; }
+  header { margin-bottom:22px; }
+  header .coach { font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); }
+  h1 { font-size:clamp(24px,4vw,32px); margin:6px 0 8px; line-height:1.15; letter-spacing:-.01em; }
+  header p { color:var(--soft); margin:0; font-size:15px; }
+  .progress { height:6px; background:var(--line); border-radius:999px; margin:18px 0 0; overflow:hidden; }
+  .progress i { display:block; height:100%; width:0; background:var(--teal); transition:width .3s; }
+  form { background:var(--paper); border:1.5px solid var(--line); border-radius:14px; padding:24px; }
+  fieldset { border:0; padding:0; margin:0 0 8px; display:none; }
+  fieldset.active { display:grid; gap:16px; }
+  legend { font-size:18px; font-weight:800; margin-bottom:14px; }
+  legend small { display:block; font-size:13px; font-weight:500; color:var(--muted); margin-top:2px; }
+  .field { display:grid; gap:6px; }
+  .row { display:grid; gap:14px; }
+  @media (min-width:560px) { .row { grid-template-columns:1fr 1fr; } .row.r3 { grid-template-columns:1fr 1fr 1fr; } }
+  label { font-size:13.5px; font-weight:700; }
+  label .opt { font-weight:500; color:var(--muted); }
+  input, select, textarea { width:100%; font:inherit; font-size:15px; padding:11px 13px; border:1.5px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); }
+  input:focus, select:focus, textarea:focus { outline:2px solid #33C7CE; border-color:var(--teal); }
+  textarea { min-height:80px; resize:vertical; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chips label { display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border:1.5px solid var(--line); border-radius:999px; font-weight:600; font-size:13.5px; cursor:pointer; background:#fff; }
+  .chips label:has(input:checked) { background:var(--wash); border-color:var(--teal); color:var(--teal-dark); }
+  .chips input { width:auto; margin:0; }
+  .hint { font-size:12.5px; color:var(--muted); }
+  .nav { display:flex; justify-content:space-between; gap:12px; margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+  .btn { font:inherit; font-weight:700; font-size:15px; padding:12px 22px; border-radius:999px; border:0; cursor:pointer; }
+  .btn-teal { background:var(--teal); color:#fff; }
+  .btn-teal:hover { background:var(--teal-dark); }
+  .btn-ghost { background:#fff; color:var(--soft); border:1.5px solid var(--line); }
+  .btn-coral { background:var(--coral); color:#fff; }
+  .consent { display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--soft); font-weight:500; background:var(--wash-2); padding:12px; border-radius:10px; }
+  .consent input { width:auto; margin-top:3px; }
+  .status { display:none; font-size:14px; padding:12px 14px; border-radius:10px; margin-top:14px; }
+  .status.ok { display:block; background:#E4F5EC; color:#176A3D; }
+  .status.err { display:block; background:#FBE9EF; color:#B12851; }
+  .done { display:none; text-align:center; padding:30px 10px; }
+  .done.show { display:block; }
+  .done h2 { margin:0 0 8px; }
+  .done p { color:var(--soft); }
+  .done .acciones { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+  pre { display:none; text-align:left; background:#123638; color:#cfe6e7; padding:14px; border-radius:10px; font-size:12px; overflow:auto; max-height:260px; }
+  pre.show { display:block; }
+  footer { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="coach" id="coachLabel">Ficha de onboarding</div>
+    <h1 id="titulo">Antes de tu primera sesión</h1>
+    <p id="subtitulo">Son 5 minutos. Con esto armo tu programa a tu medida y no a ciegas. Todo lo que escribas queda solo entre tú y tu coach.</p>
+    <div class="progress"><i id="bar"></i></div>
+  </header>
+
+  <form id="f" novalidate>
+    <!-- PASO 1 -->
+    <fieldset class="active" data-step="1">
+      <legend>1 · Datos básicos <small>Para contactarte y para los cálculos de carga.</small></legend>
+      <div class="row">
+        <div class="field"><label for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" required autocomplete="name"></div>
+        <div class="field"><label for="whatsapp">WhatsApp</label><input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" required placeholder="+56 9 1234 5678"></div>
+      </div>
+      <div class="row r3">
+        <div class="field"><label for="edad">Edad</label><input id="edad" name="edad" type="number" min="14" max="99" required></div>
+        <div class="field"><label for="sexo">Sexo</label><select id="sexo" name="sexo" required><option value="">Elige</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
+        <div class="field"><label for="comuna">Comuna <span class="opt">(opcional)</span></label><input id="comuna" name="comuna"></div>
+      </div>
+      <div class="row r3">
+        <div class="field"><label for="email">Email <span class="opt">(opcional)</span></label><input id="email" name="email" type="email"></div>
+        <div class="field"><label for="altura_cm">Altura (cm)</label><input id="altura_cm" name="altura_cm" type="number" min="120" max="230" required></div>
+        <div class="field"><label for="peso_kg">Peso (kg)</label><input id="peso_kg" name="peso_kg" type="number" min="30" max="300" step="0.1" required></div>
+      </div>
+    </fieldset>
+
+    <!-- PASO 2 -->
+    <fieldset data-step="2">
+      <legend>2 · Objetivo y experiencia <small>Sé honesto: no hay respuestas malas, solo programas mal diseñados.</small></legend>
+      <div class="field">
+        <label for="objetivo">Objetivo principal</label>
+        <select id="objetivo" name="objetivo" required>
+          <option value="">Elige uno</option>
+          <option>Ganar masa muscular</option>
+          <option>Perder grasa</option>
+          <option>Fuerza</option>
+          <option>Rendimiento deportivo</option>
+          <option>Salud general / movilidad</option>
+          <option>Rehabilitación / volver a entrenar</option>
+          <option>Preparar una competencia</option>
+        </select>
+      </div>
+      <div class="field"><label for="objetivo_detalle">Cuéntamelo con tus palabras <span class="opt">(opcional)</span></label><textarea id="objetivo_detalle" name="objetivo_detalle" placeholder="Ej: quiero subir 4 kg de músculo y dejar de sentir el hombro al empujar."></textarea></div>
+      <div class="row">
+        <div class="field"><label for="plazo">¿Para cuándo?</label><select id="plazo" name="plazo"><option>Sin apuro, es un cambio de hábito</option><option>3 meses</option><option>6 meses</option><option>Tengo una fecha concreta (la indico abajo)</option></select></div>
+        <div class="field">
+          <label for="experiencia_nivel">Experiencia entrenando</label>
+          <select id="experiencia_nivel" name="experiencia_nivel" required>
+            <option value="">Elige</option>
+            <option>Nunca he entrenado</option>
+            <option>Principiante (menos de 1 año)</option>
+            <option>Intermedio (1 a 3 años)</option>
+            <option>Avanzado (más de 3 años)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="experiencia_anios">Años entrenando en total <span class="opt">(aprox.)</span></label><input id="experiencia_anios" name="experiencia_anios" type="number" min="0" max="60" step="0.5"></div>
+        <div class="field"><label for="entreno_actual">¿Qué haces hoy?</label><input id="entreno_actual" name="entreno_actual" placeholder="Ej: 3 días de máquinas sin plan, corro los domingos"></div>
+      </div>
+    </fieldset>
+
+    <!-- PASO 3 -->
+    <fieldset data-step="3">
+      <legend>3 · Lesiones y salud <small>Esto define qué ejercicios van y cuáles no. Si no hay nada, deja en blanco.</small></legend>
+      <div class="field">
+        <label>Zonas con molestia, lesión actual o antigua</label>
+        <div class="chips" id="zonas">
+          <label><input type="checkbox" name="lesiones_zonas" value="Cuello"> Cuello</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Hombro"> Hombro</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Codo / muñeca"> Codo / muñeca</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Zona lumbar"> Zona lumbar</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Cadera"> Cadera</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Rodilla"> Rodilla</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Tobillo / pie"> Tobillo / pie</label>
+          <label><input type="checkbox" name="lesiones_zonas" value="Ninguna"> Ninguna</label>
+        </div>
+      </div>
+      <div class="field"><label for="lesiones_detalle">Detalle <span class="opt">(qué pasó, cuándo, qué movimiento duele)</span></label><textarea id="lesiones_detalle" name="lesiones_detalle" placeholder="Ej: hombro derecho, me duele al hacer press militar por sobre la cabeza desde hace 1 año. Kine me dijo que era manguito rotador."></textarea></div>
+      <div class="row">
+        <div class="field"><label for="condiciones_medicas">Condiciones médicas <span class="opt">(hipertensión, diabetes, asma, embarazo, etc.)</span></label><input id="condiciones_medicas" name="condiciones_medicas"></div>
+        <div class="field"><label for="medicamentos">Medicamentos <span class="opt">(opcional)</span></label><input id="medicamentos" name="medicamentos"></div>
+      </div>
+      <div class="field"><label for="cirugias">Cirugías <span class="opt">(opcional)</span></label><input id="cirugias" name="cirugias" placeholder="Ej: menisco rodilla izquierda, 2021"></div>
+    </fieldset>
+
+    <!-- PASO 4 -->
+    <fieldset data-step="4">
+      <legend>4 · Disponibilidad y equipamiento <small>Diseño el programa para la vida que tienes, no para la que te gustaría tener.</small></legend>
+      <div class="row r3">
+        <div class="field"><label for="dias_semana">Días por semana</label><select id="dias_semana" name="dias_semana" required><option value="">Elige</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div class="field"><label for="minutos_sesion">Minutos por sesión</label><select id="minutos_sesion" name="minutos_sesion" required><option value="">Elige</option><option>30</option><option>45</option><option>60</option><option>75</option><option>90</option></select></div>
+        <div class="field"><label for="modalidad">Modalidad</label><select id="modalidad" name="modalidad" required><option value="">Elige</option><option>Presencial</option><option>Online</option><option>Mixto</option></select></div>
+      </div>
+      <div class="field"><label for="horario">Horarios en que puedes entrenar</label><input id="horario" name="horario" placeholder="Ej: lun-mié-vie 7:00, o después de las 19:00"></div>
+      <div class="field">
+        <label for="equipamiento">Equipamiento</label>
+        <select id="equipamiento" name="equipamiento" required>
+          <option value="">Elige</option>
+          <option>Gimnasio completo</option>
+          <option>Casa con equipamiento básico</option>
+          <option>Solo peso corporal</option>
+          <option>Box / funcional</option>
+        </select>
+      </div>
+      <div class="field"><label for="equipamiento_detalle">Detalle del equipamiento <span class="opt">(si es casa: qué tienes exactamente)</span></label><input id="equipamiento_detalle" name="equipamiento_detalle" placeholder="Ej: mancuernas ajustables hasta 24 kg, barra de dominadas, bandas"></div>
+    </fieldset>
+
+    <!-- PASO 5 -->
+    <fieldset data-step="5">
+      <legend>5 · Preferencias y estilo de vida <small>Lo último. Esto hace que el programa se sostenga en el tiempo.</small></legend>
+      <div class="row">
+        <div class="field"><label for="gustan">Ejercicios que te gustan</label><input id="gustan" name="gustan" placeholder="Ej: sentadilla, dominadas"></div>
+        <div class="field"><label for="no_gustan">Ejercicios que odias o te dan miedo</label><input id="no_gustan" name="no_gustan" placeholder="Ej: peso muerto, burpees"></div>
+      </div>
+      <div class="row r3">
+        <div class="field"><label for="sueno_horas">Horas de sueño</label><select id="sueno_horas" name="sueno_horas"><option>Menos de 6</option><option selected>6 a 7</option><option>7 a 8</option><option>Más de 8</option></select></div>
+        <div class="field"><label for="estres">Estrés del día a día</label><select id="estres" name="estres"><option>Bajo</option><option selected>Medio</option><option>Alto</option></select></div>
+        <div class="field"><label for="nutricion">Alimentación hoy</label><select id="nutricion" name="nutricion"><option>Desordenada</option><option selected>Más o menos</option><option>Ordenada</option><option>Con nutricionista</option></select></div>
+      </div>
+      <div class="field"><label for="como_llego">¿Cómo llegaste a tu coach?</label><select id="como_llego" name="como_llego"><option>Instagram</option><option>Recomendación</option><option>Anuncio</option><option>Google</option><option>Ya nos conocíamos</option><option>Otro</option></select></div>
+      <label class="consent"><input type="checkbox" name="consentimiento" required> Declaro que la información es verdadera y autorizo a mi coach a guardarla para diseñar y ajustar mi entrenamiento. Entiendo que esta ficha no reemplaza una evaluación médica.</label>
+    </fieldset>
+
+    <div class="nav">
+      <button type="button" class="btn btn-ghost" id="prev">Atrás</button>
+      <button type="button" class="btn btn-teal" id="next">Siguiente</button>
+      <button type="submit" class="btn btn-coral" id="send" style="display:none">Enviar ficha</button>
+    </div>
+    <div class="status" id="status"></div>
+  </form>
+
+  <div class="done" id="done">
+    <h2>Ficha recibida</h2>
+    <p id="doneMsg">Tu coach ya la tiene. Nos vemos en la evaluación.</p>
+    <div class="acciones">
+      <a class="btn btn-teal" id="waCoach" target="_blank" rel="noopener" style="display:none;text-decoration:none">Avisar por WhatsApp</a>
+      <button class="btn btn-ghost" id="verJson" type="button">Ver / descargar JSON</button>
+    </div>
+    <pre id="json"></pre>
+  </div>
+  <footer>Formulario hecho con Influence Fit · Influence Chile</footer>
+</div>
+
+<script>
+  // ====== CONFIGURACIÓN ======
+  // WEBHOOK_URL: URL /exec del Apps Script (apps-script.gs) o de Make/Airtable.
+  // COACHES: datos de cada coach por su slug (?coach=slug). WHATSAPP sin + ni espacios.
+  const CONFIG = {
+    WEBHOOK_URL: '',
+    VERSION: '1.0',
+    COACHES: {
+      'demo':    { nombre: 'Tu coach', whatsapp: '' },
+      'gabriel': { nombre: 'Gabriel Meza', whatsapp: '56965450723' }
+    }
+  };
+  // ===========================
+  // Uso:
+  //   Link para WhatsApp:  https://tudominio.cl/onboarding/?coach=gabriel&nombre=Camila
+  //   Embebido en web:     <iframe src="https://tudominio.cl/onboarding/?coach=gabriel&embed=1" style="width:100%;height:900px;border:0"></iframe>
+
+  const q = new URLSearchParams(location.search);
+  const coachSlug = (q.get('coach') || 'demo').toLowerCase();
+  const coach = CONFIG.COACHES[coachSlug] || { nombre: coachSlug, whatsapp: '' };
+  if (q.get('embed')) document.body.classList.add('embed');
+  document.getElementById('coachLabel').textContent = 'Ficha de onboarding · ' + coach.nombre;
+  document.title = 'Ficha de onboarding · ' + coach.nombre;
+  if (q.get('nombre')) document.getElementById('nombre').value = q.get('nombre');
+
+  const f = document.getElementById('f');
+  const steps = [...f.querySelectorAll('fieldset')];
+  const prev = document.getElementById('prev'), next = document.getElementById('next'), send = document.getElementById('send');
+  const bar = document.getElementById('bar'), status = document.getElementById('status');
+  let i = 0;
+
+  function show(n) {
+    i = n;
+    steps.forEach((s, k) => s.classList.toggle('active', k === n));
+    prev.style.visibility = n === 0 ? 'hidden' : 'visible';
+    next.style.display = n === steps.length - 1 ? 'none' : '';
+    send.style.display = n === steps.length - 1 ? '' : 'none';
+    bar.style.width = ((n + 1) / steps.length * 100) + '%';
+    try { localStorage.setItem('onb_step', n); } catch (e) {}
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function validaPaso() {
+    const campos = [...steps[i].querySelectorAll('input, select, textarea')];
+    for (const c of campos) { if (!c.checkValidity()) { c.reportValidity(); return false; } }
+    return true;
+  }
+  next.onclick = () => { if (validaPaso()) show(i + 1); };
+  prev.onclick = () => show(i - 1);
+
+  // "Ninguna" desmarca el resto
+  document.getElementById('zonas').addEventListener('change', e => {
+    const boxes = [...e.currentTarget.querySelectorAll('input')];
+    if (e.target.value === 'Ninguna' && e.target.checked) boxes.forEach(b => { if (b !== e.target) b.checked = false; });
+    else if (e.target.checked) boxes.find(b => b.value === 'Ninguna').checked = false;
+  });
+
+  // Guarda borrador local (por si cierran WhatsApp a la mitad)
+  const KEY = 'onb_draft_' + coachSlug;
+  try {
+    const draft = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (draft) for (const [k, v] of Object.entries(draft)) {
+      const el = f.elements[k];
+      if (!el) continue;
+      if (el instanceof RadioNodeList || (el.length && el[0] && el[0].type === 'checkbox')) [...el].forEach(c => { c.checked = [].concat(v).includes(c.value); });
+      else if (el.type === 'checkbox') el.checked = !!v;
+      else el.value = v;
+    }
+  } catch (e) {}
+  f.addEventListener('input', () => { try { localStorage.setItem(KEY, JSON.stringify(recoger())); } catch (e) {} });
+
+  const normalizaFono = v => { let d = String(v || '').replace(/\D/g, ''); if (d.length === 9 && d[0] === '9') d = '56' + d; if (d.length === 8) d = '569' + d; return d; };
+  const num = v => v === '' || v == null ? null : Number(v);
+
+  function recoger() {
+    const fd = new FormData(f);
+    const d = {};
+    for (const [k, v] of fd.entries()) {
+      if (k === 'lesiones_zonas') { (d[k] = d[k] || []).push(v); continue; }
+      d[k] = v;
+    }
+    d.lesiones_zonas = d.lesiones_zonas || [];
+    d.consentimiento = !!f.elements.consentimiento.checked;
+    ['edad','altura_cm','dias_semana','minutos_sesion'].forEach(k => d[k] = num(d[k]) == null ? null : Math.round(num(d[k])));
+    ['peso_kg','experiencia_anios'].forEach(k => d[k] = num(d[k]));
+    d.whatsapp = normalizaFono(d.whatsapp);
+    return d;
+  }
+
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validaPaso()) return;
+    const d = recoger();
+    if (d.whatsapp.length !== 11) { status.className = 'status err'; status.textContent = 'Revisa el WhatsApp del paso 1: deben ser 9 dígitos chilenos.'; show(0); return; }
+    d.fecha = new Date().toISOString();
+    d.coach = coachSlug;
+    d.origen = q.get('embed') ? 'web-embed' : 'link';
+    d.version = CONFIG.VERSION;
+    send.disabled = true; send.textContent = 'Enviando…';
+    let ok = false;
+    if (CONFIG.WEBHOOK_URL) {
+      try {
+        // Apps Script redirige el POST: text/plain evita el preflight CORS y llega igual.
+        const r = await fetch(CONFIG.WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) });
+        ok = r.ok;
+      } catch (err) { ok = false; }
+    }
+    send.disabled = false; send.textContent = 'Enviar ficha';
+    const json = JSON.stringify(d, null, 2);
+    document.getElementById('json').textContent = json;
+    document.getElementById('verJson').onclick = () => {
+      const pre = document.getElementById('json'); pre.classList.toggle('show');
+      const a = document.createElement('a'); a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(json); a.download = `onboarding-${(d.nombre || 'cliente').replace(/\s+/g, '-').toLowerCase()}.json`; a.click();
+    };
+    if (coach.whatsapp) {
+      const wa = document.getElementById('waCoach');
+      wa.style.display = ''; wa.href = `https://wa.me/${coach.whatsapp}?text=${encodeURIComponent(`Hola ${coach.nombre.split(' ')[0]}, soy ${d.nombre}. Acabo de enviar mi ficha de onboarding.${ok ? '' : ' Te adjunto el JSON por si no llegó.'}`)}`;
+    }
+    if (!ok) document.getElementById('doneMsg').textContent = CONFIG.WEBHOOK_URL
+      ? 'No pudimos confirmar el envío automático. Descarga el JSON y mándaselo a tu coach por WhatsApp.'
+      : 'Descarga el JSON y mándaselo a tu coach por WhatsApp.';
+    try { localStorage.removeItem(KEY); localStorage.removeItem('onb_step'); } catch (e) {}
+    f.style.display = 'none'; document.querySelector('header .progress').style.display = 'none';
+    document.getElementById('done').classList.add('show');
+  });
+
+  show(0);
+</script>
+</body>
+</html>

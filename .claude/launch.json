@@ -4,8 +4,38 @@
     {
       "name": "curacavi-fc",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "serve", "-l", "5551", "curacavi-fc"],
+      "runtimeArgs": [
+        "--yes",
+        "serve",
+        "-l",
+        "5551",
+        "curacavi-fc"
+      ],
       "port": 5551
+    },
+    {
+      "name": "influence-fit-landing",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--yes",
+        "serve",
+        "-l",
+        "5560",
+        "influence-fit/landing"
+      ],
+      "port": 5560
+    },
+    {
+      "name": "influence-fit-onboarding",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--yes",
+        "serve",
+        "-l",
+        "5561",
+        "influence-fit/onboarding"
+      ],
+      "port": 5561
     }
   ]
 }
