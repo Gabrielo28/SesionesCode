@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" width="640" height="120">
+  <!-- Logo horizontal sobre fondo oscuro (carbón). Tipografía: Barlow Condensed 800 (instalada o vía Google Fonts). -->
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&amp;display=swap');</style>
+  </defs>
+  <rect width="120" height="120" rx="24" fill="#FFFFFF"/>
+  <rect x="26" y="26" width="18" height="68" rx="3" fill="#123638"/>
+  <rect x="54" y="26" width="18" height="68" rx="3" fill="#123638"/>
+  <rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/>
+  <rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/>
+  <rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/>
+  <text x="146" y="84" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="800" font-size="76" letter-spacing="1" fill="#FFFFFF">INFLUENCE<tspan fill="#FF7B7B">FIT</tspan></text>
+</svg>

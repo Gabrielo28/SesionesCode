@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Isotipo Influence Fit: la I y la F construidas con barras. Las tres barras de la F
+       van creciendo (progresión / periodización). Un solo acento sobre carbón. -->
+  <rect width="120" height="120" rx="24" fill="#123638"/>
+  <!-- I -->
+  <rect x="26" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/>
+  <!-- F: tres barras de largo creciente -->
+  <rect x="54" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/>
+  <rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/>
+  <rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/>
+  <rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/>
+</svg>

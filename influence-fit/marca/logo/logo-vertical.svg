@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 300" width="440" height="300">
+  <!-- Logo vertical (avatar grande, portadas, firma de video). -->
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&amp;display=swap');</style>
+  </defs>
+  <g transform="translate(160,20)">
+    <rect width="120" height="120" rx="24" fill="#123638"/>
+    <rect x="26" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/>
+    <rect x="54" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/>
+    <rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/>
+    <rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/>
+    <rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/>
+  </g>
+  <text x="220" y="222" text-anchor="middle" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="800" font-size="64" letter-spacing="1" fill="#123638">INFLUENCE<tspan fill="#FF7B7B">FIT</tspan></text>
+  <text x="220" y="262" text-anchor="middle" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="700" font-size="20" letter-spacing="5" fill="#6E8A8B">HECHO POR UN COACH</text>
+</svg>

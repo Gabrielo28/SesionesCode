@@ -131,3 +131,16 @@ origen, retención y próximos pasos. Los datos incluidos son de ejemplo.
 | 3–4 | Diagnósticos con `prospeccion-ventas/03-auditoria-express.md` · propuestas con `npm run propuesta` · 2 cierres fundadores |
 | 5–8 | Onboarding de clientes (T2 + T3 por coach) · campañas · primer `npm run reporte` |
 | 9–12 | Retención activa (T4) · caso de estudio con el reporte del mes 2 · llenar los 5 cupos |
+
+## Marca y piezas para redes
+
+`marca/` tiene la identidad completa: `identidad.md` (cualidades, logo, color, tipografía, voz, fotografía,
+lo que no se hace), el logo en `marca/logo/` (SVG y PNG: isotipo, horizontal, inverso, vertical, monocromo)
+y las plantillas de anuncios, feed e historias en `marca/graficas/plantillas/`.
+
+```bash
+node marca/graficas/build.js          # todas las piezas → marca/graficas/png/
+node marca/graficas/build.js story    # solo las historias
+```
+Para cambiar textos se edita el HTML. Para poner fotos reales, dejar el archivo en `marca/graficas/fotos/`
+y referenciarlo en el `style="background-image:url(...)"` del bloque `.foto`.
