@@ -38,6 +38,8 @@ Influence Chile, así que el coach que después vea la agencia matriz reconoce l
 - `logo-horizontal-inverso.svg`: sobre carbón.
 - `logo-vertical.svg`: con la bajada "Hecho por un coach".
 
+**Submarca.** Debajo del nombre va siempre la línea "BY INFLUENCE CHILE" en Barlow 600, mayúsculas, interletrado amplio, color silenciado y a un tercio del tamaño del nombre. Es la única mención a la agencia matriz en el logo: no se agrega el logo de Influence Chile al lado ni se cambia el isotipo. En tamaños menores a 32 px de alto (favicon, avatar chico) se usa el isotipo solo, sin la línea.
+
 **Reglas.** Espacio libre alrededor igual al ancho de la barra de la I. Nunca estirar, girar, poner
 sombra ni degradado. Sobre foto, usar el inverso con una capa carbón al 60 % debajo. Mínimo 32 px de alto
 para el isotipo y 120 px de ancho para el horizontal.

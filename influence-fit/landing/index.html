@@ -64,8 +64,12 @@
   nav { background: var(--ink); color: #fff; border-bottom: 1px solid var(--ink-line); position: sticky; top: 0; z-index: 20; }
   nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
   .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .04em; text-transform: uppercase; }
-  .logo i { width: 32px; height: 32px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; border-radius: 6px; font-style: normal; font-size: 18px; }
+  .logo i { width: 36px; height: 36px; border-radius: 8px; background: #fff; display: block; flex: none; position: relative; }
+  .logo i::before { content: ""; position: absolute; left: 8px; top: 8px; width: 5px; height: 20px; border-radius: 1.5px; background: var(--ink); box-shadow: 8px 0 0 var(--ink); }
+  .logo i::after { content: ""; position: absolute; left: 22px; top: 8px; width: 7px; height: 4.5px; border-radius: 1.5px; background: var(--accent); box-shadow: 0 7.5px 0 -0.5px var(--accent), 0 15px 0 -2px var(--accent); }
   .logo span { color: var(--accent); }
+  .logo b { display: inline-block; line-height: 1; font-weight: inherit; }
+  .logo small { display: block; font-family: var(--font-body); font-weight: 600; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-muted); margin-top: 3px; }
   nav ul { display: none; gap: 24px; list-style: none; margin: 0; padding: 0; font-size: 15px; font-weight: 500; }
   nav ul a { text-decoration: none; color: #fff; opacity: .85; } nav ul a:hover { opacity: 1; }
   @media (min-width: 900px) { nav ul { display: flex; } }
@@ -191,7 +195,7 @@
 
 <nav>
   <div class="wrap">
-    <a class="logo" href="#top"><i>IF</i>Influence<span>Fit</span></a>
+    <a class="logo" href="#top"><i></i><b>Influence<span>Fit</span><small>by Influence Chile</small></b></a>
     <ul>
       <li><a href="#dolores">Problemas</a></li>
       <li><a href="#servicios">Servicios</a></li>
@@ -462,7 +466,7 @@
   <div class="wrap">
     <div class="cols">
       <div>
-        <a class="logo" href="#top" style="color:#fff"><i>IF</i>Influence<span>Fit</span></a>
+        <a class="logo" href="#top" style="color:#fff"><i></i><b>Influence<span>Fit</span><small>by Influence Chile</small></b></a>
         <p style="margin-top:12px;max-width:34ch">La vertical fitness de <a href="https://influencechile.cl" target="_blank" rel="noopener">Influence Chile SpA</a>. Marketing y sistemas para profesionales del entrenamiento, hecho por un coach.</p>
       </div>
       <div>

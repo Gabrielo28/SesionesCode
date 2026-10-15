@@ -9,5 +9,6 @@
   <rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/>
   <rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/>
   <rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/>
-  <text x="146" y="84" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="800" font-size="76" letter-spacing="1" fill="#FFFFFF">INFLUENCE<tspan fill="#FF7B7B">FIT</tspan></text>
+  <text x="146" y="78" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="800" font-size="76" letter-spacing="1" fill="#FFFFFF">INFLUENCE<tspan fill="#FF7B7B">FIT</tspan></text>
+  <text x="148" y="108" font-family="'Barlow', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="15" letter-spacing="3.2" fill="#9FBABB">BY INFLUENCE CHILE</text>
 </svg>

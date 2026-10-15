@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 300" width="440" height="300">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 330" width="440" height="330">
   <!-- Logo vertical (avatar grande, portadas, firma de video). -->
   <defs>
     <style>@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&amp;display=swap');</style>
@@ -13,4 +13,5 @@
   </g>
   <text x="220" y="222" text-anchor="middle" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="800" font-size="64" letter-spacing="1" fill="#123638">INFLUENCE<tspan fill="#FF7B7B">FIT</tspan></text>
   <text x="220" y="262" text-anchor="middle" font-family="'Barlow Condensed', 'Arial Narrow', Impact, sans-serif" font-weight="700" font-size="20" letter-spacing="5" fill="#6E8A8B">HECHO POR UN COACH</text>
+  <text x="220" y="296" text-anchor="middle" font-family="'Barlow', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="13" letter-spacing="3" fill="#9FBABB">BY INFLUENCE CHILE</text>
 </svg>

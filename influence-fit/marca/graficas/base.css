@@ -30,6 +30,9 @@ h1 { font-size: 112px; } h2 { font-size: 80px; }
 .dark .logo i::before { background: var(--ink); box-shadow: 13px 0 0 var(--ink); }
 .logo i::after { content: ""; position: absolute; left: 34px; top: 12px; width: 11px; height: 7px; border-radius: 2px; background: var(--accent); box-shadow: 0 12px 0 -1px var(--accent), 0 24px 0 -3px var(--accent); }
 .logo span { color: var(--accent); }
+.logo b { display: inline-block; line-height: 1; font-weight: inherit; }
+.logo small { display: block; font-family: var(--body); font-weight: 600; font-size: .36em; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: 5px; }
+.dark .logo small { color: var(--ink-muted); }
 .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-family: var(--display); font-size: 26px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .dark .foot { color: var(--ink-muted); }
 .num { font-family: var(--display); font-weight: 800; font-size: 160px; line-height: 1; color: var(--accent); }
