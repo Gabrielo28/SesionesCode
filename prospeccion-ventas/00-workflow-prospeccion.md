@@ -174,8 +174,10 @@ Un entrante vale cinco contactos en frío. Reglas:
   Google Ads). Está en la auditoría de oferta; la propuesta no regala servicios.
 - **Toda propuesta responde lo que pidieron, en el orden que lo pidieron.** Si pidieron 9
   puntos, son 9, no 10.
-- **Máximo dos opciones por propuesta, una marcada como recomendada.** Con más, el cliente se
-  enreda y no decide. Nada de catálogos ni menús de combinaciones.
+- **Una opción por propuesta; dos como máximo, con una marcada como recomendada.** Con más, el
+  cliente se enreda y no decide. Nada de catálogos ni menús de combinaciones.
+- **En propuestas no se promete nada sobre accesos o contraseñas.** Cómo se comparten las cuentas
+  se coordina en la reunión de la semana 1, según lo que use cada cliente.
 - **No se toca una automatización de cliente ni se gastan créditos de Apollo sin preguntar.**
 
 ---

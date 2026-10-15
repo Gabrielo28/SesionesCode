@@ -1,8 +1,8 @@
-// Uso: node render.js [nombre-archivo-sin-extension]   (por defecto: propuesta-opciones-250k)
+// Uso: node render.js [nombre-archivo-sin-extension]   (por defecto: propuesta-presencia-250k)
 // En Windows define CHROME con la ruta de Chrome.
 const { chromium } = require('playwright'); const path = require('path');
 (async () => {
-  const dir = __dirname, name = process.argv[2] || 'propuesta-opciones-250k';
+  const dir = __dirname, name = process.argv[2] || 'propuesta-presencia-250k';
   const b = await chromium.launch({ executablePath: process.env.CHROME || '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
   const p = await b.newPage();
   await p.goto('file://' + path.join(dir, name + '.html'), { waitUntil: 'networkidle' });

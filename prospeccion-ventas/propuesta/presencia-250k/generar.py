@@ -1,9 +1,9 @@
-# Propuesta "Qué puedes hacer con $250.000" — DOS opciones como máximo (los clientes se enredan con más):
-# 1) Plan Presencia sin reels (recomendada) y 2) Contenido Estratégico + Campaña Influencers. Precios espejo de influencechile.cl.
+# Propuesta de UN plan: Plan Presencia sin reels a $250.000 neto/mes, para leads con ese presupuesto.
+# Reglas: una sola opción (los clientes se enredan con varias) y sin prometer nada sobre accesos o contraseñas. Precios espejo de influencechile.cl.
 #   python3 prospeccion-ventas/propuesta/opciones-250k/generar.py prospeccion-ventas/propuesta/opciones-250k/cliente.json
 #   NODE_PATH=/opt/node22/lib/node_modules node prospeccion-ventas/propuesta/opciones-250k/render.js
 import html, datetime, sys, json, os
-CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "", "nota_camino1": "", "archivo": "propuesta-opciones-250k",
+CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "", "nota_camino1": "", "archivo": "propuesta-presencia-250k",
            "presupuesto": 250000, "fecha": datetime.date.today().strftime("%-d de %B de %Y")}
 MESES={'January':'enero','February':'febrero','March':'marzo','April':'abril','May':'mayo','June':'junio','July':'julio','August':'agosto','September':'septiembre','October':'octubre','November':'noviembre','December':'diciembre'}
 for en,es in MESES.items(): CLIENTE['fecha']=CLIENTE['fecha'].replace(en,es)
@@ -69,14 +69,18 @@ HTML=f'''<!DOCTYPE html>
   .cta .marca-pie img {{ height:22mm; width:auto; display:block; margin:0 auto 6mm; }}
   .firma {{ border-top:1px solid #d7eaea; padding-top:6mm; font-size:9.6pt; line-height:1.7; }} .firma strong {{ font-size:11pt; }}
   .pie {{ font-size:8.2pt; color:#6b8585; margin-top:8mm; }}
+  .resumen {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:5mm 0 6mm; page-break-inside:avoid; }}
+  .resumen > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; }}
+  .resumen .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1.5mm; }}
+  .resumen .v {{ font-size:15pt; font-weight:800; line-height:1.15; }} .resumen .s {{ font-size:8.6pt; color:#4a6a6a; margin-top:1mm; }}
 </style></head><body>
 
 <section class="portada">
   <div class="marca"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
   <div>
     <div class="kicker">Propuesta · {C["fecha"]}</div>
-    <h1>Qué puedes hacer con {f(B)} al mes</h1>
-    <p class="sub">Dos formas de trabajar con nosotros dentro de tu presupuesto, con lo que incluye cada una y cuál te recomendamos.</p>
+    <h1>Gestión de redes con {f(B)} al mes</h1>
+    <p class="sub">Nuestro Plan Presencia ajustado a tu presupuesto: planificamos, diseñamos, publicamos y te reportamos cada mes.</p>
   </div>
   <div class="para">
     <div><strong>Para</strong>{para}</div>
@@ -85,29 +89,29 @@ HTML=f'''<!DOCTYPE html>
 </section>
 
 <section class="seccion primera">
-  <h2>Dos opciones con {f(B)}</h2>
+  <h2>Nuestra propuesta</h2>
   <div class="linea"></div>
-  <p>{(C['contacto'].split()[0]+', n') if C['contacto'] else 'N'}os pediste ver qué puedes tomar con un presupuesto de {f(B)}. Te proponemos dos caminos. La diferencia de fondo es una sola: <strong>si el trabajo de cada mes lo hacemos nosotros o lo haces tú con nuestro plan.</strong></p>
-  <div class="caminos" style="grid-template-columns:1fr 1fr">
-    <div class="reco"><div class="badge">Recomendada</div><div class="k">Opción 1 · mensual</div><h4>Tus redes gestionadas cada mes</h4><div class="v">{f(RECO)} <small>/ mes</small></div>Nuestro Plan Presencia ajustado a tu presupuesto: planificamos, diseñamos, publicamos y te reportamos. Lo único que no incluye son los reels.</div>
-    <div><div class="k">Opción 2 · un mes de impulso</div><h4>Estrategia + campaña con influencers</h4><div class="v">{f(CE+INF)} <small>pago único</small></div>Te entregamos un mes de contenido planificado pieza por pieza y una campaña con 2 creadoras para darte a conocer. El contenido lo produces y publicas tú.</div>
+  <p>{(C['contacto'].split()[0]+', n') if C['contacto'] else 'N'}os pediste ver qué podemos hacer con un presupuesto de {f(B)}. Nuestra recomendación es una sola: <strong>el Plan Presencia, nuestro plan de entrada, con la única diferencia de que no incluye la producción de los 4 reels mensuales.</strong> Los reels son la parte que más tiempo de producción lleva, y por eso son lo que explica la diferencia con el valor del plan en la web ({f(PRESENCIA)}). Todo lo demás se mantiene igual.</p>
+  <div class="resumen">
+    <div><div class="k">Plan</div><div class="v">Presencia</div><div class="s">sin producción de reels</div></div>
+    <div><div class="k">Inversión mensual</div><div class="v">{f(RECO)}</div><div class="s">neto + IVA · {f(iva(RECO))} con IVA</div></div>
+    <div><div class="k">Compromiso</div><div class="v">Sin permanencia</div><div class="s">aviso de término con un mes · inicio en 10 días hábiles</div></div>
   </div>
-  <h3>Por qué recomendamos la opción 1</h3>
+  <h3>Por qué este plan</h3>
   <ul>
-    <li><strong>Constancia sin depender de tu tiempo.</strong> En la opción 2 el contenido de cada mes lo produces y publicas tú; si se te acumula el trabajo, la cuenta se detiene. En la opción 1, no.</li>
-    <li><strong>Es nuestro plan de entrada casi completo.</strong> El Plan Presencia vale {f(PRESENCIA)}; para llegar a tu presupuesto le quitamos solo la producción de los 4 reels, que es la parte que más tiempo nos lleva.</li>
+    <li><strong>Constancia sin depender de tu tiempo.</strong> Cada mes planificamos, diseñamos y publicamos nosotros. Tu cuenta se mantiene activa aunque tengas semanas complicadas.</li>
+    <li><strong>Todo con la misma cara.</strong> Definimos tu identidad gráfica en la semana 1 y cada pieza sale con ella, para que la cuenta se vea de una sola marca.</li>
     <li><strong>Crece contigo.</strong> Cuando el presupuesto lo permita, se suman los reels y pasas al plan completo sin cambiar nada más.</li>
   </ul>
-  <p>La opción 2 tiene sentido si prefieres un empujón puntual antes de comprometerte con algo mensual.</p>
-  <div class="nota"><strong>Valores netos:</strong> todos los precios están en pesos chilenos, más IVA, y son los mismos que publicamos en influencechile.cl. Sin costo de puesta en marcha.</div>
+  {nota1}
 </section>
 
 <section class="seccion">
-  <h2>Opción 1 · Plan Presencia sin reels</h2>
+  <h2>Qué incluye</h2>
   <div class="linea"></div>
   <p>Mismo plan, misma forma de trabajar que el Plan Presencia de la web. La única fila que cambia es la de los reels.</p>
   <table>
-    <tr><th>Concepto</th><th style="width:22%;text-align:center">Plan Presencia<br><span style="font-weight:400">{f(PRESENCIA)} neto</span></th><th style="width:22%;text-align:center">Opción 1<br><span style="font-weight:400">{f(RECO)} neto</span></th></tr>
+    <tr><th>Concepto</th><th style="width:22%;text-align:center">Plan Presencia<br><span style="font-weight:400">{f(PRESENCIA)} neto</span></th><th style="width:22%;text-align:center">Esta propuesta<br><span style="font-weight:400">{f(RECO)} neto</span></th></tr>
     <tr><td><strong>Planificación y programación mensual.</strong> Calendario con cada pieza definida, entregado el día 20 del mes anterior. Lo apruebas en 48 horas, una ronda de cambios incluida.</td>{si("Sí")}{si("Sí")}</tr>
     <tr><td><strong>4 publicaciones al mes</strong> (posts o carruseles) con diseño, copy y caption.</td>{si("4")}{si("4")}</tr>
     <tr><td><strong>8 historias al mes.</strong> Si nos mandas videos cortos de tu celular, los subimos como historias con tu diseño.</td>{si("8")}{si("8")}</tr>
@@ -118,33 +122,35 @@ HTML=f'''<!DOCTYPE html>
     <tr><td><strong>Informe mensual</strong> de una página: qué funcionó y qué hacer el mes siguiente.</td>{si("Sí")}{si("Sí")}</tr>
     <tr><td>Respuesta a comentarios y mensajes.</td>{no("No")}{no("No")}</tr>
   </table>
-  {nota1}
   <div class="total">
-    <div class="l">Opción 1 · recomendada<strong>Plan Presencia sin reels</strong></div>
-    <div class="r"><div class="neto">{f(RECO)}</div><div class="iva">netos / mes · {f(iva(RECO))} con IVA</div></div>
+    <div class="l">Total mensual<strong>Plan Presencia sin reels</strong></div>
+    <div class="r"><div class="neto">{f(RECO)}</div><div class="iva">netos · {f(iva(RECO))} con IVA</div></div>
   </div>
+  <p style="font-size:9pt;color:#4a6a6a">Valores en pesos chilenos, netos, con el IVA indicado aparte. Facturación mensual. Sin costo de puesta en marcha.</p>
 </section>
 
 <section class="seccion">
-  <h2>Opción 2 · Estrategia + campaña con influencers</h2>
-  <div class="linea"></div>
-  <table>
-    <tr><th style="width:30%">Servicio</th><th>Qué recibes</th><th style="width:24%">Qué haces tú</th><th style="width:14%">Neto</th></tr>
-    <tr><td><strong>Contenido Estratégico</strong></td><td>Un informe con un mes de contenido detallado: 3 reels, 12 posts y 12 historias, con ángulo, gancho, copy y objetivo de cada pieza.</td><td>Producir, diseñar y publicar las piezas.</td><td class="n">{f(CE)}</td></tr>
-    <tr><td><strong>Campaña con influencers</strong></td><td>2 creadoras de más de 10 mil seguidores, con reels e historias. Acuerdo formal con cada una; si alguna no cumple, respondemos nosotros.</td><td>Aportar el canje (por ejemplo, prendas).</td><td class="n">desde {f(INF)}</td></tr>
-  </table>
-  <div class="total">
-    <div class="l">Opción 2 · pago único<strong>Estrategia + influencers</strong></div>
-    <div class="r"><div class="neto">{f(CE+INF)}</div><div class="iva">netos · {f(iva(CE+INF))} con IVA</div></div>
-  </div>
-
-  <h2 style="margin-top:9mm">Condiciones</h2>
+  <h2>Cómo trabajamos</h2>
   <div class="linea"></div>
   <ul>
-    <li><strong>Opción 1:</strong> sin permanencia mínima. Solo pedimos aviso de término con un mes de anticipación. Recomendamos evaluar a los 90 días.</li>
-    <li><strong>Opción 2:</strong> pago único; la forma de pago se acuerda al confirmar.</li>
-    <li><strong>Inicio:</strong> 10 días hábiles después de la confirmación. Semana 1: reunión de 60 minutos para definir pilares, tono e identidad gráfica, y acceso a tus cuentas como colaborador, sin pedir contraseñas.</li>
-    <li><strong>No incluido:</strong> inversión en pauta (se paga directo a Meta), respuesta a mensajes y comentarios, y piezas fuera de lo acordado.</li>
+    <li><strong>Semana 1:</strong> reunión de 60 minutos para definir pilares de contenido, tono e identidad gráfica (colores, tipografías, plantillas).</li>
+    <li><strong>Semana 2:</strong> primer calendario aprobado y primeras publicaciones. Desde ahí, calendario mensual el día 20 del mes anterior.</li>
+    <li><strong>Cada mes:</strong> 4 publicaciones y 8 historias diseñadas, publicadas y reportadas. Una ronda de ajustes por pieza.</li>
+    <li><strong>Los primeros 5 días de cada mes:</strong> informe de una página con lo que funcionó y una recomendación concreta.</li>
+  </ul>
+  <h3>Qué necesitamos de ti</h3>
+  <table>
+    <tr><th style="width:50%">Al comenzar</th><th>Cada mes</th></tr>
+    <tr><td>Acceso a tus cuentas de Instagram y Facebook para publicar (lo coordinamos en la reunión de la semana 1)</td><td>Aprobar el calendario en 48 horas</td></tr>
+    <tr><td>Logo, colores y fotos que ya tengas, y piezas anteriores que te hayan gustado</td><td>Fotos de las prendas o productos nuevos, y avisos de promociones con una semana de anticipación</td></tr>
+    <tr><td>Una reunión de 60 minutos para definir pilares y tono</td><td>Responder tú los mensajes y comentarios de clientes (no van en este plan)</td></tr>
+  </table>
+  <h2 style="margin-top:8mm">Condiciones</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Sin permanencia mínima.</strong> Solo pedimos aviso de término con un mes de anticipación, para cerrar el calendario en curso y entregarte todo el material producido. Recomendamos evaluar a los 90 días, porque antes el contenido no alcanza a madurar.</li>
+    <li><strong>Inicio:</strong> 10 días hábiles después de la confirmación.</li>
+    <li><strong>No incluido:</strong> inversión en pauta (se paga directo a Meta; la gestión sí va incluida), producción de reels, respuesta a mensajes y comentarios, y piezas fuera del calendario.</li>
   </ul>
 </section>
 
@@ -152,14 +158,14 @@ HTML=f'''<!DOCTYPE html>
   <div class="cta">
     <div class="marca-pie"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
     <h2>¿Partimos?</h2>
-    <p>Dime con qué opción te quedas y te confirmo los pasos para partir. Si quieres verlo conversando, <strong>dime el día y la hora que te acomoden y me ajusto.</strong></p>
-    <div class="boton">Responder por WhatsApp o correo</div>
+    <p>Si te hace sentido, confírmame por WhatsApp o correo y agendamos la reunión de la semana 1. <strong>Dime el día y la hora que te acomoden y me ajusto.</strong></p>
+    <div class="boton">Confirmar por WhatsApp o correo</div>
     <div class="firma">
       <strong>Gabriel Meza</strong><br>
       Influence Chile · Agencia de marketing y desarrollo<br>
       +56 9 6545 0723 · <a href="https://influencechile.cl">influencechile.cl</a> · Instagram <a href="https://www.instagram.com/influence.chile">@influence.chile</a>
     </div>
-    <p class="pie">Propuesta válida por 30 días desde el {C["fecha"]}. Valores en pesos chilenos, netos, IVA indicado aparte, iguales a los publicados en influencechile.cl.</p>
+    <p class="pie">Propuesta válida por 30 días desde el {C["fecha"]}. Valores en pesos chilenos, netos, IVA indicado aparte.</p>
   </div>
 </section>
 </body></html>'''
