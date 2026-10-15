@@ -1,337 +1,506 @@
-# Mensajes por canal — a quién se le escribe por dónde
+# Mensajes de prospección — por canal (versión 3, 15-oct-2026)
 
-Complementa `mensajes-frio-v2.md` (que tiene la secuencia larga de LinkedIn/email para prioridad A).
-Acá cada empresa está clasificada por **el canal que de verdad conviene**, con el mensaje ya en el
-formato de ese canal. Criterio:
+Reemplaza a la versión anterior y a `mensajes-frio-v2.md` (las dos quedaron en `archivo/`). Este
+archivo trae todo: el mensaje de cada empresa en su canal, las invitaciones de LinkedIn, el guion de
+llamada con el correo que va después, y los seguimientos.
+
+## Cómo están escritos
+
+Cada mensaje tiene tres partes, en este orden:
+
+1. **Contexto:** quién eres y por qué le escribes a esa empresa, con un dato público y neutro de
+   ellos (qué servicios ofrecen, por dónde atienden, en qué ciudades están).
+2. **Qué hacemos, en una frase concreta.** El servicio tal cual, sin rodeos.
+3. **Una pregunta simple** que se responda con sí o no.
+
+Lo que **no** llevan, porque resulta invasivo: suposiciones sobre sus problemas ("se les acumulan
+mensajes", "el teléfono no para"), cifras de su equipo o de su cartera, "probé tu WhatsApp",
+preguntas retóricas que los ponen en evidencia, y frases como "trabajo con corredoras…" (todavía no
+tenemos clientes de automatización que mostrar; se dice qué hacemos, no a quién).
+
+**Firma de los correos:** Gabriel Meza · Influence Chile · influencechile.cl · +56 9 6545 0723
 
 | Canal | Cuándo | Formato |
 |---|---|---|
-| **WhatsApp** | La empresa publica el número como canal de atención y lo revisa todo el día (inmobiliarias, gestorías, estudios chicos que lo promocionan). Es también una demostración: les escribes por lo mismo que les propones automatizar. | 3-4 líneas, nombre de pila, un dato de ellos, termina en pregunta. Sin link en el primer mensaje. |
-| **Email** | Oficinas con horario (legal, contable, seguros, RR.HH.). El correo del sitio llega al socio en firmas de 5-20 personas. | Asunto corto y concreto, 6-8 líneas, una pregunta al final. LinkedIn un día antes como refuerzo si el decisor tiene perfil. |
-| **Llamada** | Empresas de 2-6 personas donde contesta el socio o alguien que se lo pasa. | Guion de 30 segundos para pedir el correo directo del socio y avisar que le escribes. Después, email. |
-| **LinkedIn** | Solo donde el decisor tiene perfil activo y no hay WhatsApp ni correo directo publicado, o la empresa es más corporativa. | Invitación + secuencia de `mensajes-frio-v2.md`. |
+| **WhatsApp** | La empresa publica el número como canal de atención (inmobiliarias, gestorías, estudios chicos). | 3 párrafos cortos, sin link. Entre 10:00 y 18:00. |
+| **Email** | Oficinas con horario (legal, contable, seguros, RR.HH.). | Asunto descriptivo, 4-6 líneas, una pregunta. Si el decisor tiene LinkedIn, la invitación va un día antes. |
+| **Llamada** | Empresas chicas donde contesta el socio o alguien que se lo pasa. | 30 segundos para pedir el correo de quien ve el tema. Después, el correo indicado. |
+| **LinkedIn** | Sin WhatsApp ni correo directo útil, o empresa más corporativa. | Invitación de 300 caracteres, mensaje al aceptar. |
 
-Las de prioridad C no están: no se les escribe (motivos en `mensajes-frio-v2.md`).
-Teléfonos y correos son los publicados en el sitio de cada empresa o en su ficha de Apollo.
+Las 8 de prioridad C no se contactan (motivos en `archivo/mensajes-frio-v2.md`).
 
 ---
 
-## WHATSAPP — 20 empresas
+## Seguimientos (iguales para todos)
 
-Regla: primer mensaje sin link. El link del diagnóstico va recién si responden. Mandar en horario
-de oficina (10:00-18:00); un WhatsApp de un desconocido a las 22:00 se borra.
+Solo dos, y se deja. Nunca el mismo texto del primer mensaje.
 
-### Prioridad A
+**WhatsApp, día 4**
+> Hola [Nombre], te escribí hace unos días sobre el asistente de WhatsApp para [empresa]. Si te sirve para evaluarlo, tengo un diagnóstico de 2 minutos que muestra si les aplica. ¿Te lo mando?
 
-**Propietat Corredora — Daniel Celedón** · +56 9 7849 7413 (WhatsApp del sitio)
-> Hola Daniel, soy Gabriel de Influence Chile. Vi que en Propietat trabajan sin call center, todo directo con ustedes tres — y me quedé pensando en qué pasa con el que escribe un sábado a las 10 de la noche por un depto en Providencia. ¿Hoy esas consultas de fuera de horario las alcanzan a tomar, o se enfrían hasta el lunes?
+**WhatsApp, día 10**
+> [Nombre], último mensaje de mi parte para no molestar. Si más adelante les interesa, me encuentras en influencechile.cl. ¡Éxito!
+
+**Email, día 4** (responder sobre el mismo hilo)
+> [Nombre], retomo mi correo anterior por si quedó abajo en la bandeja. Si les sirve, tengo un diagnóstico de 2 minutos que muestra qué procesos de [empresa] se podrían automatizar. ¿Te lo comparto?
+
+**Email, día 10**
+> [Nombre], cierro el tema de mi parte para no llenarte la bandeja. Si en algún momento les hace sentido, basta con responder este correo.
+
+El link del diagnóstico (influencechile.cl/diagnostico-workflows.html) va solo si dicen que sí.
+
+---
+
+## WHATSAPP — 27 empresas
+
+### Inmobiliarias y corredoras — prioridad A
+
+**Propietat Corredora — Daniel Celedón** · +56 9 7849 7413
+> Hola Daniel, soy Gabriel, de Influence Chile. Te escribo porque vi que en Propietat atienden a sus clientes de forma directa, sin call center.
+>
+> Implementamos un asistente de WhatsApp para corredoras: responde las preguntas frecuentes de cada propiedad (disponibilidad, precio, requisitos) a cualquier hora y deja la visita agendada en su calendario. Ustedes siguen atendiendo directo desde la visita.
+>
+> ¿Te interesaría verlo funcionando en una llamada de 15 minutos?
 
 **Grupo Cueto — Sebastián Cueto** · +56 9 3676 5659
-> Hola Sebastián, soy Gabriel de Influence Chile. Probé el WhatsApp de grupocueto.cl: saluda solo y después queda esperando a un ejecutivo. Ese primer paso ya lo dieron. ¿Hoy cuántas de esas consultas terminan en una visita agendada? Pregunto porque trabajo justo en la parte que viene después del saludo.
+> Hola Sebastián, soy Gabriel, de Influence Chile. Te escribo porque vi que el WhatsApp de Grupo Cueto ya tiene un saludo automático.
+>
+> Nosotros trabajamos el paso siguiente: que el mismo WhatsApp responda las preguntas de cada propiedad y deje la visita agendada, sin esperar a un ejecutivo.
+>
+> ¿Te interesaría verlo en una llamada de 15 minutos?
 
 **Gia Propiedades — Fidel Ibáñez** · +56 9 5709 2236
-> Hola Fidel, soy Gabriel de Influence Chile. Gia lleva 14 años, que en corretaje es mucha cartera y muchos referidos escribiendo al mismo WhatsApp de siempre. ¿Les pasa que se quedan consultas sin responder el mismo día? Trabajo con corredoras establecidas en que lo repetitivo (disponibilidad, precio, visita) se conteste solo.
+> Hola Fidel, soy Gabriel, de Influence Chile. Te escribo porque vi que en Gia las consultas de arriendo y venta entran por WhatsApp.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y agenda la visita en su calendario.
+>
+> ¿Te interesaría ver cómo funciona? Son 15 minutos.
 
 **Luz Propiedades — Any Luz Hein** · +56 9 6679 3965
-> Hola Any, soy Gabriel de Influence Chile. Vi que Luz Propiedades tiene 861 propiedades publicadas y son cuatro personas — cada propiedad genera consultas y casi todas preguntan lo mismo. ¿Hoy esas consultas de los portales las responden a mano? Trabajo con corredoras de regiones en que eso se conteste solo y la visita quede agendada sin coordinar.
+> Hola Any, soy Gabriel, de Influence Chile. Te escribo porque vi que Luz Propiedades tiene muchas propiedades publicadas en portales y atiende por WhatsApp.
+>
+> Implementamos un asistente que responde las consultas que llegan desde los portales (disponibilidad, precio, requisitos) a cualquier hora y deja la visita agendada.
+>
+> ¿Te interesaría verlo en una llamada de 15 minutos?
 
 **Mellibovsky Propiedades — Yossi Mellibovsky** · +56 9 5867 6467
-> Hola Yossi, soy Gabriel de Influence Chile. Vi que tienes 44 propiedades activas a tu nombre y Marcelo otras 18 — eso es un teléfono que no para. ¿Cuánto de tu día se va contestando "¿sigue disponible?" y "¿se puede ver el sábado?"? Trabajo con corredores en que esa parte se conteste sola y a ti te llegue la visita puesta.
+> Hola Yossi, soy Gabriel, de Influence Chile. Te escribo porque vi que en Mellibovsky tienen varias propiedades activas en portales en Chillán.
+>
+> Implementamos un asistente de WhatsApp para corredores: responde las preguntas frecuentes de cada propiedad a cualquier hora y te deja la visita agendada.
+>
+> ¿Te interesaría ver cómo funciona? Son 15 minutos.
 
-**BCG Contadores — Julio Quezada** · +56 9 5678 3322 (WhatsApp del sitio)
-> Hola Julio, soy Gabriel de Influence Chile. Vi que en BCG son cuatro socios atendiendo pymes en Rancagua — y con cuatro, el que persigue los documentos de cada cliente a fin de mes es un socio. ¿Cómo les llega hoy la documentación mensual: WhatsApp, correo? Trabajo con estudios contables en que esa parte corra sola, sin cambiar el software.
+### Contables y gestorías — prioridad A
 
-**Emprende tu Pyme — Ricardo** · +56 9 5066 6450 (WhatsApp de asesoría)
-> Hola Ricardo, soy Gabriel de Influence Chile. Vi que Emprende tu Pyme atiende asesoría y contabilidad por dos WhatsApp — y que cada emprendedor pasa por los mismos pasos (empresa en un día, inicio de actividades, patente). ¿Cuántos trámites de constitución hacen al mes? Trabajo con gestorías en que cada trámite tenga su flujo automático y el asesor entre solo donde hay que decidir.
+**BCG Contadores — Julio Quezada** · +56 9 5678 3322
+> Hola Julio, soy Gabriel, de Influence Chile. Te escribo porque vi que en BCG atienden pymes en Rancagua y tienen WhatsApp en el sitio.
+>
+> Implementamos automatizaciones para estudios contables: recordatorios mensuales a cada cliente, recepción ordenada de documentos y respuesta a consultas frecuentes, sin cambiar el software contable que usan.
+>
+> ¿Te interesaría conversarlo 15 minutos?
 
-### Prioridad B (resolver primero lo que dice la nota)
+**Emprende tu Pyme — Ricardo** · +56 9 5066 6450
+> Hola Ricardo, soy Gabriel, de Influence Chile. Te escribo porque vi que en Emprende tu Pyme acompañan a emprendedores en la constitución y los trámites de su empresa.
+>
+> Implementamos seguimiento automático de trámites: el cliente recibe avisos de avance y de lo que le falta entregar, y el asesor entra solo cuando hay que decidir algo.
+>
+> ¿Te interesaría verlo en una llamada de 15 minutos?
 
-**Vercetti Propiedades** · +56 9 3510 3597 — *buscar al gerente en LinkedIn; si no aparece, escribir igual al WhatsApp general*
-> Hola, soy Gabriel de Influence Chile. Vercetti tiene 20 agentes y la meta de ser red nacional — y un solo WhatsApp del sitio contestado a mano. ¿Cómo reparten hoy las consultas que entran por acá entre los agentes? Trabajo con corredoras en que la primera respuesta y la agenda sean iguales para todos y automáticas.
+### Inmobiliarias y corredoras — prioridad B
+
+**Vercetti Propiedades** · +56 9 3510 3597 — *buscar al gerente en LinkedIn; si no aparece, escribir igual*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Vercetti trabaja con un equipo de agentes y recibe consultas por el WhatsApp del sitio.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad, agenda la visita y asigna la consulta al agente que corresponde.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
 **Cima Propiedades** · +56 9 4578 6529 — *identificar gerente*
-> Hola, soy Gabriel de Influence Chile. Cima tiene oficinas en Concepción, Viña y Santiago y un solo canal de contacto para las tres. ¿Quién decide hoy a qué oficina va cada consulta? Trabajo con inmobiliarias multi-oficina en que la consulta llegue a la oficina correcta ya calificada y con visita puesta.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Cima tiene oficinas en Concepción, Viña del Mar y Santiago.
+>
+> Implementamos un asistente de WhatsApp para inmobiliarias que responde las consultas de cada propiedad y las deriva a la oficina que corresponde, con la visita ya agendada.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
 **Concreta Propiedades** · +56 9 9844 1444 — *identificar dueño*
-> Hola, soy Gabriel de Influence Chile. Probé el selector de horarios de visita en concretapropiedades.cl: elige el horario pero no reserva, termina acá en WhatsApp. Es la mitad del camino. ¿Les sirve ver cómo se cierra la otra mitad con una propiedad real de ustedes?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que en su sitio se puede elegir un horario de visita, que después se coordina por WhatsApp.
+>
+> Implementamos la parte que completa eso: que la visita quede confirmada en su calendario de forma automática y el interesado reciba el recordatorio.
+>
+> ¿Les interesaría verlo en una llamada de 15 minutos?
 
 **Mundo Corretaje** · +56 9 5647 9109 — *identificar dueño*
-> Hola, soy Gabriel de Influence Chile. Mundo Corretaje hace compraventa, arriendo y administración en La Serena con dos celulares — y en administración, propietario y arrendatario preguntan cosas distintas al mismo número. ¿Cuántas propiedades administran hoy? Trabajo con corredoras en que cada tipo de consulta se conteste sola y les llegue ordenada.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que en Mundo Corretaje trabajan compraventa, arriendo y administración en La Serena.
+>
+> Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y les entrega el resto ordenado.
+>
+> ¿Les interesaría conversarlo 15 minutos?
 
 **MS Propiedades SpA** · +56 9 2883 0691 — *identificar dueño*
-> Hola, soy Gabriel de Influence Chile. Vi que MS Propiedades lleva venta, arriendo y administración en Chillán por este WhatsApp. ¿Cuántas consultas les llegan a la semana desde los portales? Trabajo con corredoras de ese tamaño en que lo repetitivo se conteste solo y ustedes reciban la visita agendada.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que MS Propiedades trabaja venta, arriendo y administración en Chillán.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
 
 **Ascender Bienes Raíces** · +56 9 2863 5329 — *identificar dueño*
-> Hola, soy Gabriel de Influence Chile. Ascender ofrece venta, arriendo, administración y tasaciones en Valdivia, y todo entra por este número. Cuatro servicios por un canal que no distingue es un corredor haciendo de recepcionista. ¿Les muestro cómo queda con una propiedad real de ustedes?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Ascender ofrece venta, arriendo, administración y tasaciones en Valdivia.
+>
+> Implementamos un asistente de WhatsApp que reconoce qué servicio busca cada persona, responde lo frecuente y les deja agendada la visita o la tasación.
+>
+> ¿Les interesaría conversarlo 15 minutos?
 
 **RMC / Mardones Propiedades** · +56 9 8139 3239 — *confirmar nombre de pila de R. Mardones*
-> Hola, soy Gabriel de Influence Chile. RMC cubre Valdivia y Los Ríos, y en zonas con parcelas coordinar la visita es la mitad del trabajo. ¿Les pasa que las visitas fuera de la ciudad se descoordinan? Trabajo con corredoras en que la visita se agende sola con los datos de acceso de cada propiedad.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que RMC trabaja propiedades y parcelas en Valdivia y Los Ríos.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad y agenda la visita con la información de acceso incluida.
+>
+> ¿Les interesaría verlo en una llamada de 15 minutos?
 
 **Roma Inmobiliaria — Paola González** · +56 9 7806 5144 — *confirmar si hay equipo o es unipersonal*
-> Hola Paola, soy Gabriel de Influence Chile. Vi que Roma dice agilizar el proceso "mediante tecnología" y me dio curiosidad, porque el contacto termina acá como en cualquier corredora. ¿Cuántas personas son en el equipo hoy? Con eso te digo si lo que hago aplica o no.
+> Hola Paola, soy Gabriel, de Influence Chile. Te escribo porque vi en el sitio de Roma que buscan agilizar el proceso inmobiliario con tecnología.
+>
+> Nosotros implementamos esa parte en la atención: un asistente de WhatsApp que responde las preguntas de cada propiedad y deja la visita agendada.
+>
+> ¿Te interesaría ver cómo funciona? Son 15 minutos.
 
-**Golden Propiedades** · +56 9 8899 2595 — *buscar al dueño (Rosi Salazar es contacto comercial); el sitio no carga*
-> Hola, soy Gabriel de Influence Chile. Golden tiene más de 2.000 propiedades vendidas o arrendadas con un equipo de cuatro — esa proporción solo cierra si la atención es muy eficiente, o si hay consultas que se quedan sin responder. ¿Cuál de las dos es? Trabajo en que lo repetitivo se conteste solo.
+**Golden Propiedades** · +56 9 8899 2595 — *buscar al dueño (Rosi Salazar es contacto comercial)*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Golden lleva más de 2.000 propiedades vendidas o arrendadas.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
 **Deluno Propiedades** · +56 9 8668 5079 — *identificar socio*
-> Hola, soy Gabriel de Influence Chile. Deluno cubre Cachagua, Zapallar, Maitencillo y Santiago Oriente, y en costa enero trae más consultas en una semana que mayo entero. ¿Cómo manejan ese peak hoy? Trabajo con corredoras en que la temporada se atienda sola sin contratar para el verano.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Deluno trabaja en Cachagua, Zapallar, Maitencillo y Santiago Oriente, y se acerca la temporada de verano.
+>
+> Implementamos un asistente de WhatsApp que responde las consultas de arriendo de temporada (fechas, precio, capacidad) a cualquier hora y deja la reserva encaminada.
+>
+> ¿Les interesaría verlo antes de la temporada? Son 15 minutos.
+
+**Urbana Propiedades** · +56 9 9017 5378 — *nueva 12-oct; identificar socio*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Urbana trabaja arriendo de temporada en Tongoy y La Serena, y se acerca el verano.
+>
+> Implementamos un asistente de WhatsApp que responde las consultas de temporada (fechas, precio, capacidad) a cualquier hora y deja la reserva encaminada.
+>
+> ¿Les interesaría verlo antes de la temporada? Son 15 minutos.
+
+**Fornerod Propiedades** · +56 9 8536 2107 — *nueva 12-oct*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Fornerod tiene propiedades en varias ciudades, desde La Serena hasta Antofagasta y Puerto Varas.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada, esté donde esté la propiedad.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+**MATT Gestión — Matías Schenone** · +56 9 2642 6034 · mschenone@mattgestion.cl — *nueva 12-oct; candidata a A*
+> Hola Matías, soy Gabriel, de Influence Chile. Te escribo porque vi que en MATT las cotizaciones de propiedades y proyectos entran por WhatsApp.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad o proyecto a cualquier hora y deja la visita agendada.
+>
+> ¿Te interesaría verlo en una llamada de 15 minutos?
+
+**Alevarre Propiedades** · +56 9 4411 6374 — ***verificar antes:*** *el sitio no cargó; confirmar que sigan activos*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Alevarre trabaja propiedades en La Serena y Coquimbo y atiende por este número.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+### Contables, gestorías y consultoras — prioridad B
 
 **Consultoría SAV** · +56 9 7926 3760 — *identificar socio*
-> Hola, soy Gabriel de Influence Chile. SAV promete acceso en tiempo real a la contabilidad — y al interesado le responde en 24 horas por formulario. ¿Cuántas consultas de planes reciben a la semana? Trabajo con consultoras contables en que el prospecto reciba al tiro lo que hoy espera un día, sin tocar el sistema contable.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que SAV ofrece a sus clientes acceso en línea a su contabilidad.
+>
+> Implementamos lo mismo para la atención: un asistente que responde al instante las consultas de planes y precios, y les entrega al interesado ya calificado.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
 **HB Estudio Contable** · +56 9 5371 3937 — *identificar dueño*
-> Hola, soy Gabriel de Influence Chile. HB atiende solo por este WhatsApp y teléfono — cómodo para el cliente actual, pero el que escribe un viernes a las 8 espera al lunes. ¿Se les acumulan mensajes del fin de semana? Trabajo con estudios boutique en que lo repetitivo se conteste solo y el contador entre cuando hay criterio.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que HB atiende a sus clientes por WhatsApp y teléfono.
+>
+> Implementamos automatizaciones para estudios contables: respuesta a consultas frecuentes a cualquier hora, recordatorios mensuales y recepción ordenada de documentos, sin cambiar su software.
+>
+> ¿Les interesaría conversarlo 15 minutos?
 
-**AyR Contax** · WhatsApp del sitio — *identificar fundador; confirmar tamaño (Iquique, Pucón, Viña)*
-> Hola, soy Gabriel de Influence Chile. AyR atiende pymes en Iquique, Pucón y Viña — tres ciudades con el mismo canal. ¿Cuántas personas son en total y cómo reparten los clientes? Trabajo con estudios distribuidos en que el cliente tenga un canal que responda igual en todas las ciudades.
+**AyR Contax** · WhatsApp del sitio — *identificar fundador; confirmar tamaño*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que AyR atiende pymes en Iquique, Pucón y Viña del Mar.
+>
+> Implementamos un canal de atención automático para estudios contables que responde igual en todas las ciudades, envía recordatorios y recibe documentos ordenados.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
-**EFG Consulting — Francisco Carrasco** · +56 9 8765 6370 — *ángulo: aliado, no cliente*
-> Hola Francisco, soy Gabriel de Influence Chile. EFG trabaja 100% remoto con pymes de todo Chile, igual que nosotros. Cuando una pyme tuya necesita automatizar WhatsApp, cotizaciones o reportería, ¿lo haces tú o lo derivas? Si lo derivas, me gustaría conversar 15 minutos sobre cómo trabajamos con consultoras que necesitan a quién derivar.
+**BPM Contadores Auditores (Contadores Curicó)** · +56 9 6170 2215 — *nueva 12-oct; identificar socio*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que en BPM las cotizaciones de contabilidad y auditoría entran por este WhatsApp.
+>
+> Implementamos un asistente que hace las preguntas iniciales de cada cotización según el tipo de cliente y les entrega la solicitud completa para responder.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+**ServicioDTE** · +56 9 9178 8639 — *nueva 12-oct; confirmar tamaño*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que ServicioDTE atiende 100 % online y cotiza por WhatsApp.
+>
+> Implementamos un asistente que hace las preguntas iniciales de cada cotización según el rubro del cliente y les entrega la solicitud completa para responder.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+**EFG Consulting — Francisco Carrasco** · +56 9 8765 6370 — *ángulo: alianza, no venta*
+> Hola Francisco, soy Gabriel, de Influence Chile. Te escribo porque vi que EFG trabaja 100 % remoto con pymes de todo Chile, igual que nosotros.
+>
+> Nosotros implementamos automatizaciones (WhatsApp, cotizadores, reportes) y buscamos consultoras con las que derivarnos clientes cuando el trabajo es del otro.
+>
+> ¿Te interesaría conversarlo 15 minutos?
 
 ---
 
-## EMAIL — 16 empresas
+## EMAIL — 18 empresas
 
-Regla: LinkedIn un día antes si el decisor tiene perfil (invitación de `mensajes-frio-v2.md`), para
-que el nombre les suene. Asunto sin "propuesta", "oportunidad" ni "automatización" — se van a spam
-mental. Firma: Gabriel · Influence Chile · influencechile.cl.
+Asunto descriptivo, sin "propuesta", "oportunidad" ni "automatización". Si el decisor tiene
+LinkedIn, la invitación va el día anterior (texto en la sección LinkedIn).
 
 ### Prioridad A
 
 **Schneider Abogados — Peter Schneider** · contacto@schneiderabogados.cl (+ LinkedIn)
-> **Asunto:** Los clientes del Plan Legal Permanente
+> **Asunto:** Atención de los clientes del Plan Legal Permanente
 >
-> Peter, el Plan Legal Permanente tiene un costo operativo que seguro conoces: el cliente con plan escribe cuando quiere, por donde quiere, y espera rápido porque "para eso paga". Con nueve personas y clientes en Alemania, España y Estados Unidos, eso son consultas a cualquier hora que alguien lee, clasifica y deriva antes de que un abogado haga algo de valor.
+> Peter, soy Gabriel, de Influence Chile. Te escribo porque vi que Schneider Abogados ofrece un Plan Legal Permanente y atiende clientes en Chile y en el extranjero.
 >
-> Trabajo con estudios de ese tamaño en que esa capa corra sola — recibir, clasificar, pedir el documento que falta, derivar al abogado correcto — y que cada cliente con plan vea su estado sin preguntar por correo.
+> Implementamos sistemas de atención para estudios jurídicos: cada consulta llega clasificada por tema, con los documentos pedidos de antemano, y el cliente puede ver el estado de su caso sin escribir.
 >
-> ¿Cómo manejan hoy el seguimiento de los planes: correo, Excel, algo más? Con eso te digo en 15 minutos si aplica.
+> ¿Te interesaría conversarlo 15 minutos?
 
-**AIJ Abogados — Víctor Iturra** · contacto@aijabogados.cl (+ LinkedIn; alternativa WhatsApp +56 9 7373 2844, que ellos promocionan)
+**AIJ Abogados — Víctor Iturra** · contacto@aijabogados.cl (+ LinkedIn)
 > **Asunto:** Las calculadoras de aijabogados.cl
 >
-> Víctor, AIJ hizo dos cosas que casi ningún estudio hace: prometer respuesta por WhatsApp en 2 horas y poner calculadoras (autodespido, pensión) en el sitio. Las dos terminan en el mismo lugar: alguien leyendo el WhatsApp y decidiendo a cuál de los cuatro abogados va.
+> Víctor, soy Gabriel, de Influence Chile. Te escribo porque vi que AIJ tiene calculadoras de autodespido y pensión en su sitio, y atención por WhatsApp.
 >
-> Lo que hago es que la calculadora no termine en un número sino en una conversación: toma el resultado, hace las tres preguntas que ustedes harían y agenda directo con el abogado del área. Las 2 horas se vuelven 2 minutos.
+> Implementamos la conexión entre esas dos cosas: que el resultado de la calculadora inicie la conversación por WhatsApp, haga las preguntas de evaluación y agende con el abogado del área.
 >
-> ¿Les llegan muchas consultas desde las calculadoras? Si es un canal relevante, 15 minutos y te muestro cómo se conecta.
+> ¿Te interesaría verlo en 15 minutos?
 
 **Wiseplan — Luis Rosas Asenjo** · contacto@wiseplan.cl (+ LinkedIn)
-> **Asunto:** El cierre de nómina de cada cliente
+> **Asunto:** Comunicación con las empresas en el cierre de nómina
 >
-> Luis, el outsourcing de remuneraciones tiene un ritmo que no perdona: todos los clientes cierran el mismo día, todos mandan novedades tarde, todos preguntan lo mismo la misma semana. Con 16 personas y clientes en dos países, ese ida y vuelta es el trabajo que nadie quiere.
+> Luis, soy Gabriel, de Influence Chile. Te escribo porque vi que Wiseplan hace outsourcing de remuneraciones y ya trabaja automatización en el cálculo de nómina.
 >
-> Una pregunta honesta antes de contarte qué hago, porque en LinkedIn Wiseplan menciona "automatización de nómina": ¿eso cubre el cálculo, o también la recolección de novedades y la comunicación con cada empresa? Es en esa capa donde solemos entrar.
+> Nosotros implementamos la parte de comunicación con cada empresa cliente: recepción de novedades, recordatorios de cierre y respuesta a consultas frecuentes.
 >
-> Si sigue siendo manual, 15 minutos y te lo muestro con un cliente real de ustedes.
+> Si esa parte todavía es manual, ¿te interesaría conversarlo 15 minutos?
 
 **Consultores Vega — Paula Vega** · recepcion@consultoresvega.cl
-> **Asunto:** "Le contactamos el mismo día hábil"
+> **Asunto:** Atención fuera de horario en Consultores Vega
 >
-> Paula, te escribo a ti porque llevas remuneraciones, el servicio con el ritmo más duro de la firma. La promesa de "el mismo día hábil" aplica al que escribe un martes a las 11; el que escribe un viernes a las 7 de la tarde con un problema de nómina espera al lunes.
+> Paula, soy Gabriel, de Influence Chile. Te escribo porque vi que en Consultores Vega se comprometen a contactar a cada cliente el mismo día hábil.
 >
-> Trabajo con firmas de siete personas en que lo repetitivo (recibir novedades, confirmar, responder "¿ya salió mi liquidación?", recordar plazos) se resuelva solo y a cualquier hora, sin cambiar el software contable.
+> Implementamos una atención automática para estudios contables que responde las consultas frecuentes a cualquier hora y recibe las novedades de remuneraciones ordenadas, sin cambiar su software.
 >
-> ¿Cómo reciben hoy las novedades de cada cliente? Si es correo y WhatsApp, 15 minutos y te lo muestro. Y si prefieres que hable con el socio a cargo, dime con quién.
+> ¿Te interesaría conversarlo 15 minutos? Si lo ve otra persona del estudio, te agradezco indicarme con quién.
 
 **Fuenzalida Contadores — Eugenio Fuenzalida** · correo del sitio (+ LinkedIn)
-> **Asunto:** Pymes y edificios: dos carteras, el mismo seguimiento
+> **Asunto:** Comunicación con pymes y comunidades
 >
-> Eugenio, Fuenzalida tiene algo poco común: dos carteras recurrentes con ritmos distintos — las pymes con su mes contable, y los edificios y comunidades con informes, comités y copropietarios preguntando. Las dos generan la misma clase de trabajo (pedir, recibir, confirmar, informar), pero a gente distinta.
+> Eugenio, soy Gabriel, de Influence Chile. Te escribo porque vi que Fuenzalida atiende tanto pymes como edificios y comunidades.
 >
-> Trabajo en que esa capa de comunicación corra sola para cada tipo de cliente: la pyme recibe su recordatorio y sube documentos; el comité recibe su informe y el copropietario tiene dónde preguntar sin interrumpir al contador.
+> Implementamos automatizaciones para estudios contables: recordatorios y recepción de documentos para las pymes, y envío de informes y respuesta a consultas frecuentes para las comunidades.
 >
-> ¿Cuál de las dos carteras les quita más tiempo de seguimiento hoy? Con eso parto.
+> ¿Te interesaría conversarlo 15 minutos?
 
 **Franco & Cía Abogados — Rolando Franco** · contacto@francoycia.cl (+ LinkedIn)
-> **Asunto:** "¿En qué va mi causa?"
+> **Asunto:** Consultas de estado de causa
 >
-> Rolando, un estudio con 30 años y 150 clientes recibe consultas que no son de clientes nuevos: son clientes antiguos preguntando en qué va la causa, si llegó el documento, cuándo es la audiencia. Hoy entran por el botón "Hablemos" o por teléfono, y las responde alguien del equipo de 12 que podría estar en otra cosa.
+> Rolando, soy Gabriel, de Influence Chile. Te escribo porque vi que Franco & Cía tiene una larga trayectoria y una cartera estable de clientes en Temuco.
 >
-> Trabajo con estudios de ese tamaño en que el cliente vea el estado de su causa y haga esas preguntas sin ocupar a un abogado, y las consultas nuevas lleguen clasificadas por área al socio que corresponde.
+> Implementamos sistemas de atención para estudios jurídicos: los clientes consultan el estado de su causa sin ocupar a un abogado, y las consultas nuevas llegan clasificadas por área.
 >
-> ¿Cómo manejan hoy las consultas de estado? Si es correo y teléfono, 15 minutos y te muestro cómo lo resolvemos.
+> ¿Te interesaría conversarlo 15 minutos?
 
-**Avanzo Ágil Consultora — Marcela G.** · marcela.g@avanzoconsultora.cl (correo directo publicado en el sitio)
-> **Asunto:** Los 200 candidatos de un proceso masivo
+**Avanzo Ágil Consultora — Marcela G.** · marcela.g@avanzoconsultora.cl
+> **Asunto:** Comunicación con candidatos en procesos masivos
 >
-> Marcela, reclutamiento masivo tiene un problema que el ejecutivo no tiene: 200 candidatos para 20 vacantes son 200 personas que preguntan, no llegan, llegan tarde o necesitan tres confirmaciones. Y eso lo absorbe un equipo de ocho a punta de WhatsApp.
+> Marcela, soy Gabriel, de Influence Chile. Te escribo porque vi que Avanzo hace reclutamiento masivo y ya usa una plataforma con IA para seleccionar.
 >
-> Una pregunta honesta antes: vi que mencionan una plataforma con IA para reclutamiento. ¿Cubre también la comunicación con el candidato (confirmaciones, recordatorios, estado) o solo el filtro? Es en la comunicación donde solemos entrar.
+> Nosotros implementamos la comunicación con cada candidato: confirmaciones, recordatorios de entrevista y aviso de estado, todo por WhatsApp y sin intervención del equipo.
 >
-> Si esa parte sigue siendo manual, 15 minutos y te muestro cómo queda.
+> Si esa parte todavía es manual, ¿te interesaría conversarlo 15 minutos?
 
 **EJA — Manuel Madrid del Real** · contacto@eja.cl (+ LinkedIn)
-> **Asunto:** Los vencimientos de cada cliente
+> **Asunto:** Vencimientos y consultas de clientes de cumplimiento
 >
-> Manuel, un estudio que hace cumplimiento (laboral, ambiental, permisos) tiene clientes que no consultan una vez — consultan cada vez que cambia una norma, vence un permiso o llega una fiscalización. En EJA eso entra por Google Forms, WhatsApp o correo, y uno de los cuatro abogados lo clasifica.
+> Manuel, soy Gabriel, de Influence Chile. Te escribo porque vi que EJA asesora a empresas en cumplimiento laboral, ambiental y de permisos.
 >
-> Trabajo con estudios de ese tamaño en que el cliente tenga un canal que entienda qué pregunta, muestre vencimientos y estado, y derive al abogado del área cuando hay que decidir. En cumplimiento, además, los vencimientos se avisan solos.
+> Implementamos sistemas para estudios de ese tipo: aviso automático de vencimientos a cada cliente y un canal que recibe las consultas y las deriva al abogado del área.
 >
-> ¿Cómo llevan hoy los vencimientos de permisos y obligaciones por cliente? Si es planilla, 15 minutos.
+> ¿Te interesaría conversarlo 15 minutos?
 
 ### Prioridad B
 
 **Arriendos Chile** · administracion@arriendoschile.cl — *identificar gerente*
-> **Asunto:** Cuando el arrendatario pasa de administración a legal
+> **Asunto:** Seguimiento de arriendos entre administración y legal
 >
-> Arriendos Chile administra propiedades con abogados en la casa — es lo que un propietario quiere, y también lo que más coordinación interna exige: el arrendatario que no paga pasa de un área a la otra, y en ese traspaso se pierden días.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Arriendos Chile administra propiedades y tiene área legal propia.
 >
-> Trabajo con administradoras en que ese flujo (aviso de mora, recordatorio, escalamiento, estado visible para el propietario) corra solo entre las dos áreas.
+> Implementamos el seguimiento automático de cada arriendo: avisos de pago, recordatorios, paso al área legal cuando corresponde y estado visible para el propietario.
 >
-> ¿Cuántas propiedades administran hoy? Con eso les digo si vale una llamada corta. ¿A quién le conviene que le escriba directamente?
+> ¿Con quién podría conversarlo 15 minutos?
 
 **Montt Corretajes** · info@monttcorretajes.cl — *identificar dueño*
-> **Asunto:** Sin WhatsApp, a propósito o sin querer
+> **Asunto:** Atención por WhatsApp para Montt Corretajes
 >
-> Montt Corretajes es de las pocas corredoras de Puerto Montt sin WhatsApp publicado — solo formulario y teléfono. Puede ser una decisión (no quieren el ruido) o un hueco (pierden al que no llama). Si es lo segundo, trabajo con corredoras en tener WhatsApp sin el ruido: contesta solo lo repetitivo y agenda, y a ustedes les llega la visita. ¿Es decisión o hueco?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Montt Corretajes atiende por formulario y teléfono.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad y deja la visita agendada, sin sumar trabajo al equipo.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
 
-**MBM Propiedades — Marcela Martínez Barriga** · correo del sitio (+ LinkedIn) — *verificar el sitio desde un navegador antes*
-> **Asunto:** Consultas comerciales e industriales en MBM
+**MBM Propiedades — Marcela Martínez Barriga** · correo del sitio (+ LinkedIn) — *verificar el sitio antes*
+> **Asunto:** Consultas de oficinas e industrial en MBM
 >
-> Marcela, MBM lleva desde el 2000 en el sector oriente y en oficinas e industrial — consultas distintas a las de vivienda: más datos, más documentos, más idas y vueltas antes de una visita.
+> Marcela, soy Gabriel, de Influence Chile. Te escribo porque vi que MBM trabaja oficinas, locales e industrial en el sector oriente.
 >
-> Trabajo con corredoras establecidas en que esa recolección previa corra sola y el ejecutivo entre con el interesado ya calificado. ¿Cómo califican hoy una consulta comercial antes de mostrar?
+> Implementamos un asistente que hace las preguntas de calificación de cada consulta comercial (superficie, uso, plazo) y la entrega completa al ejecutivo antes de la visita.
+>
+> ¿Te interesaría conversarlo 15 minutos?
 
-**CZ Abogados — Paulina Zamora** · contacto@czabogados.cl — *cautela: tienen "Agendar", atienden medianas y grandes*
-> **Asunto:** Dos preguntas sobre el botón "Agendar"
+**CZ Abogados — Paulina Zamora** · contacto@czabogados.cl — *cautela: ya tienen agendamiento*
+> **Asunto:** Consultas recurrentes de clientes de CZ
 >
-> Paulina, CZ tiene un botón "Agendar reunión" y es Empresa B — dos señales de un estudio que piensa en proceso. Dos preguntas directas: ¿ese agendamiento queda confirmado solo o lo revisa alguien? Y con clientes medianos y grandes, ¿la consulta recurrente (estado, documentos, vencimientos de compliance) entra por correo? Si la segunda es sí, ahí es donde trabajo con estudios como CZ.
+> Paulina, soy Gabriel, de Influence Chile. Te escribo porque vi que CZ atiende a empresas medianas y grandes, y ya tiene agendamiento en su sitio.
+>
+> Implementamos sistemas para las consultas recurrentes de esos clientes: estado de asuntos, solicitud de documentos y aviso de vencimientos, sin ocupar a un abogado.
+>
+> ¿Te interesaría conversarlo 15 minutos?
 
-**BS Chile Consultores — Andrés Sepúlveda** · correo del sitio (+ LinkedIn) — *cautela: "Reservar cita" y venden un ERP*
-> **Asunto:** Cuánto demora una cotización en BS Chile
+**BS Chile Consultores — Andrés Sepúlveda** · correo del sitio (+ LinkedIn) — *cautela: venden un ERP*
+> **Asunto:** Cotización e incorporación de clientes en BS Chile
 >
-> Andrés, BS Chile vende un ERP además de llevar la contabilidad — el cliente que llega ya es digital. Lo que me dio curiosidad: cuando una pyme pide cotización, ¿cuánto demora en recibir una propuesta? Con dos socios y clientes en todo Chile, el cuello suele ser ese — la cotización y el onboarding, no la contabilidad. ¿Lo conversamos 15 minutos?
+> Andrés, soy Gabriel, de Influence Chile. Te escribo porque vi que BS Chile lleva contabilidad y además ofrece un ERP a pymes de todo Chile.
+>
+> Implementamos la parte previa al servicio: cotización automática según el tipo de empresa e incorporación del cliente nuevo con solicitud de documentos.
+>
+> ¿Te interesaría conversarlo 15 minutos?
 
-**OPTIMA PYME** · contacto@optimapymechile.cl — *ángulo: referidor*
-> **Asunto:** Lo que viene después de la digitalización básica
+**OPTIMA PYME** · contacto@optimapymechile.cl — *ángulo: alianza*
+> **Asunto:** Derivación de clientes entre consultoras
 >
-> Optima Pyme ofrece digitalización básica a pymes de Concepción. Nosotros hacemos la parte siguiente — atención automática, cotizadores, flujos internos — y las consultoras de gestión son quienes mejor detectan cuándo una pyme está lista. ¿Les interesa conversar sobre derivarnos casos, y viceversa? 15 minutos.
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Optima Pyme acompaña a pymes de Concepción en su digitalización.
+>
+> Nosotros implementamos automatizaciones (WhatsApp, cotizadores, flujos internos) y buscamos consultoras con las que derivarnos clientes según lo que cada una hace.
+>
+> ¿Les interesaría conversarlo 15 minutos?
 
 **Home Pymes** · formulario / correo del sitio (+ LinkedIn empresa) — *identificar fundador*
-> **Asunto:** 800 empresarios y un formulario
+> **Asunto:** Comunicación recurrente con clientes de Home Pymes
 >
-> Home Pymes atiende a más de 800 empresarios con plataforma propia — eso es un back-office recibiendo documentos y consultas de 800 clientes. El primer contacto, en cambio, sigue siendo formulario y WhatsApp. ¿La plataforma cubre también la comunicación recurrente (recordatorios, estado, "¿qué me falta?") o eso lo hace el equipo a mano? Si es a mano, ahí trabajo con gestorías de alto volumen. ¿Con quién conviene conversarlo?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Home Pymes atiende a cientos de empresarios con plataforma propia.
+>
+> Implementamos la comunicación recurrente con cada cliente: recordatorios de documentos, avisos de estado y respuesta a consultas frecuentes por WhatsApp.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
-**Gestión 360 Consultores** · contacto@gestion360chile.cl — *confirmar que es la de cobranza, no la automotriz*
-> **Asunto:** Supervisar a las empresas externas de cobranza
+**Gestión 360 Consultores** · contacto@gestion360chile.cl — *confirmar que es la de cobranza*
+> **Asunto:** Seguimiento de cobranza y reportes de empresas externas
 >
-> Gestión 360 asesora procesos de cobranza y supervisa empresas externas — el rubro donde el seguimiento es el producto: cada deudor es una secuencia con fechas, cada empresa externa un reporte que consolidar. Trabajo en que esa secuencia y esa consolidación corran solas. ¿Cómo supervisan hoy a las externas: reportes que les mandan, o acceso directo?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Gestión 360 asesora procesos de cobranza y supervisa empresas externas.
+>
+> Implementamos secuencias automáticas de seguimiento a deudores y la consolidación de reportes de cada empresa externa en un solo panel.
+>
+> ¿Con quién podría conversarlo 15 minutos?
 
-**RYS Consultores (Rabanal & Stenger)** · correo del sitio (+ LinkedIn empresa) — *identificar a Rabanal o Stenger; confirmar tamaño*
-> **Asunto:** "¿En qué va mi postulación?"
+**RYS Consultores (Rabanal & Stenger)** · correo del sitio (+ LinkedIn empresa) — *identificar socio*
+> **Asunto:** Comunicación con candidatos en RYS
 >
-> RYS lleva desde 2008 con oficinas en Concepción, Santiago y Antofagasta y clientes grandes. Pregunta directa: ¿los candidatos saben en qué va su proceso sin preguntar? Con tres oficinas y procesos corporativos, responder eso a mano es tiempo de consultor. Si esa parte es manual, ahí trabajo. ¿A cuál de los socios le escribo?
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que RYS hace selección con oficinas en Concepción, Santiago y Antofagasta.
+>
+> Implementamos la comunicación automática con candidatos: confirmación de entrevistas, recordatorios y aviso de avance en cada proceso.
+>
+> ¿Con quién podría conversarlo 15 minutos?
+
+**Yung y Asociados** · yungyasoc@yungyasoc.cl — *nueva 12-oct; **verificar antes:** el sitio no cargó*
+> **Asunto:** Atención de consultas nuevas en Yung y Asociados
+>
+> Estimado Fernando, soy Gabriel, de Influence Chile. Le escribo porque vi que Yung y Asociados atiende varias áreas del derecho desde Antofagasta.
+>
+> Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área y con los antecedentes básicos, lista para que el abogado la evalúe.
+>
+> ¿Le interesaría conversarlo 15 minutos?
 
 ---
 
-## LLAMADA — 5 empresas
+## LLAMADA — 7 empresas
 
-Regla: la llamada no vende; consigue el nombre y el correo directo del socio y avisa que llega un
-mail. 30 segundos. Después va el email de `mensajes-frio-v2.md` (prioridad A) o el de arriba (B).
+La llamada no vende: pide el correo de quien ve el tema. Después se manda el correo indicado.
 
-**Guion base**
-> "Hola, habla Gabriel de Influence Chile. Trabajo con [rubro] en [una frase del hueco]. No es una venta por teléfono — quería saber a quién le conviene que le escriba por correo sobre esto, y su correo directo. ¿Con quién hablo?"
+**Guion**
+> "Hola, habla Gabriel, de Influence Chile. Implementamos [servicio en una frase] para [rubro]. Me gustaría enviarle la información a la persona que ve estos temas. ¿Me podría indicar a quién y su correo?"
 
-Si contesta el socio directamente: se dice el dato específico de la empresa (está en cada mensaje
-de abajo) y se pide 15 minutos otro día. No se improvisa más que eso.
+Si contesta la persona que decide: se le dice lo mismo y se le pregunta si prefiere 15 minutos otro día o recibir la información por correo.
 
-**Seguros Gaete — María Loreto Gaete** · +56 9 2643 0165 — prioridad A
-> Dato: "el comparativo de 24 horas compite contra cotizadores de 30 segundos; lo que hago es que la parte mecánica corra sola y el corredor entre a recomendar". Pedir correo directo de María Loreto; email de `mensajes-frio-v2.md` #11.
+**Seguros Gaete — María Loreto Gaete** · +56 9 2643 0165 — A
+> Servicio: "cotización automática de seguros por WhatsApp, con la comparación lista para que el corredor recomiende".
+> Correo después: **Asunto:** Cotización de seguros por WhatsApp — "María Loreto, gracias por recibirme por teléfono. Como le comenté, implementamos un asistente que toma los datos de cada cotización por WhatsApp y le entrega la comparación lista para recomendar. ¿Le acomoda conversarlo 15 minutos?"
 
-**Seguros Broker — Lily Justiniano** · (2) 2349 5981 — prioridad A
-> Dato: "ya tienen cotizador para vehículos; empresas, hogar y vida siguen a mano, y las renovaciones también". Pedir correo directo de Lily; email de `mensajes-frio-v2.md` #12.
+**Seguros Broker — Lily Justiniano** · (2) 2349 5981 — A
+> Servicio: "cotización automática para hogar, vida y empresas, y aviso de renovaciones".
+> Correo después: **Asunto:** Cotización y renovaciones — "Lily, gracias por la conversación. Vi que ya tienen cotizador para vehículos; nosotros implementamos lo mismo para hogar, vida y empresas, más el aviso automático de renovaciones. ¿Le acomoda conversarlo 15 minutos?"
 
-**Celer — Felipe Bustos** · +56 9 9419 1121 (celular del socio publicado en celer.cl) — prioridad A
-> Es el número del socio, así que la llamada puede ser la conversación: "11 contadores pidiendo documentos a pymes cada fin de mes — ¿cómo les llega hoy la documentación?". Si no es buen momento, pedir cuándo y mandar el email de `mensajes-frio-v2.md` #10.
+**Celer — Felipe Bustos** · +56 9 9419 1121 (celular del socio) — A
+> Es el número del socio, así que la llamada puede ser la conversación. Servicio: "recordatorios y recepción automática de documentos de cada cliente, sin cambiar el software contable".
+> Si no es buen momento: preguntar cuándo, y mandar **Asunto:** Recepción de documentos de clientes — "Felipe, como te comenté, implementamos recordatorios y recepción ordenada de documentos para estudios contables, sin cambiar su software. ¿Te acomoda conversarlo 15 minutos esta semana?"
 
-**Admincondominios (Loyola & Zúñiga)** · 32 317 5046 — prioridad A
-> Dato: "la respuesta en 48 horas del formulario es lo que hace que el teléfono no pare". Pedir nombre y correo del socio a cargo; después el email de `mensajes-frio-v2.md` #19.
+**Admincondominios (Loyola & Zúñiga)** · 32 317 5046 — A
+> Servicio: "atención automática para copropietarios: consultas frecuentes, boletas y reclamos, a cualquier hora".
+> Correo después: **Asunto:** Atención de copropietarios — "Gracias por la información. Implementamos un canal de WhatsApp para administradoras que responde las consultas frecuentes de los copropietarios y deriva al administrador solo lo que necesita su revisión. ¿Le acomoda conversarlo 15 minutos?"
 
-**Administración de Edificios Santiago** · +56 2 2405 3539 — prioridad B (2 personas)
-> Dato: "Edipro resuelve el cálculo, no la atención; el copropietario igual llama por su boleta". Pedir nombre y correo; email de `mensajes-frio-v2.md` sección B.
+**Administración de Edificios Santiago** · +56 2 2405 3539 — B
+> Servicio y correo: los mismos de Admincondominios.
 
----
+**Droppelmann & Binimelis Propiedades — Sandra Droppelmann** · +56 9 7614 5960 — B, nueva 12-oct
+> Servicio: "un WhatsApp que responde las preguntas de cada propiedad y parcela, y agenda la visita".
+> Correo después a info@dbpropiedades.cl: **Asunto:** Atención por WhatsApp — "Sandra, gracias por atenderme. Implementamos un asistente de WhatsApp para corredoras que responde las consultas de cada propiedad a cualquier hora y deja la visita agendada. ¿Te acomoda verlo 15 minutos?"
 
-## LINKEDIN — 3 empresas (sin WhatsApp ni correo directo útil, o perfil corporativo)
-
-Invitación y secuencia en `mensajes-frio-v2.md`.
-
-**Luppa — María Paz Ramírez Álvarez** (A) · no hay teléfono ni correo directo publicado, pero su perfil está activo como socia directora. Secuencia #8. Si no acepta en 5 días, llamar al número del sitio y pedir su correo.
-**Home Key Propiedades — Cristian Lengerich Ulloa** (B) · el sitio no carga; LinkedIn es el único canal confiable. Mensaje B de v2 (preguntar primero si las visitas online ya quedan confirmadas solas).
-**Grupo Insurex — Marcelo Rubio Barrientos** (B) · empresa de 140 personas; el gerente general está en LinkedIn y el correo general no llega a él. Mensaje B de v2.
-
-(Roma Inmobiliaria va por WhatsApp, pero el LinkedIn de Paola González está enlazado en el sitio como alternativa menos directa mientras se confirma el tamaño.)
+**Clínica Dental Dentistatemuco** · +56 45 273 1700 — B, nueva 12-oct
+> Servicio: "reserva de horas por WhatsApp a cualquier hora, con confirmación y recordatorio automáticos".
+> Correo después: **Asunto:** Reserva de horas por WhatsApp — "Gracias por la información. Implementamos un asistente de WhatsApp para clínicas dentales que agenda horas a cualquier hora y envía el recordatorio al paciente. ¿Le acomoda conversarlo 15 minutos?"
 
 ---
 
-## NUEVAS DEL 12-OCT — 10 empresas (todas B)
+## LINKEDIN — 3 empresas, más las invitaciones de refuerzo
 
-Salieron de la búsqueda semanal del lunes 12. Mismo criterio de canal que arriba. Tres vienen con
-**"verificar antes"**: el sitio no cargó al revisarlas y los datos son del buscador o de directorios.
-A esas no se les escribe hasta abrir el sitio desde un navegador y confirmar lo que dice el mensaje.
+**Invitación (máximo 300 caracteres), para todas**
+> Hola [Nombre], soy Gabriel, de Influence Chile. Implementamos automatizaciones de atención para [rubro]. Me gustaría sumarte a mi red.
 
-### WhatsApp
+**Mensaje al aceptar:** el mismo texto del correo de esa empresa, sin el asunto.
 
-**MATT Gestión — Matías Schenone** · +56 9 2642 6034 (WhatsApp del sitio) · mschenone@mattgestion.cl — *candidata a subir a A: decisor con nombre y correo directo*
-> Hola Matías, soy Gabriel de Influence Chile. Vi que en MATT son cuatro personas con unas 110 propiedades y 6 proyectos entre Puerto Varas y Coyhaique, y que la cotización entra toda por WhatsApp. ¿Cuántas de esas consultas son "¿sigue disponible?" o "¿cuándo se puede ver?"? Trabajo con corredoras del sur en que esa parte se conteste sola y a ustedes les llegue la visita puesta.
+**Luppa — María Paz Ramírez Álvarez** (A, RR.HH.) · solo LinkedIn
+> Al aceptar: "Gracias por aceptar, María Paz. Te escribo porque vi que Luppa hace selección y desarrollo de personas. Implementamos la comunicación automática con candidatos: confirmación de entrevistas, recordatorios y aviso de avance en cada proceso. ¿Te interesaría conversarlo 15 minutos?"
+> Si no acepta en 5 días: llamar al número del sitio y pedir su correo.
 
-**Urbana Propiedades** · +56 9 9017 5378 — *identificar socio en LinkedIn antes; si no aparece, escribir igual*
-> Hola, soy Gabriel de Influence Chile. Vi que Urbana trabaja arriendo de temporada en Tongoy y La Serena, y se viene el verano: consultas a cualquier hora preguntando lo mismo (fechas, precio, cuántas personas). ¿Esas consultas de noche y fin de semana las alcanzan a tomar al tiro? Trabajo con corredoras en que eso se conteste solo y la reserva quede encaminada.
+**Home Key Propiedades — Cristian Lengerich Ulloa** (B) · el sitio no carga
+> Al aceptar: "Gracias por aceptar, Cristian. Te escribo porque vi que Home Key trabaja propiedades en Concepción. Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad y deja la visita agendada. ¿Te interesaría verlo 15 minutos?"
 
-**Fornerod Propiedades** · +56 9 8536 2107 (WhatsApp del sitio)
-> Hola, soy Gabriel de Influence Chile. Vi que Fornerod tiene propiedades desde La Serena hasta Antofagasta y Puerto Varas, todo entrando al mismo WhatsApp. Con interesados en otras ciudades, la primera respuesta es la que decide si siguen. ¿Cómo hacen hoy para contestar rápido las consultas de propiedades que están lejos? Trabajo justo en esa primera respuesta.
+**Grupo Insurex — Marcelo Rubio Barrientos** (B) · empresa grande, el correo general no llega a él
+> Al aceptar: "Gracias por aceptar, Marcelo. Te escribo porque vi que Insurex es corredora de seguros con varias líneas de negocio. Implementamos cotización automática por WhatsApp y aviso de renovaciones para corredoras. ¿Te interesaría conversarlo 15 minutos?"
 
-**BPM Contadores Auditores (Contadores Curicó)** · +56 9 6170 2215 (el "Cotizar ahora" del sitio lleva acá) · asesorias@contadorescurico.cl — *identificar socio*
-> Hola, soy Gabriel de Influence Chile. Vi que en BPM auditan a contratistas, condominios, sindicatos y colegios, además de llevar pymes, y que todas las cotizaciones entran por este WhatsApp. Cada rubro se cotiza distinto. ¿Cuánto tiempo se les va armando cotizaciones a mano? Trabajo con estudios contables en que las preguntas iniciales y la cotización base salgan solas.
+---
 
-**ServicioDTE** · +56 9 9178 8639 (el "Cotizar por WhatsApp" del sitio) — *confirmar tamaño de equipo*
-> Hola, soy Gabriel de Influence Chile. Vi que ServicioDTE atiende 100 % online a clínicas, restaurantes, constructoras y transporte, y que la cotización parte por WhatsApp. ¿Cada cotización la arman a mano según el rubro? Trabajo con estudios contables online en que las primeras preguntas y el precio base salgan solos, y ustedes entren cuando el cliente ya está calificado.
+## Verificar antes de cualquier mensaje
 
-**Alevarre Propiedades** · +56 9 4411 6374 · alevarrepropiedades@gmail.com — ***verificar antes:*** *el sitio no cargó. Confirmar las ~134 propiedades y que sigan activos*
-> Hola, soy Gabriel de Influence Chile. Vi que Alevarre tiene más de 130 propiedades entre La Serena y Coquimbo, y que todo el contacto llega a un celular y un Gmail. Con ese volumen, contestar "¿sigue disponible?" se come el día. ¿Cuántas consultas les entran a la semana? Trabajo con corredoras en que esa parte se conteste sola y les llegue la visita puesta.
-
-### Email
-
-**Yung y Asociados** · yungyasoc@yungyasoc.cl · +56 55 255 6640 — ***verificar antes:*** *el sitio no cargó. Confirmar cantidad de abogados y que Fernando Yung Moraga siga como socio*
-> **Asunto:** Las consultas que llegan a yungyasoc@
->
-> Estimado Fernando, Yung y Asociados atiende laboral, comercial, civil, tributario, penal y recursos naturales desde Antofagasta. Con seis áreas, cada consulta que llega al correo general tiene que leerla alguien, entender de qué se trata y pasarla al abogado correcto antes de que empiece el trabajo de verdad.
->
-> Trabajo con estudios en que esa primera capa corra sola: la consulta llega clasificada por área, con los antecedentes básicos pedidos, y el abogado entra directo a evaluar.
->
-> ¿Cómo distribuyen hoy las consultas nuevas entre las áreas? Con eso te digo en 15 minutos si aplica.
->
-> Gabriel · Influence Chile · influencechile.cl
-
-### Llamada
-
-**Droppelmann & Binimelis Propiedades — Sandra Droppelmann** · +56 9 7614 5960 (celular publicado) — *son dos socias; confirmar actividad reciente*
-> Dato: "venden parcelas en Puerto Octay, Puerto Klocker y Riachuelo; el que compra suele estar en Santiago y pregunta de noche, y hoy no tienen WhatsApp publicado". Si contesta Sandra: preguntar cómo les llegan las consultas de compradores de afuera y pedir 15 minutos. Si no, pedir su correo y escribir con ese mismo dato.
-
-**Clínica Dental Dentistatemuco** · +56 45 273 1700 — *confirmar cuántos dentistas atienden*
-> Dato: "el botón 'Reservar ahora' del sitio lleva a este teléfono, y atienden de 10:00 a 13:00 y de 15:00 a 20:00; el que quiere reservar a las 14:00 o un domingo, no encuentra a nadie". Pedir el nombre y correo del dueño o dueña. También calza para redes: es la primera clínica de salud del pipeline.
-
-### Verificar antes de cualquier mensaje
-
-**Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo desde un navegador, ver equipo y canal de contacto, y recién ahí escribir el mensaje. Si es una sola persona, pasa a C.
+**Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
+navegador, ver equipo y canal, y recién ahí usar el mensaje base de inmobiliarias. Si es una sola
+persona, pasa a C.
 
 ---
 
 ## Resumen
 
-| Canal | A | B | Nuevas 12-oct (B) | Total |
-|---|---|---|---|---|
-| WhatsApp | 7 | 14 | 6 | 27 |
-| Email | 8 | 9 | 1 | 18 |
-| Llamada (y luego email) | 4 | 1 | 2 | 7 |
-| LinkedIn | 1 | 2 | 0 | 3 |
-| Verificar antes | 0 | 0 | 1 | 1 |
-| **Total** | **20** | **26** | **10** | **56** |
+| Canal | A | B | Total |
+|---|---|---|---|
+| WhatsApp | 7 | 20 | 27 |
+| Email | 8 | 10 | 18 |
+| Llamada (y luego correo) | 4 | 3 | 7 |
+| LinkedIn | 1 | 2 | 3 |
+| Verificar antes | 0 | 1 | 1 |
+| **Total** | **20** | **36** | **56** |
 
-La columna `canal` de `pipeline-automatizacion.csv` tiene esta misma asignación, con el número o
-correo al lado, para no tener que abrir este archivo cada vez.
-
-Orden sugerido para la primera semana: lunes las 5 inmobiliarias A por WhatsApp (respuesta rápida,
-señal temprana), martes los 8 emails A con la invitación de LinkedIn el día antes, miércoles las 5
-llamadas A. Jueves y viernes: respuestas, y empezar con las B que ya tengan el nombre resuelto.
+Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
+invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y
+las B que ya tengan nombre.

@@ -102,7 +102,7 @@ de atención (frecuente en inmobiliarias).
 
 ### Guion de primer contacto (LinkedIn o email)
 
-Los mensajes reales, ya escritos por empresa y por persona, están en `mensajes-frio-v2.md`. La
+Los mensajes reales, ya escritos por empresa y por persona, están en `mensajes-por-canal.md` (versión 3). La
 estructura que siguen (y que se usa para cualquier empresa nueva) es:
 
 1. **Nombre y cargo reales.** Nunca "Hola [nombre]". Si no se encontró al decisor, la empresa es

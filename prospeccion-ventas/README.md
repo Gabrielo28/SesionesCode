@@ -17,12 +17,11 @@
 | [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
 | [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 74 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
-| [mensajes-frio-v2.md](mensajes-frio-v2.md) | **Los mensajes vigentes**: secuencia completa (invitación LinkedIn → mensaje 1 → día 4 → día 10) para las 20 de prioridad A, mensaje 1 para las 26 de B, y por qué no se escribe a las 8 de C |
-| [mensajes-por-canal.md](mensajes-por-canal.md) | **Por dónde escribirle a cada una**: las 56 (A+B, incluidas las 10 del 12-oct) clasificadas en WhatsApp / email / llamada / LinkedIn según lo que la empresa publica como canal, con el mensaje ya en el formato de ese canal (WhatsApp corto, email con asunto, guion de llamada) |
+| [mensajes-por-canal.md](mensajes-por-canal.md) | **Los mensajes vigentes (versión 3)**: las 56 empresas A+B por canal, con mensaje de tres partes (contexto, qué hacemos, una pregunta), invitaciones de LinkedIn, guion de llamada con su correo y seguimientos día 4 y día 10 |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
 | [leads-automatizacion-chile.csv](leads-automatizacion-chile.csv) | Fuente de candidatos (74 empresas, inmobiliaria + servicios profesionales B2B) con la señal pública de cada una — la búsqueda semanal automática agrega filas acá; las nuevas entran al pipeline como B |
-| [archivo/](archivo/) | Lotes 1-3 de mensajes anteriores, reemplazados por `mensajes-frio-v2.md`. Se guardan solo como historial |
+| [archivo/](archivo/) | Versiones anteriores de mensajes (lotes 1-3, v2 y por-canal v1), reemplazadas por `mensajes-por-canal.md` v3. Solo historial |
 | [propuesta/](propuesta/) | Generadores de propuesta PDF (redes y diagnóstico de workflows). `presencia-250k/`: propuesta de un solo plan para leads con presupuesto de $250.000 (Plan Presencia sin reels); edita `cliente.json` y regenera |
 | [auditoria-oferta-influence.md](auditoria-oferta-influence.md) | Qué vende la web, qué no define, inconsistencias internas corregidas y decisiones de política (grabación, permanencia, LinkedIn) |
 | [situ/](situ/) | **Lead entrante Situ (situ.care)**: brief y decisiones (`respuesta-situ.md`), propuesta en HTML/PDF de 9 páginas que responde los 9 puntos de su correo más inversión en dos opciones (A Instagram+Facebook $450k, B con LinkedIn $550k) y ejemplos (`propuesta-situ.pdf`), el correo listo para pegar (`correo-situ.md`) y la guía de accesos sin contraseñas para el cliente (`guia-accesos.md`) |
@@ -134,7 +133,7 @@ El trabajo diario no se hace sobre ese CSV sino sobre **`pipeline-automatizacion
 tiene la verificación hecha, el decisor identificado donde se pudo, y la prioridad:
 
 - **A (20):** decisor con nombre y cargo, hueco verificado en el sitio, tamaño entre 3 y 50
-  personas. Tienen secuencia completa en `mensajes-frio-v2.md`. Se escriben ya.
+  personas. Tienen mensaje, invitación y seguimientos en `mensajes-por-canal.md`. Se escriben ya.
 - **B (26):** falta el nombre del decisor, o hay que confirmar tamaño/sitio, o el ángulo cambia
   (ya tienen algo automatizado, son más grandes, o conviene más como aliado que como cliente).
   Tienen el mensaje 1 listo y una instrucción de qué resolver antes de mandarlo.

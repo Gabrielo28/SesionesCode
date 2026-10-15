@@ -19,7 +19,7 @@ reajusta.
 | Candidatos de automatización (fuente) | `leads-automatizacion-chile.csv` | asistente (rutina de los lunes) |
 | Candidatos de redes (fuente) | `leads-chile-132-empresas.csv` | asistente |
 | **El pipeline de trabajo** | `pipeline-automatizacion.csv` | asistente escribe, Gabriel decide |
-| Mensajes vigentes por empresa y por canal | `mensajes-frio-v2.md` · `mensajes-por-canal.md` | asistente genera, Gabriel envía |
+| Mensajes vigentes por empresa y por canal | `mensajes-por-canal.md` (versión 3: contexto, qué hacemos, una pregunta) | asistente genera, Gabriel envía |
 | Cómo se verifica antes de escribir | `08-prospeccion-automatizacion.md` §Frío · `03-auditoria-express.md` | asistente |
 | Qué decir cuando responden / objeciones | `04-seguimiento-y-objeciones.md` · `08` §Objeciones | Gabriel |
 | Propuestas | `propuesta/generar.js` (redes, PDF) · `situ/propuesta-situ.html` (plantilla a medida) | asistente arma, Gabriel aprueba |
@@ -152,9 +152,10 @@ Un entrante vale cinco contactos en frío. Reglas:
 3. Canal          Lo que la empresa publica como canal principal manda:
                   inmobiliaria → WhatsApp · legal/contable/RR.HH./seguros → email
                   (+ LinkedIn) · estudio chico sin correo → llamada.
-4. Mensaje        5 partes, ≤ 6 líneas: quién soy · qué vi en SU web/redes (concreto) ·
-                  qué suele costar eso · qué hacemos · una pregunta fácil de responder.
-                  Sin precios. Sin "soluciones integrales". Sin adjuntos.
+4. Mensaje        3 partes, ≤ 6 líneas: contexto (quién soy y por qué le escribo, con un
+                  dato público y neutro de ellos) · qué hacemos en una frase · una pregunta
+                  de sí o no. Sin suponer sus problemas, sin cifras de su equipo, sin
+                  "trabajo con…" si no hay clientes que mostrar. Sin precios ni adjuntos.
 5. Registrar      Fila completa en el pipeline, estado por_contactar.
 ```
 
