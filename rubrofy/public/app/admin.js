@@ -469,7 +469,7 @@
           </table></div>
         </div>
         <div class="ig-card"><div class="ig-card-head"><h2>Códigos de descuento</h2></div>
-          ${d.codigosConFlow ? '' : '<p class="adm-nota adm-aviso">Los códigos se cobran como cupones de Flow: funcionan cuando Flow esté configurado. Puedes crearlos desde ya.</p>'}
+          ${d.codigosConFlow ? '' : '<p class="adm-nota adm-aviso">Los códigos funcionan cuando Flow o Mercado Pago estén configurados. Puedes crearlos desde ya.</p>'}
           <form id="f-codigo" class="adm-form">
             <label>Código<input name="codigo" maxlength="24" placeholder="AMIGO20" required class="adm-mayus"></label>
             <label>Tipo<select name="tipo"><option value="porcentaje">Porcentaje</option><option value="monto">Monto en pesos</option></select></label>

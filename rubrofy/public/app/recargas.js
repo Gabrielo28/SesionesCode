@@ -95,11 +95,19 @@
       const simular = e.target.closest('[data-simular]');
       if (!pagar && !simular) return;
       const btn = pagar || simular;
+      // Con Flow y Mercado Pago, se elige con cuál pagar.
+      let medio;
+      if (pagar && window.RubrofyPagos) {
+        // Se abre encima de este diálogo (sin cerrarlo).
+        const e = await window.RubrofyPagos.elegirMedio({ detalle: `${paqueteSel.cantidad} ${TITULOS[paqueteSel.tipo]} · $${paqueteSel.precioClp.toLocaleString('es-CL')}.` });
+        if (!e) return;
+        medio = e.medio;
+      }
       btn.disabled = true;
       const texto = btn.textContent;
       btn.textContent = pagar ? 'Abriendo el pago…' : 'Cargando…';
       try {
-        const r = await ctx.api(`/api/negocios/${n.id}/recargas${simular ? '/simular' : ''}`, { method: 'POST', body: JSON.stringify({ paquete: paqueteSel.id }) });
+        const r = await ctx.api(`/api/negocios/${n.id}/recargas${simular ? '/simular' : ''}`, { method: 'POST', body: JSON.stringify({ paquete: paqueteSel.id, medio }) });
         if (r.url) { window.location.href = r.url; return; }
         if (r.negocio) { ctx.setNegocio(r.negocio); Object.assign(n, r.negocio); }
         pintar(`Listo: se cargaron ${paqueteSel.cantidad} ${esc(TITULOS[paqueteSel.tipo])} (simulado, sin cobro).`);

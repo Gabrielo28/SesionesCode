@@ -535,10 +535,18 @@
         return crearPrimeraSemana();
       }
       if (accion === 'pagar') {
+        // Con Flow y Mercado Pago, se elige con cuál pagar.
+        let medio, emailPago;
+        if (window.RubrofyPagos) {
+          const e = await window.RubrofyPagos.elegirMedio({ plan: true });
+          if (!e) return;
+          medio = e.medio;
+          emailPago = e.emailPago;
+        }
         b.disabled = true;
         b.textContent = 'Abriendo el pago…';
         try {
-          const res = await ctx.api(`/api/negocios/${ctx.negocio().id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: b.dataset.plan }) });
+          const res = await ctx.api(`/api/negocios/${ctx.negocio().id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: b.dataset.plan, medio, emailPago }) });
           if (res.url) { window.location.href = res.url; return; }
           if (res.negocio) ctx.setNegocio(res.negocio);
           cerrar();

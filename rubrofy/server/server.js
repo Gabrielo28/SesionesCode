@@ -44,6 +44,8 @@ const { getPlan, listPlanesPublico, stripePriceId, planIdDesdePriceId } = requir
 const stripe = require('./stripe');
 const pagos = require('./pagos');
 const cobroFlow = require('./cobro-flow');
+const cobroMp = require('./cobro-mp');
+const mercadopago = require('./mercadopago');
 const beneficios = require('./beneficios');
 const creditos = require('./creditos');
 const soporte = require('./soporte');
@@ -77,6 +79,8 @@ const limiteEstrategia = crearLimitador({ max: 10, ventanaMs: 60 * 60 * 1000 });
 const limiteVerificar = crearLimitador({ max: 3, ventanaMs: 60 * 60 * 1000 });
 // "Descubre tu diseño con IA" lee la web y manda imágenes a Claude: tope por negocio.
 const limiteDisenoIA = crearLimitador({ max: 5, ventanaMs: 60 * 60 * 1000 });
+// Avisos de Mercado Pago: cada uno consulta su API, así que se atienden a lo más 300 por minuto.
+const limiteAvisosMp = crearLimitador({ max: 300, ventanaMs: 60 * 1000 });
 
 // Estados de una suscripción de Stripe que ya terminó: solo en ese caso un
 // cambio de plan puede abrir un Checkout nuevo sin duplicar el cobro.
@@ -123,7 +127,7 @@ function cambiarEmail(negocio, nuevo, base, { porEquipo = false } = {}) {
   return { negocio };
 }
 
-// Elimina la cuenta. Antes corta la suscripción: si Flow o Stripe no
+// Elimina la cuenta. Antes corta la suscripción: si Flow, Mercado Pago o Stripe no
 // responden, NO se elimina (si no, se le seguiría cobrando sin cuenta donde
 // verlo). Un rechazo de Flow (la suscripción ya no existe) no la frena.
 async function eliminarCuenta(negocio) {
@@ -135,6 +139,11 @@ async function eliminarCuenta(negocio) {
   if (f && f.error) {
     if (!f.status || f.status >= 500 || f.status === 401) return { error: 'No pudimos cancelar la suscripción en Flow. Intenta de nuevo en un rato: la cuenta no se eliminó para que no se siga cobrando.' };
     console.log(`Flow al eliminar ${negocio.id}: ${f.error} (se elimina igual)`);
+  }
+  const m = await cobroMp.cancelarYa(negocio);
+  if (m && m.error) {
+    if (!m.status || m.status >= 500 || m.status === 401) return { error: 'No pudimos cancelar la suscripción en Mercado Pago. Intenta de nuevo en un rato: la cuenta no se eliminó para que no se siga cobrando.' };
+    console.log(`Mercado Pago al eliminar ${negocio.id}: ${m.error} (se elimina igual)`);
   }
   store.deleteNegocio(negocio.id);
   return { ok: true };
@@ -300,9 +309,9 @@ async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }
 }
 
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
-// los IDs internos de Stripe o Flow).
+// los IDs internos de Stripe, Flow o Mercado Pago).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
+  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, mp: _mpInfo, mpPrueba: _mpPrueba, medioPago: _medioPago, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
   resto.metaConexion = meta.publicoMeta(metaInfo);
   // Meta Ads y Competencia: "Próximamente" hasta que Meta apruebe la app.
   resto.metaAbierto = meta.abiertoPara(negocio);
@@ -331,11 +340,13 @@ function negocioPublico(negocio) {
   resto.esAdmin = admin.esAdmin(negocio); // solo muestra el enlace; /api/admin valida por su cuenta
   resto.zonaHoraria = programacion.ZONA;
   resto.plan = negocio.plan || 'gratis';
-  // Cómo paga: con qué (Flow o Stripe) y, si ya se suscribió, cómo va.
+  // Cómo paga: con qué (Flow, Mercado Pago o Stripe) y, si ya se suscribió,
+  // cómo va. medios: con qué puede elegir pagar (Flow y Mercado Pago).
   const sus = pagos.suscripcion(negocio);
   const prov = sus ? sus.proveedor : pagos.proveedor();
-  resto.pagos = Object.assign({ proveedor: prov, nombre: pagos.nombre(prov), suscripcion: !!sus, estado: sus ? sus.estado : null },
-    sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : {});
+  const detallePago = sus && sus.proveedor === 'flow' ? cobroFlow.publico(negocio) : sus && sus.proveedor === 'mercadopago' ? cobroMp.publico(negocio) : {};
+  resto.pagos = Object.assign({ proveedor: prov, nombre: pagos.nombre(prov), suscripcion: !!sus, estado: sus ? sus.estado : null,
+    medios: pagos.proveedores().filter((p) => p !== 'stripe').map((p) => ({ id: p, nombre: pagos.nombre(p) })) }, detallePago);
   resto.tieneSuscripcion = !!sus || !!(stripeInfo && stripeInfo.customerId);
   delete resto.planRegalado;
   delete resto.creditosPlan; delete resto.referidoPor; delete resto.suspendido;
@@ -1217,9 +1228,10 @@ function revisarPruebas(ahora = Date.now()) {
   try { creditos.revisarReferidos((n) => pagos.activa(n)); } catch (err) { console.error('referidos:', err.message); }
 }
 revisarPruebas();
-// Flow: se revisan las suscripciones cada 6 horas (FLOW_REVISION_SEG) por si
-// un aviso de cobro no llegó, y un minuto después de arrancar.
-cobroFlow.configurar({
+// Flow y Mercado Pago: se revisan las suscripciones cada 6 horas
+// (FLOW_REVISION_SEG, MP_REVISION_SEG) por si un aviso de cobro no llegó, y
+// un minuto después de arrancar.
+const depsCobro = {
   planDeCortesia,
   notificar,
   // Comprobante de cada pago y aviso si no se pudo cobrar, por correo.
@@ -1231,18 +1243,29 @@ cobroFlow.configurar({
     if (evento === 'recarga') return avisos.correoRecibo({ negocio, urlPanel: url('#cuenta'), montoClp: datos.monto, detalle: datos.detalle });
     return avisos.correoRecibo({ negocio, urlPanel: url('#cuenta'), montoClp: datos.monto, detalle: `Plan ${getPlan(negocio.plan).nombre || ''}`.trim(), periodo: datos.periodo, fecha: datos.fecha });
   }),
-});
+};
+cobroFlow.configurar(depsCobro);
+cobroMp.configurar(depsCobro);
 // Al pasar a producción, lo creado en sandbox se archiva y el plan vuelve a
 // lo que corresponde sin pago (ver limpiarSandbox en cobro-flow.js).
-if (pagos.proveedor() === 'flow') {
+if (pagos.disponible('flow')) {
   const limpiados = cobroFlow.limpiarSandbox();
   if (limpiados.length) console.log(`Flow en producción: se archivaron los cobros de sandbox de ${limpiados.length} cuenta(s): ${limpiados.map((l) => `${l.negocioId} (${l.antes} → ${l.despues})`).join(', ')}`);
 }
+{
+  const limpiados = cobroMp.limpiarPrueba();
+  if (limpiados.length) console.log(`Mercado Pago en producción: se archivaron los cobros de prueba de ${limpiados.length} cuenta(s): ${limpiados.map((l) => `${l.negocioId} (${l.antes} → ${l.despues})`).join(', ')}`);
+}
 let ultimaRevisionFlow = 0;
-const revisarFlow = () => { if (pagos.proveedor() === 'flow') cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
+const revisarFlow = () => { if (pagos.disponible('flow')) cobroFlow.sincronizarTodas().catch((err) => console.error('Flow:', err.message)); };
 setTimeout(revisarFlow, 60 * 1000).unref();
 setInterval(revisarFlow, (Number(process.env.FLOW_REVISION_SEG) || 6 * 3600) * 1000).unref();
+const revisarMp = () => { if (pagos.disponible('mercadopago')) cobroMp.sincronizarTodas().catch((err) => console.error('Mercado Pago:', err.message)); };
+setTimeout(revisarMp, 75 * 1000).unref();
+setInterval(revisarMp, (Number(process.env.MP_REVISION_SEG) || 6 * 3600) * 1000).unref();
 respaldos.iniciar(); // respaldo externo diario (si están las variables RESPALDO_S3_*)
+// Con qué paga el negocio su suscripción ('flow', 'mercadopago', 'stripe' o null).
+const medioPagoDe = (negocio) => { const s = negocio && pagos.suscripcion(negocio); return s ? s.proveedor : null; };
 // Fidelización (server/fidelizacion.js): rescates, pausas, celebraciones,
 // rachas y aniversarios, en el mismo reloj de los recordatorios.
 fidelizacion.configurar({
@@ -1250,8 +1273,12 @@ fidelizacion.configurar({
   notificar,
   log: console.log,
   creadoEl: admin.creadoEl,
-  cancelarAlFinal: (negocio) => cobroFlow.cancelar(negocio),
-  suscribir: (negocioId, planId, base, periodo) => cobroFlow.suscribir(negocioId, planId, base || (process.env.PUBLIC_URL || '').replace(/\/$/, ''), null, periodo),
+  // Con Mercado Pago la pausa deja la suscripción en pausa y se reactiva; con
+  // Flow se cancela al final del período y se vuelve a crear.
+  cancelarAlFinal: (negocio) => (medioPagoDe(negocio) === 'mercadopago' ? cobroMp.pausar(negocio) : cobroFlow.cancelar(negocio)),
+  suscribir: (negocioId, planId, base, periodo) => (medioPagoDe(store.getNegocio(negocioId)) === 'mercadopago'
+    ? cobroMp.reanudar(negocioId)
+    : cobroFlow.suscribir(negocioId, planId, base || (process.env.PUBLIC_URL || '').replace(/\/$/, ''), null, periodo)),
   correo: (negocioId, tipo, datos) => correoCliente(negocioId, (negocio, url) => {
     const base = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
     const c = creditos.config().promo;
@@ -1403,6 +1430,8 @@ const server = http.createServer(async (req, res) => {
   // Lo mismo para los avisos y retornos de Flow: llegan del navegador del
   // cliente o de Flow con un token, y el resultado se consulta a Flow.
   const esAvisoFlow = parts[0] === 'api' && parts[1] === 'flow' && parts.length === 3;
+  // Y para Mercado Pago: el aviso solo trae un id y se consulta a Mercado Pago.
+  const esAvisoMp = parts[0] === 'api' && parts[1] === 'mp' && parts.length === 3;
 
   // GET /api/salud — para el healthcheck de Railway: responde 200 si el
   // servidor atiende y la base de datos contesta.
@@ -1418,7 +1447,7 @@ const server = http.createServer(async (req, res) => {
   const esSubidaVideo = parts[0] === 'api' && parts[1] === 'negocios' && req.method === 'POST'
     && ((parts[3] === 'contenido' && parts[5] === 'video' && parts.length === 6) || (parts[3] === 'videos' && parts.length === 4));
   const mutando = req.method !== 'GET' && req.method !== 'HEAD';
-  if (parts[0] === 'api' && mutando && !esWebhookStripe && !esAvisoFlow && !peticionLegitima(req, esSubidaVideo)) {
+  if (parts[0] === 'api' && mutando && !esWebhookStripe && !esAvisoFlow && !esAvisoMp && !peticionLegitima(req, esSubidaVideo)) {
     return sendJSON(res, 403, { error: 'Solicitud rechazada' });
   }
 
@@ -1522,7 +1551,7 @@ const server = http.createServer(async (req, res) => {
       //   /api/flow/tarjeta       vuelve el cliente de inscribir su tarjeta → /app
       //   /api/flow/plan          aviso de Flow: cobro de una suscripción
       if (esAvisoFlow && ['POST', 'GET'].includes(req.method)) {
-        if (!pagos.proveedor() || pagos.proveedor() !== 'flow') return notFound(res);
+        if (!pagos.disponible('flow')) return notFound(res);
         const token = req.method === 'POST' ? (await leerFormulario(req)).get('token') : url.searchParams.get('token');
         const accion = parts[2];
         const redirigir = (destino) => { res.writeHead(303, { Location: destino, 'Cache-Control': 'no-store' }); res.end(); };
@@ -1546,6 +1575,48 @@ const server = http.createServer(async (req, res) => {
         if (accion === 'tarjeta') {
           const r = await cobroFlow.retornoTarjeta(token, urlBase(req));
           return redirigir(`/app?checkout=${r.resultado}`);
+        }
+        return notFound(res);
+      }
+
+      // Mercado Pago (server/cobro-mp.js). Nada se da por pagado según lo que
+      // diga el aviso: con el id se le pregunta a Mercado Pago.
+      //   POST /api/mp/aviso    aviso (Webhooks): suscripción, cuota o pago de una recarga
+      //   GET  /api/mp/vuelta   vuelve el negocio de autorizar su suscripción → /app
+      //   GET  /api/mp/retorno  vuelve el negocio de pagar una recarga → /app
+      if (esAvisoMp && ['POST', 'GET'].includes(req.method)) {
+        if (!pagos.disponible('mercadopago')) return notFound(res);
+        const accion = parts[2];
+        const redirigir = (destino) => { res.writeHead(303, { Location: destino, 'Cache-Control': 'no-store' }); res.end(); };
+        const idValido = (v) => /^[A-Za-z0-9_-]{1,64}$/.test(String(v || ''));
+        if (accion === 'aviso' && req.method === 'POST') {
+          const cuerpo = await readBody(req, 64 * 1024).catch(() => ({}));
+          const tipo = String(url.searchParams.get('type') || url.searchParams.get('topic') || cuerpo.type || cuerpo.topic || '');
+          const id = String(url.searchParams.get('data.id') || url.searchParams.get('id') || (cuerpo.data && cuerpo.data.id) || '');
+          // No se exige la firma: el aviso no se cree, con el id se consulta a
+          // Mercado Pago (como con Flow). Sí se limita cuántos se atienden.
+          if (!idValido(id)) return sendJSON(res, 200, { recibido: true });
+          if (limiteAvisosMp.esperaSegundos('mp')) return sendJSON(res, 429, { error: 'Demasiados avisos' });
+          limiteAvisosMp.registrar('mp');
+          const r = await cobroMp.procesarAviso(tipo, id);
+          return sendJSON(res, r.estado === 'error' ? 500 : 200, { estado: r.estado });
+        }
+        if (accion === 'vuelta' && req.method === 'GET') {
+          let id = url.searchParams.get('preapproval_id');
+          // Si Mercado Pago no trae el id, se usa la suscripción pendiente de quien volvió.
+          if (!idValido(id)) {
+            const sesion = sesionActual(req);
+            const n = sesion && store.getNegocio(sesion);
+            id = n && n.mp && ((n.mp.pendiente && n.mp.pendiente.id) || n.mp.preapprovalId);
+          }
+          if (!idValido(id)) return redirigir('/app?checkout=error');
+          return redirigir(`/app?checkout=${await cobroMp.vuelta(String(id))}`);
+        }
+        if (accion === 'retorno' && req.method === 'GET') {
+          const id = url.searchParams.get('payment_id') || url.searchParams.get('collection_id');
+          if (!/^\d{1,30}$/.test(String(id || ''))) return redirigir('/app?recarga=cancelada');
+          const r = await cobroMp.confirmarPago(String(id));
+          return redirigir(`/app?recarga=${r.estado === 'pagado' || r.estado === 'pendiente' ? 'exito' : 'cancelada'}`);
         }
         return notFound(res);
       }
@@ -1806,7 +1877,7 @@ const server = http.createServer(async (req, res) => {
         if (parts[2] === 'beneficios') {
           const vista = () => ({
             regalos: beneficios.listarRegalos(), codigos: beneficios.listarCodigos(),
-            codigosConFlow: pagos.proveedor() === 'flow',
+            codigosConFlow: pagos.disponible('flow') || pagos.disponible('mercadopago'),
             cuentas: store.listNegocios().map((n) => ({ id: n.id, nombre: n.nombre, email: n.email || '', plan: n.plan || 'gratis', paga: pagos.activa(n), regalo: beneficios.regaloVigente(n) })),
           });
           if (req.method === 'GET' && parts.length === 3) return sendJSON(res, 200, vista());
@@ -2154,14 +2225,22 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'checkout' && parts.length === 4 && req.method === 'POST') {
           const body = await readBody(req);
           const planId = body.plan;
-          // Con Flow: inscribir la tarjeta en Flow (devuelve { url }) o, si ya
-          // hay suscripción o tarjeta, cambiar/crear la suscripción al tiro.
-          if (body.codigo && pagos.proveedor() !== 'flow') return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
-          if (pagos.proveedor() === 'flow') {
+          // Con Flow o Mercado Pago (body.medio: con cuál quiere pagar): ir a
+          // pagar (devuelve { url }) o, si ya hay suscripción, cambiarla al
+          // tiro. Con una suscripción vigente se cambia esa, con su medio.
+          const actual = pagos.suscripcion(negocio);
+          const vigente = actual && ((actual.proveedor === 'flow' && cobroFlow.suscripcionVigente(negocio)) || (actual.proveedor === 'mercadopago' && cobroMp.suscripcionVigente(negocio)));
+          const medio = vigente ? actual.proveedor : (pagos.disponible(body.medio) ? body.medio : pagos.proveedor());
+          if (body.codigo && medio !== 'flow' && medio !== 'mercadopago') return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
+          if (medio === 'flow' || medio === 'mercadopago') {
             const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('cobro:' + negocioId);
-            const r = await cobroFlow.elegirPlan(negocio, planId, urlBase(req), body.codigo ? String(body.codigo) : null, body.periodo === 'anual' ? 'anual' : 'mensual');
+            const codigo = body.codigo ? String(body.codigo) : null;
+            const periodo = body.periodo === 'anual' ? 'anual' : 'mensual';
+            const r = medio === 'mercadopago'
+              ? await cobroMp.elegirPlan(negocio, planId, urlBase(req), codigo, periodo, body.emailPago ? String(body.emailPago) : null)
+              : await cobroFlow.elegirPlan(negocio, planId, urlBase(req), codigo, periodo);
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
             if (r.url) return sendJSON(res, 200, { url: r.url });
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio || store.getNegocio(negocioId)) });
@@ -2268,8 +2347,10 @@ const server = http.createServer(async (req, res) => {
         if (parts[3] === 'cuenta') {
           if (parts.length === 4 && req.method === 'GET') {
             const f = negocio.flow || {};
+            const m = negocio.mp || {};
             const lista = [
               ...(f.cobros || []).map((c) => ({ fecha: c.fecha, detalle: 'Suscripción mensual', periodo: c.periodo || null, montoClp: c.monto, estado: c.estado, enlacePago: c.link || null })),
+              ...(m.cobros || []).map((c) => ({ fecha: c.fecha, detalle: `Suscripción ${m.periodo === 'anual' ? 'anual' : 'mensual'} · Mercado Pago`, periodo: null, montoClp: c.monto, estado: c.estado, enlacePago: null })),
               ...recargas.historial(negocioId).filter((h) => h.precioClp > 0).map((h) => ({ fecha: h.fecha, detalle: `${h.cantidad} ${h.nombre}`, montoClp: h.precioClp, estado: h.simulada ? 'simulada' : 'pagado' })),
             ].sort((x, y) => String(y.fecha).localeCompare(String(x.fecha)));
             return sendJSON(res, 200, {
@@ -2349,7 +2430,13 @@ const server = http.createServer(async (req, res) => {
             limiteEstrategia.registrar('recarga:' + negocioId);
             const r = recargas.crearPendiente(negocioId, p.id);
             const base = urlBase(req);
-            if (pagos.proveedor() === 'flow') {
+            const medio = pagos.disponible(body.medio) ? body.medio : pagos.proveedor();
+            if (medio === 'mercadopago') {
+              const pm = await cobroMp.pagarRecarga({ negocio, recarga: r, base });
+              if (pm.error) return sendJSON(res, 424, { error: pm.error });
+              return sendJSON(res, 200, { url: pm.url });
+            }
+            if (medio === 'flow') {
               const pf = await cobroFlow.pagarRecarga({ negocio, recarga: r, base });
               if (pf.error) return sendJSON(res, 424, { error: pf.error });
               return sendJSON(res, 200, { url: pf.url });
@@ -2366,17 +2453,18 @@ const server = http.createServer(async (req, res) => {
         }
 
         // POST /api/negocios/:id/codigo  { codigo, plan? }
-        // Con una suscripción de Flow vigente, aplica el descuento a esa
-        // suscripción. Si no, solo revisa el código y dice qué descuento da
-        // (se aplica al elegir el plan).
+        // Con una suscripción vigente (Flow o Mercado Pago), aplica el
+        // descuento a esa suscripción. Si no, solo revisa el código y dice qué
+        // descuento da (se aplica al elegir el plan).
         if (parts[3] === 'codigo' && parts.length === 4 && req.method === 'POST') {
-          if (pagos.proveedor() !== 'flow') return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
+          if (!pagos.disponible('flow') && !pagos.disponible('mercadopago')) return sendJSON(res, 400, { error: 'Los códigos de descuento todavía no están disponibles' });
           const espera = limiteEstrategia.esperaSegundos('codigo:' + negocioId);
           if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
           limiteEstrategia.registrar('codigo:' + negocioId);
           const body = await readBody(req);
-          if (cobroFlow.suscripcionVigente(negocio)) {
-            const r = await cobroFlow.aplicarCodigo(negocio, String(body.codigo || ''));
+          const conMp = medioPagoDe(negocio) === 'mercadopago' && cobroMp.suscripcionVigente(negocio);
+          if (conMp || cobroFlow.suscripcionVigente(negocio)) {
+            const r = conMp ? await cobroMp.aplicarCodigo(negocio, String(body.codigo || '')) : await cobroFlow.aplicarCodigo(negocio, String(body.codigo || ''));
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
             return sendJSON(res, 200, { aplicado: true, negocio: negocioPublico(r.negocio) });
           }
@@ -2386,15 +2474,17 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, { codigo: v.codigo.codigo, descripcion: v.codigo.descripcion, planes: v.codigo.planes, precios });
         }
 
-        // Suscripción con Flow (Flow no tiene un portal como Stripe):
+        // Suscripción con Flow o Mercado Pago (no tienen un portal como Stripe):
         //   POST /api/negocios/:id/suscripcion/cancelar  se cancela al terminar el período pagado
         //   POST /api/negocios/:id/suscripcion/tarjeta   → { url } para inscribir otra tarjeta
+        //                                                  (Mercado Pago: cambiar el medio de pago)
         if (parts[3] === 'suscripcion' && parts.length === 5 && req.method === 'POST') {
-          if (!(negocio.flow && negocio.flow.customerId)) return sendJSON(res, 400, { error: 'Todavía no tienes una suscripción para gestionar' });
+          const conMp = medioPagoDe(negocio) === 'mercadopago';
+          if (!conMp && !(negocio.flow && negocio.flow.customerId)) return sendJSON(res, 400, { error: 'Todavía no tienes una suscripción para gestionar' });
           if (parts[4] === 'cancelar') {
-            const r = await cobroFlow.cancelar(negocio);
+            const r = conMp ? await cobroMp.cancelar(negocio) : await cobroFlow.cancelar(negocio);
             if (r.error) return sendJSON(res, r.status || 502, { error: r.error });
-            correoCliente(negocioId, (n, url) => avisos.correoCancelacion({ negocio: n, urlPanel: url('#cuenta'), hasta: n.flow && n.flow.periodoFin }));
+            correoCliente(negocioId, (n, url) => avisos.correoCancelacion({ negocio: n, urlPanel: url('#cuenta'), hasta: (pagos.suscripcion(n) || {}).periodoFin }));
             return sendJSON(res, 200, { negocio: negocioPublico(r.negocio) });
           }
           // Pausa (server/fidelizacion.js): sin cobro durante 1 a 3 meses; se reanuda sola.
@@ -2414,6 +2504,11 @@ const server = http.createServer(async (req, res) => {
             const espera = limiteEstrategia.esperaSegundos('cobro:' + negocioId);
             if (espera) return sendJSON(res, 429, { error: 'Demasiados intentos. Espera un rato.' });
             limiteEstrategia.registrar('cobro:' + negocioId);
+            if (conMp) {
+              const r = await cobroMp.cambiarMedio(negocio);
+              if (r.error) return sendJSON(res, r.status || 424, { error: r.error });
+              return sendJSON(res, 200, { url: r.url });
+            }
             const fresco = store.getNegocio(negocioId);
             delete fresco.flow.planPendiente;
             delete fresco.flow.periodoPendiente;
@@ -4058,14 +4153,15 @@ server.listen(PORT, () => {
   console.log(correo.configurado()
     ? 'Correo configurado: resumen semanal los lunes.'
     : 'RESEND_API_KEY / EMAIL_FROM no configurados: no se envían resúmenes semanales.');
-  if (pagos.proveedor() === 'flow') {
-    console.log(`Cobro con Flow (${process.env.FLOW_SANDBOX === '1' ? 'sandbox, pagos de prueba' : 'producción'}): planes y recargas disponibles.`);
+  if (pagos.disponible('flow') || pagos.disponible('mercadopago')) {
+    if (pagos.disponible('flow')) console.log(`Cobro con Flow (${process.env.FLOW_SANDBOX === '1' ? 'sandbox, pagos de prueba' : 'producción'}): planes y recargas disponibles.`);
+    if (pagos.disponible('mercadopago')) console.log(`Cobro con Mercado Pago (${mercadopago.entorno() === 'prueba' ? 'credenciales de prueba' : 'producción'}): planes y recargas disponibles.`);
   } else if (process.env.STRIPE_SECRET_KEY) {
     const planesDisponibles = listPlanesPublico().filter((p) => p.disponible && p.id !== 'gratis').map((p) => p.id);
     console.log(planesDisponibles.length
       ? `Stripe configurado — planes de pago disponibles: ${planesDisponibles.join(', ')}.`
       : 'Stripe configurado, pero falta STRIPE_PRICE_PRO / STRIPE_PRICE_ESTUDIO: nadie puede suscribirse todavía.');
   } else {
-    console.log('Sin cobro configurado (FLOW_API_KEY/FLOW_SECRET_KEY o STRIPE_SECRET_KEY): nadie puede suscribirse todavía.');
+    console.log('Sin cobro configurado (FLOW_API_KEY/FLOW_SECRET_KEY, MERCADOPAGO_ACCESS_TOKEN o STRIPE_SECRET_KEY): nadie puede suscribirse todavía.');
   }
 });

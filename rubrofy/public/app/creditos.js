@@ -175,10 +175,17 @@
       const simular = e.target.closest('[data-simular]');
       if (!pagar && !simular) return;
       const btn = pagar || simular;
+      // Con Flow y Mercado Pago, se elige con cuál pagar (encima de esta ventana).
+      let medio;
+      if (pagar && window.RubrofyPagos) {
+        const e = await window.RubrofyPagos.elegirMedio({ detalle: 'Créditos ⚡ para fotos y videos con IA.' });
+        if (!e) return;
+        medio = e.medio;
+      }
       btn.disabled = true;
       btn.textContent = pagar ? 'Abriendo el pago…' : 'Cargando…';
       try {
-        const res = await ctx.api(`/api/negocios/${n.id}/recargas${simular ? '/simular' : ''}`, { method: 'POST', body: JSON.stringify({ paquete: sel }) });
+        const res = await ctx.api(`/api/negocios/${n.id}/recargas${simular ? '/simular' : ''}`, { method: 'POST', body: JSON.stringify({ paquete: sel, medio }) });
         if (res.url) { window.location.href = res.url; return; }
         if (res.negocio) { ctx.setNegocio(res.negocio); Object.assign(n, res.negocio); }
         info = await ctx.api(`/api/negocios/${n.id}/creditos`);

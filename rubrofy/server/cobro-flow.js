@@ -87,12 +87,15 @@ function aplicarSuscripcion(negocioId, sub) {
   delete negocio.flow.codigoPendiente;
   delete negocio.flow.periodoPendiente;
   const enPrueba = pruebaGratis.vigente(negocio);
-  if (ACTIVAS.has(estado)) {
+  if (require('./pagos').activaFueraDe(negocio, 'flow')) {
+    // Paga al día con Mercado Pago (cambió de medio): esta no le cambia el plan.
+  } else if (ACTIVAS.has(estado)) {
     // Si paga durante la prueba gratis, la prueba termina y manda el plan pagado.
     if (enPrueba) negocio.prueba.terminada = 'suscripcion';
     // Lo mismo con un plan de regalo: ahora manda el que paga.
     beneficios.terminarRegalo(negocio, 'suscripcion', { suscrito: true });
     negocio.plan = planDesdeFlow(sub.planId) || negocio.plan || 'gratis';
+    negocio.medioPago = 'flow';
   } else {
     // Cancelada, sin iniciar o con un cobro vencido: vuelve a sin plan
     // (o conserva la prueba gratis o el plan de regalo hasta su fecha).
@@ -356,8 +359,8 @@ function limpiarSandbox(ahora = Date.now()) {
     delete negocio.flow;
     // La pausa se apoya en la suscripción de sandbox: ya no aplica.
     delete negocio.pausa;
-    const pagaConStripe = !!(negocio.stripe && negocio.stripe.subscriptionId);
-    if (!pagaConStripe) {
+    const pagaConOtro = !!(negocio.stripe && negocio.stripe.subscriptionId) || require('./pagos').activaFueraDe(negocio, 'flow');
+    if (!pagaConOtro) {
       negocio.plan = pruebaGratis.vigente(negocio, ahora) ? negocio.prueba.plan : beneficios.planSinPago(negocio, ahora);
       deps.planDeCortesia(negocio);
     }

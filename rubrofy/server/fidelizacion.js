@@ -176,15 +176,17 @@ function sumarMeses(iso, meses) {
   return d.toISOString();
 }
 
-// Pausar: Flow deja de cobrar al terminar el período pagado; un mes después
-// la suscripción se vuelve a crear sola (la tarjeta queda inscrita).
+// Pausar: Flow deja de cobrar al terminar el período pagado y un mes después
+// la suscripción se vuelve a crear sola (la tarjeta queda inscrita); Mercado
+// Pago deja la suscripción en pausa y se reactiva sola en la misma fecha.
 async function pausar(negocio, meses = 1) {
   if (negocio.pausa && negocio.pausa.hasta) return { error: 'Tu suscripción ya está en pausa', status: 409 };
   const r = await deps.cancelarAlFinal(negocio);
   if (r.error) return r;
   const fresco = store.getNegocio(negocio.id);
-  const fin = (fresco.flow && fresco.flow.periodoFin) || new Date().toISOString().slice(0, 10);
-  fresco.pausa = { desde: new Date().toISOString(), finPagado: fin, hasta: sumarMeses(fin, Math.min(3, Math.max(1, meses))), plan: fresco.plan, periodo: (fresco.flow && fresco.flow.periodo) || 'mensual', meses };
+  const sus = require('./pagos').suscripcion(fresco) || {};
+  const fin = sus.periodoFin || new Date().toISOString().slice(0, 10);
+  fresco.pausa = { desde: new Date().toISOString(), finPagado: fin, hasta: sumarMeses(fin, Math.min(3, Math.max(1, meses))), plan: fresco.plan, periodo: sus.periodo || 'mensual', meses };
   store.saveNegocio(fresco);
   deps.correo(negocio.id, 'pausa', { hasta: fresco.pausa.hasta, finPagado: fin });
   return { negocio: fresco };

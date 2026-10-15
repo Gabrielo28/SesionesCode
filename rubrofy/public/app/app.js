@@ -875,24 +875,102 @@
     }
   }
 
-  const conFlow = () => !!(negocioActual.pagos && negocioActual.pagos.proveedor === 'flow');
+  // Cobra Rubrofy con Flow o Mercado Pago (no Stripe): hay pago anual,
+  // códigos de descuento y la suscripción se gestiona desde el panel.
+  const conCobroPropio = () => ['flow', 'mercadopago'].includes(negocioActual.pagos && negocioActual.pagos.proveedor);
 
-  // Abre la página de pago (Stripe Checkout o la inscripción de tarjeta en
-  // Flow) o cambia el plan de una suscripción activa.
+  // "¿Cómo quieres pagar?": Flow (tarjeta) o Mercado Pago. Con un solo medio
+  // disponible no pregunta. plan: true si es un plan (Mercado Pago pide el
+  // correo con que paga). Resuelve { medio, emailPago } o null (volvió).
+  function elegirMedio({ plan = false, detalle = '' } = {}) {
+    const medios = (negocioActual.pagos && negocioActual.pagos.medios) || [];
+    if (medios.length < 2) return Promise.resolve({ medio: medios[0] ? medios[0].id : undefined });
+    return new Promise((resolve) => {
+      let dlg = document.getElementById('dlg-medio');
+      if (!dlg) {
+        dlg = document.createElement('dialog');
+        dlg.id = 'dlg-medio';
+        dlg.className = 'dlg';
+        document.body.appendChild(dlg);
+      }
+      let elegido = medios[0].id;
+      const textos = {
+        flow: { t: 'Tarjeta de crédito o débito', d: plan ? 'Pagas con Flow. Se cobra solo cada mes y cancelas cuando quieras.' : 'Pagas con Flow, con tu tarjeta.' },
+        mercadopago: { t: 'Mercado Pago', d: plan ? 'Con tu cuenta de Mercado Pago o con tarjeta. Se cobra solo cada mes y cancelas cuando quieras.' : 'Con tu cuenta de Mercado Pago o con tarjeta.' },
+      };
+      dlg.innerHTML = `<div class="dlg-caja">
+        <h2>¿Cómo quieres pagar?</h2>
+        ${detalle ? `<p class="sub">${escapeHtml(detalle)}</p>` : ''}
+        <div class="medio-opciones" role="radiogroup" aria-label="Medio de pago">
+          ${medios.map((m) => `<button type="button" class="medio-op" data-medio="${escapeHtml(m.id)}" role="radio"><span class="medio-op-marca medio-${escapeHtml(m.id)}" aria-hidden="true"></span><span class="medio-op-txt"><b>${escapeHtml((textos[m.id] || { t: m.nombre }).t)}</b><span>${escapeHtml((textos[m.id] || { d: '' }).d)}</span></span></button>`).join('')}
+        </div>
+        ${plan ? `<label class="medio-email" hidden>Correo con el que pagas en Mercado Pago
+          <input type="email" name="emailPago" maxlength="120" autocomplete="email" value="${escapeHtml(negocioActual.email || '')}">
+          <small>Tiene que ser el mismo de tu cuenta de Mercado Pago (o el que escribas al pagar). Si no coincide, Mercado Pago rechaza el pago.</small>
+        </label>` : ''}
+        <p class="config-error" data-medio-error hidden></p>
+        <div class="dlg-acciones"><button type="button" class="btn-ghost" data-medio-volver>Volver</button><button type="button" class="btn-approve" data-medio-seguir>Continuar</button></div>
+      </div>`;
+      const pintar = () => {
+        dlg.querySelectorAll('[data-medio]').forEach((b) => { const on = b.dataset.medio === elegido; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+        const caja = dlg.querySelector('.medio-email');
+        if (caja) caja.hidden = elegido !== 'mercadopago';
+      };
+      const cerrar = (valor) => { dlg.close(); resolve(valor); };
+      dlg.onclick = (e) => {
+        const op = e.target.closest('[data-medio]');
+        if (op) { elegido = op.dataset.medio; return pintar(); }
+        if (e.target.closest('[data-medio-volver]') || e.target === dlg) return cerrar(null);
+        if (!e.target.closest('[data-medio-seguir]')) return;
+        const input = dlg.querySelector('input[name="emailPago"]');
+        const emailPago = plan && elegido === 'mercadopago' && input ? input.value.trim() : undefined;
+        if (emailPago !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailPago)) {
+          const err = dlg.querySelector('[data-medio-error]');
+          err.textContent = 'Escribe el correo con el que pagas en Mercado Pago.';
+          err.hidden = false;
+          input.focus();
+          return;
+        }
+        cerrar({ medio: elegido, emailPago });
+      };
+      dlg.oninput = () => { const err = dlg.querySelector('[data-medio-error]'); if (err) err.hidden = true; };
+      dlg.addEventListener('cancel', () => resolve(null), { once: true });
+      pintar();
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    });
+  }
+  window.RubrofyPagos = { elegirMedio: (o) => elegirMedio(o) };
+
+  // Abre la página de pago (Flow, Mercado Pago o Stripe Checkout) o cambia el
+  // plan de una suscripción activa.
   async function pagarPlan(btn, errorEl) {
     const planId = btn.dataset.checkoutPlan;
-    if (negocioActual.tieneSuscripcion && !negocioActual.sinPlan) {
-      const destino = planesInfo.find((p) => p.id === planId);
+    const destino = planesInfo.find((p) => p.id === planId);
+    const cambia = negocioActual.tieneSuscripcion && !negocioActual.sinPlan;
+    const prov = negocioActual.pagos && negocioActual.pagos.proveedor;
+    if (cambia) {
       const nombre = destino ? destino.nombre : 'el nuevo plan';
-      if (!confirm(conFlow()
-        ? (periodoPlan === 'anual' ? `Tu suscripción pasará a ${nombre} con pago anual desde hoy (12 meses por el precio de 10). Flow ajusta el cobro según lo que ya pagaste.` : `Tu suscripción pasará a ${nombre} desde hoy. Flow ajusta el cobro según los días que quedan del mes.`)
-        : `Tu suscripción pasará a ${nombre} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
+      const anual = periodoPlan === 'anual';
+      const mismoPeriodo = ((negocioActual.pagos && negocioActual.pagos.periodo) || 'mensual') === (periodoPlan || 'mensual');
+      if (!confirm(prov === 'flow'
+        ? (anual ? `Tu suscripción pasará a ${nombre} con pago anual desde hoy (12 meses por el precio de 10). Flow ajusta el cobro según lo que ya pagaste.` : `Tu suscripción pasará a ${nombre} desde hoy. Flow ajusta el cobro según los días que quedan del mes.`)
+        : prov === 'mercadopago'
+          ? (mismoPeriodo ? `Tu suscripción pasará a ${nombre} desde hoy. Mercado Pago cobra el precio nuevo desde tu próximo pago.` : `Para pagar ${anual ? 'anual' : 'mensual'}, Mercado Pago crea una suscripción nueva: la autorizas y empieza a cobrar cuando termine lo que ya pagaste.`)
+          : `Tu suscripción pasará a ${nombre} ahora mismo. La diferencia proporcional a los días que quedan se cobra en tu próxima factura.`)) return;
+    }
+    let medio, emailPago;
+    if (!cambia) {
+      const precio = destino ? (periodoPlan === 'anual' && destino.precioAnualClp ? `$${destino.precioAnualClp.toLocaleString('es-CL')} al año` : `$${destino.precioClp.toLocaleString('es-CL')} al mes`) : '';
+      const e = await elegirMedio({ plan: true, detalle: destino ? `Plan ${destino.nombre} · ${precio}.` : '' });
+      if (!e) return;
+      medio = e.medio;
+      emailPago = e.emailPago;
     }
     if (errorEl) errorEl.hidden = true;
     btn.disabled = true;
     try {
       const codigo = codigoDescuento && codigoDescuento.planes.includes(planId) ? codigoDescuento.codigo : undefined;
-      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId, codigo, periodo: periodoPlan || 'mensual' }) });
+      const resultado = await api(`/api/negocios/${negocioActual.id}/checkout`, { method: 'POST', body: JSON.stringify({ plan: planId, codigo, periodo: periodoPlan || 'mensual', medio, emailPago }) });
       if (codigo) codigoDescuento = null;
       if (resultado.url) {
         window.location.href = resultado.url;
@@ -942,12 +1020,13 @@
   function gestionSuscripcion() {
     const pg = negocioActual.pagos || {};
     if (!negocioActual.tieneSuscripcion) return '';
-    if (pg.proveedor !== 'flow') return '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>';
+    if (pg.proveedor === 'stripe') return '<button type="button" class="btn-ghost" data-action="portal">Gestionar suscripción</button>';
+    const conMp = pg.proveedor === 'mercadopago';
     const t = pg.tarjeta;
-    const tarjeta = t && t.ultimos4 ? `${escapeHtml(t.tipo || 'Tarjeta')} terminada en ${escapeHtml(t.ultimos4)}` : 'tu tarjeta';
+    const tarjeta = conMp ? `Mercado Pago${pg.emailPago ? ` (${escapeHtml(pg.emailPago)})` : ''}` : t && t.ultimos4 ? `${escapeHtml(t.tipo || 'Tarjeta')} terminada en ${escapeHtml(t.ultimos4)}` : 'tu tarjeta';
     const fin = pg.periodoFin ? fechaLarga(pg.periodoFin) : '';
     let linea = '';
-    if (pg.estado === 'past_due') linea = `No pudimos cobrar con ${tarjeta}. Cambia la tarjeta para seguir con tu plan.`;
+    if (pg.estado === 'past_due') linea = `No pudimos cobrar con ${tarjeta}. ${conMp ? 'Cambia tu medio de pago' : 'Cambia la tarjeta'} para seguir con tu plan.`;
     else if (pg.estado === 'canceled') linea = 'Tu suscripción está cancelada. Elige un plan para volver.';
     else if (negocioActual.pausa && negocioActual.pausa.reanudadaPorDueno) linea = `Tu plan se reanuda solo el ${fechaLarga(negocioActual.pausa.hasta)}, cuando termina lo que ya pagaste. No se cobra antes.`;
     else if (negocioActual.pausa && negocioActual.pausa.hasta) linea = `Tu plan está en pausa: sigue ${fin ? `hasta el ${fin}` : 'hasta el fin del período pagado'}, después no se cobra, y se reanuda solo el ${fechaLarga(negocioActual.pausa.hasta)}. Todo queda guardado.`;
@@ -957,10 +1036,19 @@
     const vigente = pg.suscripcion && !['canceled', 'incomplete'].includes(pg.estado) && !pg.cancelaAlFinal;
     return `${linea ? `<p class="plan-estado">${linea}</p>` : ''}
       <div class="plan-acciones">
-        <button type="button" class="btn-ghost" data-action="flow-tarjeta">Cambiar tarjeta</button>
+        <button type="button" class="btn-ghost" data-action="flow-tarjeta">${conMp ? 'Cambiar medio de pago' : 'Cambiar tarjeta'}</button>
         ${enPausa ? '<button type="button" class="btn-approve" data-action="flow-reanudar">Reanudar mi plan</button>' : ''}
         ${vigente ? '<button type="button" class="btn-ghost" data-action="flow-cancelar">Cancelar suscripción</button>' : ''}
       </div>`;
+  }
+
+  // "pagas con tarjeta en Flow o con Mercado Pago" (según los medios disponibles).
+  function medioTexto() {
+    const ids = ((negocioActual.pagos && negocioActual.pagos.medios) || []).map((m) => m.id);
+    if (ids.includes('flow') && ids.includes('mercadopago')) return 'pagas con tarjeta en Flow o con Mercado Pago';
+    if (ids.includes('mercadopago')) return 'pagas con Mercado Pago';
+    const nombre = negocioActual.pagos && negocioActual.pagos.nombre;
+    return `pagas con tarjeta${nombre ? ` en ${escapeHtml(nombre)}` : ''}`;
   }
 
   // Mensual o anual (2 meses gratis). Parte en lo que ya paga el negocio.
@@ -973,7 +1061,7 @@
     const pgPeriodo = (negocioActual.pagos && negocioActual.pagos.periodo) || 'mensual';
     if (!periodoPlan) periodoPlan = pgPeriodo;
     const anual = periodoPlan === 'anual';
-    const conAnual = conFlow() && planesInfo.some((p) => p.precioAnualClp);
+    const conAnual = conCobroPropio() && planesInfo.some((p) => p.precioAnualClp);
     const mesesGratis = (planesInfo.find((p) => p.mesesGratisAnual) || {}).mesesGratisAnual || 2;
 
     const filas = planesInfo.map((p, i) => {
@@ -983,7 +1071,7 @@
         boton = `<button type="button" class="btn-approve" data-checkout-plan="${p.id}">Pasar a ${anual ? 'anual' : 'mensual'}</button>`;
       } else if (esActual) {
         boton = `<span class="ig-estado conectado">Plan actual${negocioActual.tieneSuscripcion && pgPeriodo === 'anual' ? ' · anual' : ''}</span>`;
-      } else if (i < indiceActual && !(conFlow() && negocioActual.tieneSuscripcion && !negocioActual.sinPlan)) {
+      } else if (i < indiceActual && !(conCobroPropio() && negocioActual.tieneSuscripcion && !negocioActual.sinPlan)) {
         // Con Stripe, bajar de plan se hace desde "Gestionar suscripción" (Billing Portal).
         boton = '';
       } else if (i < indiceActual) {
@@ -1022,7 +1110,7 @@
     const estadoPlan = negocioActual.sinPlan && pr.disponible
       ? `<div class="plan-prueba"><p class="plan-estado">Tu cuenta no tiene un plan activo. Prueba el plan ${escapeHtml(nombrePlan(pr.plan))} ${pr.dias} días gratis dejando tu nombre, correo y teléfono, o elige un plan.</p><button type="button" class="btn-approve" data-abrir-prueba>Quiero mis ${pr.dias} días gratis</button></div>`
       : negocioActual.sinPlan
-      ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: pagas con tarjeta${negocioActual.pagos && negocioActual.pagos.nombre ? ` en ${escapeHtml(negocioActual.pagos.nombre)}` : ''} y cancelas cuando quieras.</p>`
+      ? `<p class="plan-estado">${pr.hasta ? 'Terminó tu prueba gratis. ' : ''}Tu cuenta no tiene un plan activo. Elige uno para crear contenido: ${medioTexto()} y cancelas cuando quieras.</p>`
       : pr.vigente && !negocioActual.tieneSuscripcion
         ? `<p class="plan-estado">Estás en tu prueba gratis hasta el ${fechaLarga(pr.hasta)} (${pr.diasRestantes === 1 ? 'queda 1 día' : `quedan ${pr.diasRestantes} días`}). Elige tu plan antes y no se corta nada.</p>`
       : negocioActual.regalo
@@ -1031,7 +1119,7 @@
         ? '<p class="plan-estado">Plan de cortesía para la cuenta administradora: no se cobra.</p>'
         : '';
     const pg = negocioActual.pagos || {};
-    const cajaCodigo = pg.proveedor === 'flow' && !negocioActual.regalo && !negocioActual.cortesia
+    const cajaCodigo = ['flow', 'mercadopago'].includes(pg.proveedor) && !negocioActual.regalo && !negocioActual.cortesia
       ? `<div class="plan-codigo">
           ${codigoDescuento ? `<p class="plan-codigo-ok">Código <b>${escapeHtml(codigoDescuento.codigo)}</b>: ${escapeHtml(codigoDescuento.descripcion)}. Se aplica al elegir tu plan.</p>` : ''}
           <form data-codigo-form class="plan-codigo-form">
@@ -1687,6 +1775,7 @@
     if (resultado === 'tarjeta') { alert('No se pudo inscribir la tarjeta. Intenta de nuevo o usa otra tarjeta.'); return; }
     if (resultado === 'error') { alert('No pudimos confirmar tu suscripción. Recarga la página en unos minutos; si no se activa tu plan, escríbenos.'); return; }
     if (resultado === 'tarjeta-ok') { negocioActual = await api('/api/me'); render(); alert('Listo, tu tarjeta quedó registrada.'); return; }
+    if (resultado === 'pendiente') { negocioActual = await api('/api/me'); render(); alert('Mercado Pago está confirmando tu suscripción. Tu plan se activa apenas la apruebe (suele tardar unos minutos): recarga la página en un rato.'); return; }
     if (resultado !== 'exito') return;
     // El aviso del pago puede tardar unos segundos en activar el plan.
     for (let i = 0; i < 10; i++) {

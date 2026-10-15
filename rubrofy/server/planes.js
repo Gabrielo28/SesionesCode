@@ -92,7 +92,7 @@ function listPlanesPublico() {
     competenciaProximamente: !!p.competencia && process.env.META_LOGIN_PUBLICO !== '1',
     competencia: p.competencia,
     // Con Flow los planes se crean solos en Flow; con Stripe hay que dar el precio.
-    disponible: require('./flow').configurado() || !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
+    disponible: require('./flow').configurado() || require('./mercadopago').configurado() || !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));
 }
 

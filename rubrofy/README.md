@@ -1317,13 +1317,17 @@ desde /admin → Beneficios:
   vencimiento opcionales; se pueden desactivar. El cliente lo escribe en
   Plan: se revisa (`POST /api/negocios/:id/codigo`, muestra el precio con
   descuento) y se aplica al elegir el plan, o al tiro si ya tiene una
-  suscripción. Se cobra como **cupón de Flow** (se crea en Flow al primer
-  uso y se reutiliza), así que solo funciona con Flow. Un uso por cuenta.
+  suscripción. Con Flow se cobra como **cupón de Flow** (se crea en Flow al
+  primer uso y se reutiliza); con Mercado Pago, Rubrofy baja el monto de la
+  suscripción mientras el código vale y lo vuelve al precio del plan al
+  vencer (un código que deja el plan en $0 no se puede usar con Mercado
+  Pago). Un uso por cuenta.
 
 ## Cobro con Flow (recomendado en Chile)
 
 Si están `FLOW_API_KEY` y `FLOW_SECRET_KEY`, Rubrofy cobra con **Flow**
-(flow.cl) y Stripe queda sin usar. Código: `server/flow.js` (cliente de la
+(flow.cl) y Stripe queda sin usar. Flow puede convivir con **Mercado Pago**
+(sección siguiente): con los dos, el negocio elige con cuál pagar. Código: `server/flow.js` (cliente de la
 API) y `server/cobro-flow.js` (planes, recargas, avisos).
 
 - **Planes:** al elegir Pro o Estudio el negocio pasa a ser un cliente de
@@ -1371,6 +1375,55 @@ cobrar de verdad; las claves de sandbox y producción son distintas).
    cobros reales.
 4. Probar con una tarjeta real: suscribirse a Pro, revisar el cobro en Flow
    y el comprobante por correo, y cancelar.
+
+## Cobro con Mercado Pago (junto a Flow)
+
+Si está `MERCADOPAGO_ACCESS_TOKEN`, Rubrofy también cobra con **Mercado
+Pago**. Con Flow y Mercado Pago configurados, al elegir un plan, comprar una
+recarga o créditos, el panel pregunta **"¿Cómo quieres pagar?"**: tarjeta
+(Flow) o Mercado Pago. Con uno solo, no pregunta. Código:
+`server/mercadopago.js` (cliente de la API) y `server/cobro-mp.js` (planes,
+recargas, avisos); `server/pagos.js` sabe qué medios hay y con cuál paga
+cada negocio (`/api/me` → `pagos.medios`, `pagos.proveedor`).
+
+- **Planes:** una suscripción sin plan asociado (`POST /preapproval`,
+  estado `pending`) por el precio del plan (o el anual cada 12 meses). El
+  negocio la autoriza en Mercado Pago, con su cuenta o con tarjeta, y
+  Mercado Pago cobra solo. Mercado Pago exige que el correo de la
+  suscripción sea el mismo con que se paga: el panel lo pide (prellenado con
+  el de la cuenta). La referencia `rubrofy|<negocio>|<plan>|<período>` dice
+  de quién es.
+- **Cambiar de plan** cambia el monto de la misma suscripción: el plan nuevo
+  rige al tiro y el precio nuevo se cobra desde el próximo pago (sin
+  prorrateo, a diferencia de Flow). **Pasar a anual o mensual** crea una
+  suscripción nueva que empieza a cobrar cuando termina lo pagado; al
+  autorizarla se cancela la anterior. **Cancelar** corta los cobros en
+  Mercado Pago y el plan sigue hasta el fin del período pagado. **Pausar**
+  deja la suscripción en pausa (`status: paused`) y al terminar la pausa
+  vuelve a `authorized`. **Cambiar medio de pago** abre la misma suscripción
+  en Mercado Pago.
+- **Recargas:** pago único con Checkout Pro (`POST /checkout/preferences`,
+  `external_reference: recarga:<id>`).
+- **Avisos:** como con Flow, nada se da por pagado por lo que diga el aviso:
+  con el id se consulta a Mercado Pago (por eso no se verifica la firma
+  `x-signature`; se atienden a lo más 300 avisos por minuto). Solo se aceptan
+  suscripciones que Rubrofy creó para ese negocio. Semáforo rojo (cobros vencidos) deja la cuenta sin plan hasta que
+  se pague. Cada 6 horas (`MP_REVISION_SEG`) se revisan todas.
+- Rutas: `/api/mp/aviso` (Webhooks: `subscription_preapproval`,
+  `subscription_authorized_payment`, `payment`), `/api/mp/vuelta` (vuelta de
+  autorizar la suscripción) y `/api/mp/retorno` (vuelta de pagar una
+  recarga). Van fuera del chequeo anti-CSRF.
+- Si un negocio cambia de medio (canceló en uno y paga con el otro), la
+  cancelación de uno no le quita el plan que paga con el otro
+  (`pagos.activaFueraDe`).
+
+Variables: `MERCADOPAGO_ACCESS_TOKEN` (Mercado Pago Developers → Tus
+integraciones → tu aplicación → Credenciales de producción → Access Token) y
+`MERCADOPAGO_PRUEBA=1` mientras se prueba con credenciales o cuentas de
+prueba. Al pasar a producción, lo creado en prueba se archiva
+(`negocio.mpPrueba`) y cada cuenta vuelve al plan que le toca sin pago, como
+con Flow. En Webhooks se configura la URL `https://<dominio>/api/mp/aviso`
+con los eventos "Pagos" y "Planes y suscripciones".
 
 **Boletas:** Rubrofy no emite boletas. En pagos con tarjeta, el comprobante
 de pago tiene valor de boleta si en el SII se declara el modelo "No emito

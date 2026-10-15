@@ -100,7 +100,7 @@
     'admin-creditos': { t: 'Créditos y modelos de IA', d: 'Las fotos y videos con IA se pagan con créditos ⚡. Aquí decides cuánto cobra cada creación, qué modelos usa cada calidad, los packs y las promociones.',
       p: ['Anota el costo real de cada modelo (open.higgsfield.ai/pricing) y tu comisión: Rubrofy calcula los créditos.', 'Activa un modelo por calidad (Rápida, Recomendada, Premium) para fotos y para videos.', 'Revisa la "Ganancia mínima" de cada pack: es lo que ganas aunque el cliente gaste todo en el modelo más caro.', 'Si Higgsfield se queda sin saldo, las creaciones se pausan solas, no se cobra a nadie y te llega un correo. Carga saldo y toca "Reanudar".'] },
     'admin-beneficios': { t: 'Beneficios', d: 'Regala un plan sin costo a una cuenta que elijas, o crea códigos de descuento para que tus clientes paguen menos.',
-      p: ['Plan de regalo: Pro o Estudio por un tiempo o sin límite, sin tarjeta. No cuenta como ingreso. Puedes revocarlo cuando quieras.', 'Códigos: un porcentaje o un monto en pesos, por algunos meses o para siempre, con máximo de usos y vencimiento opcionales. Se cobran como cupones de Flow.', 'A una cuenta que ya paga no se le puede regalar un plan: dale un código.'] },
+      p: ['Plan de regalo: Pro o Estudio por un tiempo o sin límite, sin tarjeta. No cuenta como ingreso. Puedes revocarlo cuando quieras.', 'Códigos: un porcentaje o un monto en pesos, por algunos meses o para siempre, con máximo de usos y vencimiento opcionales. Con Flow se aplican como cupón; con Mercado Pago, Rubrofy baja el monto de la suscripción mientras el código vale.', 'A una cuenta que ya paga no se le puede regalar un plan: dale un código.'] },
     'admin-pruebas': { t: 'Pruebas gratis', d: 'Cada negocio puede pedir 7 días gratis del plan Pro dejando su nombre, correo y teléfono. Aquí ves esos datos y si terminó pagando.',
       p: ['Escríbeles por WhatsApp durante la prueba solo si en «Acepta contacto» dice Sí: es cuando más ayuda un contacto.', 'Una prueba por negocio y por teléfono.', '"Descargar CSV" sirve para tu CRM o planilla.'] },
     'editar-reel': { t: 'Estudio de reels', d: 'Dos pestañas: en Mis videos guardas todos tus videos (los que subes, los creados con IA y los editados); en Reels por publicar ves cada reel con su avance: video, edición y aprobación.',
@@ -189,7 +189,7 @@
     'creditos': { t: 'Créditos ⚡', d: 'Un solo saldo para crear fotos y videos con IA. Antes de crear, siempre ves cuánto usa.',
       p: ['Tu plan trae créditos que se renuevan el día 1 de cada mes.', 'Si necesitas más, compra un pack: esos duran 12 meses.', 'Invita a otro negocio con tu enlace y los dos reciben créditos de regalo.'], n: 'Si una creación falla, los créditos se devuelven solos.' },
     'plan-pago': { t: 'Plan y pago', d: 'Tu plan actual y lo que usaste este mes.',
-      p: ['Para subir de plan, pulsa "Actualizar a…" y paga con tarjeta.', 'Para cambiar la tarjeta o cancelar, usa los botones al final de esta tarjeta.', 'Tus pagos quedan en la sección Pagos, más abajo.'], n: 'Las piezas con IA, los reels editados y los créditos ⚡ del plan se renuevan el día 1 de cada mes. Los créditos de packs duran 12 meses.' },
+      p: ['Para subir de plan, pulsa "Actualizar a…" y elige cómo pagar: tarjeta con Flow o Mercado Pago.', 'Para cambiar la tarjeta (o el medio de pago en Mercado Pago) o cancelar, usa los botones al final de esta tarjeta.', 'Tus pagos quedan en la sección Pagos, más abajo.'], n: 'Las piezas con IA, los reels editados y los créditos ⚡ del plan se renuevan el día 1 de cada mes. Los créditos de packs duran 12 meses.' },
     'eliminar': { t: 'Eliminar cuenta', d: 'Borra tu cuenta y todo su contenido, fotos, métricas y conexiones. No se puede deshacer.',
       p: ['Pulsa "Eliminar cuenta".', 'Confirma.'], n: 'Si tienes un plan de pago, la suscripción se cancela.' },
 
@@ -214,7 +214,7 @@
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',
       p: ['Escribe qué haces y qué vendes, en una o dos frases.', 'Ejemplo: "panadería artesanal de barrio, pan de masa madre y pasteles".'] },
     'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads y competencia.',
-      p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta en una página segura de pago; cambias de plan, de tarjeta o cancelas desde tu panel cuando quieras.'] },
+      p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta (Flow) o con Mercado Pago, en una página segura de pago; cambias de plan, de medio de pago o cancelas desde tu panel cuando quieras.'] },
   };
 
   const CSS = `

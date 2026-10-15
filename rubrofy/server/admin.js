@@ -183,8 +183,10 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
   const config = {
     'IA de textos (Anthropic)': !!process.env.ANTHROPIC_API_KEY,
     'Imágenes y videos con IA (Higgsfield u OpenAI)': !!(process.env.HIGGSFIELD_API_KEY || process.env.OPENAI_API_KEY),
-    'Cobro (Flow o Stripe)': !!(require('./flow').configurado() || (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET)),
+    'Cobro (Flow, Mercado Pago o Stripe)': !!(require('./flow').configurado() || require('./mercadopago').configurado() || (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET)),
     ...(require('./flow').configurado() ? { 'Flow cobrando de verdad (sin FLOW_SANDBOX)': require('./flow').entorno() === 'produccion' } : {}),
+    'Mercado Pago (MERCADOPAGO_ACCESS_TOKEN)': require('./mercadopago').configurado(),
+    ...(require('./mercadopago').configurado() ? { 'Mercado Pago cobrando de verdad (credenciales de producción, sin MERCADOPAGO_PRUEBA)': require('./mercadopago').entorno() === 'produccion' } : {}),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Instagram aprobado por Meta (INSTAGRAM_APP_APROBADA; mientras no, el panel explica cómo pedir que habiliten la cuenta)': process.env.INSTAGRAM_APP_APROBADA === '1',
     'Meta Ads y competencia (Conectar con Facebook)': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
