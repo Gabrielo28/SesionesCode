@@ -45,6 +45,11 @@ ul.check { list-style: none; display: grid; gap: 22px; font-size: 34px; line-hei
 ul.check li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; } ul.check li > span { display: block; }
 ul.check li::before { content: "✓"; color: var(--accent); font-weight: 700; font-family: var(--display); font-size: 38px; }
 /* foto: pon el archivo en ../fotos/ y referencia en style="background-image"; si no existe, se ve la trama con la nota */
+/* foto a sangre con capa carbón para que el texto se lea */
+.canvas.photo { background-size: cover; background-position: center; }
+.canvas.photo::before { content: ""; position: absolute; inset: 0; background: rgba(18,54,56,.74); }
+.canvas.photo.soft::before { background: rgba(18,54,56,.62); }
+.canvas.photo > * { position: relative; }
 .foto { background-color: var(--ink-2); background-size: cover; background-position: center; position: relative; }
 .foto .nota { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 60px; font-family: var(--display); font-size: 30px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); background-image: repeating-linear-gradient(45deg, transparent 0 28px, rgba(255,255,255,.04) 28px 30px); }
 .foto[style*="url"] .nota { display: none; }

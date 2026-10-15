@@ -86,6 +86,7 @@ Las fuentes están en Google Fonts. En Canva o CapCut: Barlow Condensed y Barlow
 - Capturas de pantalla reales: chat del agente, reporte mensual, agenda llena. Tapar nombres y números
   de clientes.
 - Si no hay foto buena, la pieza va tipográfica sobre carbón. Es mejor que una foto de banco.
+- **Estado actual:** las fotos de `graficas/fotos/` son generadas con IA como provisorias, en estilo documental y sin rostros reconocibles a propósito (de espaldas, manos, sala vacía, litoral). Sirven para lanzar, pero no reemplazan fotos reales de Gabriel: cuando existan, se cambian por archivos con el mismo nombre y se vuelve a correr `build.js`. Nunca presentar a la persona generada como Gabriel ni como un cliente real.
 
 ## 7. Lo que no se hace
 
