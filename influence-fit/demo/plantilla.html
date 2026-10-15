@@ -1,0 +1,620 @@
+<title>Influence Fit en vivo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: banda carbón con encabezado y pasos; escenario en dos columnas (teléfono a la izquierda, explicación a la derecha); el último paso es la oferta a ancho completo. */
+  :root {
+    --bg: #F3F6F6; --surface: #FFFFFF; --ink: #123638; --ink-2: #3F5D5E; --muted: #6E8A8B; --line: #DCE5E5;
+    --band: #123638; --band-2: #0E2B2D; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+    --accent: #FF7B7B; --accent-ink: #123638; --accent-soft: #FFE9E9; --teal: #12959C; --ok: #1E8E5A; --ok-soft: #E4F5EC;
+    --wa-bg: #ECE5DD; --wa-in: #FFFFFF; --wa-out: #D9FDD3; --wa-fg: #111B21; --wa-meta: #667781; --wa-sys: #FFF6D1; --wa-btn: #0A7CFF;
+    --phone-frame: #0E2B2D;
+    --display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+    --body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B2224; --surface: #123638; --ink: #EAF2F2; --ink-2: #C3D6D6; --muted: #8FAFB0; --line: #24494B;
+      --band: #0E2B2D; --band-2: #0A2022; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+      --accent: #FF8A8A; --accent-ink: #123638; --accent-soft: #3A2328; --teal: #3FB7BD; --ok: #54C98A; --ok-soft: #12301F;
+      --wa-bg: #0B141A; --wa-in: #1F2C33; --wa-out: #005C4B; --wa-fg: #E9EDEF; --wa-meta: #8696A0; --wa-sys: #2A2F1E; --wa-btn: #53BDEB;
+      --phone-frame: #000000;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B2224; --surface: #123638; --ink: #EAF2F2; --ink-2: #C3D6D6; --muted: #8FAFB0; --line: #24494B;
+    --band: #0E2B2D; --band-2: #0A2022; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+    --accent: #FF8A8A; --accent-ink: #123638; --accent-soft: #3A2328; --teal: #3FB7BD; --ok: #54C98A; --ok-soft: #12301F;
+    --wa-bg: #0B141A; --wa-in: #1F2C33; --wa-out: #005C4B; --wa-fg: #E9EDEF; --wa-meta: #8696A0; --wa-sys: #2A2F1E; --wa-btn: #53BDEB;
+    --phone-frame: #000000;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: .01em; line-height: 1; margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  .hl { color: var(--accent); }
+  .eyebrow { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  /* ---------- banda superior ---------- */
+  .band { background: var(--band); color: var(--band-fg); }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--band-line); flex-wrap: wrap; }
+  .logo { display: inline-flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+  .logo svg { width: 38px; height: 38px; flex: none; }
+  .logo b { font-weight: inherit; display: inline-block; }
+  .logo b span { color: var(--accent); }
+  .logo small { display: block; font-family: var(--body); font-weight: 600; font-size: 9.5px; letter-spacing: .2em; color: var(--band-muted); margin-top: 4px; }
+  .tag-demo { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--band-muted); border: 1px solid var(--band-line); border-radius: 999px; padding: 6px 12px; }
+  .intro { display: grid; gap: 28px; padding-block: 40px 28px; align-items: end; }
+  @media (min-width: 900px) { .intro { grid-template-columns: 1.4fr 1fr; } }
+  .intro h1 { font-size: clamp(40px, 6vw, 68px); font-weight: 800; }
+  .intro p.lede { font-size: 18px; color: var(--band-muted); max-width: 52ch; margin-top: 16px; }
+  .intro .photo { border-radius: 16px; overflow: hidden; border: 1px solid var(--band-line); aspect-ratio: 16 / 10; max-width: 100%; position: relative; }
+  .intro .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 40% 40%; display: block; }
+  .intro .photo span { position: absolute; left: 12px; bottom: 12px; font-family: var(--display); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; background: rgba(14,43,45,.8); color: #fff; padding: 5px 10px; border-radius: 6px; }
+
+  /* pasos */
+  .steps { display: flex; gap: 6px; padding-block: 0 20px; overflow-x: auto; scrollbar-width: none; }
+  .steps::-webkit-scrollbar { display: none; }
+  .steps button { flex: 1 0 auto; min-width: 120px; text-align: left; background: transparent; color: var(--band-muted); border: 0; border-top: 3px solid var(--band-line); padding: 10px 4px 4px; display: grid; gap: 2px; }
+  .steps button b { font-family: var(--display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .steps button span { font-family: var(--display); font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--band-fg); opacity: .6; }
+  .steps button[aria-current="step"] { border-top-color: var(--accent); }
+  .steps button[aria-current="step"] b { color: var(--accent); }
+  .steps button[aria-current="step"] span, .steps button.done span { opacity: 1; }
+  .steps button.done { border-top-color: var(--band-fg); }
+
+  /* ---------- escenario ---------- */
+  .stage { padding-block: 40px 32px; }
+  .scene { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 900px) { .scene { grid-template-columns: 360px 1fr; } }
+  .scene > * { min-width: 0; }
+
+  .phone { width: 340px; max-width: 100%; margin: 0 auto; background: var(--phone-frame); border-radius: 40px; padding: 12px; box-shadow: 0 20px 50px rgba(18,54,56,.25); }
+  .screen { height: 620px; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; background: var(--wa-bg); color: var(--wa-fg); position: relative; }
+  .notch { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 90px; height: 22px; background: var(--phone-frame); border-radius: 12px; z-index: 3; }
+
+  /* barra de app */
+  .appbar { display: flex; align-items: center; gap: 10px; padding: 38px 14px 10px; background: var(--band); color: #fff; flex: none; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; flex: none; display: grid; place-items: center; background: #fff; }
+  .avatar svg { width: 22px; height: 22px; }
+  .appbar b { display: block; font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .appbar small { display: block; font-size: 12px; color: var(--band-muted); }
+
+  /* chat */
+  .chat { flex: 1; overflow-y: auto; padding: 14px 10px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.35; scroll-behavior: smooth; }
+  .msg { max-width: 84%; padding: 7px 10px 6px; border-radius: 10px; background: var(--wa-in); box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+  .msg.out { background: var(--wa-out); align-self: flex-end; }
+  .msg time { display: block; text-align: right; font-size: 11px; color: var(--wa-meta); margin-top: 2px; }
+  .msg .opts { display: grid; gap: 6px; margin-top: 8px; }
+  .msg .opts span { display: block; text-align: center; padding: 7px; border-radius: 8px; background: var(--wa-in); color: var(--wa-btn); font-weight: 600; font-size: 13px; border: 1px solid var(--line); }
+  .msg .opts span.sel { border-color: var(--ok); color: var(--ok); }
+  .sys { align-self: center; text-align: center; font-size: 12px; background: var(--wa-sys); color: var(--wa-fg); padding: 6px 10px; border-radius: 8px; max-width: 92%; }
+  .typing { align-self: flex-start; background: var(--wa-in); padding: 10px 12px; border-radius: 10px; display: inline-flex; gap: 4px; }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--wa-meta); animation: blink 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25 } 40% { opacity: 1 } }
+  .chat .msg, .chat .sys { animation: rise .25s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+  /* feed de instagram */
+  .ig { background: var(--surface); color: var(--ink); flex: 1; overflow-y: auto; }
+  .ig-top { display: flex; align-items: center; justify-content: space-between; padding: 38px 14px 10px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--line); }
+  .ig-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 13px; }
+  .ig-head .avatar { width: 30px; height: 30px; background: var(--band); }
+  .ig-head b { display: block; font-weight: 600; }
+  .ig-head small { display: block; color: var(--muted); font-size: 11.5px; }
+  .ig-img { aspect-ratio: 4 / 5; background-size: cover; background-position: 40% center; position: relative; max-width: 100%; }
+  .ig-img::before { content: ""; position: absolute; inset: 0; background: rgba(18,54,56,.72); }
+  .ig-img div { position: absolute; inset: 0; padding: 22px 18px; display: flex; flex-direction: column; justify-content: space-between; color: #fff; }
+  .ig-img h3 { font-size: 30px; font-weight: 800; }
+  .ig-img .mini { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #9FBABB; }
+  .ig-cta { display: flex; justify-content: space-between; align-items: center; padding: 11px 12px; background: var(--teal); color: #fff; font-size: 14px; font-weight: 600; }
+  .ig-cap { padding: 10px 12px 18px; font-size: 13px; color: var(--ink-2); }
+  .ig-cap b { color: var(--ink); }
+
+  /* formulario */
+  .form { background: var(--bg); color: var(--ink); flex: 1; overflow-y: auto; padding: 40px 16px 16px; display: grid; gap: 12px; align-content: start; }
+  .form .eyebrow { font-size: 12px; }
+  .form h3 { font-size: 26px; font-weight: 800; }
+  .bar { height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; } .bar i { display: block; height: 100%; width: 60%; background: var(--teal); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+  .card h4 { font-family: var(--display); font-size: 17px; text-transform: uppercase; margin: 0; letter-spacing: .02em; }
+  .f label { display: block; font-family: var(--display); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .f div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; background: var(--bg); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips span { font-size: 12.5px; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line); }
+  .chips span.on { border-color: var(--teal); color: var(--teal); font-weight: 600; }
+  .btn-sm { display: block; text-align: center; font-family: var(--display); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 14px; padding: 10px; border-radius: 99px; background: var(--teal); color: #fff; }
+
+  /* reporte en el teléfono */
+  .rep { background: var(--bg); color: var(--ink); flex: 1; overflow-y: auto; padding: 40px 14px 16px; display: grid; gap: 10px; align-content: start; }
+  .rep .hero { background: var(--band); color: #fff; border-radius: 12px; padding: 14px; }
+  .rep .hero small, .kpi small { display: block; font-family: var(--display); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; opacity: .8; }
+  .rep .hero b { display: block; font-family: var(--display); font-size: 52px; font-weight: 800; color: var(--accent); line-height: 1; margin-top: 4px; }
+  .rep .hero span { font-size: 12px; color: var(--band-muted); }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .kpi small { color: var(--muted); opacity: 1; }
+  .kpi b { display: block; font-family: var(--display); font-size: 26px; font-weight: 800; line-height: 1.05; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .example { font-size: 11.5px; color: var(--muted); text-align: center; }
+
+  /* ---------- panel de explicación ---------- */
+  .panel { display: grid; gap: 22px; align-content: start; }
+  .panel .num { font-family: var(--display); font-weight: 800; font-size: 15px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+  .panel h2 { font-size: clamp(34px, 4.4vw, 52px); font-weight: 800; }
+  .panel .lede { font-size: 18px; color: var(--ink-2); max-width: 58ch; }
+  .facts { display: grid; gap: 12px; }
+  @media (min-width: 640px) { .facts { grid-template-columns: 1fr 1fr; } }
+  .fact { border-top: 2px solid var(--ink); padding-top: 10px; }
+  .fact b { display: block; font-family: var(--display); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+  .fact p { color: var(--ink-2); font-size: 15.5px; }
+  .fact.mide { border-top-color: var(--accent); }
+  ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  ul.list li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; font-size: 16px; color: var(--ink-2); }
+  ul.list li::before { content: "✓"; color: var(--teal); font-weight: 700; }
+  .lead { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+  .lead header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .lead header b { font-family: var(--display); font-size: 18px; text-transform: uppercase; letter-spacing: .02em; }
+  .pill { font-family: var(--display); font-weight: 700; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; background: var(--ok-soft); color: var(--ok); white-space: nowrap; }
+  .pill.coral { background: var(--accent-soft); color: var(--accent); }
+  dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; font-size: 15px; }
+  dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; font-weight: 500; }
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .tbl table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14px; }
+  .tbl th { font-family: var(--display); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-align: left; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 700; }
+  .tbl td { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl tr.new td { background: var(--ok-soft); }
+
+  /* línea de tiempo de retención */
+  .timeline { display: grid; gap: 0; }
+  .timeline button { display: grid; grid-template-columns: 76px 1fr; gap: 14px; text-align: left; background: transparent; border: 0; border-left: 3px solid var(--line); padding: 10px 0 10px 14px; color: var(--ink-2); }
+  .timeline button b { font-family: var(--display); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .timeline button span { font-size: 15.5px; }
+  .timeline button[aria-pressed="true"] { border-left-color: var(--accent); color: var(--ink); }
+  .timeline button[aria-pressed="true"] b { color: var(--accent); }
+  .timeline button:hover span { color: var(--ink); }
+
+  /* embudo */
+  .funnel { display: grid; gap: 10px; }
+  .funnel .row { display: grid; grid-template-columns: 170px 1fr; gap: 12px; align-items: center; font-size: 15px; }
+  .funnel .track { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .funnel .fill { height: 26px; border-radius: 0 4px 4px 0; background: var(--teal); min-width: 4px; }
+  .funnel .val { font-family: var(--display); font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .funnel .rate { color: var(--muted); font-size: 13.5px; white-space: nowrap; }
+  @media (max-width: 520px) { .funnel .row { grid-template-columns: 1fr; gap: 4px; } }
+
+  /* ---------- oferta ---------- */
+  .offer { display: grid; gap: 28px; }
+  .offer h2 { font-size: clamp(36px, 5vw, 60px); font-weight: 800; }
+  .levels { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .levels { grid-template-columns: repeat(3, 1fr); } }
+  .level { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 8px; align-content: start; }
+  .level.rec { background: var(--band); color: var(--band-fg); border-color: var(--band); }
+  .level small { font-family: var(--display); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .level.rec small { color: var(--band-muted); }
+  .level h3 { font-size: 26px; font-weight: 800; }
+  .level .price { font-family: var(--display); font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .level p { font-size: 15px; color: var(--ink-2); } .level.rec p { color: var(--band-muted); }
+  .founders { border: 2px solid var(--accent); border-radius: 16px; padding: 22px; display: grid; gap: 16px; background: var(--surface); }
+  @media (min-width: 900px) { .founders { grid-template-columns: 1.3fr 1fr; align-items: center; } }
+  .founders ul.list li { color: var(--ink); }
+  .cta { display: grid; gap: 12px; }
+  .cta .number { font-family: var(--display); font-size: 34px; font-weight: 800; letter-spacing: .02em; user-select: all; }
+  .cta .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; padding: 12px 22px; border-radius: 999px; border: 1.5px solid transparent; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .copied { font-size: 13.5px; color: var(--ok); min-height: 1.4em; }
+
+  /* ---------- controles ---------- */
+  .controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 16px 40px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .controls .hint { font-size: 13.5px; color: var(--muted); }
+  .controls .hint kbd { font-family: var(--body); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; background: var(--surface); }
+  .controls .row { display: flex; gap: 10px; }
+  .controls button { font-family: var(--display); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 16px; padding: 11px 22px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+  .controls button.next { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .replay { justify-self: start; font-family: var(--display); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; background: transparent; border: 1px solid var(--line); color: var(--ink-2); padding: 7px 14px; border-radius: 999px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat .msg, .chat .sys { animation: none; }
+    .typing i { animation: none; opacity: .6; }
+    .chat { scroll-behavior: auto; }
+  }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="top">
+      <span class="logo">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#FFFFFF"/><rect x="26" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="54" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/></svg>
+        <b>Influence<span>Fit</span><small>by Influence Chile</small></b>
+      </span>
+      <span class="tag-demo">Demo del sistema</span>
+    </div>
+    <div class="intro">
+      <div>
+        <p class="eyebrow">Para coaches y gimnasios</p>
+        <h1>Así se ve tu negocio <span class="hl">con el sistema andando.</span></h1>
+        <p class="lede">Un cliente nuevo, desde que ve tu anuncio hasta que renueva al tercer mes. Cinco pasos. Tú solo apareces para entrenar.</p>
+      </div>
+      <div class="photo"><img src="__FOTO__" alt="Coach corrigiendo una sentadilla con barra en un gimnasio frente al mar"><span>Hecho por un coach</span></div>
+    </div>
+    <nav class="steps" id="steps" aria-label="Pasos de la demo"></nav>
+  </div>
+</header>
+
+<main class="wrap stage" id="stage">
+
+  <!-- PASO 1 · ANUNCIO -->
+  <section class="scene" data-step="1" data-label="Anuncio" id="paso-1">
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="ig">
+        <div class="ig-top"><span>Instagram</span><span style="font-size:14px;color:var(--muted)">♡ ✈</span></div>
+        <div class="ig-head"><span class="avatar"><svg viewBox="0 0 120 120"><rect x="26" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/><rect x="54" y="26" width="18" height="68" rx="3" fill="#FFFFFF"/><rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/></svg></span><div><b>tu.coach</b><small>Publicidad</small></div></div>
+        <div class="ig-img" style="background-image:url(__FOTO__)"><div>
+          <span class="mini">Evaluación de 45 min</span>
+          <h3>Entrena con un plan hecho para ti.<br><span class="hl">Partimos esta semana.</span></h3>
+          <span class="mini">El Tabo · Online</span>
+        </div></div>
+        <div class="ig-cta"><span>Enviar mensaje</span><span>›</span></div>
+        <div class="ig-cap"><b>tu.coach</b> ¿Quieres bajar grasa sin que te duelan las rodillas? Escríbeme y vemos en una evaluación qué necesitas.</div>
+      </div>
+    </div></div>
+    <div class="panel">
+      <span class="num">Paso 1 de 5</span>
+      <h2>Alguien ve <span class="hl">tu anuncio</span></h2>
+      <p class="lede">El anuncio habla como tú, con tu sala y tu zona. Y no termina en "info por DM": abre WhatsApp con el mensaje ya escrito.</p>
+      <div class="facts">
+        <div class="fact"><b>Qué haces tú</b><p>Nada. Los creativos, los textos y la pauta los hacemos nosotros, con tus fotos reales.</p></div>
+        <div class="fact"><b>Qué cambia</b><p>Pagas por conversaciones, no por "me gusta". Cada clic llega a tu WhatsApp.</p></div>
+        <div class="fact mide"><b>Lo que medimos</b><p>Costo por conversación iniciada.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASO 2 · WHATSAPP -->
+  <section class="scene" data-step="2" data-label="WhatsApp" id="paso-2" hidden>
+    <div style="display:grid;gap:12px;justify-items:center">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="appbar"><span class="avatar"><svg viewBox="0 0 120 120"><rect x="26" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="54" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/></svg></span><div><b>Tu coach</b><small id="waStatus">en línea</small></div></div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+      </div></div>
+      <button class="replay" id="replay" type="button">Repetir conversación</button>
+    </div>
+    <div class="panel">
+      <span class="num">Paso 2 de 5</span>
+      <h2>El asistente responde <span class="hl">y agenda solo</span></h2>
+      <p class="lede">Contesta en minutos, a cualquier hora, con tus precios y tus horarios reales. Pregunta lo que tú preguntarías y ofrece horas libres de tu calendario.</p>
+      <div class="lead" id="leadCard">
+        <header><b>Camila R.</b><span class="pill" id="leadPill">Calificando…</span></header>
+        <dl class="kv">
+          <dt>Objetivo</dt><dd>Bajar grasa, molestia en rodilla</dd>
+          <dt>Disponibilidad</dt><dd>3 días, en la mañana</dd>
+          <dt>Urgencia</dt><dd>Esta semana</dd>
+          <dt>Evaluación</dt><dd id="leadEval">Pendiente</dd>
+        </dl>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>Qué haces tú</b><p>Llegas a la evaluación. Si alguien menciona una lesión seria o pide hablar contigo, el asistente te lo pasa.</p></div>
+        <div class="fact mide"><b>Lo que medimos</b><p>Costo por evaluación agendada. Es el número que manda.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASO 3 · FICHA -->
+  <section class="scene" data-step="3" data-label="Ficha" id="paso-3" hidden>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="form">
+        <span class="eyebrow">Ficha de onboarding · Paso 3 de 5</span>
+        <h3>Antes de tu primera sesión</h3>
+        <div class="bar"><i></i></div>
+        <div class="card">
+          <h4>Lesiones y salud</h4>
+          <div class="f"><label>Zonas con molestia</label><div class="chips" style="border:0;padding:0;background:transparent"><span>Hombro</span><span>Zona lumbar</span><span class="on">Rodilla ✓</span><span>Tobillo</span></div></div>
+          <div class="f"><label>Detalle</label><div>Me duele la rodilla derecha al bajar en sentadilla profunda, desde hace 6 meses.</div></div>
+          <div class="f"><label>Condiciones médicas</label><div>Ninguna</div></div>
+        </div>
+        <div class="card">
+          <h4>Disponibilidad</h4>
+          <div class="f"><label>Días · Minutos · Modalidad</label><div>3 días · 60 min · Presencial</div></div>
+        </div>
+        <span class="btn-sm">Siguiente</span>
+      </div>
+    </div></div>
+    <div class="panel">
+      <span class="num">Paso 3 de 5</span>
+      <h2>La ficha llega <span class="hl">sola a tu planilla</span></h2>
+      <p class="lede">Apenas agenda, recibe un link con la ficha: objetivo, experiencia, lesiones, disponibilidad y equipamiento. Cinco minutos desde el teléfono. Tú llegas a la evaluación sabiendo con quién vas a trabajar.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Cliente</th><th>Objetivo</th><th>Nivel</th><th>Lesiones</th><th>Días</th></tr></thead>
+        <tbody>
+          <tr><td>Tomás V.</td><td>Fuerza</td><td>Avanzado</td><td>Ninguna</td><td>4</td></tr>
+          <tr><td>Josefa A.</td><td>Ganar masa</td><td>Intermedio</td><td>Hombro</td><td>3</td></tr>
+          <tr class="new"><td><b>Camila R.</b></td><td>Bajar grasa</td><td>Intermedio</td><td>Rodilla</td><td>3</td></tr>
+        </tbody>
+      </table></div>
+      <div class="facts">
+        <div class="fact"><b>Además</b><p>Recordatorio automático 24 horas antes de cada sesión y aviso de cobro a fin de mes. Contrato y consentimiento informado incluidos.</p></div>
+        <div class="fact mide"><b>Lo que medimos</b><p>Horas de administración por semana, antes y después.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASO 4 · RETENCIÓN -->
+  <section class="scene" data-step="4" data-label="Retención" id="paso-4" hidden>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="appbar"><span class="avatar"><svg viewBox="0 0 120 120"><rect x="26" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="54" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/></svg></span><div><b>Tu coach</b><small id="retDay">semana 2</small></div></div>
+      <div class="chat" id="retChat"></div>
+    </div></div>
+    <div class="panel">
+      <span class="num">Paso 4 de 5</span>
+      <h2>Le hablas <span class="hl">antes de que se vaya</span></h2>
+      <p class="lede">La gente abandona en momentos predecibles. El sistema te deja el mensaje listo justo en esos días, escrito como lo escribirías tú. Toca cada momento para verlo.</p>
+      <div class="timeline" id="timeline" role="group" aria-label="Momentos de la secuencia de retención"></div>
+      <div class="facts">
+        <div class="fact"><b>Qué haces tú</b><p>Abres la planilla, tocas "enviar" en los mensajes del día. Dos minutos. El de la semana 6 lleva un dato real de progreso que escribes tú.</p></div>
+        <div class="fact mide"><b>Lo que medimos</b><p>Porcentaje de renovación al mes 3 y al mes 6.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASO 5 · REPORTE -->
+  <section class="scene" data-step="5" data-label="Reporte" id="paso-5" hidden>
+    <div class="phone"><div class="screen">
+      <div class="notch"></div>
+      <div class="rep">
+        <span class="eyebrow">Reporte mensual · noviembre</span>
+        <div class="hero"><small>Evaluaciones agendadas</small><b>22</b><span>Meta del mes: 15</span></div>
+        <div class="kpis">
+          <div class="kpi"><small>Costo por evaluación</small><b>$5.032</b></div>
+          <div class="kpi"><small>Clientes nuevos</small><b>6</b></div>
+          <div class="kpi"><small>Inversión en medios</small><b>$110.700</b></div>
+          <div class="kpi"><small>Horas admin / semana</small><b>2,5</b></div>
+        </div>
+        <p class="example">Datos de ejemplo</p>
+      </div>
+    </div></div>
+    <div class="panel">
+      <span class="num">Paso 5 de 5</span>
+      <h2>Cada mes ves <span class="hl">el número</span></h2>
+      <p class="lede">Un reporte corto con lo que importa: cuántas personas llegaron, cuántas agendaron, cuántas se quedaron y cuánto costó cada una. Si algo no funciona, se ve en el reporte y se cambia.</p>
+      <div class="lead">
+        <header><b>Embudo del mes</b><span class="pill coral">Datos de ejemplo</span></header>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>Ejemplo de lectura</b><p>La evaluación de las 20:00 se llena y la de las 7:00 no. El mes siguiente se ajusta la pauta por horario.</p></div>
+        <div class="fact mide"><b>Lo que medimos</b><p>Costo por evaluación, tasa de cierre, renovación y horas de administración.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASO 6 · OFERTA -->
+  <section class="offer" data-step="6" data-label="Cómo partir" id="paso-6" hidden>
+    <div style="display:grid;gap:12px">
+      <span class="eyebrow">Cómo partir</span>
+      <h2>Tres niveles. <span class="hl">Partes por lo que te duele hoy.</span></h2>
+    </div>
+    <div class="levels">
+      <div class="level"><small>Nivel 1 · pago único</small><h3>Sistema de Clientes</h3><div class="price">$490.000 – $890.000</div><p>Ficha de onboarding, asistente de WhatsApp, recordatorios y cobros, contrato y consentimiento. Operando en 7 días.</p></div>
+      <div class="level rec"><small>Nivel 2 · mensual · el más pedido</small><h3>Clientes Nuevos</h3><div class="price">$350.000 – $600.000</div><p>Anuncios con creativos propios, landing o perfil optimizado, asistente conectado a los anuncios y reporte mensual. Más inversión en medios.</p></div>
+      <div class="level"><small>Nivel 3 · mensual</small><h3>Marca + Retención</h3><div class="price">$750.000 – $1.400.000</div><p>Todo el Nivel 2, más 12 a 16 piezas de contenido al mes, secuencia de retención, referidos y comunidad.</p></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--muted)">Precios de referencia en pesos chilenos, IVA no incluido. La inversión en medios se paga directo a Meta; sugerimos un mínimo de $200.000 al mes.</p>
+    <div class="founders">
+      <div style="display:grid;gap:14px">
+        <span class="eyebrow">5 cupos fundadores</span>
+        <ul class="list">
+          <li>Entras al Nivel 2 y el Sistema de Clientes completo va incluido sin costo.</li>
+          <li>Si en 60 días no tienes al menos 15 evaluaciones agendadas, el mes siguiente de gestión corre por nuestra cuenta.</li>
+          <li>Trato directo con el coach. A cambio, un testimonio en video y tu caso de estudio.</li>
+        </ul>
+      </div>
+      <div class="cta">
+        <span style="font-size:15px;color:var(--ink-2)">Primer paso: diagnóstico gratis de 20 minutos. Escribe "DIAGNÓSTICO" al</span>
+        <span class="number" id="phoneNum">+56 9 6545 0723</span>
+        <div class="row">
+          <button class="btn primary" id="copyNum" type="button">Copiar número</button>
+          <a class="btn ghost" href="https://wa.me/56965450723?text=Hola%20Gabriel%2C%20quiero%20el%20diagn%C3%B3stico%20gratis." target="_blank" rel="noopener">Abrir WhatsApp</a>
+        </div>
+        <span class="copied" id="copied" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="controls">
+    <span class="hint">Usa <kbd>←</kbd> <kbd>→</kbd> para avanzar</span>
+    <div class="row">
+      <button type="button" id="prev">Anterior</button>
+      <button type="button" class="next" id="next">Siguiente</button>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+  var nav = document.getElementById('steps');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var current = 1;
+
+  scenes.forEach(function (s) {
+    var n = +s.dataset.step;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<b>' + (n < 6 ? 'Paso ' + n : 'Final') + '</b><span>' + s.dataset.label + '</span>';
+    b.addEventListener('click', function () { go(n); });
+    nav.appendChild(b);
+  });
+
+  function go(n) {
+    n = Math.max(1, Math.min(scenes.length, n));
+    current = n;
+    scenes.forEach(function (s) { s.hidden = +s.dataset.step !== n; });
+    Array.prototype.forEach.call(nav.children, function (b, i) {
+      if (i + 1 === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.classList.toggle('done', i + 1 < n);
+      if (i + 1 === n && b.scrollIntoView) { try { b.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+    });
+    prev.disabled = n === 1;
+    next.disabled = n === scenes.length;
+    next.textContent = n === scenes.length - 1 ? 'Cómo partir' : 'Siguiente';
+    try { history.replaceState(null, '', '#paso-' + n); } catch (e) {}
+    if (n === 2) playChat();
+    if (n === 5) drawFunnel();
+  }
+  prev.addEventListener('click', function () { go(current - 1); });
+  next.addEventListener('click', function () { go(current + 1); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(current + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(current - 1); e.preventDefault(); }
+  });
+
+  // ---------- paso 2: conversación ----------
+  var script = [
+    { who: 'in', t: 'Hola, vi tu anuncio. ¿Cuánto sale el entrenamiento?', at: '18:02' },
+    { who: 'out', t: 'Hola Cami. Online $59.990 al mes, presencial desde $120.000. Antes de partir hacemos una evaluación de 45 min. ¿Qué quieres lograr?', at: '18:02' },
+    { who: 'in', t: 'Bajar grasa y que no me duela la rodilla al hacer sentadilla', at: '18:04' },
+    { who: 'out', t: 'Eso lo vemos en detalle en la evaluación. ¿Cuántos días a la semana puedes entrenar?', at: '18:04' },
+    { who: 'in', t: '3, en la mañana', at: '18:05' },
+    { who: 'out', t: 'Perfecto. Tengo estos horarios esta semana:', at: '18:05', opts: ['Jue 18:00', 'Vie 7:30', 'Sáb 10:00'] },
+    { who: 'in', t: 'Vie 7:30', at: '18:06', pick: 1 },
+    { who: 'out', t: 'Listo, quedó el viernes a las 7:30 en El Tabo. Un día antes te mando recordatorio.', at: '18:06' },
+    { who: 'sys', t: 'Evaluación agendada en tu calendario · calificación A' }
+  ];
+  var chat = document.getElementById('chat');
+  var status = document.getElementById('waStatus');
+  var pill = document.getElementById('leadPill');
+  var evalCell = document.getElementById('leadEval');
+  var timers = [];
+  var optsEl = null;
+
+  function bubble(m) {
+    var el;
+    if (m.who === 'sys') { el = document.createElement('div'); el.className = 'sys'; el.textContent = m.t; }
+    else {
+      el = document.createElement('div'); el.className = 'msg' + (m.who === 'out' ? ' out' : '');
+      var p = document.createElement('span'); p.textContent = m.t; el.appendChild(p);
+      if (m.opts) {
+        var o = document.createElement('div'); o.className = 'opts';
+        m.opts.forEach(function (x) { var s = document.createElement('span'); s.textContent = x; o.appendChild(s); });
+        el.appendChild(o); optsEl = o;
+      }
+      var tm = document.createElement('time'); tm.textContent = m.at + (m.who === 'out' ? ' ✓✓' : ''); el.appendChild(tm);
+    }
+    if (m.pick != null && optsEl) optsEl.children[m.pick].classList.add('sel');
+    return el;
+  }
+  function finishLead() { pill.textContent = 'Calificación A'; evalCell.textContent = 'Vie 7:30 · agendada'; }
+  function resetLead() { pill.textContent = 'Calificando…'; evalCell.textContent = 'Pendiente'; }
+
+  function playChat() {
+    timers.forEach(clearTimeout); timers = [];
+    chat.innerHTML = ''; optsEl = null; resetLead(); status.textContent = 'en línea';
+    if (reduce) { script.forEach(function (m) { chat.appendChild(bubble(m)); }); finishLead(); return; }
+    var t = 300;
+    script.forEach(function (m, i) {
+      if (m.who === 'out') {
+        timers.push(setTimeout(function () {
+          status.textContent = 'escribiendo…';
+          var ty = document.createElement('div'); ty.className = 'typing'; ty.innerHTML = '<i></i><i></i><i></i>'; ty.id = 'typing';
+          chat.appendChild(ty); chat.scrollTop = chat.scrollHeight;
+        }, t));
+        t += 850;
+      }
+      timers.push(setTimeout(function () {
+        var ty = document.getElementById('typing'); if (ty) ty.remove();
+        status.textContent = 'en línea';
+        chat.appendChild(bubble(m)); chat.scrollTop = chat.scrollHeight;
+        if (i === script.length - 1) finishLead();
+      }, t));
+      t += m.who === 'in' ? 1050 : 700;
+    });
+  }
+  document.getElementById('replay').addEventListener('click', playChat);
+
+  // ---------- paso 4: retención ----------
+  var moments = [
+    { k: 'Día 0', label: 'Bienvenida', day: 'día 0', msgs: [
+      { who: 'out', t: 'Cami, bienvenida. Ya tengo tu ficha y tu programa está armado para bajar grasa cuidando la rodilla. Las primeras dos semanas son de técnica: vas a terminar con energía, no destruida. Eso es a propósito.', at: '8:00' },
+      { who: 'in', t: '¡Gracias! Nos vemos el lunes', at: '8:14' } ] },
+    { k: 'Semana 2', label: 'Adaptación: cuando dan ganas de dejarlo', day: 'semana 2', msgs: [
+      { who: 'out', t: 'Cami, van dos semanas. Por lo general aquí aparece dolor muscular raro y la sensación de que "esto es muy poco". Las dos son normales. Del 1 al 10, ¿cómo te has sentido?', at: '9:00' },
+      { who: 'in', t: '8. La rodilla ya no me molesta en la sentadilla a cajón', at: '9:41' } ] },
+    { k: 'Semana 6', label: 'Progreso con un dato real', day: 'semana 6', msgs: [
+      { who: 'out', t: 'Cami, mes y medio. Revisé tus registros: subiste de 20 a 32 kg en sentadilla y bajaste 3 cm de cintura. Esta semana cambiamos ejercicios. ¿Cuál te está costando más?', at: '9:00' },
+      { who: 'in', t: 'El peso muerto rumano jaja', at: '10:02' } ] },
+    { k: 'Semana 10', label: 'Antes de que termine el ciclo', day: 'semana 10', msgs: [
+      { who: 'out', t: 'Quedan dos semanas del primer ciclo. Antes de que termine quiero mostrarte dónde partiste y dónde estás. ¿Te acomoda 15 minutos al final de la sesión del jueves?', at: '9:00' },
+      { who: 'in', t: 'Sí, el jueves', at: '9:20' } ] },
+    { k: 'Mes 3', label: 'Encuesta y renovación', day: 'mes 3', msgs: [
+      { who: 'out', t: 'Se cumplen 3 meses. Te pido 2 minutos para 5 preguntas, es lo que uso para mejorar el programa. Y si renuevas antes del viernes, mantienes el precio actual por 6 meses más.', at: '9:00' },
+      { who: 'in', t: 'Renuevo. Y le pasé tu número a mi hermana', at: '9:33' },
+      { who: 'sys', t: 'Renovó · llegó un referido' } ] }
+  ];
+  var tl = document.getElementById('timeline');
+  var retChat = document.getElementById('retChat');
+  var retDay = document.getElementById('retDay');
+  moments.forEach(function (m, i) {
+    var b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = '<b>' + m.k + '</b><span>' + m.label + '</span>';
+    b.addEventListener('click', function () { showMoment(i); });
+    tl.appendChild(b);
+  });
+  function showMoment(i) {
+    Array.prototype.forEach.call(tl.children, function (b, j) { b.setAttribute('aria-pressed', String(i === j)); });
+    retDay.textContent = moments[i].day;
+    retChat.innerHTML = ''; optsEl = null;
+    moments[i].msgs.forEach(function (m) { retChat.appendChild(bubble(m)); });
+  }
+  showMoment(1);
+
+  // ---------- paso 5: embudo ----------
+  var funnelData = [ { l: 'Conversaciones', v: 38 }, { l: 'Evaluaciones agendadas', v: 22 }, { l: 'Evaluaciones realizadas', v: 13 }, { l: 'Clientes nuevos', v: 6 } ];
+  function drawFunnel() {
+    var f = document.getElementById('funnel'); if (f.childElementCount) return;
+    var max = funnelData[0].v;
+    funnelData.forEach(function (d, i) {
+      var row = document.createElement('div'); row.className = 'row';
+      var rate = i ? Math.round(d.v / funnelData[i - 1].v * 100) + '% del paso anterior' : '';
+      row.innerHTML = '<span>' + d.l + '</span><span class="track"><span class="fill" style="width:' + (d.v / max * 70) + '%"></span><span class="val">' + d.v + '</span><span class="rate">' + rate + '</span></span>';
+      f.appendChild(row);
+    });
+  }
+
+  // ---------- copiar número ----------
+  var copied = document.getElementById('copied');
+  document.getElementById('copyNum').addEventListener('click', function () {
+    var txt = document.getElementById('phoneNum').textContent;
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById('phoneNum'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copied.textContent = 'Número seleccionado. Cópialo con Ctrl+C o mantén presionado.';
+    }
+    try {
+      navigator.clipboard.writeText(txt).then(function () { copied.textContent = 'Número copiado.'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // ---------- inicio ----------
+  var m = /^#paso-(\d)$/.exec(location.hash || '');
+  go(m ? +m[1] : 1);
+})();
+</script>
