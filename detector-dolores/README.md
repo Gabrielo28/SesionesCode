@@ -102,6 +102,19 @@ dispare y una solución que lo repare.
 La carpeta trae `server.js` (servidor estático Node, sin dependencias), `package.json`
 y `railway.json`. Sirve el escáner en `/` y la radiografía de proceso en `/proceso`.
 
+**Automático (un comando).** Con un token de Railway (Account Settings → Tokens):
+
+```bash
+cd detector-dolores
+RAILWAY_API_TOKEN=... node desplegar-railway.js
+```
+
+Crea el proyecto `escaner-de-negocio`, el servicio con Root Directory
+`/detector-dolores` conectado a `main`, genera el dominio, lanza el deploy, espera a
+que termine y prueba las rutas. Es idempotente: correrlo dos veces no duplica nada.
+
+**A mano**, si prefieres el panel:
+
 1. Railway → **New Project → Deploy from GitHub repo** → `Gabrielo28/SesionesCode`.
 2. En el servicio: **Settings → Source → Root Directory** = `detector-dolores`
    (el repo tiene varios proyectos; esto le dice a Railway cuál es).
