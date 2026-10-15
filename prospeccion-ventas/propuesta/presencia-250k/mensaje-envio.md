@@ -7,7 +7,7 @@ Reemplaza `[Nombre]`. Si va por correo, el asunto es:
 
 Hola [Nombre], te mando la propuesta que conversamos para trabajar con $250.000 al mes.
 
-Es nuestro Plan Presencia con una sola diferencia: no incluye la producción de los reels. Todo lo demás se mantiene: planificamos el mes, diseñamos y publicamos 4 posts y 8 historias, gestionamos tus anuncios si algún día quieres invertir en pauta, y te mandamos un informe mensual.
+Es nuestro Plan Presencia con una sola diferencia: no incluye la producción de los reels. Partimos optimizando tu cuenta (perfil, biografía, enlace y destacadas), y cada mes planificamos, diseñamos y publicamos 4 posts y 8 historias, gestionamos tus anuncios si algún día quieres invertir en pauta, y te mandamos un informe mensual.
 
 Queda en **$250.000 + IVA**, sin permanencia, con aviso de un mes si decides parar. Cuando el presupuesto lo permita, se suman los reels y pasas al plan completo.
 

@@ -3,7 +3,7 @@
 #   python3 prospeccion-ventas/propuesta/opciones-250k/generar.py prospeccion-ventas/propuesta/opciones-250k/cliente.json
 #   NODE_PATH=/opt/node22/lib/node_modules node prospeccion-ventas/propuesta/opciones-250k/render.js
 import html, datetime, sys, json, os
-CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "", "nota_camino1": "", "archivo": "propuesta-presencia-250k",
+CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "", "nota_camino1": "", "optimizacion": [], "archivo": "propuesta-presencia-250k",
            "presupuesto": 250000, "fecha": datetime.date.today().strftime("%-d de %B de %Y")}
 MESES={'January':'enero','February':'febrero','March':'marzo','April':'abril','May':'mayo','June':'junio','July':'julio','August':'agosto','September':'septiembre','October':'octubre','November':'noviembre','December':'diciembre'}
 for en,es in MESES.items(): CLIENTE['fecha']=CLIENTE['fecha'].replace(en,es)
@@ -17,6 +17,20 @@ PRESENCIA=350000; RECO=250000; CE=69990; INF=99990; META_ARMADO=150000; LANDING=
 ig=f' ({C["instagram"]})' if C["instagram"] else ''
 para=(f'{C["contacto"]}<br>' if C["contacto"] else '')+f'{C["nombre"]}{ig}'
 nota1=(f'<div class="nota"><strong>En tu caso:</strong> {C["nota_camino1"]}</div>' if C["nota_camino1"] else '')
+OPT_BASE=[('Foto de perfil y nombre','que se lean en miniatura y que el nombre incluya lo que vendes, porque Instagram lo usa en las búsquedas.'),
+          ('Biografía','qué vendes, para quién y cómo se compra, en tres líneas, con un llamado a la acción claro.'),
+          ('Enlace','a un lugar donde se pueda comprar o consultar directo, no a una página genérica.'),
+          ('Historias destacadas','ordenadas por lo que pregunta un cliente antes de comprar, con portadas de la misma línea gráfica.')]
+opt_items=CLIENTE.get('optimizacion') or []
+opt_html=''.join(f'<li><strong>{html.escape(a)}:</strong> {html.escape(b)}</li>' for a,b in OPT_BASE)
+opt_cliente=''.join(f'<li>{html.escape(x)}</li>' for x in opt_items)
+opt_block=f'''</section>
+
+<section class="seccion">
+  <h2>Lo primero: optimizamos tu cuenta</h2>
+  <div class="linea"></div>
+  <p>Antes de la primera publicación dejamos el perfil listo para vender. Es lo que ve quien llega a tu cuenta, y decide en segundos si sigue mirando:</p>
+  <ul>{opt_html}</ul>''' + (f'''<div class="nota"><strong>Lo que ya vimos en {C["instagram"] or "tu cuenta"}:</strong><ul style="margin:2mm 0 0">{opt_cliente}</ul></div>''' if opt_items else '')
 
 def si(x): return f'<td class="c si">{x}</td>'
 def no(x): return f'<td class="c no">{x}</td>'
@@ -80,7 +94,7 @@ HTML=f'''<!DOCTYPE html>
   <div>
     <div class="kicker">Propuesta · {C["fecha"]}</div>
     <h1>Gestión de redes con {f(B)} al mes</h1>
-    <p class="sub">Nuestro Plan Presencia ajustado a tu presupuesto: planificamos, diseñamos, publicamos y te reportamos cada mes.</p>
+    <p class="sub">Nuestro Plan Presencia ajustado a tu presupuesto: optimizamos tu cuenta, y cada mes planificamos, diseñamos, publicamos y te reportamos.</p>
   </div>
   <div class="para">
     <div><strong>Para</strong>{para}</div>
@@ -104,6 +118,7 @@ HTML=f'''<!DOCTYPE html>
     <li><strong>Crece contigo.</strong> Cuando el presupuesto lo permita, se suman los reels y pasas al plan completo sin cambiar nada más.</li>
   </ul>
   {nota1}
+  {opt_block}
 </section>
 
 <section class="seccion">
@@ -112,6 +127,7 @@ HTML=f'''<!DOCTYPE html>
   <p>Mismo plan, misma forma de trabajar que el Plan Presencia de la web. La única fila que cambia es la de los reels.</p>
   <table>
     <tr><th>Concepto</th><th style="width:22%;text-align:center">Plan Presencia<br><span style="font-weight:400">{f(PRESENCIA)} neto</span></th><th style="width:22%;text-align:center">Esta propuesta<br><span style="font-weight:400">{f(RECO)} neto</span></th></tr>
+    <tr><td><strong>Optimización de la cuenta</strong> al inicio: foto de perfil, nombre, biografía, enlace e historias destacadas con portadas propias.</td>{si("Sí")}{si("Sí")}</tr>
     <tr><td><strong>Planificación y programación mensual.</strong> Calendario con cada pieza definida, entregado el día 20 del mes anterior. Lo apruebas en 48 horas, una ronda de cambios incluida.</td>{si("Sí")}{si("Sí")}</tr>
     <tr><td><strong>4 publicaciones al mes</strong> (posts o carruseles) con diseño, copy y caption.</td>{si("4")}{si("4")}</tr>
     <tr><td><strong>8 historias al mes.</strong> Si nos mandas videos cortos de tu celular, los subimos como historias con tu diseño.</td>{si("8")}{si("8")}</tr>
@@ -133,7 +149,7 @@ HTML=f'''<!DOCTYPE html>
   <h2>Cómo trabajamos</h2>
   <div class="linea"></div>
   <ul>
-    <li><strong>Semana 1:</strong> reunión de 60 minutos para definir pilares de contenido, tono e identidad gráfica (colores, tipografías, plantillas).</li>
+    <li><strong>Semana 1:</strong> reunión de 60 minutos para definir pilares de contenido, tono e identidad gráfica (colores, tipografías, plantillas). Optimizamos tu perfil, biografía y destacadas.</li>
     <li><strong>Semana 2:</strong> primer calendario aprobado y primeras publicaciones. Desde ahí, calendario mensual el día 20 del mes anterior.</li>
     <li><strong>Cada mes:</strong> 4 publicaciones y 8 historias diseñadas, publicadas y reportadas. Una ronda de ajustes por pieza.</li>
     <li><strong>Los primeros 5 días de cada mes:</strong> informe de una página con lo que funcionó y una recomendación concreta.</li>
