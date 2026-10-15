@@ -31,12 +31,15 @@
     { id: 'CAP-02', g: 2, nombre: 'Un solo canal de entrada', sintoma: 'Casi todos los clientes nuevos llegan por la misma vía: la ubicación, el boca a boca o un marketplace.', causa: 'Nunca se abrió un segundo canal. Si el único cambia (abre un competidor, baja el flujo), la venta cae sin reemplazo.', rapida: 'Abrir el segundo canal más barato para el rubro: Google para servicios locales, Instagram para venta visual, WhatsApp al barrio para almacenes.', taller: 'Plan de contenido y pauta con medición de origen por canal.', quien: 'influence' },
     { id: 'CAP-03', g: 2, nombre: 'Instagram inactivo o mudo', sintoma: 'Más de 30 días sin publicar, o la bio no dice qué vende, dónde ni cómo comprar.', causa: 'Lo hace el dueño cuando puede. Sin sistema, no hay constancia; sin bio clara, el que llega no entiende.', rapida: 'Bio con qué, dónde y cómo comprar; destacadas con precios, ubicación y preguntas frecuentes; 3 publicaciones por semana durante un mes.', taller: 'Plan Presencia o Crecimiento con calendario mensual.', quien: 'influence' },
     { id: 'CAP-04', g: 2, nombre: 'Publicidad a ciegas', sintoma: 'Promociona posts con el botón azul, sin objetivo, sin landing y sin saber cuánto costó cada cliente.', causa: 'Gasta sin estructura ni medición. La conclusión "la publicidad no sirve" sale de aquí.', rapida: 'Una sola campaña con un objetivo (mensajes o visitas), un público y un mensaje; medir costo por consulta.', taller: 'Meta Ads con estructura, públicos y optimización semanal.', quien: 'influence' },
+    { id: 'CAP-06', g: 3, nombre: 'Web caída o insegura', sintoma: 'La web no carga, da error o no tiene candado de seguridad (https).', causa: 'Dominio, hosting o certificado vencidos, o una web que nadie revisa. Google la baja y el navegador la marca como peligrosa.', rapida: 'Renovar dominio y hosting, activar https y revisar que la página principal cargue en el celular.', taller: 'Landing o sitio nuevo con hosting administrado y monitoreo.', quien: 'influence' },
     { id: 'CAP-05', g: 3, nombre: 'Clientes nuevos en caída', sintoma: 'Llega menos gente que antes y el dueño no sabe por qué ("el barrio está malo").', causa: 'Cambió algo afuera (competencia, flujo, hábitos) y el negocio no tiene cómo verlo ni compensarlo.', rapida: 'Preguntar a cada cliente cómo llegó durante 2 semanas; revisar si abrió competencia y qué ofrece.', taller: 'Captación activa: Google, contenido y pauta con medición.', quien: 'influence' },
 
     // CONVERSIÓN
     { id: 'CON-01', g: 3, nombre: 'Respuesta lenta', sintoma: 'Un WhatsApp o DM en hora punta demora más de 2 horas en ser respondido.', causa: 'Responde el dueño entre medio de atender. El cliente que pregunta precio compra donde le contestan primero.', rapida: 'WhatsApp Business con respuesta automática inmediata y respuestas rápidas con precio y siguiente paso; regla de 15 minutos en horario.', taller: 'Flujo de WhatsApp automatizado y una persona responsable del canal en hora punta.', quien: 'influence' },
     { id: 'CON-02', g: 3, nombre: 'Consultas sin seguimiento', sintoma: 'Comentarios con "¿precio?" sin responder; el que pregunta y no compra no vuelve a recibir mensaje.', causa: 'Nadie tiene asignado el seguimiento. Lo que no tiene dueño no se hace.', rapida: 'Un mensaje de seguimiento fijo a las 48 horas, con dueño y texto definidos.', taller: 'Secuencia de seguimiento automatizada por WhatsApp.', quien: 'influence' },
     { id: 'CON-03', g: 2, nombre: 'No se puede comprar sin llamar', sintoma: 'Para reservar, pedir o cotizar hay que llamar o esperar un DM. El link de la bio va al home.', causa: 'No hay un camino directo de interés a compra. Cada fricción pierde una parte.', rapida: 'Link de agenda, catálogo de WhatsApp o formulario de pedido en la bio y en Google.', taller: 'Landing con prueba social y un solo botón, tienda online o agenda online.', quien: 'influence' },
+    { id: 'CON-06', g: 2, nombre: 'Web lenta o mala en celular', sintoma: 'La web demora más de 4 segundos en cargar o no está adaptada al celular.', causa: 'Imágenes pesadas, plantilla antigua o sitio hecho solo para computador. La mayoría de las visitas llegan desde el celular y se van antes de que cargue.', rapida: 'Comprimir las imágenes de la portada y revisar la web en el celular; sacar lo que no carga.', taller: 'Landing o sitio liviano, pensado primero para celular.', quien: 'influence' },
+    { id: 'CON-07', g: 2, nombre: 'Sin WhatsApp a un toque', sintoma: 'La web no tiene un botón o link directo a WhatsApp.', causa: 'El cliente chileno quiere preguntar por WhatsApp. Si tiene que copiar un número o llenar un formulario, se va.', rapida: 'Botón flotante de WhatsApp con mensaje prellenado en todas las páginas.', taller: 'Flujo de WhatsApp que responde, califica y agenda.', quien: 'influence' },
     { id: 'CON-04', g: 1, nombre: 'Sin prueba social', sintoma: 'Pocas reseñas, sin testimonios, sin casos ni antes-después visibles.', causa: 'Nunca se pide. El cliente nuevo no tiene cómo confiar.', rapida: 'QR de reseñas en el mesón o en el mensaje post-venta; 3 testimonios en destacadas.', taller: 'Casos y resultados como línea de contenido permanente.', quien: 'influence' },
     { id: 'CON-05', g: 1, nombre: 'Precio escondido', sintoma: 'No hay precios ni rangos en ningún canal; todo es "consultar".', causa: 'Miedo a espantar. En la práctica espanta más el no saber.', rapida: 'Publicar rangos ("desde $X") en bio, destacadas y respuestas rápidas.', taller: 'Catálogo con precios y la política de precios detrás.', quien: 'influence' },
 
@@ -123,7 +126,10 @@
       { id: 'w1', t: 'No se puede comprar, reservar ni cotizar en 2 toques', c: ['CON-03'] },
       { id: 'w2', t: 'Sin precios ni rangos', c: ['CON-05'] },
       { id: 'w3', t: 'Sin píxel de Meta ni Google Analytics', c: ['DAT-05'] },
-      { id: 'w4', t: 'Abandonada: pie de página o novedades de hace más de un año', c: ['CAP-03'] }
+      { id: 'w4', t: 'Abandonada: pie de página o novedades de hace más de un año', c: ['CAP-03'] },
+      { id: 'w5', t: 'Demora más de 4 segundos o se ve mal en el celular', c: ['CON-06'] },
+      { id: 'w6', t: 'No carga, da error o no tiene candado (https)', c: ['CAP-06'] },
+      { id: 'w7', t: 'No tiene botón ni link directo a WhatsApp', c: ['CON-07'] }
     ] },
     { grupo: 'Meta Ads y empleo', items: [
       { id: 'a1', t: 'Un post promocionado sin landing ni llamado a la acción', c: ['CAP-04'] },
@@ -157,9 +163,9 @@
     { id: 'S01', nombre: 'Perfil de Google completo y 10 reseñas', esfuerzo: 1, costo: 'Gratis', quien: 'dueño',
       que: 'Reclamar el perfil, fotos reales, horario, categoría, botón de WhatsApp; QR de reseñas en el mesón y en el mensaje post-venta; responder todas las reseñas.',
       resultado: 'Aparecer cuando buscan el rubro en la comuna y tener prueba social en 2 semanas.', codigos: ['CAP-01', 'CON-04', 'RET-04', 'CAP-05'] },
-    { id: 'S02', nombre: 'Flujo de WhatsApp que responde y hace seguimiento', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
-      que: 'WhatsApp Business con respuesta automática inmediata, respuestas rápidas con precio y siguiente paso, catálogo, regla de 15 minutos en horario y mensaje de seguimiento fijo a las 48 horas.',
-      resultado: 'Cerrar las consultas que hoy se pierden por demora o silencio.', codigos: ['CON-01', 'CON-02', 'CON-03', 'CON-05', 'PER-04'] },
+    { id: 'S02', nombre: 'Asistente de WhatsApp que responde, califica y agenda', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
+      que: 'Asistente con IA en WhatsApp que responde al instante, también fuera de horario: da precios y siguiente paso, hace las preguntas para calificar, agenda o toma el pedido y hace seguimiento a las 48 horas a quien no respondió. Botón de WhatsApp en la web y en la bio.',
+      resultado: 'Cerrar las consultas que hoy se pierden por demora o silencio.', codigos: ['CON-01', 'CON-02', 'CON-03', 'CON-05', 'CON-07', 'PER-04'] },
     { id: 'S03', nombre: 'Aceptar todos los medios de pago', esfuerzo: 1, costo: 'Bajo', quien: 'dueño',
       que: 'Máquina de tarjeta y QR de transferencia en el mesón, sin mínimo ni recargo; cartel nuevo; anunciarlo en el barrio y en redes.',
       resultado: 'Dejar de perder la venta completa del que no anda con efectivo.', codigos: ['CAJ-02'] },
@@ -186,7 +192,7 @@
       resultado: 'Saber cuánto cuesta cada cliente nuevo y comprar más de los que convienen.', codigos: ['CAP-04', 'CAP-05', 'DAT-02', 'DAT-05'] },
     { id: 'S11', nombre: 'Landing, tienda online o agenda online', esfuerzo: 3, costo: 'Medio', quien: 'influence',
       que: 'Una página con prueba social, precios y un solo botón; o tienda con catálogo, carrito y pago; o agenda online. Link en la bio y en Google.',
-      resultado: 'Que se pueda comprar o reservar sin llamar y sin esperar un DM.', codigos: ['CON-03', 'CON-05', 'CON-04', 'OPE-01', 'CAJ-02'] },
+      resultado: 'Que se pueda comprar o reservar sin llamar y sin esperar un DM.', codigos: ['CON-03', 'CON-06', 'CAP-06', 'CON-05', 'CON-04', 'OPE-01', 'CAJ-02'] },
     { id: 'S12', nombre: 'Delegar un área completa con procedimiento', esfuerzo: 2, costo: 'Medio', quien: 'influence',
       que: 'Elegir la tarea que más horas quita al dueño y no necesita que sea él (redes, WhatsApp, cobranza); escribirla en 10 pasos; asignar un responsable interno o externo; revisar una vez por semana.',
       resultado: 'Que el negocio funcione una semana sin el dueño y que él recupere horas para pensar.', codigos: ['PER-01', 'PER-02', 'PER-04', 'PER-05'] },

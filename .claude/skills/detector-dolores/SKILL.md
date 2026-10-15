@@ -21,7 +21,9 @@ Lee estos cuatro archivos del repo. Son la base; no improvises categorías ni f�
 3. `detector-dolores/03-entrevista-de-diagnostico.md` — preguntas llave, cuantificación, ficha
 4. `detector-dolores/04-de-dolor-a-oferta.md` — catálogo de soluciones, matriz dolor → oferta, cómo presentar
 5. `detector-dolores/05-radiografia-de-proceso.md` — mapear un proceso paso a paso, leer el cuello de botella, las 4 jugadas, el servicio de 90 minutos
-6. `detector-dolores/06-escaner-y-codigos.md` — los 40 códigos de falla, sus síntomas, reparaciones y qué sensor dispara cada uno (fuente: `escaner/codigos.js`)
+7. `detector-dolores/07-plan-30-dias-clientes.md` — posicionamiento por reparaciones y la rutina comercial
+8. `detector-dolores/mercado/README.md` — el escáner de mercado (muchos negocios a la vez)
+6. `detector-dolores/06-escaner-y-codigos.md` — los 43 códigos de falla, sus síntomas, reparaciones y qué sensor dispara cada uno (fuente: `escaner/codigos.js`)
 
 Si el negocio vende principalmente por Instagram, lee además
 `prospeccion-ventas/03-auditoria-express.md` para la parte de redes.
@@ -39,6 +41,16 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
   `node -e "console.log(Buffer.from(process.argv[1].replace(/-/g,'+').replace(/_/g,'/'),'base64').toString())" <valor de d>`
 - Una **ficha de observación** o **ficha de entrevista** ya llenada
 - **Un proceso descrito paso a paso** (quién hace qué, cuánto demora, cuánto espera, qué se repite, qué se pierde), o un JSON de `detector-dolores/proceso/`
+
+## Si piden escanear muchos negocios o un rubro completo
+
+Usa el escáner de mercado: arma un CSV con nombre y web (o usa uno existente) y corre
+`cd detector-dolores/mercado && node escanear-mercado.js lista.csv --nombre <rubro>`.
+Entrega: cuántos quedaron en Escribir hoy y Esta semana, las 3 fallas más comunes del
+rubro con su porcentaje, la oferta que conviene empaquetar, los 10 primeros negocios
+con su hallazgo principal, y la ruta del tablero `mercado/resultados/<rubro>.html`.
+Antes de citar un hallazgo en un mensaje, verifica esa web con un navegador real: el
+escaneo automático puede equivocarse con webs que bloquean robots o cargan tarde.
 
 ## Procedimiento
 

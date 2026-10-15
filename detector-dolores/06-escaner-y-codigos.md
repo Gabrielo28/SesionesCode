@@ -19,7 +19,7 @@ CONECTAR     Nombre, rubro y modo. Rápido (lo responde el dueño) o Taller (Inf
 
 LEER         16 lecturas, 2 por sistema. Cada respuesta es un sensor: puede disparar
              uno o más códigos.
-             En modo taller, además, 29 señales observadas (Google Maps, Instagram,
+             En modo taller, además, 32 señales observadas (Google Maps, Instagram,
              web, Meta Ads, empleo, comprador misterioso, visita).
 
 ESCANEAR     La consola recorre los 8 sistemas y muestra cuántas fallas hay en cada uno.
@@ -60,7 +60,7 @@ sabe qué le duele.
 
 ---
 
-## Catálogo de códigos (40)
+## Catálogo de códigos (43)
 
 
 ### CAP · Captación (Admisión)
@@ -71,6 +71,7 @@ sabe qué le duele.
 | **CAP-02** | Medio | Un solo canal de entrada | Casi todos los clientes nuevos llegan por la misma vía: la ubicación, el boca a boca o un marketplace. | Abrir el segundo canal más barato para el rubro: Google para servicios locales, Instagram para venta visual, WhatsApp al barrio para almacenes. | Plan de contenido y pauta con medición de origen por canal. | Influence |
 | **CAP-03** | Medio | Instagram inactivo o mudo | Más de 30 días sin publicar, o la bio no dice qué vende, dónde ni cómo comprar. | Bio con qué, dónde y cómo comprar; destacadas con precios, ubicación y preguntas frecuentes; 3 publicaciones por semana durante un mes. | Plan Presencia o Crecimiento con calendario mensual. | Influence |
 | **CAP-04** | Medio | Publicidad a ciegas | Promociona posts con el botón azul, sin objetivo, sin landing y sin saber cuánto costó cada cliente. | Una sola campaña con un objetivo (mensajes o visitas), un público y un mensaje; medir costo por consulta. | Meta Ads con estructura, públicos y optimización semanal. | Influence |
+| **CAP-06** | Crítico | Web caída o insegura | La web no carga, da error o no tiene candado de seguridad (https). | Renovar dominio y hosting, activar https y revisar que la página principal cargue en el celular. | Landing o sitio nuevo con hosting administrado y monitoreo. | Influence |
 | **CAP-05** | Crítico | Clientes nuevos en caída | Llega menos gente que antes y el dueño no sabe por qué ("el barrio está malo"). | Preguntar a cada cliente cómo llegó durante 2 semanas; revisar si abrió competencia y qué ofrece. | Captación activa: Google, contenido y pauta con medición. | Influence |
 
 ### CON · Conversión (Transmisión)
@@ -80,6 +81,8 @@ sabe qué le duele.
 | **CON-01** | Crítico | Respuesta lenta | Un WhatsApp o DM en hora punta demora más de 2 horas en ser respondido. | WhatsApp Business con respuesta automática inmediata y respuestas rápidas con precio y siguiente paso; regla de 15 minutos en horario. | Flujo de WhatsApp automatizado y una persona responsable del canal en hora punta. | Influence |
 | **CON-02** | Crítico | Consultas sin seguimiento | Comentarios con "¿precio?" sin responder; el que pregunta y no compra no vuelve a recibir mensaje. | Un mensaje de seguimiento fijo a las 48 horas, con dueño y texto definidos. | Secuencia de seguimiento automatizada por WhatsApp. | Influence |
 | **CON-03** | Medio | No se puede comprar sin llamar | Para reservar, pedir o cotizar hay que llamar o esperar un DM. El link de la bio va al home. | Link de agenda, catálogo de WhatsApp o formulario de pedido en la bio y en Google. | Landing con prueba social y un solo botón, tienda online o agenda online. | Influence |
+| **CON-06** | Medio | Web lenta o mala en celular | La web demora más de 4 segundos en cargar o no está adaptada al celular. | Comprimir las imágenes de la portada y revisar la web en el celular; sacar lo que no carga. | Landing o sitio liviano, pensado primero para celular. | Influence |
+| **CON-07** | Medio | Sin WhatsApp a un toque | La web no tiene un botón o link directo a WhatsApp. | Botón flotante de WhatsApp con mensaje prellenado en todas las páginas. | Flujo de WhatsApp que responde, califica y agenda. | Influence |
 | **CON-04** | Leve | Sin prueba social | Pocas reseñas, sin testimonios, sin casos ni antes-después visibles. | QR de reseñas en el mesón o en el mensaje post-venta; 3 testimonios en destacadas. | Casos y resultados como línea de contenido permanente. | Influence |
 | **CON-05** | Leve | Precio escondido | No hay precios ni rangos en ningún canal; todo es "consultar". | Publicar rangos ("desde $X") en bio, destacadas y respuestas rápidas. | Catálogo con precios y la política de precios detrás. | Influence |
 
@@ -186,6 +189,9 @@ sabe qué le duele.
 | Web | Sin precios ni rangos | CON-05 |
 | Web | Sin píxel de Meta ni Google Analytics | DAT-05 |
 | Web | Abandonada: pie de página o novedades de hace más de un año | CAP-03 |
+| Web | Demora más de 4 segundos o se ve mal en el celular | CON-06 |
+| Web | No carga, da error o no tiene candado (https) | CAP-06 |
+| Web | No tiene botón ni link directo a WhatsApp | CON-07 |
 | Meta Ads y empleo | Un post promocionado sin landing ni llamado a la acción | CAP-04 |
 | Meta Ads y empleo | La misma vacante operativa publicada 2 o más veces en el año | PER-03 |
 | Comprador misterioso | Respondió en más de 2 horas (o no respondió) | CON-01 |
@@ -215,7 +221,7 @@ Cada solución repara varios códigos. El escáner las ordena **de la mejor a la
 | Id | Solución | Esfuerzo | Costo | Quién | Repara | Qué cambia |
 |---|---|---|---|---|---|---|
 | **S01** | Perfil de Google completo y 10 reseñas | Esta semana | Gratis | Dueño | CAP-01, CON-04, RET-04, CAP-05 | Aparecer cuando buscan el rubro en la comuna y tener prueba social en 2 semanas. |
-| **S02** | Flujo de WhatsApp que responde y hace seguimiento | Esta semana | Bajo | Influence | CON-01, CON-02, CON-03, CON-05, PER-04 | Cerrar las consultas que hoy se pierden por demora o silencio. |
+| **S02** | Asistente de WhatsApp que responde, califica y agenda | Esta semana | Bajo | Influence | CON-01, CON-02, CON-03, CON-05, CON-07, PER-04 | Cerrar las consultas que hoy se pierden por demora o silencio. |
 | **S03** | Aceptar todos los medios de pago | Esta semana | Bajo | Dueño | CAJ-02 | Dejar de perder la venta completa del que no anda con efectivo. |
 | **S04** | Lista de clientes y un mensaje semanal | Esta semana | Bajo | Influence | RET-01, RET-02, RET-03, RET-05, CAP-02 | Que los que ya compraron vuelvan sin gastar en captación. |
 | **S05** | Tablero de 5 números cada lunes | Esta semana | Gratis | Dueño | DAT-01, DAT-02, DAT-03, DAT-04 | Ver las fugas antes de que duelan y saber qué canal trae clientes. |
@@ -224,7 +230,7 @@ Cada solución repara varios códigos. El escáner las ordena **de la mejor a la
 | **S08** | Costeo, precios y carta con destacados | 2 a 4 semanas | Bajo | Se deriva | MAR-01, MAR-02, MAR-03, MAR-04, MAR-05 | Que quede más plata de las mismas ventas. |
 | **S09** | Presencia constante en redes con sistema | 2 a 4 semanas | Medio | Influence | CAP-03, CAP-02, PER-04, CAP-05 | Un segundo canal de clientes nuevos que no depende del dueño. |
 | **S10** | Campaña de captación medida | 2 a 4 semanas | Medio | Influence | CAP-04, CAP-05, DAT-02, DAT-05 | Saber cuánto cuesta cada cliente nuevo y comprar más de los que convienen. |
-| **S11** | Landing, tienda online o agenda online | 1 a 3 meses | Medio | Influence | CON-03, CON-05, CON-04, OPE-01, CAJ-02 | Que se pueda comprar o reservar sin llamar y sin esperar un DM. |
+| **S11** | Landing, tienda online o agenda online | 1 a 3 meses | Medio | Influence | CON-03, CON-06, CAP-06, CON-05, CON-04, OPE-01, CAJ-02 | Que se pueda comprar o reservar sin llamar y sin esperar un DM. |
 | **S12** | Delegar un área completa con procedimiento | 2 a 4 semanas | Medio | Influence | PER-01, PER-02, PER-04, PER-05 | Que el negocio funcione una semana sin el dueño y que él recupere horas para pensar. |
 | **S13** | Radiografía de proceso y refuerzo en hora punta | 2 a 4 semanas | Bajo | Influence | OPE-02, OPE-04, PER-02 | Saber en qué paso exacto se frena y cuánto cuesta, y destrabarlo sin contratar. |
 | **S14** | Cargo escrito e inducción de una semana | 2 a 4 semanas | Bajo | Se deriva | PER-03, PER-05 | Que la gente nueva rinda en una semana y se quede. |

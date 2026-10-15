@@ -29,7 +29,9 @@ oferta que la destraba.
 | [02-senales-desde-afuera.md](02-senales-desde-afuera.md) | Diagnóstico de 15 min sin hablar con nadie: Google Maps, Instagram, web, Meta Ads, empleo, comprador misterioso. Checklists por rubro y ficha de observación |
 | [03-entrevista-de-diagnostico.md](03-entrevista-de-diagnostico.md) | La conversación de 20 min: pregunta llave por área, 5 porqués, cómo cuantificar, ficha de entrevista |
 | [04-de-dolor-a-oferta.md](04-de-dolor-a-oferta.md) | Catálogo de soluciones, matriz dolor → oferta de 30 días → estructural, priorización y cómo presentar |
-| [06-escaner-y-codigos.md](06-escaner-y-codigos.md) | **El escáner**: cómo funciona, los 8 sistemas, el catálogo de 40 códigos de falla con síntoma, causa y reparación, y qué sensor dispara cada uno. Se genera desde `escaner/codigos.js` |
+| [07-plan-30-dias-clientes.md](07-plan-30-dias-clientes.md) | **El plan comercial**: posicionamiento por reparaciones (diagnóstico gratis, reparación a precio fijo, operación mensual), rutina semanal de mensajes y metas |
+| [mercado/](mercado/) | **Escáner de mercado (interno)**: escanea decenas de webs de un rubro, detecta fallas, ordena a quién escribir y con qué mensaje, y muestra qué servicio venderle a ese mercado. Ver su README |
+| [06-escaner-y-codigos.md](06-escaner-y-codigos.md) | **El escáner**: cómo funciona, los 8 sistemas, el catálogo de 43 códigos de falla con síntoma, causa y reparación, y qué sensor dispara cada uno. Se genera desde `escaner/codigos.js` |
 | [escaner/](escaner/) | **La app del escáner**: conectar → 16 lecturas (+ señales en modo taller) → escaneo por sistema → códigos de falla → informe imprimible y WhatsApp. Es la puerta de entrada y el captador de leads |
 | [05-radiografia-de-proceso.md](05-radiografia-de-proceso.md) | Mapear un proceso paso a paso: las 5 preguntas, cómo leer el cuello de botella, las 7 fugas de tiempo, las 4 jugadas para destrabarlo, y el formato del servicio express de 90 minutos |
 | [proceso/](proceso/) | **Radiografía de proceso**: herramienta web para mapear en vivo con el dueño y ver al instante el paso que frena, el tiempo perdido y los pesos al mes. Imprime a PDF |
@@ -96,6 +98,26 @@ node codigos-a-md.js > ../06-escaner-y-codigos.md   # regenerar el catálogo en 
 El catálogo completo (sistemas, códigos, lecturas, señales y soluciones) vive en
 `escaner/codigos.js`. Para agregar un código: una línea en `CODIGOS`, un sensor que lo
 dispare y una solución que lo repare.
+
+## Publicarlo en influencechile.cl (Netlify)
+
+La carpeta `influencechile-web/` (en la raíz del repo) es tu web publicada al 15 de
+octubre de 2026 con estos cambios:
+
+- **El escáner en /escaner/**, con ítem en el menú, link en el hero, un bloque antes del
+  test de 5 preguntas y un link desde el resultado del test.
+- **Página 8 veces más liviana**: las 11 imágenes que iban dentro del HTML ahora son
+  archivos WebP en `img/`. El HTML baja de 810 KB a cerca de 100 KB.
+- **Preguntas frecuentes** con datos estructurados (lo que más citan Google y las IA),
+  ficha de empresa ampliada, `llms.txt` para buscadores con IA, `robots.txt` que les
+  da la bienvenida y sitemap con la nueva página.
+- **Medición lista** en `medicion.js`: pegas tu ID de Google Analytics y tu píxel de Meta
+  y queda midiendo clics a WhatsApp y uso del escáner.
+- **Modo taller oculto** al público: se abre con `influencechile.cl/escaner/?taller`.
+
+Para publicar: Netlify → tu sitio → Deploys → arrastrar la carpeta `influencechile-web`.
+Si tienes cambios en tu copia local de la web que no estén publicados, aplica estos
+cambios sobre esa copia en vez de subir esta carpeta.
 
 ## Publicarlo en Railway
 

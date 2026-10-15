@@ -16,3 +16,6 @@ desktop.ini
 # Entornos
 .env
 .env.local
+
+# Escáner de mercado: resultados con datos de prospectos (el repo es público)
+detector-dolores/mercado/resultados/

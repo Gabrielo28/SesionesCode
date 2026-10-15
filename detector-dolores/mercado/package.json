@@ -1,0 +1,7 @@
+{
+  "name": "escaner-de-mercado",
+  "private": true,
+  "description": "Escáner de mercado interno — Influence Chile",
+  "scripts": { "escanear": "node escanear-mercado.js" },
+  "dependencies": { "playwright-core": "1.56.1" }
+}

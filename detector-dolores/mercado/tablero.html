@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escáner de mercado · Influence Chile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* Tablero interno: misma familia visual que el escáner (instrumento oscuro). Resumen de mercado arriba, lista de negocios, detalle al tocar. */
+  :root {
+    color-scheme: dark;
+    --bg: #0B1A1B; --panel: #10292B; --panel-2: #153537; --line: #1F4548; --ink: #E6F1F1; --ink-2: #B9D2D3; --muted: #8FB0B2; --faint: #5E7F81;
+    --teal: #2EC4CC; --coral: #FF8A8A;
+    --g3: #FF6B6B; --g3-w: rgba(255,107,107,.14); --g2: #F5B942; --g2-w: rgba(245,185,66,.14); --g1: #7FB7FF; --g1-w: rgba(127,183,255,.14); --ok: #4CD28A; --ok-w: rgba(76,210,138,.14);
+    --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.45; font-size: 14px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 18px 16px 60px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+  .marca { font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); }
+  .meta { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  h1 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin: 2px 0 14px; }
+  h2 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  h2 small { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+  .grid-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .stat .l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+  .stat .v { font-family: var(--mono); font-size: 26px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat.hoy .v { color: var(--coral); }
+  .grid-mercado { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 860px) { .grid-mercado { grid-template-columns: 1fr; } }
+  .barra { display: grid; grid-template-columns: 58px minmax(0, 1fr) 46px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12.5px; }
+  .barra .id { font-family: var(--mono); font-weight: 700; font-size: 11.5px; }
+  .barra .nom { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+  .barra .track { height: 8px; background: rgba(255,255,255,.05); border-radius: 0 4px 4px 0; }
+  .barra .fill { height: 8px; border-radius: 0 4px 4px 0; }
+  .barra .pct { font-family: var(--mono); text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .g3c { color: var(--g3); } .g2c { color: var(--g2); } .g1c { color: var(--g1); }
+  .bg3 { background: var(--g3); } .bg2 { background: var(--g2); } .bg1 { background: var(--g1); }
+  .sol-m { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .sol-m:last-child { border-bottom: 0; }
+  .sol-m .n { font-family: var(--mono); color: var(--teal); font-weight: 700; min-width: 22px; }
+  .sol-m .t { flex: 1; min-width: 0; }
+  .sol-m .c { font-family: var(--mono); color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+  .oferta { margin-top: 10px; background: rgba(46,196,204,.08); border: 1px solid rgba(46,196,204,.25); border-radius: 9px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); }
+  .oferta b { color: var(--teal); }
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 10px; }
+  .filtros input, .filtros select { font: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); color: var(--ink); min-width: 0; }
+  .filtros input { flex: 1 1 200px; }
+  .btn { font: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; border-radius: 30px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { border-color: var(--teal); }
+  .btn-teal { background: var(--teal); color: #07191A; border-color: var(--teal); }
+  .lista { display: grid; gap: 6px; }
+  .fila { display: grid; grid-template-columns: 112px 46px minmax(0, 1.4fr) minmax(0, 1.6fr) 18px; gap: 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+  .fila:hover { border-color: var(--teal); }
+  .fila.abierta { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .nivel { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; text-align: center; white-space: nowrap; }
+  .nivel.hoy { background: var(--g3-w); color: var(--g3); } .nivel.semana { background: var(--g2-w); color: var(--g2); } .nivel.nutrir { background: var(--g1-w); color: var(--g1); } .nivel.mano { background: rgba(255,255,255,.07); color: var(--ink-2); }
+  .score { font-family: var(--mono); font-weight: 700; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums; }
+  .nom { font-weight: 700; font-size: 14px; line-height: 1.25; min-width: 0; }
+  .nom small { display: block; font-weight: 500; color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .estado-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--ok-w); color: var(--ok); margin-left: 6px; vertical-align: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+  .chip { font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .chip.g3 { background: var(--g3-w); color: var(--g3); } .chip.g2 { background: var(--g2-w); color: var(--g2); } .chip.g1 { background: var(--g1-w); color: var(--g1); }
+  .chip.man { outline: 1px dashed currentColor; }
+  .flecha { color: var(--faint); font-size: 11px; transition: transform .2s; }
+  .fila.abierta .flecha { transform: rotate(180deg); }
+  @media (max-width: 720px) {
+    .fila { grid-template-columns: auto 40px minmax(0, 1fr) 14px; }
+    .fila .chips { grid-column: 1 / -1; }
+  }
+  .detalle { background: var(--panel-2); border: 1px solid var(--teal); border-top: 0; border-radius: 0 0 10px 10px; padding: 14px; margin-top: -6px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .detalle { grid-template-columns: 1fr; } }
+  .detalle h3 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); margin: 0 0 8px; }
+  .bloque + .bloque { margin-top: 14px; }
+  .cod { border-left: 4px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+  .cod.g3 { border-left-color: var(--g3); } .cod.g2 { border-left-color: var(--g2); } .cod.g1 { border-left-color: var(--g1); }
+  .cod .t { font-weight: 700; font-size: 13px; }
+  .cod .t .chip { margin-right: 6px; }
+  .cod .e { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+  .solx { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .solx b { font-family: var(--mono); color: var(--teal); min-width: 22px; }
+  .solx .q { font-size: 11px; color: var(--muted); }
+  .solx .q.inf { color: var(--teal); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px; }
+  .links a { font-size: 12px; color: var(--teal); text-decoration: none; border: 1px solid var(--line); border-radius: 20px; padding: 4px 10px; }
+  .links a:hover { border-color: var(--teal); }
+  textarea { width: 100%; font: inherit; font-size: 13px; line-height: 1.5; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); resize: vertical; min-height: 120px; }
+  select.estado { font: inherit; font-size: 13px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); }
+  .fila-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+  details.taller summary { cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); }
+  details.taller .grupo { margin-top: 8px; }
+  details.taller .grupo b { font-size: 11.5px; color: var(--muted); display: block; margin-bottom: 2px; }
+  details.taller label { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--ink-2); padding: 3px 0; cursor: pointer; }
+  details.taller input { accent-color: var(--teal); margin-top: 2px; }
+  .info { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+  .vacio { text-align: center; color: var(--muted); padding: 30px; }
+  .nota-pie { font-size: 12px; color: var(--faint); margin-top: 18px; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="marca">Escáner de mercado · interno</span>
+    <span class="meta" id="meta"></span>
+  </header>
+  <h1 id="titulo"></h1>
+  <div class="grid-top" id="stats"></div>
+  <div class="grid-mercado">
+    <div class="panel"><h2>Qué falla en este mercado <small>% de negocios con cada código</small></h2><div id="fallas"></div></div>
+    <div class="panel"><h2>Qué venderle a este mercado <small>soluciones que más aparecen en el Top 3</small></h2><div id="vender"></div><div class="oferta" id="oferta"></div></div>
+  </div>
+  <div class="panel">
+    <h2>Negocios <small>ordenados por oportunidad · toca uno para ver el detalle y el mensaje</small></h2>
+    <div class="filtros">
+      <input id="buscar" type="search" placeholder="Buscar negocio, rubro o código (ej: CON-07)">
+      <select id="f-nivel"><option value="">Todos los niveles</option><option>Escribir hoy</option><option>Esta semana</option><option>Nutrir</option><option>Revisar a mano</option></select>
+      <select id="f-rubro"><option value="">Todos los rubros</option></select>
+      <select id="f-estado"><option value="">Todo el seguimiento</option></select>
+      <button class="btn" id="exportar">Exportar seguimiento (CSV)</button>
+    </div>
+    <div class="lista" id="lista"></div>
+  </div>
+  <p class="nota-pie">La oportunidad (0 a 100) combina qué tan graves son las fallas, cuántas se reparan con servicios de Influence y qué tan bien calza el negocio con el cliente ideal. El escaneo automático solo ve la web: lo que marques en "Modo taller" (Google Maps, Instagram, comprador misterioso, visita) suma códigos y reordena las soluciones. Tus marcas y el seguimiento quedan guardados en este navegador.</p>
+</div>
+
+<script>
+var DATOS = /*__DATOS__*/null;
+(function () {
+  if (!DATOS) { document.getElementById('titulo').textContent = 'Sin datos: genera el tablero con escanear-mercado.js'; return; }
+  var $ = function (id) { return document.getElementById(id); };
+  var CAT = DATOS.catalogo, POR = {}; CAT.CODIGOS.forEach(function (c) { POR[c.id] = c; c.sistema = c.sistema || c.id.slice(0, 3); });
+  var SEN = {}; CAT.SENALES.forEach(function (g) { g.items.forEach(function (it) { SEN[it.id] = { g: g.grupo, t: it.t, c: it.c }; }); });
+  var ESTADOS = ['Por contactar', 'Contactado', 'Respondió', 'Reunión', 'Propuesta', 'Cliente', 'Descartado'];
+  var CLAVE = 'escaner-mercado:' + DATOS.fuente + ':' + DATOS.rubro;
+  var MEM = {}; try { MEM = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) {}
+  function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(MEM)); } catch (e) {} }
+  function mem(n) { var k = n.nombre + '|' + (n.web || ''); return MEM[k] = MEM[k] || { estado: 'Por contactar', senales: [], mensaje: null }; }
+  function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  var nivelCls = { 'Escribir hoy': 'hoy', 'Esta semana': 'semana', 'Nutrir': 'nutrir', 'Revisar a mano': 'mano' };
+  var QUIEN = { influence: 'Influence', partner: 'Se deriva', 'dueño': 'Dueño' };
+
+  // Mismo ranking que el escáner (codigos.js: rankearSoluciones)
+  function rankear(det, max) {
+    var cub = {}, out = [];
+    var peso = function (id) { return POR[id].g * (det[id] && det[id].length > 1 ? 1.5 : 1); };
+    for (var k = 0; k < max; k++) {
+      var mejor = null;
+      CAT.SOLUCIONES.forEach(function (s) {
+        if (out.some(function (o) { return o.s === s; })) return;
+        var nuevos = s.codigos.filter(function (id) { return det[id] && !cub[id]; }); if (!nuevos.length) return;
+        var imp = nuevos.reduce(function (a, id) { return a + peso(id); }, 0), p = imp * (4 - s.esfuerzo);
+        if (!mejor || p > mejor.p) mejor = { s: s, nuevos: nuevos, p: p };
+      });
+      if (!mejor) break; mejor.nuevos.forEach(function (id) { cub[id] = true; }); out.push(mejor);
+    }
+    return out;
+  }
+  function estadoNegocio(n) {
+    var m = mem(n), det = {};
+    n.codigos.forEach(function (c) { det[c.id] = c.evidencia.slice(); });
+    var manuales = {};
+    m.senales.forEach(function (sid) { var s = SEN[sid]; if (!s) return; s.c.forEach(function (id) { (det[id] = det[id] || []).push(s.g + ': ' + s.t); manuales[id] = true; }); });
+    var cods = Object.keys(det).map(function (id) { return { id: id, g: POR[id].g, nombre: POR[id].nombre, evidencia: det[id], manual: manuales[id] && !n.codigos.some(function (c) { return c.id === id; }) }; })
+      .sort(function (a, b) { return b.g - a.g || a.id.localeCompare(b.id); });
+    return { cods: cods, sols: rankear(det, 5) };
+  }
+
+  // ---- encabezado y mercado ----
+  var M = DATOS.mercado;
+  $('titulo').textContent = 'Mercado: ' + (DATOS.rubro === 'Todos' ? 'todos los rubros' : DATOS.rubro);
+  $('meta').textContent = DATOS.fuente + ' · ' + new Date(DATOS.generado).toLocaleString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  function nNivel(k) { var x = M.niveles.find(function (v) { return v.nivel === k; }); return x ? x.n : 0; }
+  $('stats').innerHTML =
+    '<div class="stat"><div class="l">Negocios escaneados</div><div class="v">' + M.escaneados + '</div></div>' +
+    '<div class="stat"><div class="l">Webs que cargaron</div><div class="v">' + M.cargaron + '</div></div>' +
+    '<div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + nNivel('Escribir hoy') + '</div></div>' +
+    '<div class="stat"><div class="l">Esta semana</div><div class="v">' + nNivel('Esta semana') + '</div></div>' +
+    '<div class="stat"><div class="l">Clientes ganados</div><div class="v" id="ganados">0</div></div>';
+  $('fallas').innerHTML = M.codigos.slice(0, 10).map(function (c) {
+    return '<div class="barra"><span class="id g' + c.g + 'c">' + c.id + '</span><div style="min-width:0"><div class="nom">' + esc(c.nombre) + '</div><div class="track"><div class="fill bg' + c.g + '" style="width:' + c.pct + '%"></div></div></div><span class="pct">' + c.pct + '%</span></div>';
+  }).join('');
+  $('vender').innerHTML = M.soluciones.slice(0, 6).map(function (s, i) {
+    return '<div class="sol-m"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(s.nombre) + ' <span class="c">· ' + QUIEN[s.quien] + '</span></span><span class="c">' + s.top3 + ' negocios</span></div>';
+  }).join('');
+  var top = M.soluciones.find(function (s) { return s.quien === 'influence'; }), f0 = M.codigos[0];
+  $('oferta').innerHTML = top && f0 ? '<b>Oferta para este mercado:</b> empaqueta "' + esc(top.nombre) + '" como servicio de precio fijo. Aparece en el Top 3 de ' + top.top3 + ' negocios. La falla más común es ' + f0.id + ' (' + esc(f0.nombre) + '), presente en el ' + f0.pct + '% de las webs.' : '';
+
+  // ---- filtros ----
+  var rubros = {}; DATOS.negocios.forEach(function (n) { if (n.rubro) rubros[n.rubro] = 1; });
+  Object.keys(rubros).sort().forEach(function (r) { var o = document.createElement('option'); o.textContent = r; $('f-rubro').appendChild(o); });
+  ESTADOS.forEach(function (e) { var o = document.createElement('option'); o.textContent = e; $('f-estado').appendChild(o); });
+  ['buscar', 'f-nivel', 'f-rubro', 'f-estado'].forEach(function (id) { $(id).addEventListener('input', pintar); });
+
+  var abierto = null;
+  function pintar() {
+    var q = $('buscar').value.trim().toLowerCase(), fn = $('f-nivel').value, fr = $('f-rubro').value, fe = $('f-estado').value;
+    var vis = DATOS.negocios.filter(function (n) {
+      var m = mem(n), e = estadoNegocio(n);
+      if (fn && n.nivel !== fn) return false; if (fr && n.rubro !== fr) return false; if (fe && m.estado !== fe) return false;
+      if (q && (n.nombre + ' ' + (n.rubro || '') + ' ' + (n.ciudad || '') + ' ' + e.cods.map(function (c) { return c.id; }).join(' ')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    $('ganados').textContent = DATOS.negocios.filter(function (n) { return mem(n).estado === 'Cliente'; }).length;
+    if (!vis.length) { $('lista').innerHTML = '<div class="vacio">Ningún negocio con esos filtros.</div>'; return; }
+    $('lista').innerHTML = vis.map(function (n) {
+      var i = DATOS.negocios.indexOf(n), m = mem(n), e = estadoNegocio(n);
+      return '<div class="fila' + (abierto === i ? ' abierta' : '') + '" data-i="' + i + '"><span class="nivel ' + nivelCls[n.nivel] + '">' + n.nivel + '</span><span class="score">' + n.oportunidad + '</span>' +
+        '<span class="nom">' + esc(n.nombre) + (m.estado !== 'Por contactar' ? '<span class="estado-tag">' + esc(m.estado) + '</span>' : '') + '<small>' + esc([n.rubro, n.ciudad, n.info && n.info.plataforma].filter(Boolean).join(' · ')) + '</small></span>' +
+        '<span class="chips">' + e.cods.map(function (c) { return '<span class="chip g' + c.g + (c.manual ? ' man' : '') + '">' + c.id + '</span>'; }).join('') + '</span><span class="flecha">▼</span></div>' +
+        (abierto === i ? detalle(n, i) : '');
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('.fila'), function (f) { f.addEventListener('click', function () { var i = +f.getAttribute('data-i'); abierto = abierto === i ? null : i; pintar(); }); });
+    if (abierto != null) conectarDetalle(DATOS.negocios[abierto]);
+  }
+
+  function detalle(n, i) {
+    var m = mem(n), e = estadoNegocio(n);
+    var web = n.web ? (/^https?:/.test(n.web) ? n.web : 'https://' + n.web) : '';
+    var links = [web && '<a href="' + esc(web) + '" target="_blank" rel="noopener">Web</a>',
+      '<a href="https://www.google.com/maps/search/' + encodeURIComponent(n.nombre + ' ' + (n.ciudad || '')) + '" target="_blank" rel="noopener">Google Maps</a>',
+      '<a href="' + esc(n.instagram || 'https://www.instagram.com/explore/search/keyword/?q=' + encodeURIComponent(n.nombre)) + '" target="_blank" rel="noopener">Instagram</a>',
+      '<a href="' + esc(n.ads || 'https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=CL&q=' + encodeURIComponent(n.nombre)) + '" target="_blank" rel="noopener">Anuncios en Meta</a>',
+      n.linkedin && '<a href="' + esc(n.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>'].filter(Boolean).join('');
+    var inf = n.info || {};
+    var datos = [inf.plataforma && 'Plataforma: ' + inf.plataforma, inf.ms && 'Carga: ' + (inf.ms / 1000).toFixed(1) + ' s', inf.camino && 'Camino de compra: ' + inf.camino, inf.año && '© ' + inf.año, n.empleados && 'Empleados: ' + n.empleados, n.visita && !n.visita.ok && 'Web: ' + (n.visita.error || n.visita.status)].filter(Boolean).join(' · ');
+    var msg = m.mensaje != null ? m.mensaje : n.mensaje;
+    return '<div class="detalle" onclick="event.stopPropagation()">' +
+      '<div>' +
+        '<div class="bloque"><h3>Códigos de falla</h3>' + (e.cods.length ? e.cods.map(function (c) { return '<div class="cod g' + c.g + '"><div class="t"><span class="chip g' + c.g + '">' + c.id + '</span>' + esc(c.nombre) + (c.manual ? ' <span class="q">(marcado a mano)</span>' : '') + '</div>' + c.evidencia.map(function (x) { return '<div class="e">' + esc(x) + '</div>'; }).join('') + '</div>'; }).join('') : '<div class="info">Sin fallas detectadas en la web.</div>') + '</div>' +
+        '<div class="bloque"><h3>Soluciones, de la mejor a la peor</h3>' + e.sols.map(function (t, k) { return '<div class="solx"><b>' + (k + 1) + '</b><span>' + esc(t.s.nombre) + ' <span class="q' + (t.s.quien === 'influence' ? ' inf' : '') + '">· ' + QUIEN[t.s.quien] + ' · repara ' + t.nuevos.join(', ') + '</span></span></div>'; }).join('') + '</div>' +
+      '</div><div>' +
+        '<div class="bloque"><h3>Primer mensaje</h3><textarea id="msg-' + i + '">' + esc(msg) + '</textarea>' +
+          '<div class="fila-btns"><button class="btn btn-teal" id="copiar-' + i + '">Copiar mensaje</button><select class="estado" id="estado-' + i + '">' + ESTADOS.map(function (s) { return '<option' + (s === m.estado ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></div></div>' +
+        '<div class="bloque"><h3>Revisar</h3><div class="links">' + links + '</div>' + (datos ? '<div class="info" style="margin-top:8px">' + esc(datos) + '</div>' : '') + (n.descripcion ? '<div class="info" style="margin-top:6px">' + esc(n.descripcion) + '</div>' : '') + '</div>' +
+        '<div class="bloque"><details class="taller"' + (m.senales.length ? ' open' : '') + '><summary>Modo taller · marca lo que veas a mano (' + m.senales.length + ')</summary>' +
+          CAT.SENALES.map(function (g) { return '<div class="grupo"><b>' + esc(g.grupo) + '</b>' + g.items.map(function (it) { return '<label><input type="checkbox" data-s="' + it.id + '"' + (m.senales.indexOf(it.id) >= 0 ? ' checked' : '') + '>' + esc(it.t) + '</label>'; }).join('') + '</div>'; }).join('') +
+        '</details></div>' +
+      '</div></div>';
+  }
+  function conectarDetalle(n) {
+    var i = DATOS.negocios.indexOf(n), m = mem(n);
+    var ta = $('msg-' + i); if (!ta) return;
+    ta.addEventListener('input', function () { m.mensaje = ta.value; guardar(); });
+    $('copiar-' + i).addEventListener('click', function () {
+      var b = this;
+      var ok = function () { b.textContent = 'Copiado ✓'; if (m.estado === 'Por contactar') { m.estado = 'Contactado'; guardar(); } setTimeout(pintar, 900); };
+      try { navigator.clipboard.writeText(ta.value).then(ok, function () { ta.select(); document.execCommand('copy'); ok(); }); } catch (e) { ta.select(); document.execCommand('copy'); ok(); }
+    });
+    $('estado-' + i).addEventListener('change', function () { m.estado = this.value; guardar(); pintar(); });
+    Array.prototype.forEach.call(document.querySelectorAll('.detalle input[data-s]'), function (cb) {
+      cb.addEventListener('change', function () { var s = cb.getAttribute('data-s'); m.senales = m.senales.filter(function (x) { return x !== s; }); if (cb.checked) m.senales.push(s); guardar(); pintar(); });
+    });
+  }
+
+  $('exportar').addEventListener('click', function () {
+    var q = function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; };
+    var filas = [['estado', 'nivel', 'oportunidad', 'nombre', 'rubro', 'ciudad', 'web', 'codigos', 'solucion_top1', 'mensaje'].join(',')].concat(DATOS.negocios.map(function (n) {
+      var m = mem(n), e = estadoNegocio(n);
+      return [m.estado, n.nivel, n.oportunidad, n.nombre, n.rubro, n.ciudad, n.web, e.cods.map(function (c) { return c.id; }).join(' '), e.sols[0] ? e.sols[0].s.nombre : '', m.mensaje != null ? m.mensaje : n.mensaje].map(q).join(',');
+    }));
+    var blob = new Blob(['﻿' + filas.join('\n')], { type: 'text/csv' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'seguimiento-' + DATOS.rubro.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.csv'; a.click();
+  });
+  pintar();
+})();
+</script>
+</body>
+</html>

@@ -4,7 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Escáner de Negocio · Influence Chile</title>
-<meta name="description" content="Conecta el escáner a tu negocio y lee los códigos de falla: qué sistema falla, qué tan grave es y cómo se repara.">
+<meta name="description" content="Diagnóstico gratis de tu negocio en 3 minutos. El escáner lee 8 sistemas, entrega los códigos de falla y las 5 mejores soluciones, de la mejor a la peor.">
+<link rel="canonical" href="https://influencechile.cl/escaner/">
+<meta name="theme-color" content="#0B1A1B">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Influence Chile">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Escáner de Negocio · Diagnóstico gratis en 3 minutos">
+<meta property="og:description" content="Como el escáner de un auto: lee 8 sistemas de tu negocio y te dice qué falla, qué tan grave es y cómo se repara.">
+<meta property="og:image" content="https://influencechile.cl/og-cover.png">
+<meta property="og:url" content="https://influencechile.cl/escaner/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="https://influencechile.cl/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebApplication",
+ "name": "Escáner de Negocio",
+ "url": "https://influencechile.cl/escaner/",
+ "applicationCategory": "BusinessApplication",
+ "operatingSystem": "Web",
+ "inLanguage": "es-CL",
+ "isAccessibleForFree": true,
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "CLP"
+ },
+ "description": "Diagnóstico gratuito de negocios en 3 minutos. Lee 8 sistemas (captación, conversión, margen, operación, caja, retención, personas y datos), entrega códigos de falla con su gravedad y las 5 mejores soluciones ordenadas de la mejor a la peor.",
+ "provider": {
+  "@type": "ProfessionalService",
+  "name": "Influence Chile",
+  "url": "https://influencechile.cl/"
+ }
+}
+</script>
+<script src="/medicion.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -25,6 +60,9 @@
   header .led.fault { background: var(--g3); box-shadow: 0 0 10px var(--g3); }
   @keyframes parpadeo { from { opacity: .35 } to { opacity: 1 } }
   header .ver { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  header .volver { font-weight: 800; font-size: 15px; letter-spacing: -.02em; color: var(--ink); text-decoration: none; }
+  header .volver span { color: var(--teal); }
+  header .volver:hover { color: var(--teal); }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; margin-bottom: 14px; }
   h1 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; margin-bottom: 8px; }
   h2 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
@@ -133,6 +171,13 @@
   .sol .res b { color: var(--teal); font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; margin-right: 6px; }
   @media (max-width: 480px) { .sol { grid-template-columns: 44px 1fr; gap: 10px; padding: 12px; } .sol .rank b { font-size: 20px; } }
 
+  .revisa { margin-top: 26px; padding-top: 22px; border-top: 1px dashed var(--line); }
+  .revisa h2 { font-size: 17px; }
+  .revisa p { font-size: 14px; }
+  .revisa ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 4px 0 14px; }
+  .revisa li { display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; color: var(--ink-2); }
+  .revisa li b { font-family: var(--mono); color: var(--teal); font-size: 12px; min-width: 32px; }
+  .revisa li strong { color: var(--ink); margin-right: 4px; }
   .nota { background: rgba(46,196,204,.08); border: 1px solid rgba(46,196,204,.25); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; color: var(--ink-2); margin-top: 14px; }
   .nota b { color: var(--teal); }
   .cta { background: linear-gradient(135deg, #123638, #12959C); border-radius: 14px; padding: 22px 20px; margin-top: 14px; text-align: center; }
@@ -165,7 +210,7 @@
 <div class="wrap">
   <header>
     <div class="marca"><span class="led" id="led"></span>Escáner de Negocio</div>
-    <div class="ver">INFLUENCE CHILE · v1.0 · 40 códigos</div>
+    <a class="volver" href="https://influencechile.cl/">influence<span>chile</span> ↗</a>
   </header>
 
   <!-- 1. CONECTAR -->
@@ -180,12 +225,27 @@
       <option value="">Elige uno…</option>
       <option>Almacén / Minimarket / Kiosco</option><option>Restaurante / Cafetería / Delivery</option><option>Clínica / Dental / Estética</option><option>Tienda / Retail / Moda</option><option>Servicios profesionales</option><option>Gimnasio / Academia / Deporte</option><option>Tienda online</option><option>Pyme B2B / Distribuidor / Fábrica</option><option>Otro</option>
     </select>
-    <label>Modo de escaneo</label>
-    <div class="modo">
+    <label class="solo-taller hidden">Modo de escaneo</label>
+    <div class="modo solo-taller hidden">
       <div class="op sel" data-modo="rapido"><b>Rápido</b><span>Responde el dueño. 16 lecturas, 3 minutos.</span></div>
       <div class="op" data-modo="taller"><b>Taller</b><span>Lo usa Influence: 16 lecturas + señales observadas desde afuera.</span></div>
     </div>
     <div class="fila-btn"><button class="btn btn-teal" id="btn-conectar">Conectar →</button></div>
+    <div class="revisa">
+      <h2>Qué revisa el escáner</h2>
+      <p>Todo negocio que vende es la misma cadena: alguien se entera, llega, compra, se le entrega, se cobra y vuelve. El escáner lee los 8 sistemas de esa cadena y detecta cuál está frenando las ventas.</p>
+      <ul>
+        <li><b>CAP</b><span><strong>Captación</strong> ¿Llega suficiente gente nueva?</span></li>
+        <li><b>CON</b><span><strong>Conversión</strong> ¿Los que preguntan, compran?</span></li>
+        <li><b>MAR</b><span><strong>Ticket y margen</strong> ¿Queda plata de cada venta?</span></li>
+        <li><b>OPE</b><span><strong>Operación</strong> ¿Se entrega bien y a tiempo?</span></li>
+        <li><b>CAJ</b><span><strong>Caja y cobro</strong> ¿La plata llega cuando debe?</span></li>
+        <li><b>RET</b><span><strong>Retención</strong> ¿Los clientes vuelven?</span></li>
+        <li><b>PER</b><span><strong>Personas y dueño</strong> ¿Funciona sin el dueño?</span></li>
+        <li><b>DAT</b><span><strong>Datos y control</strong> ¿Se sabe cuánto se gana?</span></li>
+      </ul>
+      <p>Al final recibes los códigos de falla con su gravedad, la reparación de cada uno y las 5 soluciones que más conviene aplicar, de la mejor a la peor. Gratis y sin registro.</p>
+    </div>
   </section>
 
   <!-- 2. LECTURA -->
@@ -240,7 +300,10 @@
     <div class="cta">
       <h2>Agendar la reparación</h2>
       <p>Diagnóstico completo con números de tu negocio, radiografía del proceso que más duele y plan de 30 días. Gratis, sin compromiso.</p>
-      <a class="btn btn-wa" id="r-wa" target="_blank" rel="noopener">Agendar por WhatsApp</a>
+      <div class="fila-btn" style="justify-content:center;margin-top:0">
+        <a class="btn btn-wa" id="r-wa" target="_blank" rel="noopener">Agendar por WhatsApp</a>
+        <a class="btn" id="r-planes" href="https://influencechile.cl/#planes">Ver planes</a>
+      </div>
     </div>
     <div class="fila-btn no-print" style="justify-content:center">
       <button class="btn" id="btn-imprimir">Imprimir informe</button>
@@ -260,6 +323,17 @@
   var est = { negocio: '', rubro: '', modo: 'rapido', r: [], s: [] };
   var actual = 0;
 
+  // El modo taller es la herramienta interna: solo aparece con ?taller en la URL.
+  var TALLER = /[?&]taller(=|&|$)/.test(location.search);
+  if (TALLER) Array.prototype.forEach.call(document.querySelectorAll('.solo-taller'), function (el) { el.classList.remove('hidden'); });
+
+  // Medición: usa el píxel de Meta o Google Analytics si la página los tiene; si no, no hace nada.
+  function medir(evento, datos) {
+    try { if (window.fbq) window.fbq('trackCustom', evento, datos || {}); } catch (e) {}
+    try { if (window.gtag) window.gtag('event', evento, datos || {}); } catch (e) {}
+    try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: evento }, datos || {})); } catch (e) {}
+  }
+
   function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function mostrar(id) { ['conectar', 'lectura', 'senales', 'escaneando', 'resultado'].forEach(function (s) { $(s).classList.toggle('hidden', s !== id); }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   function led(c) { $('led').className = 'led ' + (c || ''); }
@@ -270,7 +344,9 @@
   });
   $('btn-conectar').addEventListener('click', function () {
     est.negocio = $('negocio').value.trim(); est.rubro = $('rubro').value; est.r = []; est.s = []; actual = 0;
+    if (!TALLER) est.modo = 'rapido';
     led('on'); pintarPregunta(); mostrar('lectura');
+    medir('EscanerInicio', { rubro: est.rubro || 'sin rubro', modo: est.modo });
   });
 
   // ---- 2. lectura ----
@@ -342,7 +418,7 @@
     lineas.push({ izq: 'Lectura completa', der: R.lista.length + ' códigos', cls: R.lista.length ? 'g' + Math.max.apply(null, R.lista.map(function (x) { return x.c.g; })) : 'ok' });
     var i = 0;
     function paso() {
-      if (i >= lineas.length) { setTimeout(function () { led(R.n3 ? 'fault' : 'on'); render(R); mostrar('resultado'); }, 500); return; }
+      if (i >= lineas.length) { setTimeout(function () { led(R.n3 ? 'fault' : 'on'); render(R); mostrar('resultado'); medir('EscanerCompleto', { rubro: est.rubro || 'sin rubro', codigos: R.lista.length, criticos: R.n3 }); }, 500); return; }
       var l = lineas[i], div = document.createElement('div'); div.className = 'linea';
       div.innerHTML = '<span class="izq">' + l.izq + '</span><span class="der cursor"></span>';
       con.appendChild(div); requestAnimationFrame(function () { div.classList.add('ver'); });
@@ -414,6 +490,8 @@
   function b64d(s) { return decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))); }
   function guardarUrl() { try { var u = new URL(location.href); u.searchParams.set('d', b64e(JSON.stringify(est))); history.replaceState(null, '', u); } catch (e) {} }
 
+  $('r-wa').addEventListener('click', function () { medir('EscanerWhatsApp', { rubro: est.rubro || 'sin rubro' }); try { if (window.fbq) window.fbq('track', 'Contact'); } catch (e) {} });
+  $('r-planes').addEventListener('click', function () { medir('EscanerVerPlanes', {}); });
   $('btn-imprimir').addEventListener('click', function () { window.print(); });
   $('btn-copiar').addEventListener('click', function () { guardarUrl(); try { navigator.clipboard.writeText(location.href); this.textContent = 'Link copiado ✓'; } catch (e) { prompt('Copia este link:', location.href); } });
   $('btn-borrar').addEventListener('click', function () { est = { negocio: '', rubro: '', modo: 'rapido', r: [], s: [] }; try { var u = new URL(location.href); u.search = ''; history.replaceState(null, '', u); } catch (e) {} led(''); mostrar('conectar'); });
