@@ -1,0 +1,143 @@
+{
+  "campana": {
+    "ejemplo": true,
+    "slug": "ejemplo-dentales-oriente",
+    "fecha": "2026-10-15",
+    "rubro": "Clínicas dentales",
+    "zona": "Santiago Oriente",
+    "comunas": ["Providencia", "Ñuñoa", "Las Condes", "La Reina"],
+    "servicio": "Gestión de redes sociales + contenido (plan Crecimiento)",
+    "tipo_oferta": "optimizar",
+    "canal": "redes",
+    "meta": 10,
+    "busquedas": [
+      { "consulta": "clínica dental Providencia", "fuente": "WebSearch", "resultados": 9 },
+      { "consulta": "dentista Barrio Italia", "fuente": "WebSearch", "resultados": 6 },
+      { "consulta": "clínica dental Ñuñoa Plaza Egaña", "fuente": "WebSearch", "resultados": 7 },
+      { "consulta": "ortodoncia Las Condes Apoquindo", "fuente": "WebSearch", "resultados": 8 },
+      { "consulta": "centro odontológico La Reina", "fuente": "WebSearch", "resultados": 5 }
+    ]
+  },
+  "prospectos": [
+    {
+      "nombre": "Clínica Dental Ejemplo Sonríe",
+      "comuna": "Providencia",
+      "direccion": "Av. Ejemplo 1234",
+      "telefono": "+56 9 1111 1111",
+      "email": "contacto@sonrie.ejemplo.cl",
+      "web": "https://sonrie.ejemplo.cl",
+      "instagram": "sonrie.ejemplo",
+      "seguidores": 1850,
+      "ultimo_post_dias": 4,
+      "google": { "rating": 4.7, "resenas": 212 },
+      "senales": { "web": "desordenada", "redes": "desordenada", "pauta": false },
+      "hallazgo": "Publican 3 veces por semana pero solo fotos de stock; 212 reseñas en Google que nunca aparecen en Instagram.",
+      "canal_mensaje": "DM Instagram",
+      "mensaje": "Hola 👋 Soy Gabriel, de Influence Chile.\n\nRevisé la cuenta de Sonríe y hay algo que les está costando pacientes: tienen 212 reseñas de 4,7 en Google y ninguna aparece en Instagram, donde todo es foto de stock.\n\n¿Te mando el análisis completo? Son 2 minutos, sin compromiso.",
+      "fuentes": ["https://sonrie.ejemplo.cl/contacto", "busqueda: clínica dental Providencia"]
+    },
+    {
+      "nombre": "Odontología Ejemplo Barrio Italia",
+      "comuna": "Providencia",
+      "telefono": "+56 9 2222 2222",
+      "web": "https://barrioitalia-dental.ejemplo.cl",
+      "instagram": "dental.barrioitalia.ejemplo",
+      "seguidores": 640,
+      "ultimo_post_dias": 160,
+      "google": { "rating": 4.5, "resenas": 58 },
+      "senales": { "web": "buena", "redes": "abandonada" },
+      "hallazgo": "Último post hace 5 meses; la web tiene reserva online que no se menciona en la bio.",
+      "canal_mensaje": "WhatsApp",
+      "mensaje": "Hola, soy Gabriel de Influence Chile.\n\nVi que tienen reserva online en la web (muy bien hecha), pero el Instagram está parado desde mayo y la bio no la menciona. Es justo donde llegan los pacientes nuevos de Barrio Italia.\n\n¿Te muestro qué cambiaríamos? Sin costo.",
+      "fuentes": ["https://barrioitalia-dental.ejemplo.cl"]
+    },
+    {
+      "nombre": "Centro Odontológico Ejemplo Egaña",
+      "comuna": "Ñuñoa",
+      "direccion": "Av. Ejemplo Larraín 5678",
+      "telefono": "+56 2 2333 3333",
+      "email": "recepcion@egana.ejemplo.cl",
+      "web": "https://egana.ejemplo.cl",
+      "instagram": "egana.dental.ejemplo",
+      "seguidores": 3900,
+      "ultimo_post_dias": 2,
+      "google": { "rating": 4.8, "resenas": 430 },
+      "sucursales": 2,
+      "senales": { "web": "buena", "redes": "buena", "pauta": true },
+      "hallazgo": "Redes bien llevadas y con pauta activa; no hay mucho que ordenar.",
+      "fuentes": ["https://egana.ejemplo.cl", "https://www.facebook.com/ads/library/?q=egana"]
+    },
+    {
+      "nombre": "Dentista Ejemplo Villaseca",
+      "comuna": "Ñuñoa",
+      "telefono": "+56 9 4444 4444",
+      "google": { "rating": 4.9, "resenas": 37 },
+      "senales": { "web": "ninguna", "redes": "ninguna" },
+      "hallazgo": "Sin web ni Instagram; vive del boca a boca (37 reseñas).",
+      "fuentes": ["busqueda: dentista Ñuñoa Villaseca"]
+    },
+    {
+      "nombre": "Ortodoncia Ejemplo Apoquindo",
+      "comuna": "Las Condes",
+      "direccion": "Av. Apoquindo 0000, of. 501",
+      "email": "hola@orto-apoquindo.ejemplo.cl",
+      "telefono": "+56 9 5555 5555",
+      "web": "https://orto-apoquindo.ejemplo.cl",
+      "instagram": "orto.apoquindo.ejemplo",
+      "seguidores": 2300,
+      "ultimo_post_dias": 9,
+      "google": { "rating": 4.4, "resenas": 96 },
+      "senales": { "web": "desordenada", "redes": "desordenada", "pauta": true },
+      "hallazgo": "Pautean en Meta con un anuncio que lleva al home, no a reservar; reels sin CTA.",
+      "canal_mensaje": "Email",
+      "mensaje": "Hola, soy Gabriel de Influence Chile.\n\nVi que están pauteando en Meta (buena señal: ya invierten), pero el anuncio lleva al home y no a reservar, y los reels no tienen llamado a la acción. Esa plata se está yendo.\n\n¿Te mando el análisis con los 3 ajustes? Son 2 minutos de lectura.",
+      "fuentes": ["https://orto-apoquindo.ejemplo.cl", "https://www.facebook.com/ads/library/?q=orto%20apoquindo"]
+    },
+    {
+      "nombre": "Ortodoncia Ejemplo Apoquindo SpA",
+      "comuna": "Las Condes",
+      "telefono": "+56 9 5555 5555",
+      "senales": { "web": "desordenada", "redes": "desordenada" },
+      "fuentes": ["busqueda: ortodoncia Las Condes Apoquindo"]
+    },
+    {
+      "nombre": "Clínica Ejemplo Los Dominicos",
+      "comuna": "Las Condes",
+      "web": "https://dominicos.ejemplo.cl",
+      "instagram": "dominicos.dental.ejemplo",
+      "seguidores": 980,
+      "ultimo_post_dias": 21,
+      "senales": { "web": "abandonada", "redes": "desordenada" },
+      "hallazgo": "Web sin formulario ni teléfono visible; Instagram activo sin destacadas.",
+      "fuentes": ["https://dominicos.ejemplo.cl"]
+    },
+    {
+      "nombre": "Dental Ejemplo Príncipe de Gales",
+      "comuna": "La Reina",
+      "telefono": "+56 9 6666 6666",
+      "email": "agenda@pgales.ejemplo.cl",
+      "instagram": "pgales.dental.ejemplo",
+      "seguidores": 410,
+      "ultimo_post_dias": 95,
+      "google": { "rating": 4.2, "resenas": 19 },
+      "senales": { "web": "ninguna", "redes": "abandonada" },
+      "hallazgo": "Instagram parado hace 3 meses y sin web: agenda solo por WhatsApp.",
+      "canal_mensaje": "WhatsApp",
+      "mensaje": "Hola, soy Gabriel de Influence Chile.\n\nVi que el Instagram de la clínica está parado desde julio y que agendan todo por WhatsApp. Con 19 reseñas buenas en Google hay material de sobra para reactivarlo.\n\n¿Te muestro cómo lo haríamos? Sin compromiso.",
+      "fuentes": ["busqueda: centro odontológico La Reina"]
+    },
+    {
+      "nombre": "Sonrisas Ejemplo Larrain",
+      "comuna": "La Reina",
+      "instagram": "sonrisas.larrain.ejemplo",
+      "seguidores": 5200,
+      "ultimo_post_dias": 1,
+      "google": { "rating": 4.6, "resenas": 150 },
+      "senales": { "web": "buena", "redes": "buena" },
+      "oportunidad": "media",
+      "motivo_override": "Redes buenas, pero la competencia directa ya trabaja con agencia: argumento de urgencia",
+      "hallazgo": "Muy buen contenido; solo contacto por DM.",
+      "fuentes": ["busqueda: centro odontológico La Reina"]
+    }
+  ]
+}
