@@ -13,7 +13,7 @@ body { font-family: var(--body); color: var(--text); background: var(--bg); -web
 .canvas { width: 1080px; position: relative; overflow: hidden; display: flex; flex-direction: column; }
 .canvas.sq { height: 1080px; } .canvas.p45 { height: 1350px; } .canvas.story { height: 1920px; }
 .canvas.dark { background: var(--ink); color: #fff; }
-.pad { padding: 88px; } .story .pad { padding: 120px 88px; }
+.pad { padding: 88px; } .story .pad { padding: 120px 88px 270px; }
 h1, h2 { font-family: var(--display); text-transform: uppercase; letter-spacing: .01em; line-height: .96; font-weight: 800; }
 h1 { font-size: 112px; } h2 { font-size: 80px; }
 .hl { color: var(--accent); }
