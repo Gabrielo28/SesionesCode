@@ -1,0 +1,482 @@
+<title>Panel Influence Fit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: barra carbón arriba con el negocio del cliente; navegación lateral (pestañas arriba en el teléfono); cada sección es una vista del panel. */
+  :root {
+    --bg: #F3F6F6; --surface: #FFFFFF; --surface-2: #F8FAFA; --ink: #123638; --ink-2: #3F5D5E; --muted: #6E8A8B; --line: #DCE5E5;
+    --band: #123638; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+    --accent: #FF7B7B; --accent-ink: #123638; --accent-text: #B83A40; --accent-soft: #FFE9E9; --teal: #0E7177; --teal-soft: #E1F0F0;
+    --ok: #1E7A4E; --ok-soft: #E4F5EC; --warn: #8A5A00; --warn-soft: #FFF1D1; --risk: #B12851; --risk-soft: #FBE9EF;
+    --display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+    --body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B2224; --surface: #123638; --surface-2: #0F2E30; --ink: #EAF2F2; --ink-2: #C3D6D6; --muted: #8FAFB0; --line: #24494B;
+      --band: #0E2B2D; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+      --accent: #FF8A8A; --accent-ink: #123638; --accent-text: #FF9C9C; --accent-soft: #3A2328; --teal: #4FC0C6; --teal-soft: #163F42;
+      --ok: #5FD094; --ok-soft: #12301F; --warn: #F2C35B; --warn-soft: #33290F; --risk: #FF8FAE; --risk-soft: #3A1A24;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B2224; --surface: #123638; --surface-2: #0F2E30; --ink: #EAF2F2; --ink-2: #C3D6D6; --muted: #8FAFB0; --line: #24494B;
+    --band: #0E2B2D; --band-line: #24494B; --band-fg: #FFFFFF; --band-muted: #9FBABB;
+    --accent: #FF8A8A; --accent-ink: #123638; --accent-text: #FF9C9C; --accent-soft: #3A2328; --teal: #4FC0C6; --teal-soft: #163F42;
+    --ok: #5FD094; --ok-soft: #12301F; --warn: #F2C35B; --warn-soft: #33290F; --risk: #FF8FAE; --risk-soft: #3A1A24;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: .01em; line-height: 1.05; margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  /* barra superior */
+  .top { background: var(--band); color: var(--band-fg); }
+  .top-in { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand svg { width: 34px; height: 34px; flex: none; }
+  .brand b { display: block; font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+  .brand b span { color: var(--accent); }
+  .brand small { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--band-muted); margin-top: 3px; }
+  .who { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .who .biz { text-align: right; }
+  .who .biz b { display: block; font-weight: 600; font-size: 15px; }
+  .who .biz span { font-size: 12.5px; color: var(--band-muted); }
+  .ex { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--band-muted); border: 1px solid var(--band-line); padding: 5px 10px; border-radius: 999px; }
+
+  /* estructura */
+  .shell { max-width: 1280px; margin: 0 auto; display: grid; gap: 28px; padding-block: 24px 48px; }
+  @media (min-width: 980px) { .shell { grid-template-columns: 210px 1fr; } }
+  .shell > * { min-width: 0; }
+  nav.side { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav.side::-webkit-scrollbar { display: none; }
+  @media (min-width: 980px) { nav.side { flex-direction: column; position: sticky; top: 16px; align-self: start; overflow: visible; } }
+  nav.side button { display: flex; align-items: center; justify-content: space-between; gap: 10px; white-space: nowrap; text-align: left; background: transparent; border: 0; border-radius: 10px; padding: 10px 12px; color: var(--ink-2); font-weight: 600; font-size: 15px; }
+  nav.side button:hover { background: var(--surface); color: var(--ink); }
+  nav.side button[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: inset 3px 0 0 var(--accent); }
+  nav.side .count { font-family: var(--display); font-size: 13px; font-weight: 700; background: var(--accent); color: var(--accent-ink); border-radius: 99px; padding: 1px 8px; }
+  .help { margin-top: 18px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); display: none; }
+  @media (min-width: 980px) { .help { display: grid; gap: 6px; } }
+  .help b { font-family: var(--display); font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+  .help p { font-size: 13.5px; color: var(--ink-2); }
+  .help .num { font-family: var(--display); font-size: 18px; font-weight: 700; user-select: all; }
+
+  .view { display: grid; gap: 22px; align-content: start; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .head h1 { font-size: clamp(30px, 4vw, 42px); font-weight: 800; }
+  .head p { color: var(--ink-2); margin-top: 4px; }
+  .eyebrow { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .card h2 { font-size: 20px; font-weight: 700; letter-spacing: .03em; }
+  .card .sub { font-size: 13.5px; color: var(--muted); margin-top: -6px; }
+  .grid2 { display: grid; gap: 18px; } @media (min-width: 900px) { .grid2 { grid-template-columns: 1.3fr 1fr; } }
+
+  /* indicadores */
+  .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 760px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 4px; }
+  .kpi small { font-family: var(--display); font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .kpi b { font-family: var(--display); font-size: 38px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .kpi span { font-size: 13px; color: var(--ink-2); }
+  .kpi.hl { background: var(--band); border-color: var(--band); color: var(--band-fg); }
+  .kpi.hl small, .kpi.hl span { color: var(--band-muted); }
+  .kpi.hl b { color: var(--accent); }
+
+  /* proceso */
+  .process { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 0; overflow-x: auto; }
+  .process div { border-top: 3px solid var(--line); padding: 10px 10px 0 0; display: grid; gap: 2px; }
+  .process div.done { border-top-color: var(--teal); }
+  .process div.now { border-top-color: var(--accent); }
+  .process b { font-family: var(--display); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .process span { font-size: 14px; color: var(--ink-2); }
+  .process div.done b { color: var(--teal); } .process div.now b { color: var(--accent-text); }
+
+  /* gráfico semanal */
+  .bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; height: 170px; padding-top: 8px; position: relative; }
+  .bars .goal { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--muted); }
+  .bars .goal span { position: absolute; right: 0; top: -18px; font-size: 12px; color: var(--muted); background: var(--surface); padding-left: 4px; }
+  .bar { display: grid; gap: 4px; justify-items: center; align-self: end; }
+  .bar i { display: block; width: 100%; max-width: 44px; border-radius: 4px 4px 0 0; background: var(--teal); }
+  .bar.last i { background: var(--accent); }
+  .bar b { font-family: var(--display); font-size: 16px; font-variant-numeric: tabular-nums; }
+  .bar span { font-size: 12px; color: var(--muted); }
+
+  /* listas */
+  .rows { display: grid; }
+  .row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .row .when { font-family: var(--display); font-weight: 700; font-size: 15px; min-width: 76px; color: var(--teal); }
+  .row b { font-weight: 600; } .row small { display: block; color: var(--muted); font-size: 13px; }
+  .pill { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+  .pill.a { background: var(--ok-soft); color: var(--ok); } .pill.b { background: var(--teal-soft); color: var(--teal); } .pill.c { background: var(--line); color: var(--ink-2); }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); } .pill.warn { background: var(--warn-soft); color: var(--warn); } .pill.risk { background: var(--risk-soft); color: var(--risk); } .pill.acc { background: var(--accent-soft); color: var(--accent-text); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--display); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 14px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.wa { background: #25D366; border-color: #25D366; color: #0B2A16; }
+  .btn:disabled { opacity: .45; cursor: default; }
+
+  /* embudo de evaluaciones */
+  .board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+  .col { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; gap: 10px; align-content: start; }
+  .col header { display: flex; justify-content: space-between; align-items: center; }
+  .col header b { font-family: var(--display); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; }
+  .col header span { font-family: var(--display); font-weight: 700; color: var(--muted); }
+  .lead { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; text-align: left; color: var(--ink); width: 100%; }
+  .lead:hover { border-color: var(--teal); }
+  .lead .t { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .lead b { font-weight: 600; }
+  .lead small { color: var(--muted); font-size: 13px; }
+  .lead .meta { font-size: 13px; color: var(--ink-2); }
+
+  /* tabla */
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .tbl table { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 14.5px; }
+  .tbl th { font-family: var(--display); font-weight: 700; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  .tbl td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl tbody tr { cursor: pointer; } .tbl tbody tr:hover td { background: var(--surface-2); }
+  .tbl td.n { font-variant-numeric: tabular-nums; text-align: right; } .tbl th.n { text-align: right; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chips button { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 99px; padding: 6px 12px; font-size: 13.5px; font-weight: 600; }
+  .chips button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); }
+
+  /* ficha */
+  .drawer { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 14px; padding: 18px; display: grid; gap: 12px; }
+  .drawer header { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .drawer h2 { font-size: 24px; }
+  dl.kv { display: grid; grid-template-columns: 140px 1fr; gap: 8px 16px; margin: 0; }
+  @media (max-width: 520px) { dl.kv { grid-template-columns: 1fr; gap: 2px; } dl.kv dd { margin-bottom: 8px; } }
+  dl.kv dt { color: var(--muted); font-size: 14px; } dl.kv dd { margin: 0; }
+
+  /* mensajes */
+  .msgs { display: grid; gap: 14px; }
+  .msg { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; }
+  .msg header { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .msg header b { font-weight: 600; font-size: 16px; }
+  .bubble { background: #D9FDD3; color: #111B21; border-radius: 12px 12px 4px 12px; padding: 10px 12px; font-size: 14.5px; max-width: 62ch; justify-self: end; white-space: pre-line; }
+  .msg .foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .msg .foot small { color: var(--muted); font-size: 13px; }
+  .msg.sent { opacity: .6; }
+  .field { display: grid; gap: 6px; }
+  .field label { font-family: var(--display); font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--ink-2); }
+  .field input { font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); }
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--band); color: var(--band-fg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 20; }
+
+  .note { font-size: 13px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="top">
+  <div class="top-in gut">
+    <div class="brand">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="24" fill="#FFFFFF"/><rect x="26" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="54" y="26" width="18" height="68" rx="3" fill="#123638"/><rect x="72" y="26" width="22" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="52" width="16" height="16" rx="3" fill="#FF7B7B"/><rect x="72" y="78" width="10" height="16" rx="3" fill="#FF7B7B"/></svg>
+      <div><b>Influence<span>Fit</span></b><small>by Influence Chile</small></div>
+    </div>
+    <div class="who">
+      <div class="biz"><b>Box Litoral CrossFit</b><span>Nivel 2 · semana 6 · lunes 17 de noviembre</span></div>
+      <span class="ex">Datos de ejemplo</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell gut">
+  <div>
+    <nav class="side" id="nav" aria-label="Secciones del panel"></nav>
+    <div class="help">
+      <b>Tu equipo</b>
+      <p>Gabriel Meza, coach y estratega. Próxima reunión: jueves 20, 9:00.</p>
+      <span class="num">+56 9 6545 0723</span>
+    </div>
+  </div>
+
+  <main>
+    <!-- RESUMEN -->
+    <section class="view" data-view="resumen" data-label="Resumen">
+      <div class="head">
+        <div><span class="eyebrow">Buenos días, Matías</span><h1>Tu semana en un vistazo</h1><p>Lo que pasó desde el lunes pasado y lo que tienes para hoy.</p></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi hl"><small>Evaluaciones agendadas</small><b>6</b><span>esta semana · meta 4</span></div>
+        <div class="kpi"><small>Conversaciones</small><b>11</b><span>el asistente respondió todas</span></div>
+        <div class="kpi"><small>Clientes nuevos</small><b>2</b><span>Camila R. y Benjamín U.</span></div>
+        <div class="kpi"><small>Costo por evaluación</small><b>$4.610</b><span>semana anterior $5.390</span></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <h2>Evaluaciones agendadas por semana</h2>
+          <p class="sub">Desde que partimos. La semana 1 fue de puesta en marcha.</p>
+          <div class="bars" id="bars" role="img" aria-label="Evaluaciones agendadas por semana: semana 1, 0; semana 2, 3; semana 3, 4; semana 4, 5; semana 5, 4; semana 6, 6. Meta semanal 4."></div>
+        </div>
+        <div class="card">
+          <h2>Para hoy</h2>
+          <div class="rows">
+            <div class="row"><span class="when">Hoy</span><div><b>3 mensajes de seguimiento</b><small>Camila (semana 2), Josefa (semana 6), Tomás (semana 10)</small></div><button class="btn primary" type="button" data-go="mensajes">Ver</button></div>
+            <div class="row"><span class="when">Hoy</span><div><b>Diego F. no viene hace 8 días</b><small>El mensaje ya está escrito</small></div><button class="btn" type="button" data-go="mensajes">Ver</button></div>
+            <div class="row"><span class="when">18:00</span><div><b>Evaluación con Maite I.</b><small>Bajar grasa · calificación A · ficha completa</small></div><button class="btn" type="button" data-go="evaluaciones">Ver</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Tu puesta en marcha</h2>
+        <div class="process">
+          <div class="done"><b>Día 1</b><span>Contrato y accesos</span></div>
+          <div class="done"><b>Día 3</b><span>Asistente de WhatsApp</span></div>
+          <div class="done"><b>Día 5</b><span>Ficha y recordatorios</span></div>
+          <div class="done"><b>Día 7</b><span>Capacitación</span></div>
+          <div class="done"><b>Semana 2</b><span>Anuncios encendidos</span></div>
+          <div class="now"><b>5 dic</b><span>Primer reporte mensual</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVALUACIONES -->
+    <section class="view" data-view="evaluaciones" data-label="Evaluaciones" hidden>
+      <div class="head">
+        <div><span class="eyebrow">De la conversación al cliente</span><h1>Tus evaluaciones</h1><p>Cada persona que escribe aparece aquí. El asistente la mueve de columna sola; tú solo cierras.</p></div>
+      </div>
+      <div class="board" id="board"></div>
+      <div class="drawer" id="leadDetail" hidden></div>
+      <p class="note">Toca una tarjeta para ver lo que el asistente averiguó.</p>
+    </section>
+
+    <!-- CLIENTES -->
+    <section class="view" data-view="clientes" data-label="Clientes" hidden>
+      <div class="head">
+        <div><span class="eyebrow">Fichas y seguimiento</span><h1>Tus clientes</h1><p>Cada cliente con su ficha de onboarding y el próximo mensaje de la secuencia.</p></div>
+        <div class="chips" id="filters" role="group" aria-label="Filtrar clientes"></div>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>Cliente</th><th>Plan</th><th>Desde</th><th>Semana</th><th>Próximo paso</th><th>Estado</th></tr></thead>
+        <tbody id="clientRows"></tbody>
+      </table></div>
+      <div class="drawer" id="clientDetail" hidden></div>
+    </section>
+
+    <!-- MENSAJES -->
+    <section class="view" data-view="mensajes" data-label="Mensajes de hoy" hidden>
+      <div class="head">
+        <div><span class="eyebrow">Retención</span><h1>Mensajes de hoy</h1><p>Escritos en tu tono. Revisas, tocas enviar y se abre WhatsApp con el texto listo. Dos minutos al día.</p></div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+    </section>
+
+    <!-- ANUNCIOS -->
+    <section class="view" data-view="anuncios" data-label="Anuncios" hidden>
+      <div class="head">
+        <div><span class="eyebrow">Noviembre, al día 17</span><h1>Tus anuncios</h1><p>Los gestionamos nosotros. Aquí ves en qué se va cada peso y qué está funcionando.</p></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><small>Invertido este mes</small><b>$110.700</b><span>pagado directo a Meta</span></div>
+        <div class="kpi"><small>Conversaciones</small><b>92</b><span>según Meta</span></div>
+        <div class="kpi hl"><small>Costo por evaluación</small><b>$5.032</b><span>meta $12.000</span></div>
+        <div class="kpi"><small>Mejor creativo</small><b style="font-size:24px;line-height:1.15">Reel testimonio</b><span>socia contando su mes 3</span></div>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>Campaña</th><th class="n">Invertido</th><th class="n">Conversaciones</th><th class="n">Costo por conversación</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Evaluación gratis · mujeres 28 a 45 · Litoral</td><td class="n">$50.500</td><td class="n">49</td><td class="n">$1.031</td><td><span class="pill ok">Activa · subir presupuesto</span></td></tr>
+          <tr><td>Clase de prueba · hombres 25 a 40 · San Antonio</td><td class="n">$41.300</td><td class="n">22</td><td class="n">$1.877</td><td><span class="pill warn">En revisión · creativo nuevo</span></td></tr>
+          <tr><td>Recordatorio · visitaron tu perfil en 30 días</td><td class="n">$18.900</td><td class="n">21</td><td class="n">$900</td><td><span class="pill ok">Activa</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="card">
+        <h2>Lo que estamos cambiando esta semana</h2>
+        <div class="rows">
+          <div class="row"><span class="when">Lun</span><div><b>Más presupuesto a mujeres 28 a 45</b><small>Trae el 60% de las evaluaciones con el menor costo</small></div><span class="pill acc">En curso</span></div>
+          <div class="row"><span class="when">Mié</span><div><b>Creativo nuevo para el horario de las 7:00</b><small>Reel “antes de la pega”, grabado en tu box</small></div><span class="pill c">Programado</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTE -->
+    <section class="view" data-view="reporte" data-label="Reporte" hidden>
+      <div class="head">
+        <div><span class="eyebrow">Te llega el día 5 de cada mes</span><h1>Tu reporte mensual</h1><p>Vista previa de noviembre con los datos hasta hoy. El reporte completo llega por WhatsApp y correo.</p></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi hl"><small>Evaluaciones agendadas</small><b>22</b><span>meta 15</span></div>
+        <div class="kpi"><small>Clientes nuevos</small><b>6</b><span>46% de las evaluaciones realizadas</span></div>
+        <div class="kpi"><small>Ingreso mensual nuevo</small><b>$690.000</b><span>6,2 veces lo invertido</span></div>
+        <div class="kpi"><small>Horas de admin</small><b>2,5</b><span>a la semana · antes 8</span></div>
+      </div>
+      <div class="card">
+        <h2>De la conversación al cliente</h2>
+        <div id="funnel" style="display:grid;gap:10px"></div>
+      </div>
+      <div class="card">
+        <h2>Lectura del mes</h2>
+        <p style="color:var(--ink-2);max-width:70ch">Bajó el costo por evaluación gracias al reel de testimonio y a que el asistente ahora ofrece horarios dentro de los 2 minutos. El cuello de botella pasó de “nadie responde” a “la evaluación de las 20:00 se llena y la de las 7:00 no”. En diciembre ajustamos la pauta por horario.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var views = Array.prototype.slice.call(document.querySelectorAll('[data-view]'));
+  var nav = $('#nav');
+  var toastT;
+  function toast(t) { var el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 2600); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  // ---------- navegación ----------
+  views.forEach(function (v) {
+    var b = document.createElement('button'); b.type = 'button'; b.dataset.target = v.dataset.view;
+    b.innerHTML = '<span>' + v.dataset.label + '</span>' + (v.dataset.view === 'mensajes' ? '<span class="count" id="msgCount">4</span>' : '');
+    b.addEventListener('click', function () { show(v.dataset.view); });
+    nav.appendChild(b);
+  });
+  function show(id) {
+    if (!views.some(function (v) { return v.dataset.view === id; })) id = 'resumen';
+    views.forEach(function (v) { v.hidden = v.dataset.view !== id; });
+    Array.prototype.forEach.call(nav.children, function (b) {
+      if (b.dataset.target === id) { b.setAttribute('aria-current', 'page'); try { b.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
+      else b.removeAttribute('aria-current');
+    });
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+  }
+  document.addEventListener('click', function (e) { var g = e.target.closest('[data-go]'); if (g) show(g.dataset.go); });
+
+  // ---------- gráfico semanal ----------
+  var weeks = [0, 3, 4, 5, 4, 6], goal = 4, max = 7, H = 120;
+  var bars = $('#bars');
+  bars.innerHTML = '<div class="goal" style="bottom:' + (goal / max * H + 22) + 'px"><span>meta 4</span></div>' + weeks.map(function (v, i) {
+    return '<div class="bar' + (i === weeks.length - 1 ? ' last' : '') + '"><b>' + v + '</b><i style="height:' + Math.max(2, v / max * H) + 'px"></i><span>Sem ' + (i + 1) + '</span></div>';
+  }).join('');
+
+  // ---------- evaluaciones ----------
+  var cols = [
+    { k: 'Nuevo', items: [
+      { n: 'Paz D.', c: 'B', meta: 'Instagram · hace 2 h', obj: 'Volver a entrenar después del embarazo', disp: 'Por definir', urg: 'Este mes', note: 'El asistente le está preguntando disponibilidad.' },
+      { n: 'Alonso G.', c: 'B', meta: 'Anuncio · hace 5 h', obj: 'Fuerza para el rugby', disp: '2 días, tarde', urg: 'Por definir', note: 'Preguntó precio; el asistente respondió y ofreció evaluación.' } ] },
+    { k: 'Conversando', items: [
+      { n: 'Sebastián Q.', c: 'B', meta: 'Anuncio · bajar grasa', obj: 'Bajar 6 kg', disp: '3 días, mañana', urg: 'Diciembre', note: 'Preguntó por cuotas. Seguimiento automático mañana a las 10:00.' },
+      { n: 'Vicente K.', c: 'B', meta: 'Reel · fuerza', obj: 'Mejorar sentadilla y peso muerto', disp: '4 días', urg: 'Esta semana', note: 'Esperando que elija horario.' },
+      { n: 'Amanda R.', c: 'C', meta: 'Anuncio · rehabilitación', obj: 'Dolor lumbar agudo', disp: '2 días', urg: 'Ya', note: 'Mencionó dolor agudo: el asistente sugirió ver a un kinesiólogo primero y te lo pasó a ti.' } ] },
+    { k: 'Evaluación agendada', items: [
+      { n: 'Maite I.', c: 'A', meta: 'Hoy 18:00', obj: 'Bajar grasa', disp: '3 días, tarde', urg: 'Esta semana', note: 'Ficha completa. Recordatorio enviado ayer.' },
+      { n: 'Joaquín P.', c: 'A', meta: 'Vie 7:30', obj: 'Ganar masa muscular', disp: '4 días, mañana', urg: 'Esta semana', note: 'Ficha completa.' },
+      { n: 'Trinidad C.', c: 'A', meta: 'Vie 19:00', obj: 'Preparar una carrera de 10 km', disp: '3 días', urg: 'Fecha: 15 de enero', note: 'Ficha pendiente: se le reenvió el link.' },
+      { n: 'Bruno A.', c: 'B', meta: 'Sáb 10:00', obj: 'Salud general', disp: '2 días', urg: 'Este mes', note: 'Llegó por recomendación de Tomás V.' } ] },
+    { k: 'Evaluación realizada', items: [
+      { n: 'Florencia Z.', c: 'A', meta: 'Decide el lunes', obj: 'Fuerza', disp: '3 días', urg: 'Esta semana', note: 'Seguimiento automático el lunes a las 9:00.' },
+      { n: 'Renata S.', c: 'B', meta: 'Pidió cuotas', obj: 'Bajar grasa', disp: '3 días', urg: 'Este mes', note: 'Se le envió el link de pago en 3 cuotas.' } ] },
+    { k: 'Cliente', items: [
+      { n: 'Camila R.', c: 'A', meta: 'Presencial 3 días', obj: 'Bajar grasa, cuidar rodilla', disp: '3 días, mañana', urg: 'Partió el 3 nov', note: 'Secuencia de retención activa.' },
+      { n: 'Benjamín U.', c: 'A', meta: 'Online', obj: 'Ganar masa', disp: '4 días', urg: 'Partió el 14 nov', note: 'Llegó por recomendación.' } ] }
+  ];
+  var board = $('#board'), leadDetail = $('#leadDetail');
+  cols.forEach(function (col, ci) {
+    var el = document.createElement('div'); el.className = 'col';
+    el.innerHTML = '<header><b>' + col.k + '</b><span>' + col.items.length + '</span></header>';
+    col.items.forEach(function (it, ii) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lead';
+      b.innerHTML = '<span class="t"><b>' + esc(it.n) + '</b><span class="pill ' + it.c.toLowerCase() + '">' + it.c + '</span></span><span class="meta">' + esc(it.meta) + '</span>';
+      b.addEventListener('click', function () { showLead(it, col.k); });
+      el.appendChild(b);
+    });
+    board.appendChild(el);
+  });
+  function showLead(it, stage) {
+    leadDetail.hidden = false;
+    leadDetail.innerHTML = '<header><div><span class="eyebrow">' + esc(stage) + '</span><h2>' + esc(it.n) + '</h2></div><span class="pill ' + it.c.toLowerCase() + '">Calificación ' + it.c + '</span></header>' +
+      '<dl class="kv"><dt>Objetivo</dt><dd>' + esc(it.obj) + '</dd><dt>Disponibilidad</dt><dd>' + esc(it.disp) + '</dd><dt>Urgencia</dt><dd>' + esc(it.urg) + '</dd><dt>Nota del asistente</dt><dd>' + esc(it.note) + '</dd></dl>';
+    try { leadDetail.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+  }
+
+  // ---------- clientes ----------
+  var clients = [
+    { n: 'Camila R.', plan: 'Presencial 3 días', desde: '3 nov', sem: 2, next: 'Check-in semana 2 · hoy', st: 'hoy', obj: 'Bajar grasa', exp: 'Intermedio (1 a 3 años)', les: 'Rodilla derecha al bajar en sentadilla profunda', eq: 'Box completo', pref: 'Le gusta remo; odia burpees' },
+    { n: 'Josefa A.', plan: 'Online', desde: '6 oct', sem: 6, next: 'Progreso semana 6 · hoy', st: 'hoy', obj: 'Ganar masa muscular', exp: 'Intermedio', les: 'Hombro izquierdo, molestia en press militar', eq: 'Gimnasio completo', pref: 'Le gusta sentadilla' },
+    { n: 'Tomás V.', plan: 'Presencial 2 días', desde: '8 sep', sem: 10, next: 'Revisión de avances · hoy', st: 'hoy', obj: 'Fuerza', exp: 'Avanzado', les: 'Ninguna', eq: 'Box completo', pref: 'Quiere competir en abril' },
+    { n: 'Diego F.', plan: 'Online', desde: '15 sep', sem: 9, next: 'Sin sesiones hace 8 días', st: 'riesgo', obj: 'Bajar grasa', exp: 'Principiante', les: 'Ninguna', eq: 'Casa: mancuernas hasta 20 kg', pref: 'Turnos de noche en el trabajo' },
+    { n: 'Valentina P.', plan: 'Online', desde: '4 nov', sem: 2, next: 'Check-in semana 2 · mañana', st: 'ok', obj: 'Salud general', exp: 'Principiante', les: 'Ninguna', eq: 'Casa: bandas y kettlebell', pref: 'Prefiere 30 minutos' },
+    { n: 'Constanza M.', plan: 'Presencial 3 días', desde: '20 oct', sem: 4, next: 'Check-in semana 6 · 1 dic', st: 'ok', obj: 'Bajar grasa', exp: 'Intermedio', les: 'Ninguna', eq: 'Box completo', pref: 'Horario 7:00' },
+    { n: 'Ignacio L.', plan: 'Online', desde: '1 oct', sem: 7, next: 'Revisión semana 10 · 8 dic', st: 'ok', obj: 'Ganar masa', exp: 'Intermedio', les: 'Lumbar antigua, con alta', eq: 'Gimnasio completo', pref: 'Entrena de noche' },
+    { n: 'Antonia R.', plan: 'Presencial 2 días', desde: '18 ago', sem: 13, next: 'Renovó por 6 meses', st: 'renovado', obj: 'Fuerza', exp: 'Intermedio', les: 'Ninguna', eq: 'Box completo', pref: 'Trajo a su hermana' }
+  ];
+  var stLabel = { hoy: ['warn', 'Mensaje hoy'], riesgo: ['risk', 'En riesgo'], ok: ['ok', 'Al día'], renovado: ['acc', 'Renovado'] };
+  var filters = [['todos', 'Todos'], ['hoy', 'Mensaje hoy'], ['riesgo', 'En riesgo'], ['renovado', 'Renovados']];
+  var filt = 'todos';
+  var fEl = $('#filters');
+  filters.forEach(function (f) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = f[1]; b.dataset.f = f[0];
+    b.addEventListener('click', function () { filt = f[0]; renderClients(); });
+    fEl.appendChild(b);
+  });
+  function renderClients() {
+    Array.prototype.forEach.call(fEl.children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.f === filt)); });
+    var tb = $('#clientRows'); tb.innerHTML = '';
+    clients.filter(function (c) { return filt === 'todos' || c.st === filt; }).forEach(function (c) {
+      var tr = document.createElement('tr'); tr.tabIndex = 0;
+      var s = stLabel[c.st];
+      tr.innerHTML = '<td><b>' + esc(c.n) + '</b></td><td>' + esc(c.plan) + '</td><td>' + esc(c.desde) + '</td><td>' + c.sem + '</td><td>' + esc(c.next) + '</td><td><span class="pill ' + s[0] + '">' + s[1] + '</span></td>';
+      tr.addEventListener('click', function () { showClient(c); });
+      tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') showClient(c); });
+      tb.appendChild(tr);
+    });
+  }
+  function showClient(c) {
+    var d = $('#clientDetail'); d.hidden = false;
+    d.innerHTML = '<header><div><span class="eyebrow">Ficha de onboarding</span><h2>' + esc(c.n) + '</h2></div><span class="pill ' + stLabel[c.st][0] + '">' + stLabel[c.st][1] + '</span></header>' +
+      '<dl class="kv"><dt>Objetivo</dt><dd>' + esc(c.obj) + '</dd><dt>Experiencia</dt><dd>' + esc(c.exp) + '</dd><dt>Lesiones</dt><dd>' + esc(c.les) + '</dd><dt>Equipamiento</dt><dd>' + esc(c.eq) + '</dd><dt>Preferencias</dt><dd>' + esc(c.pref) + '</dd><dt>Próximo paso</dt><dd>' + esc(c.next) + '</dd></dl>';
+    try { d.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+  }
+  renderClients();
+
+  // ---------- mensajes ----------
+  var msgs = [
+    { n: 'Camila R.', step: 'Check-in semana 2', pill: 'b', text: 'Cami, van dos semanas. Por lo general aquí aparece dolor muscular raro y la sensación de que “esto es muy poco”. Las dos son normales. Del 1 al 10, ¿cómo te has sentido en las sesiones?' },
+    { n: 'Josefa A.', step: 'Progreso semana 6', pill: 'acc', needs: true, text: 'Jose, mes y medio. Revisé tus registros: {dato}.\nEsta semana cambiamos ejercicios para que no se vuelva rutina. ¿Cuál te está costando más?' },
+    { n: 'Tomás V.', step: 'Antes de la renovación', pill: 'b', text: 'Tomás, quedan dos semanas del primer ciclo. Quiero mostrarte dónde partiste y dónde estás. ¿Te acomoda 15 minutos al final de la sesión del jueves?' },
+    { n: 'Diego F.', step: 'Sin sesiones hace 8 días', pill: 'risk', text: 'Diego, no te he visto esta semana. Sin reproches: ¿pasó algo o se desordenó la semana?\nSi quieres, bajamos a 2 días por un tiempo. Mejor eso que cero.' }
+  ];
+  var left = msgs.length;
+  var box = $('#msgs');
+  msgs.forEach(function (m, i) {
+    var el = document.createElement('article'); el.className = 'msg';
+    var input = m.needs ? '<div class="field"><label for="dato' + i + '">Dato de progreso (lo escribes tú)</label><input id="dato' + i + '" type="text" placeholder="Ej: subiste de 40 a 55 kg en sentadilla y dormiste mejor"></div>' : '';
+    el.innerHTML = '<header><b>' + esc(m.n) + '</b><span class="pill ' + m.pill + '">' + esc(m.step) + '</span></header>' + input +
+      '<div class="bubble" id="b' + i + '"></div><div class="foot"><small>' + (m.needs ? 'Este mensaje necesita un dato real antes de salir.' : 'Listo para enviar.') + '</small><button class="btn wa" type="button" id="s' + i + '">Enviar por WhatsApp</button></div>';
+    box.appendChild(el);
+    var bubble = $('#b' + i), send = $('#s' + i);
+    function paint() {
+      var v = m.needs ? ($('#dato' + i).value.trim()) : '';
+      bubble.textContent = m.needs ? m.text.replace('{dato}', v || '[escribe el dato de progreso]') : m.text;
+      if (m.needs) send.disabled = !v;
+    }
+    if (m.needs) $('#dato' + i).addEventListener('input', paint);
+    paint();
+    send.addEventListener('click', function () {
+      el.classList.add('sent'); send.disabled = true; send.textContent = 'Marcado como enviado';
+      left -= 1; var c = $('#msgCount'); if (c) { c.textContent = left; c.hidden = left === 0; }
+      toast('En el panel real se abre WhatsApp con este texto. Aquí queda marcado como enviado.');
+    });
+  });
+
+  // ---------- embudo del reporte ----------
+  var fd = [['Conversaciones', 38], ['Evaluaciones agendadas', 22], ['Evaluaciones realizadas', 13], ['Clientes nuevos', 6]];
+  $('#funnel').innerHTML = fd.map(function (d, i) {
+    var rate = i ? Math.round(d[1] / fd[i - 1][1] * 100) + '% del paso anterior' : '';
+    return '<div style="display:grid;grid-template-columns:minmax(150px,200px) 1fr;gap:12px;align-items:center"><span style="color:var(--ink-2)">' + d[0] + '</span>' +
+      '<span style="display:flex;align-items:center;gap:10px;min-width:0"><span style="display:block;height:24px;border-radius:0 4px 4px 0;background:var(--teal);width:' + (d[1] / 38 * 65) + '%"></span>' +
+      '<b style="font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums">' + d[1] + '</b><span style="color:var(--muted);font-size:13px;white-space:nowrap">' + rate + '</span></span></div>';
+  }).join('');
+
+  // ---------- inicio ----------
+  show((location.hash || '#resumen').slice(1));
+})();
+</script>

@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-10-15T21:25:00Z" },
+  "lists": "css",
+  "title": "Diagnóstico Influence Fit",
+  "cover": "cover",
+  "order": ["cover", "agenda", "quien", "negocio", "fugas", "fuga1", "fuga2", "fuga3", "cuenta", "diagnostico", "sistema", "demo", "niveles", "fundadores", "pasos", "cierre"],
+  "sections": {
+    "intro": { "description": "Quién soy y cómo va a ser la llamada.", "start": "cover" },
+    "negocio": { "description": "Tu negocio hoy, con tus propios números.", "start": "negocio" },
+    "fugas": { "description": "Las tres fugas, cuánto cuestan y tu diagnóstico.", "start": "fugas" },
+    "solucion": { "description": "El sistema, los niveles y cómo partir.", "start": "sistema" }
+  },
+  "faces": {
+    "barlow-condensed": { "family": "Barlow Condensed", "href": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" },
+    "barlow": { "family": "Barlow", "href": "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" }
+  },
+  "designSystems": []
+}
