@@ -3,7 +3,7 @@
 #   python3 prospeccion-ventas/propuesta/opciones-250k/generar.py prospeccion-ventas/propuesta/opciones-250k/cliente.json
 #   NODE_PATH=/opt/node22/lib/node_modules node prospeccion-ventas/propuesta/opciones-250k/render.js
 import html, datetime, sys, json, os
-CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "",
+CLIENTE = {"nombre": "[Nombre del cliente]", "contacto": "", "instagram": "", "nota_camino1": "", "archivo": "propuesta-opciones-250k",
            "presupuesto": 250000, "fecha": datetime.date.today().strftime("%-d de %B de %Y")}
 MESES={'January':'enero','February':'febrero','March':'marzo','April':'abril','May':'mayo','June':'junio','July':'julio','August':'agosto','September':'septiembre','October':'octubre','November':'noviembre','December':'diciembre'}
 for en,es in MESES.items(): CLIENTE['fecha']=CLIENTE['fecha'].replace(en,es)
@@ -15,6 +15,8 @@ B=C["presupuesto"]
 # Catálogo de la web (neto)
 PRESENCIA=350000; RECO=250000; CE=69990; INF=99990; META_ARMADO=150000; LANDING=250000; COTIZ=250000
 ig=f' ({C["instagram"]})' if C["instagram"] else ''
+para=(f'{C["contacto"]}<br>' if C["contacto"] else '')+f'{C["nombre"]}{ig}'
+nota1=(f'<div class="nota"><strong>En tu caso:</strong> {C["nota_camino1"]}</div>' if C["nota_camino1"] else '')
 
 def si(x): return f'<td class="c si">{x}</td>'
 def no(x): return f'<td class="c no">{x}</td>'
@@ -77,7 +79,7 @@ HTML=f'''<!DOCTYPE html>
     <p class="sub">Todas las formas de trabajar con nosotros que caben en tu presupuesto, con lo que incluye cada una, lo que te toca hacer a ti y cuál te recomendamos.</p>
   </div>
   <div class="para">
-    <div><strong>Para</strong>{C["nombre"]}{ig}</div>
+    <div><strong>Para</strong>{para}</div>
     <div style="text-align:right"><strong>De</strong>Gabriel Meza · Influence Chile<br>influencechile.cl · @influence.chile</div>
   </div>
 </section>
@@ -85,7 +87,7 @@ HTML=f'''<!DOCTYPE html>
 <section class="seccion primera">
   <h2>Tres caminos con {f(B)}</h2>
   <div class="linea"></div>
-  <p>Nos pediste ver qué servicios puedes tomar con un presupuesto de {f(B)}. Hay tres formas de usarlo, y la diferencia de fondo es una sola: <strong>cuánto del trabajo hacemos nosotros cada mes y cuánto haces tú.</strong></p>
+  <p>{(C['contacto'].split()[0]+', n') if C['contacto'] else 'N'}os pediste ver qué servicios puedes tomar con un presupuesto de {f(B)}. Hay tres formas de usarlo, y la diferencia de fondo es una sola: <strong>cuánto del trabajo hacemos nosotros cada mes y cuánto haces tú.</strong></p>
   <div class="caminos">
     <div class="reco"><div class="badge">Recomendado</div><div class="k">Camino 1 · mensual</div><h4>Tus redes gestionadas cada mes</h4><div class="v">{f(RECO)} <small>/ mes</small></div>Nuestro Plan Presencia, ajustado a tu presupuesto: planificamos, diseñamos, publicamos y te reportamos. Sin reels.</div>
     <div><div class="k">Camino 2 · por etapas</div><h4>Te damos el plan y el impulso; publicas tú</h4><div class="v">desde {f(CE)}</div>Servicios de una vez: la estrategia de contenido detallada, una campaña con influencers o el armado de una campaña de anuncios.</div>
@@ -116,6 +118,7 @@ HTML=f'''<!DOCTYPE html>
     <tr><td><strong>Informe mensual</strong> de una página: qué funcionó y qué hacer el mes siguiente.</td>{si("Sí")}{si("Sí")}</tr>
     <tr><td>Respuesta a comentarios y mensajes.</td>{no("No")}{no("No")}</tr>
   </table>
+  {nota1}
   <div class="nota coral"><strong>Lo que hay que saber de no tener reels:</strong> en Instagram el video es el formato que más alcance nuevo trae. Sin reels la cuenta crece más lento, pero se ve ordenada, profesional y constante, que es lo que mira quien ya te conoció por recomendación o por Google y entra a revisar antes de escribirte.</div>
   <div class="total">
     <div class="l">Camino 1 · recomendado<strong>Plan Presencia sin reels</strong></div>
@@ -181,5 +184,5 @@ HTML=f'''<!DOCTYPE html>
   </div>
 </section>
 </body></html>'''
-out=os.path.join(os.path.dirname(os.path.abspath(__file__)),'propuesta-opciones-250k.html')
+out=os.path.join(os.path.dirname(os.path.abspath(__file__)),CLIENTE['archivo']+'.html')
 open(out,'w',encoding='utf-8').write(HTML); print('ok ->',out)
