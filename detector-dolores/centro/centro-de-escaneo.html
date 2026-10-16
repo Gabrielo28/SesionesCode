@@ -1,0 +1,773 @@
+<title>Centro de escaneo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* Herramienta interna con look de instrumento (mismo mundo visual que el escáner): una sola apariencia oscura, a propósito.
+     Layout: barra superior con pestañas; cada pestaña es una vista de trabajo, resumen arriba y detalle abajo. */
+  :root {
+    color-scheme: dark;
+    --bg: #0B1A1B; --panel: #10292B; --panel-2: #153537; --line: #1F4548; --ink: #E6F1F1; --ink-2: #B9D2D3; --muted: #8FB0B2; --faint: #6A8C8E;
+    --teal: #2EC4CC; --teal-w: rgba(46,196,204,.14); --coral: #FF8A8A;
+    --g3: #FF6B6B; --g3-w: rgba(255,107,107,.14); --g2: #F5B942; --g2-w: rgba(245,185,66,.14); --g1: #7FB7FF; --g1-w: rgba(127,183,255,.14); --ok: #4CD28A; --ok-w: rgba(76,210,138,.14);
+    --font: 'Montserrat', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { margin: 0; font-family: var(--font); font-size: 14px; line-height: 1.45; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 14px 60px; }
+  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-bottom: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); }
+  .led { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); }
+  .led.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .led.off { background: var(--g3); box-shadow: 0 0 10px var(--g3); }
+  .estado-con { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 16px; overflow-x: auto; }
+  .tab { flex: 1 0 auto; border: 0; background: transparent; color: var(--ink-2); font-weight: 700; font-size: 13.5px; padding: 10px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--teal); color: #06191A; }
+  .tab .badge { font-family: var(--mono); font-size: 11px; background: rgba(0,0,0,.18); border-radius: 10px; padding: 1px 7px; }
+  .tab[aria-selected="false"] .badge { background: var(--g3-w); color: var(--g3); }
+  .vista[hidden] { display: none !important; }
+  h1 { font-size: clamp(22px, 4vw, 28px); line-height: 1.15; letter-spacing: -.02em; margin: 2px 0 6px; text-wrap: balance; }
+  h2 { font-size: 15px; margin: 0 0 10px; }
+  h2 small { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  p { margin: 0 0 10px; color: var(--ink-2); }
+  .sub { color: var(--muted); margin-bottom: 16px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .stat .l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+  .stat .v { font-family: var(--mono); font-size: 26px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .d { font-size: 11.5px; color: var(--muted); }
+  .stat.hoy .v { color: var(--coral); }
+  .stat.ok .v { color: var(--ok); }
+  .meta-bar { height: 10px; background: rgba(255,255,255,.06); border-radius: 0 5px 5px 0; margin-top: 8px; }
+  .meta-bar i { display: block; height: 10px; background: var(--teal); border-radius: 0 5px 5px 0; }
+  .embudo { display: grid; gap: 6px; }
+  .embudo .fila-e { display: grid; grid-template-columns: 96px minmax(0, 1fr) 40px; gap: 10px; align-items: center; font-size: 12.5px; }
+  .embudo .fila-e span:first-child { color: var(--ink-2); font-weight: 600; }
+  .embudo .tr { height: 12px; background: rgba(255,255,255,.05); border-radius: 0 4px 4px 0; }
+  .embudo .tr i { display: block; height: 12px; background: var(--teal); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .embudo .n { font-family: var(--mono); text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .btn { border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font-weight: 700; font-size: 13px; padding: 8px 14px; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+  .btn:hover { border-color: var(--teal); }
+  .btn-teal { background: var(--teal); border-color: var(--teal); color: #06191A; }
+  .btn-teal:hover { background: #5AD6DC; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn[disabled] { opacity: .5; cursor: default; }
+  .lista { display: grid; gap: 6px; }
+  .fila { display: grid; grid-template-columns: 108px 42px minmax(0, 1.4fr) minmax(0, 1.5fr) 16px; gap: 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; width: 100%; color: var(--ink); }
+  .fila:hover { border-color: var(--teal); }
+  .fila.abierta { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  @media (max-width: 720px) { .fila { grid-template-columns: auto 36px minmax(0, 1fr) 14px; } .fila .flecha { grid-row: 1; grid-column: 4; } .fila .chips { grid-column: 1 / -1; grid-row: 2; } }
+  @media (max-width: 520px) { .tabs { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; } .tab { padding: 9px 8px; font-size: 13px; } }
+  .nivel { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; text-align: center; white-space: nowrap; }
+  .nivel.hoy { background: var(--g3-w); color: var(--g3); } .nivel.semana { background: var(--g2-w); color: var(--g2); } .nivel.nutrir { background: var(--g1-w); color: var(--g1); } .nivel.mano { background: rgba(255,255,255,.07); color: var(--ink-2); }
+  .score { font-family: var(--mono); font-weight: 700; font-size: 17px; text-align: right; font-variant-numeric: tabular-nums; }
+  .nom { font-weight: 700; font-size: 14px; line-height: 1.25; min-width: 0; }
+  .nom small { display: block; font-weight: 500; color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tag-est { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--ok-w); color: var(--ok); margin-left: 6px; vertical-align: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+  .chip { font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .chip.g3 { background: var(--g3-w); color: var(--g3); } .chip.g2 { background: var(--g2-w); color: var(--g2); } .chip.g1 { background: var(--g1-w); color: var(--g1); }
+  .chip.man { outline: 1px dashed currentColor; }
+  .flecha { color: var(--faint); font-size: 11px; transition: transform .2s; }
+  .fila.abierta .flecha { transform: rotate(180deg); }
+  .detalle { background: var(--panel-2); border: 1px solid var(--teal); border-top: 0; border-radius: 0 0 10px 10px; padding: 14px; margin-top: -6px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .detalle { grid-template-columns: 1fr; } }
+  .detalle h3 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); margin: 0 0 8px; }
+  .bloque + .bloque { margin-top: 16px; }
+  .cod { border-left: 4px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+  .cod.g3 { border-left-color: var(--g3); } .cod.g2 { border-left-color: var(--g2); } .cod.g1 { border-left-color: var(--g1); }
+  .cod .t { font-weight: 700; font-size: 13px; } .cod .t .chip { margin-right: 6px; }
+  .cod .e { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+  .solx { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .solx b { font-family: var(--mono); color: var(--teal); min-width: 20px; }
+  .q { font-size: 11px; color: var(--muted); } .q.inf { color: var(--teal); }
+  textarea, .inp, select.inp { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 9px 10px; font-size: 13.5px; line-height: 1.5; min-width: 0; }
+  textarea { resize: vertical; min-height: 120px; }
+  textarea.nota { min-height: 60px; }
+  .fila-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+  .aviso { font-size: 12px; color: var(--muted); }
+  .aviso.err { color: var(--g3); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px; }
+  .links a { font-size: 12px; color: var(--teal); text-decoration: none; border: 1px solid var(--line); border-radius: 20px; padding: 4px 10px; }
+  .links a:hover { border-color: var(--teal); }
+  .info { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+  details.taller summary { cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); }
+  details.taller .grupo { margin-top: 8px; }
+  details.taller .grupo b { font-size: 11.5px; color: var(--muted); display: block; margin-bottom: 2px; }
+  details.taller label { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--ink-2); padding: 3px 0; cursor: pointer; }
+  details.taller input { accent-color: var(--teal); margin-top: 3px; }
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .filtros .inp { width: auto; flex: 1 1 150px; }
+  .filtros input.inp { flex: 2 1 220px; }
+  .barra { display: grid; grid-template-columns: 58px minmax(0, 1fr) 44px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12.5px; }
+  .barra .id { font-family: var(--mono); font-weight: 700; font-size: 11.5px; }
+  .barra .nm { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+  .barra .tr { height: 8px; background: rgba(255,255,255,.05); border-radius: 0 4px 4px 0; }
+  .barra .tr i { display: block; height: 8px; border-radius: 0 4px 4px 0; }
+  .barra .pct { font-family: var(--mono); text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .g3c { color: var(--g3); } .g2c { color: var(--g2); } .g1c { color: var(--g1); }
+  .bg3 { background: var(--g3); } .bg2 { background: var(--g2); } .bg1 { background: var(--g1); }
+  .solm { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .solm:last-child { border-bottom: 0; }
+  .solm .n { font-family: var(--mono); color: var(--teal); font-weight: 700; min-width: 20px; }
+  .solm .t { flex: 1; min-width: 0; }
+  .solm .c { font-family: var(--mono); color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+  .oferta { margin-top: 10px; background: var(--teal-w); border: 1px solid rgba(46,196,204,.35); border-radius: 9px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); }
+  .oferta b { color: var(--teal); }
+  .hoy-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,.07); }
+  .hoy-item:last-child { border-bottom: 0; }
+  .hoy-item .pos { font-family: var(--mono); color: var(--teal); font-weight: 700; text-align: center; }
+  .hoy-item .gancho { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .form-grid label, .campo label { display: block; font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+  .cola-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,.07); font-size: 13px; }
+  .cola-item small { display: block; color: var(--muted); font-size: 11.5px; overflow-wrap: anywhere; }
+  .est-cola { font-family: var(--mono); font-size: 10.5px; font-weight: 700; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; background: var(--g2-w); color: var(--g2); white-space: nowrap; }
+  .est-cola.escaneado { background: var(--ok-w); color: var(--ok); } .est-cola.error { background: var(--g3-w); color: var(--g3); }
+  .x { border: 0; background: none; color: var(--faint); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; }
+  .x:hover { color: var(--g3); }
+  .pasos-escaneo { counter-reset: p; list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .pasos-escaneo li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+  .pasos-escaneo li::before { counter-increment: p; content: counter(p); flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--teal-w); color: var(--teal); font-family: var(--mono); font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; }
+  .frase { font-family: var(--mono); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; color: var(--ink); }
+  .vacio { text-align: center; color: var(--muted); padding: 28px 12px; }
+  .vacio b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  .pie { font-size: 12px; color: var(--faint); margin-top: 18px; line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="marca"><span class="led" id="led"></span>Centro de escaneo · Influence</div>
+    <span class="estado-con" id="estado-con">Conectando…</span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-v="hoy">Hoy <span class="badge" id="b-hoy">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-v="negocios">Negocios <span class="badge" id="b-neg">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-v="mercado">Mercado</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="escanear">Escanear <span class="badge" id="b-cola">0</span></button>
+  </div>
+
+  <!-- HOY -->
+  <section class="vista" id="v-hoy">
+    <h1>Hoy</h1>
+    <p class="sub">A quién escribirle hoy, cómo va la semana y cómo avanza el embudo.</p>
+    <div class="stats" id="hoy-stats"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Tu lista de hoy <small>los mejores sin contactar, con el hallazgo para el mensaje</small></h2><div id="hoy-lista"></div></div>
+      <div class="panel"><h2>Embudo <small>negocios por etapa</small></h2><div class="embudo" id="embudo"></div>
+        <div class="oferta" id="hoy-consejo" style="margin-top:14px"></div></div>
+    </div>
+  </section>
+
+  <!-- NEGOCIOS -->
+  <section class="vista" id="v-negocios" hidden>
+    <h1>Negocios</h1>
+    <p class="sub">Toca un negocio para ver sus fallas, las soluciones de la mejor a la peor, el mensaje y el seguimiento.</p>
+    <div class="filtros">
+      <input class="inp" id="f-buscar" type="search" placeholder="Buscar negocio, rubro o código (ej: CON-07)">
+      <select class="inp" id="f-nivel"><option value="">Todos los niveles</option><option>Escribir hoy</option><option>Esta semana</option><option>Nutrir</option><option>Revisar a mano</option></select>
+      <select class="inp" id="f-estado"><option value="">Todo el seguimiento</option></select>
+      <select class="inp" id="f-rubro"><option value="">Todos los rubros</option></select>
+      <select class="inp" id="f-lote"><option value="">Todas las listas</option></select>
+    </div>
+    <div class="fila-btns" style="margin:-2px 0 10px"><span class="aviso" id="cuenta-neg"></span><button class="btn btn-sm" id="exportar">Exportar seguimiento (CSV)</button></div>
+    <div class="lista" id="lista"></div>
+  </section>
+
+  <!-- MERCADO -->
+  <section class="vista" id="v-mercado" hidden>
+    <h1>Mercado</h1>
+    <p class="sub">Qué falla más en cada lista escaneada y qué servicio conviene empaquetar para ese mercado.</p>
+    <div class="filtros"><select class="inp" id="m-lote" style="max-width:340px"></select></div>
+    <div class="stats" id="m-stats"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Qué falla <small>% de negocios con cada código</small></h2><div id="m-fallas"></div></div>
+      <div class="panel"><h2>Qué venderle <small>soluciones que más aparecen en el Top 3</small></h2><div id="m-vender"></div><div class="oferta" id="m-oferta"></div></div>
+    </div>
+  </section>
+
+  <!-- ESCANEAR -->
+  <section class="vista" id="v-escanear" hidden>
+    <h1>Escanear</h1>
+    <p class="sub">Agrega los negocios que quieres revisar. Quedan en la cola hasta que me pidas escanearlos.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h2>Agregar a la cola</h2>
+        <div class="campo" style="margin-bottom:10px"><label for="c-lote">Nombre de la lista</label><input class="inp" id="c-lote" placeholder="Ej: dentistas-providencia"></div>
+        <div class="form-grid">
+          <div><label for="c-nombre">Negocio</label><input class="inp" id="c-nombre" placeholder="Clínica Sonrisa"></div>
+          <div><label for="c-web">Web</label><input class="inp" id="c-web" placeholder="clinicasonrisa.cl"></div>
+          <div><label for="c-rubro">Rubro</label><input class="inp" id="c-rubro" placeholder="Odontología"></div>
+          <div><label for="c-ciudad">Comuna</label><input class="inp" id="c-ciudad" placeholder="Providencia"></div>
+        </div>
+        <div class="fila-btns"><button class="btn btn-teal" id="c-agregar">Agregar</button><span class="aviso" id="c-aviso"></span></div>
+        <div class="campo" style="margin-top:18px"><label for="c-lote-masivo">Varios a la vez · uno por línea: negocio, web, rubro, comuna</label>
+          <textarea id="c-masivo" placeholder="Clínica Sonrisa, clinicasonrisa.cl, Odontología, Providencia&#10;Dental Norte, dentalnorte.cl, Odontología, Recoleta"></textarea></div>
+        <div class="fila-btns"><button class="btn" id="c-agregar-masivo">Agregar todos</button><span class="aviso" id="c-aviso-masivo"></span></div>
+      </div>
+      <div class="panel">
+        <h2>Cómo se escanea</h2>
+        <ol class="pasos-escaneo">
+          <li>Agrega los negocios a la cola, de a uno o varios a la vez.</li>
+          <li>Escríbeme en el chat <span class="frase">escanea la cola</span>.</li>
+          <li>Reviso cada web con un navegador real y los resultados aparecen en Hoy y Negocios, sin recargar.</li>
+        </ol>
+        <p class="aviso" style="margin-top:12px">Antes de mandar un mensaje, abre la web 30 segundos y confirma el hallazgo que vas a citar.</p>
+      </div>
+    </div>
+    <div class="panel"><h2>La cola <small id="cola-resumen"></small></h2><div id="cola"></div></div>
+  </section>
+
+  <p class="pie">Tus negocios, el seguimiento y el modo taller se guardan en esta página y se ven igual en el celular y el computador. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.</p>
+</div>
+
+<script>
+/*
+ * Catálogo de códigos de falla — Escáner de Negocio · Influence Chile
+ *
+ * Como en un escáner automotriz: cada falla tiene un código, un sistema, una gravedad,
+ * un síntoma, una causa probable y una reparación. El escáner (index.html) detecta
+ * códigos a partir de las respuestas del dueño y de las señales observadas desde afuera.
+ *
+ * Se usa desde el navegador (window.CODIGOS) y desde Node (module.exports).
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.CODIGOS = factory();
+})(this, function () {
+
+  // Los 8 sistemas, en el orden de la cadena del dinero. "auto" es la pieza equivalente en un vehículo.
+  var SISTEMAS = [
+    { id: 'CAP', nombre: 'Captación',        auto: 'Admisión',      pregunta: '¿Llega suficiente gente?' },
+    { id: 'CON', nombre: 'Conversión',       auto: 'Transmisión',   pregunta: '¿Los que llegan, compran?' },
+    { id: 'MAR', nombre: 'Ticket y margen',  auto: 'Rendimiento',   pregunta: '¿Queda plata de cada venta?' },
+    { id: 'OPE', nombre: 'Operación',        auto: 'Motor',         pregunta: '¿Se entrega bien y a tiempo?' },
+    { id: 'CAJ', nombre: 'Caja y cobro',     auto: 'Combustible',   pregunta: '¿La plata llega cuando debe?' },
+    { id: 'RET', nombre: 'Retención',        auto: 'Batería',       pregunta: '¿Vuelven a comprar?' },
+    { id: 'PER', nombre: 'Personas y dueño', auto: 'Conductor',     pregunta: '¿Funciona sin el dueño?' },
+    { id: 'DAT', nombre: 'Datos y control',  auto: 'Tablero',       pregunta: '¿Se sabe cuánto se gana?' }
+  ];
+
+  // Gravedad: 3 crítica (rojo, parar y reparar), 2 media (ámbar, reparar este mes), 1 leve (revisar).
+  var CODIGOS = [
+    // CAPTACIÓN
+    { id: 'CAP-01', g: 3, nombre: 'Invisible en Google', sintoma: 'Al buscar el rubro y la comuna, el negocio no aparece o el perfil no está reclamado.', causa: 'Nunca se reclamó ni se completó el Perfil de Negocio de Google. Es el canal donde la gente ya está buscando.', rapida: 'Reclamar el perfil, cargar 10 fotos reales, horario, categoría correcta y pedir 10 reseñas con QR en 2 semanas.', taller: 'Contenido local constante y pauta geolocalizada con medición de llamadas y rutas.', quien: 'influence' },
+    { id: 'CAP-02', g: 2, nombre: 'Un solo canal de entrada', sintoma: 'Casi todos los clientes nuevos llegan por la misma vía: la ubicación, el boca a boca o un marketplace.', causa: 'Nunca se abrió un segundo canal. Si el único cambia (abre un competidor, baja el flujo), la venta cae sin reemplazo.', rapida: 'Abrir el segundo canal más barato para el rubro: Google para servicios locales, Instagram para venta visual, WhatsApp al barrio para almacenes.', taller: 'Plan de contenido y pauta con medición de origen por canal.', quien: 'influence' },
+    { id: 'CAP-03', g: 2, nombre: 'Instagram inactivo o mudo', sintoma: 'Más de 30 días sin publicar, o la bio no dice qué vende, dónde ni cómo comprar.', causa: 'Lo hace el dueño cuando puede. Sin sistema, no hay constancia; sin bio clara, el que llega no entiende.', rapida: 'Bio con qué, dónde y cómo comprar; destacadas con precios, ubicación y preguntas frecuentes; 3 publicaciones por semana durante un mes.', taller: 'Plan Presencia o Crecimiento con calendario mensual.', quien: 'influence' },
+    { id: 'CAP-04', g: 2, nombre: 'Publicidad a ciegas', sintoma: 'Promociona posts con el botón azul, sin objetivo, sin landing y sin saber cuánto costó cada cliente.', causa: 'Gasta sin estructura ni medición. La conclusión "la publicidad no sirve" sale de aquí.', rapida: 'Una sola campaña con un objetivo (mensajes o visitas), un público y un mensaje; medir costo por consulta.', taller: 'Meta Ads con estructura, públicos y optimización semanal.', quien: 'influence' },
+    { id: 'CAP-06', g: 3, nombre: 'Web caída o insegura', sintoma: 'La web no carga, da error o no tiene candado de seguridad (https).', causa: 'Dominio, hosting o certificado vencidos, o una web que nadie revisa. Google la baja y el navegador la marca como peligrosa.', rapida: 'Renovar dominio y hosting, activar https y revisar que la página principal cargue en el celular.', taller: 'Landing o sitio nuevo con hosting administrado y monitoreo.', quien: 'influence' },
+    { id: 'CAP-05', g: 3, nombre: 'Clientes nuevos en caída', sintoma: 'Llega menos gente que antes y el dueño no sabe por qué ("el barrio está malo").', causa: 'Cambió algo afuera (competencia, flujo, hábitos) y el negocio no tiene cómo verlo ni compensarlo.', rapida: 'Preguntar a cada cliente cómo llegó durante 2 semanas; revisar si abrió competencia y qué ofrece.', taller: 'Captación activa: Google, contenido y pauta con medición.', quien: 'influence' },
+
+    // CONVERSIÓN
+    { id: 'CON-01', g: 3, nombre: 'Respuesta lenta', sintoma: 'Un WhatsApp o DM en hora punta demora más de 2 horas en ser respondido.', causa: 'Responde el dueño entre medio de atender. El cliente que pregunta precio compra donde le contestan primero.', rapida: 'WhatsApp Business con respuesta automática inmediata y respuestas rápidas con precio y siguiente paso; regla de 15 minutos en horario.', taller: 'Flujo de WhatsApp automatizado y una persona responsable del canal en hora punta.', quien: 'influence' },
+    { id: 'CON-02', g: 3, nombre: 'Consultas sin seguimiento', sintoma: 'Comentarios con "¿precio?" sin responder; el que pregunta y no compra no vuelve a recibir mensaje.', causa: 'Nadie tiene asignado el seguimiento. Lo que no tiene dueño no se hace.', rapida: 'Un mensaje de seguimiento fijo a las 48 horas, con dueño y texto definidos.', taller: 'Secuencia de seguimiento automatizada por WhatsApp.', quien: 'influence' },
+    { id: 'CON-03', g: 2, nombre: 'No se puede comprar sin llamar', sintoma: 'Para reservar, pedir o cotizar hay que llamar o esperar un DM. El link de la bio va al home.', causa: 'No hay un camino directo de interés a compra. Cada fricción pierde una parte.', rapida: 'Link de agenda, catálogo de WhatsApp o formulario de pedido en la bio y en Google.', taller: 'Landing con prueba social y un solo botón, tienda online o agenda online.', quien: 'influence' },
+    { id: 'CON-06', g: 2, nombre: 'Web lenta o mala en celular', sintoma: 'La web demora más de 4 segundos en cargar o no está adaptada al celular.', causa: 'Imágenes pesadas, plantilla antigua o sitio hecho solo para computador. La mayoría de las visitas llegan desde el celular y se van antes de que cargue.', rapida: 'Comprimir las imágenes de la portada y revisar la web en el celular; sacar lo que no carga.', taller: 'Landing o sitio liviano, pensado primero para celular.', quien: 'influence' },
+    { id: 'CON-07', g: 2, nombre: 'Sin WhatsApp a un toque', sintoma: 'La web no tiene un botón o link directo a WhatsApp.', causa: 'El cliente chileno quiere preguntar por WhatsApp. Si tiene que copiar un número o llenar un formulario, se va.', rapida: 'Botón flotante de WhatsApp con mensaje prellenado en todas las páginas.', taller: 'Flujo de WhatsApp que responde, califica y agenda.', quien: 'influence' },
+    { id: 'CON-04', g: 1, nombre: 'Sin prueba social', sintoma: 'Pocas reseñas, sin testimonios, sin casos ni antes-después visibles.', causa: 'Nunca se pide. El cliente nuevo no tiene cómo confiar.', rapida: 'QR de reseñas en el mesón o en el mensaje post-venta; 3 testimonios en destacadas.', taller: 'Casos y resultados como línea de contenido permanente.', quien: 'influence' },
+    { id: 'CON-05', g: 1, nombre: 'Precio escondido', sintoma: 'No hay precios ni rangos en ningún canal; todo es "consultar".', causa: 'Miedo a espantar. En la práctica espanta más el no saber.', rapida: 'Publicar rangos ("desde $X") en bio, destacadas y respuestas rápidas.', taller: 'Catálogo con precios y la política de precios detrás.', quien: 'influence' },
+
+    // TICKET Y MARGEN
+    { id: 'MAR-01', g: 3, nombre: 'Margen desconocido', sintoma: 'El dueño no sabe cuánto deja cada producto o servicio después de todos los costos.', causa: 'Sin costeo, los precios se ponen mirando al vecino y se empuja lo que menos deja.', rapida: 'Costear los 5 productos más vendidos esta semana (insumos + tiempo + proporción de fijos).', taller: 'Costeo completo y política de precios con un contador de gestión.', quien: 'partner' },
+    { id: 'MAR-02', g: 2, nombre: 'Precios congelados', sintoma: 'Más de un año sin subir precios, o no se atreve a subirlos.', causa: 'Los costos subieron y el precio no. El margen se achica en silencio.', rapida: 'Subir 5 a 8% en los productos que el cliente no compara; comunicar con calma.', taller: 'Revisión de precios semestral con costeo.', quien: 'partner' },
+    { id: 'MAR-03', g: 2, nombre: 'Vende lo que menos deja', sintoma: 'El producto más vendido no es el que más margen deja, y nada destaca el que sí.', causa: 'Carta o catálogo plano: todo al mismo tamaño, sin producto estrella.', rapida: 'Destacar 3 productos de alto margen (tamaño, posición, foto) y armar un combo con ellos.', taller: 'Ingeniería de carta o catálogo completa.', quien: 'influence' },
+    { id: 'MAR-04', g: 1, nombre: 'Descuento por reflejo', sintoma: 'Oferta permanente, o descuento a cualquiera que lo pide.', causa: 'El descuento es la respuesta a la objeción porque no hay otra preparada.', rapida: 'Regla: descuento solo a cambio de algo (volumen, pago anticipado, referido).', taller: 'Guion de objeciones y política de descuentos.', quien: 'dueño' },
+    { id: 'MAR-05', g: 1, nombre: 'Sin venta adicional', sintoma: 'Nunca se le ofrece algo más al que ya está comprando.', causa: 'No hay combos ni "¿le agrego…?" definidos.', rapida: 'Un combo y una pregunta fija en caja.', taller: 'Combos y upsell en el catálogo y en el flujo de WhatsApp.', quien: 'influence' },
+
+    // OPERACIÓN
+    { id: 'OPE-01', g: 3, nombre: 'Pedidos en la cabeza', sintoma: 'Los pedidos y tareas del día viven en la memoria de alguien, en un cuaderno o en WhatsApp.', causa: 'Sin un solo lugar visible para todos, en hora punta se olvidan y se pierden.', rapida: 'Una planilla compartida o app simple donde entran todos los pedidos, con estado.', taller: 'Sistema de pedidos (formulario web o WhatsApp → panel) o punto de venta.', quien: 'influence' },
+    { id: 'OPE-02', g: 3, nombre: 'Errores y atrasos cada semana', sintoma: 'Varios pedidos salen mal o tarde en una semana normal; "es parte del día a día".', causa: 'Proceso sin estándar: cada uno lo hace a su manera y la información llega incompleta.', rapida: 'Checklist de apertura y cierre; lista de requisitos antes de empezar cada pedido.', taller: 'Radiografía de proceso y rediseño del flujo.', quien: 'influence' },
+    { id: 'OPE-03', g: 2, nombre: 'Quiebres de stock', sintoma: 'Falta justo lo que más se vende; "no hay" en productos básicos.', causa: 'El pedido al proveedor se hace de memoria, cuando ya faltó.', rapida: 'Lista fija de reposición semanal con mínimos para los 20 productos que más rotan.', taller: 'Control de inventario en el punto de venta.', quien: 'partner' },
+    { id: 'OPE-04', g: 2, nombre: 'Hora punta desbordada', sintoma: 'Fila, demora y una sola persona en caja el sábado a la una.', causa: 'La capacidad está dimensionada para el promedio, no para la punta.', rapida: 'Refuerzo en las 2 horas punta; pedidos anticipados por WhatsApp para descargar la fila.', taller: 'Radiografía de proceso y capacidad.', quien: 'influence' },
+    { id: 'OPE-05', g: 2, nombre: 'Las reseñas repiten "demora"', sintoma: 'Reseñas de Google con "se demoran", "se equivocaron", "nunca contestan".', causa: 'Los clientes ya diagnosticaron la operación; nadie lo leyó.', rapida: 'Responder cada reseña y arreglar la causa más repetida este mes.', taller: 'Proceso de atención con tiempos máximos y seguimiento de reseñas.', quien: 'influence' },
+
+    // CAJA Y COBRO
+    { id: 'CAJ-01', g: 3, nombre: 'Fiado o cobros sin control', sintoma: 'Le deben "harto" o no sabe cuánto; parte lleva más de 60 días.', causa: 'Crédito informal sin tope, fecha ni registro.', rapida: 'Lista de quién debe cuánto desde cuándo; tope por cliente y día de pago; cobrar lo vencido esta semana.', taller: 'Política de cobro; factoring para ventas a empresas.', quien: 'partner' },
+    { id: 'CAJ-02', g: 3, nombre: 'Solo efectivo', sintoma: 'No acepta tarjeta, o pone mínimo o recargo; transferencia "a mano".', causa: 'Evita la comisión y pierde la venta completa del que no anda con efectivo.', rapida: 'Máquina de tarjeta y QR de transferencia en el mesón; cartel "aceptamos todo medio de pago".', taller: 'Pago online en la tienda o en el flujo de WhatsApp.', quien: 'influence' },
+    { id: 'CAJ-03', g: 2, nombre: 'Stock muerto', sintoma: 'Mercadería que lleva más de 3 meses sin moverse ocupa bodega y plata.', causa: 'Se compró por impulso o por oferta del proveedor, sin mirar rotación.', rapida: 'Liquidar lo que no rota con una promoción comunicada; usar la plata en lo que sí vende.', taller: 'Control de inventario con rotación por producto.', quien: 'partner' },
+    { id: 'CAJ-04', g: 2, nombre: 'Paga al contado, cobra a plazo', sintoma: 'Proveedores al contado y clientes (empresas) a 30-60 días; semanas apretadas.', causa: 'El ciclo de caja está al revés. Vende bien y no tiene plata.', rapida: 'Anticipo obligatorio en pedidos grandes; negociar plazo con el proveedor principal.', taller: 'Factoring y política de condiciones comerciales.', quien: 'partner' },
+    { id: 'CAJ-05', g: 1, nombre: 'Caja mezclada', sintoma: 'La plata del negocio y la personal salen del mismo bolsillo.', causa: 'No hay un sueldo definido para el dueño.', rapida: 'Cuenta separada y sueldo fijo del dueño desde el próximo mes.', taller: 'Orden contable con el contador.', quien: 'partner' },
+
+    // RETENCIÓN
+    { id: 'RET-01', g: 3, nombre: 'Sin datos de clientes', sintoma: 'No tiene teléfono ni correo de quienes ya compraron, o los tiene y nunca les escribe.', causa: 'Nunca se pidió el dato. Cada mes parte de cero buscando clientes nuevos.', rapida: 'Pedir el teléfono en cada compra con una razón (oferta, rifa); lista de difusión de WhatsApp; un mensaje semanal.', taller: 'CRM simple y mensajería automatizada post-venta.', quien: 'influence' },
+    { id: 'RET-02', g: 2, nombre: 'Baja recompra', sintoma: 'Menos de un cuarto de las ventas del mes son de clientes que ya habían comprado.', causa: 'No hay motivo ni recordatorio para volver.', rapida: 'Oferta exclusiva para clientes anteriores; mensaje a los 30 días de la compra.', taller: 'Programa de fidelización y contenido para clientes actuales.', quien: 'influence' },
+    { id: 'RET-03', g: 2, nombre: 'Silencio post-venta', sintoma: 'Después de comprar no pasa nada: ni gracias, ni reseña, ni siguiente paso.', causa: 'El proceso termina en el cobro.', rapida: 'Mensaje post-compra con agradecimiento, QR de reseña y qué viene después.', taller: 'Secuencia post-venta automatizada.', quien: 'influence' },
+    { id: 'RET-04', g: 1, nombre: 'Reseñas sin responder', sintoma: 'Reseñas de Google, buenas y malas, sin respuesta.', causa: 'Nadie las mira.', rapida: 'Responder todas las de los últimos 3 meses esta semana; regla de 48 horas.', taller: 'Gestión de reputación dentro del community management.', quien: 'influence' },
+    { id: 'RET-05', g: 1, nombre: 'Sin motivo para volver', sintoma: 'Sin puntos, sin tarjeta, sin "la próxima te damos…".', causa: 'Se asume que vuelven solos.', rapida: 'Una mecánica simple: la décima gratis, descuento al referido.', taller: 'Programa de fidelización con seguimiento.', quien: 'influence' },
+
+    // PERSONAS Y DUEÑO
+    { id: 'PER-01', g: 3, nombre: 'Depende del dueño', sintoma: 'Si el dueño falta una semana, el negocio se para o se cae.', causa: 'Todo el conocimiento y todas las decisiones pasan por una persona.', rapida: 'Sacarle una tarea completa este mes (redes, WhatsApp, cobranza) con un responsable y un procedimiento escrito.', taller: 'Procesos escritos y un encargado por área.', quien: 'influence' },
+    { id: 'PER-02', g: 2, nombre: 'Dueño apagando incendios', sintoma: 'Más de 15 horas a la semana resolviendo urgencias en vez de mejorar el negocio.', causa: 'Los incendios son síntomas de otros códigos (OPE, CON) que nadie arregla de raíz.', rapida: 'Anotar una semana de incendios y arreglar la causa del más repetido.', taller: 'Radiografía de proceso.', quien: 'influence' },
+    { id: 'PER-03', g: 2, nombre: 'Rotación alta', sintoma: 'La misma vacante publicada varias veces en el año; "les enseño y se van".', causa: 'Sin inducción, sin claridad de cargo, sin incentivo ligado a resultados.', rapida: 'Descripción de cargo de una página y una semana de inducción con checklist.', taller: 'Selección e incentivos con un partner de RRHH.', quien: 'partner' },
+    { id: 'PER-04', g: 1, nombre: 'Redes de madrugada', sintoma: 'El dueño responde Instagram a la 1 de la mañana y publica cuando puede.', causa: 'Marketing es la tarea que siempre queda para el final del día.', rapida: 'Horario fijo de 30 minutos diarios o delegar el canal completo.', taller: 'Community management externo.', quien: 'influence' },
+    { id: 'PER-05', g: 1, nombre: 'Sin procesos escritos', sintoma: 'Nada está escrito; cada uno hace las cosas como las aprendió.', causa: 'Nunca hubo tiempo de escribirlo.', rapida: 'Escribir el proceso más repetido en 10 pasos, con fotos, esta semana.', taller: 'Manual operativo por área.', quien: 'dueño' },
+
+    // DATOS Y CONTROL
+    { id: 'DAT-01', g: 3, nombre: 'Venta de la semana desconocida', sintoma: 'No puede decir cuánto vendió la semana pasada en 10 segundos.', causa: 'No hay registro diario. Sin este número, todos los otros códigos son invisibles hasta que duelen.', rapida: 'Cinco números cada lunes en una planilla: ventas, clientes nuevos, consultas, cierres, caja.', taller: 'Punto de venta con reporte semanal.', quien: 'partner' },
+    { id: 'DAT-02', g: 2, nombre: 'Marketing sin medir', sintoma: 'No sabe cuánto cuesta conseguir un cliente ni qué canal lo trajo.', causa: 'Sin medición, se corta lo que funciona y se insiste en lo que no.', rapida: 'Preguntar "¿cómo llegaste?" en cada venta y anotarlo; un link distinto por canal.', taller: 'Medición de origen y costo por cliente en todas las campañas.', quien: 'influence' },
+    { id: 'DAT-03', g: 2, nombre: 'Sin registro de ventas', sintoma: 'Boleta manual, calculadora, sin punto de venta ni planilla.', causa: 'Se decidió "a ojo" desde el principio y nunca se cambió.', rapida: 'Planilla diaria de ventas por categoría, 5 minutos al cierre.', taller: 'Punto de venta con inventario.', quien: 'partner' },
+    { id: 'DAT-04', g: 1, nombre: 'No pregunta de dónde llegan', sintoma: 'Nunca se le pregunta al cliente nuevo cómo conoció el negocio.', causa: 'No se consideró un dato.', rapida: 'Una pregunta en caja durante un mes.', taller: 'Origen registrado en el CRM.', quien: 'dueño' },
+    { id: 'DAT-05', g: 1, nombre: 'Web sin sensores', sintoma: 'La web no tiene píxel de Meta ni Google Analytics.', causa: 'Se hizo la web y nadie la instrumentó.', rapida: 'Instalar píxel y analytics; medir WhatsApp y formulario como conversiones.', taller: 'Medición completa de la web y de las campañas.', quien: 'influence' }
+  ];
+
+  // Preguntas al dueño (escaneo rápido). s = índice del sistema. Cada opción dispara códigos (puede ser ninguno).
+  var PREGUNTAS = [
+    { s: 0, t: '¿De dónde llegan tus clientes nuevos?', o: ['De varios canales, y sé cuánto trae cada uno', 'Casi todo es boca a boca o gente que pasa', 'No lo sé, o cada vez llegan menos'], c: [[], ['CAP-02'], ['CAP-02', 'CAP-05']] },
+    { s: 0, t: 'Si alguien busca en Google tu rubro y tu comuna, ¿apareces?', o: ['Sí, con fotos y reseñas recientes', 'Aparezco, pero el perfil está incompleto', 'No aparezco, o nunca lo he revisado'], c: [[], ['CAP-01'], ['CAP-01']] },
+    { s: 1, t: 'Cuando te escriben por WhatsApp o Instagram en hora punta, ¿cuánto demoras en responder?', o: ['Menos de 15 minutos', 'Entre 15 minutos y 2 horas', 'Más de 2 horas, o cuando puedo'], c: [[], ['CON-01'], ['CON-01']] },
+    { s: 1, t: 'De cada 10 personas que preguntan precio, ¿cuántas terminan comprando?', o: ['4 o más', 'Entre 2 y 3', '1 o ninguna, o no lo sé'], c: [[], ['CON-02'], ['CON-02', 'CON-03']] },
+    { s: 2, t: '¿Sabes cuánto te deja cada producto o servicio después de todos los costos?', o: ['Sí, lo tengo calculado', 'Más o menos, a ojo', 'No'], c: [[], ['MAR-01'], ['MAR-01', 'MAR-03']] },
+    { s: 2, t: '¿Cuándo subiste precios por última vez?', o: ['Hace menos de un año, con cálculo', 'Hace más de un año', 'No me atrevo a subirlos'], c: [[], ['MAR-02'], ['MAR-02', 'MAR-04']] },
+    { s: 3, t: 'En una semana normal, ¿cuántos pedidos o atenciones salen mal o atrasados?', o: ['Casi ninguno', 'Algunos, se arreglan sobre la marcha', 'Varios, es parte del día a día'], c: [[], ['OPE-02'], ['OPE-02']] },
+    { s: 3, t: '¿Dónde se anotan los pedidos y las tareas del día?', o: ['En un sistema o app que todos ven', 'Cuaderno, Excel o WhatsApp', 'En la cabeza de alguien'], c: [[], ['OPE-01'], ['OPE-01']] },
+    { s: 4, t: '¿Cuánta plata te deben hoy tus clientes (fiado, facturas por cobrar)?', o: ['Nada o muy poco, y controlado', 'Algo, pero sé cuánto y de quién', 'Harto, o no sé exactamente cuánto'], c: [[], ['CAJ-04'], ['CAJ-01']] },
+    { s: 4, t: '¿Aceptas tarjeta y transferencia sin monto mínimo?', o: ['Sí, todos los medios de pago', 'Sí, pero con mínimo o recargo', 'Solo efectivo, o transferencia a mano'], c: [[], ['CAJ-02'], ['CAJ-02']] },
+    { s: 5, t: '¿Tienes el teléfono o correo de tus clientes y les escribes?', o: ['Sí, y les escribo con regularidad', 'Tengo algunos, pero no les escribo', 'No tengo sus datos'], c: [[], ['RET-01', 'RET-03'], ['RET-01']] },
+    { s: 5, t: 'De tus ventas del mes, ¿qué parte viene de clientes que ya habían comprado antes?', o: ['Más de la mitad', 'Entre un cuarto y la mitad', 'Menos de un cuarto, o no lo sé'], c: [[], ['RET-05'], ['RET-02']] },
+    { s: 6, t: 'Si te enfermas una semana, ¿qué pasa con el negocio?', o: ['Sigue funcionando igual', 'Funciona a medias', 'Se para, o se cae'], c: [[], ['PER-05'], ['PER-01']] },
+    { s: 6, t: '¿Cuántas horas a la semana se te van apagando incendios en vez de mejorar el negocio?', o: ['Menos de 5', 'Entre 5 y 15', 'Más de 15'], c: [[], [], ['PER-02']] },
+    { s: 7, t: '¿Cuánto vendiste la semana pasada?', o: ['Lo sé exacto, ahora mismo', 'Lo puedo calcular en un rato', 'No lo sé'], c: [[], ['DAT-03'], ['DAT-01']] },
+    { s: 7, t: '¿Mides qué te trae cada peso que gastas en publicidad o promociones?', o: ['Sí, sé cuánto cuesta cada cliente', 'A veces, a ojo', 'No, o no hago publicidad'], c: [[], ['DAT-02'], ['DAT-02', 'DAT-04']] }
+  ];
+
+  // Señales observadas desde afuera (modo taller). Cada una dispara códigos. Ver 02-senales-desde-afuera.md.
+  var SENALES = [
+    { grupo: 'Google Maps', items: [
+      { id: 'g1', t: 'No aparece al buscar rubro + comuna, o el perfil no está reclamado', c: ['CAP-01'] },
+      { id: 'g2', t: 'Reseñas que repiten demora, errores o que no contestan', c: ['OPE-05'] },
+      { id: 'g3', t: 'Reseñas sin responder (buenas o malas)', c: ['RET-04'] },
+      { id: 'g4', t: 'Menos de 10 reseñas o la última hace más de 3 meses', c: ['CON-04'] },
+      { id: 'g5', t: 'Horario cargado distinto al real', c: ['OPE-02'] }
+    ] },
+    { grupo: 'Instagram', items: [
+      { id: 'i1', t: 'Más de 30 días sin publicar', c: ['CAP-03'] },
+      { id: 'i2', t: 'La bio no dice qué vende, dónde ni cómo comprar', c: ['CAP-03'] },
+      { id: 'i3', t: 'Comentarios con "¿precio?" sin responder', c: ['CON-02', 'CON-05'] },
+      { id: 'i4', t: 'Responde de madrugada (lo hace el dueño)', c: ['PER-04'] },
+      { id: 'i5', t: 'Solo contenido para captar, nada para clientes actuales', c: ['RET-05'] }
+    ] },
+    { grupo: 'Web', items: [
+      { id: 'w1', t: 'No se puede comprar, reservar ni cotizar en 2 toques', c: ['CON-03'] },
+      { id: 'w2', t: 'Sin precios ni rangos', c: ['CON-05'] },
+      { id: 'w3', t: 'Sin píxel de Meta ni Google Analytics', c: ['DAT-05'] },
+      { id: 'w4', t: 'Abandonada: pie de página o novedades de hace más de un año', c: ['CAP-03'] },
+      { id: 'w5', t: 'Demora más de 4 segundos o se ve mal en el celular', c: ['CON-06'] },
+      { id: 'w6', t: 'No carga, da error o no tiene candado (https)', c: ['CAP-06'] },
+      { id: 'w7', t: 'No tiene botón ni link directo a WhatsApp', c: ['CON-07'] }
+    ] },
+    { grupo: 'Meta Ads y empleo', items: [
+      { id: 'a1', t: 'Un post promocionado sin landing ni llamado a la acción', c: ['CAP-04'] },
+      { id: 'a2', t: 'La misma vacante operativa publicada 2 o más veces en el año', c: ['PER-03'] }
+    ] },
+    { grupo: 'Comprador misterioso', items: [
+      { id: 'm1', t: 'Respondió en más de 2 horas (o no respondió)', c: ['CON-01'] },
+      { id: 'm2', t: 'No dio precio ni rango', c: ['CON-05'] },
+      { id: 'm3', t: 'No propuso un siguiente paso (link, hora, dirección)', c: ['CON-03'] },
+      { id: 'm4', t: 'No hizo seguimiento al día siguiente', c: ['CON-02'] }
+    ] },
+    { grupo: 'Visita al local', items: [
+      { id: 'v1', t: 'Solo efectivo, o mínimo de compra con tarjeta', c: ['CAJ-02'] },
+      { id: 'v2', t: 'Cuaderno de fiado a la vista', c: ['CAJ-01'] },
+      { id: 'v3', t: '"No hay" en productos básicos', c: ['OPE-03'] },
+      { id: 'v4', t: 'Fila en hora punta con una sola caja', c: ['OPE-04'] },
+      { id: 'v5', t: 'Bodega o vitrina llena de lo que no rota; oferta permanente', c: ['CAJ-03', 'MAR-04'] },
+      { id: 'v6', t: 'No piden ningún dato ni reseña al comprar', c: ['RET-01', 'RET-03'] },
+      { id: 'v7', t: 'El dueño está en caja, cocina y teléfono a la vez', c: ['PER-01'] },
+      { id: 'v8', t: 'Carta o catálogo plano, sin producto destacado ni combos', c: ['MAR-03', 'MAR-05'] },
+      { id: 'v9', t: 'El dueño saca plata de la caja para gastos personales; no tiene sueldo fijo', c: ['CAJ-05'] }
+    ] }
+  ];
+
+  var porId = {};
+  CODIGOS.forEach(function (c) { c.sistema = c.id.slice(0, 3); porId[c.id] = c; });
+
+  // Catálogo de soluciones. Cada una repara varios códigos. esfuerzo: 1 = esta semana, 2 = 2 a 4 semanas, 3 = 1 a 3 meses.
+  // El escáner las ordena de la mejor a la peor para el negocio escaneado (ver rankearSoluciones).
+  var SOLUCIONES = [
+    { id: 'S01', nombre: 'Perfil de Google completo y 10 reseñas', esfuerzo: 1, costo: 'Gratis', quien: 'dueño',
+      que: 'Reclamar el perfil, fotos reales, horario, categoría, botón de WhatsApp; QR de reseñas en el mesón y en el mensaje post-venta; responder todas las reseñas.',
+      resultado: 'Aparecer cuando buscan el rubro en la comuna y tener prueba social en 2 semanas.', codigos: ['CAP-01', 'CON-04', 'RET-04', 'CAP-05'] },
+    { id: 'S02', nombre: 'Asistente de WhatsApp que responde, califica y agenda', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
+      que: 'Asistente con IA en WhatsApp que responde al instante, también fuera de horario: da precios y siguiente paso, hace las preguntas para calificar, agenda o toma el pedido y hace seguimiento a las 48 horas a quien no respondió. Botón de WhatsApp en la web y en la bio.',
+      resultado: 'Cerrar las consultas que hoy se pierden por demora o silencio.', codigos: ['CON-01', 'CON-02', 'CON-03', 'CON-05', 'CON-07', 'PER-04'] },
+    { id: 'S03', nombre: 'Aceptar todos los medios de pago', esfuerzo: 1, costo: 'Bajo', quien: 'dueño',
+      que: 'Máquina de tarjeta y QR de transferencia en el mesón, sin mínimo ni recargo; cartel nuevo; anunciarlo en el barrio y en redes.',
+      resultado: 'Dejar de perder la venta completa del que no anda con efectivo.', codigos: ['CAJ-02'] },
+    { id: 'S04', nombre: 'Lista de clientes y un mensaje semanal', esfuerzo: 1, costo: 'Bajo', quien: 'influence',
+      que: 'Pedir el teléfono en cada compra con una razón; lista de difusión de WhatsApp; un mensaje a la semana con oferta para clientes anteriores; mensaje post-compra con gracias y reseña; una mecánica simple para volver.',
+      resultado: 'Que los que ya compraron vuelvan sin gastar en captación.', codigos: ['RET-01', 'RET-02', 'RET-03', 'RET-05', 'CAP-02'] },
+    { id: 'S05', nombre: 'Tablero de 5 números cada lunes', esfuerzo: 1, costo: 'Gratis', quien: 'dueño',
+      que: 'Planilla con ventas, clientes nuevos, consultas, cierres y caja, 10 minutos a la semana; preguntar "¿cómo llegaste?" en cada venta; un link distinto por canal.',
+      resultado: 'Ver las fugas antes de que duelan y saber qué canal trae clientes.', codigos: ['DAT-01', 'DAT-02', 'DAT-03', 'DAT-04'] },
+    { id: 'S06', nombre: 'Ordenar la caja', esfuerzo: 2, costo: 'Gratis', quien: 'partner',
+      que: 'Lista de quién debe cuánto desde cuándo; tope y día de pago por cliente; cobrar lo vencido; liquidar el stock muerto con una promoción; anticipo en pedidos grandes; cuenta separada y sueldo fijo del dueño.',
+      resultado: 'Que la plata de las ventas esté en la cuenta y no en el cuaderno ni en la bodega.', codigos: ['CAJ-01', 'CAJ-03', 'CAJ-04', 'CAJ-05'] },
+    { id: 'S07', nombre: 'Un solo lugar para los pedidos', esfuerzo: 2, costo: 'Bajo', quien: 'influence',
+      que: 'Planilla compartida o formulario de pedidos que llega a un panel o a WhatsApp, con estado; checklist de apertura y cierre; lista fija de reposición semanal con mínimos; responder las reseñas que reclaman demora y arreglar la causa más repetida.',
+      resultado: 'Menos pedidos perdidos, atrasados o con error cada semana.', codigos: ['OPE-01', 'OPE-02', 'OPE-03', 'OPE-05'] },
+    { id: 'S08', nombre: 'Costeo, precios y carta con destacados', esfuerzo: 2, costo: 'Bajo', quien: 'partner',
+      que: 'Costear los 5 productos más vendidos; subir 5 a 8% en lo que el cliente no compara; destacar los 3 de mayor margen en la carta o catálogo; un combo y una pregunta fija en caja; descuentos solo a cambio de algo.',
+      resultado: 'Que quede más plata de las mismas ventas.', codigos: ['MAR-01', 'MAR-02', 'MAR-03', 'MAR-04', 'MAR-05'] },
+    { id: 'S09', nombre: 'Presencia constante en redes con sistema', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Bio y destacadas que digan qué, dónde y cómo comprar; calendario mensual; 3 publicaciones por semana; community management que responde en el día. Plan Presencia o Crecimiento.',
+      resultado: 'Un segundo canal de clientes nuevos que no depende del dueño.', codigos: ['CAP-03', 'CAP-02', 'PER-04', 'CAP-05'] },
+    { id: 'S10', nombre: 'Campaña de captación medida', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Una campaña en Meta con un objetivo, un público y un mensaje; landing o WhatsApp como destino; píxel y analytics instalados; costo por consulta medido cada semana.',
+      resultado: 'Saber cuánto cuesta cada cliente nuevo y comprar más de los que convienen.', codigos: ['CAP-04', 'CAP-05', 'DAT-02', 'DAT-05'] },
+    { id: 'S11', nombre: 'Landing, tienda online o agenda online', esfuerzo: 3, costo: 'Medio', quien: 'influence',
+      que: 'Una página con prueba social, precios y un solo botón; o tienda con catálogo, carrito y pago; o agenda online. Link en la bio y en Google.',
+      resultado: 'Que se pueda comprar o reservar sin llamar y sin esperar un DM.', codigos: ['CON-03', 'CON-06', 'CAP-06', 'CON-05', 'CON-04', 'OPE-01', 'CAJ-02'] },
+    { id: 'S12', nombre: 'Delegar un área completa con procedimiento', esfuerzo: 2, costo: 'Medio', quien: 'influence',
+      que: 'Elegir la tarea que más horas quita al dueño y no necesita que sea él (redes, WhatsApp, cobranza); escribirla en 10 pasos; asignar un responsable interno o externo; revisar una vez por semana.',
+      resultado: 'Que el negocio funcione una semana sin el dueño y que él recupere horas para pensar.', codigos: ['PER-01', 'PER-02', 'PER-04', 'PER-05'] },
+    { id: 'S13', nombre: 'Radiografía de proceso y refuerzo en hora punta', esfuerzo: 2, costo: 'Bajo', quien: 'influence',
+      que: 'Mapear el proceso que más duele paso a paso (proceso/index.html), encontrar el paso que no da abasto, liberarlo con las 4 jugadas; refuerzo en las 2 horas punta; pedidos anticipados por WhatsApp.',
+      resultado: 'Saber en qué paso exacto se frena y cuánto cuesta, y destrabarlo sin contratar.', codigos: ['OPE-02', 'OPE-04', 'PER-02'] },
+    { id: 'S14', nombre: 'Cargo escrito e inducción de una semana', esfuerzo: 2, costo: 'Bajo', quien: 'partner',
+      que: 'Descripción de cargo de una página; checklist de inducción; incentivo simple ligado a ventas o a reseñas.',
+      resultado: 'Que la gente nueva rinda en una semana y se quede.', codigos: ['PER-03', 'PER-05'] },
+    { id: 'S15', nombre: 'Punto de venta con inventario', esfuerzo: 3, costo: 'Medio', quien: 'partner',
+      que: 'Software de caja con stock, reportes de venta por producto y rotación; reposición con mínimos automáticos.',
+      resultado: 'Ventas, margen y stock al día sin planillas.', codigos: ['OPE-03', 'CAJ-03', 'DAT-03', 'DAT-01'] }
+  ];
+
+  // Ordena las soluciones de la mejor a la peor para un escaneo.
+  // detectados: { 'CAP-01': fuentes[] , ... }. Devuelve hasta `max` soluciones con su explicación.
+  // Regla: impacto = suma de la gravedad de los códigos detectados que repara (x1.5 si el código
+  // está confirmado por 2 o más fuentes); puntaje = impacto x (4 - esfuerzo): lo rápido pesa más.
+  // Se eligen de a una, contando solo los códigos que aún no cubre una solución anterior.
+  function rankearSoluciones(detectados, max) {
+    max = max || 5;
+    var cubiertos = {}, out = [];
+    var peso = function (id) { return porId[id].g * (detectados[id] && detectados[id].length > 1 ? 1.5 : 1); };
+    for (var k = 0; k < max; k++) {
+      var mejor = null;
+      SOLUCIONES.forEach(function (s) {
+        if (out.some(function (o) { return o.s === s; })) return;
+        var nuevos = s.codigos.filter(function (id) { return detectados[id] && !cubiertos[id]; });
+        if (!nuevos.length) return;
+        var impacto = nuevos.reduce(function (a, id) { return a + peso(id); }, 0);
+        var puntaje = impacto * (4 - s.esfuerzo);
+        if (!mejor || puntaje > mejor.puntaje) mejor = { s: s, nuevos: nuevos, impacto: impacto, puntaje: puntaje, tambien: s.codigos.filter(function (id) { return detectados[id] && cubiertos[id]; }) };
+      });
+      if (!mejor) break;
+      mejor.nuevos.forEach(function (id) { cubiertos[id] = true; });
+      out.push(mejor);
+    }
+    return out;
+  }
+
+  return { SISTEMAS: SISTEMAS, CODIGOS: CODIGOS, PREGUNTAS: PREGUNTAS, SENALES: SENALES, SOLUCIONES: SOLUCIONES, porId: porId, rankearSoluciones: rankearSoluciones };
+});
+
+</script>
+<script>
+(function () {
+  var C = window.CODIGOS;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var ESTADOS = ['Por contactar', 'Contactado', 'Respondió', 'Reunión', 'Propuesta', 'Cliente', 'Descartado'];
+  var NIVELES = ['Escribir hoy', 'Esta semana', 'Nutrir', 'Revisar a mano'];
+  var NIVEL_CLS = { 'Escribir hoy': 'hoy', 'Esta semana': 'semana', 'Nutrir': 'nutrir', 'Revisar a mano': 'mano' };
+  var QUIEN = { influence: 'Influence', partner: 'Se deriva', 'dueño': 'Dueño' };
+  var GANCHO = ['CAP-06', 'CON-07', 'CON-03', 'CON-06', 'DAT-05', 'CAP-03', 'CON-05', 'CON-04', 'DAT-02', 'CAP-01', 'RET-01', 'CAP-02'];
+  var SEN = {}; C.SENALES.forEach(function (g) { g.items.forEach(function (it) { SEN[it.id] = { g: g.grupo, t: it.t, c: it.c }; }); });
+  var META_SEMANA = 50;
+
+  var S = { neg: {}, seg: {}, cola: [], db: null, sample: null, downloads: null, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
+
+  // ---------- conexión ----------
+  function estadoCon(txt, cls) { $('estado-con').textContent = txt; $('led').className = 'led ' + (cls || ''); }
+  function errDb(e) { estadoCon('Sin conexión con la base (' + (e && e.code || 'error') + ')', 'off'); }
+
+  (async function iniciar() {
+    var db = await window.claude.use('db');
+    if (!db) { estadoCon('Abre esta página desde tu cuenta de claude.ai para ver tus datos', 'off'); pintarTodo(); return; }
+    S.db = db; estadoCon('En línea', 'on');
+    db.collection('negocios').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.neg = m; S.cargado.neg = true; pintarTodo(); }, errDb);
+    db.collection('seguimiento').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.seg = m; S.cargado.seg = true; pintarTodo(); }, errDb);
+    db.collection('cola').limit(1000).onSnapshot(function (snap) { S.cola = snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); }); S.cargado.cola = true; pintarTodo(); }, errDb);
+    var user = await window.claude.use('user');
+    if (user && user.can) { var w = await user.can('data.write'); if (w === false) { S.puedeEscribir = false; pintarTodo(); } }
+    S.sample = await window.claude.use('sample'); S.downloads = await window.claude.use('downloads');
+    pintarTodo();
+  })();
+
+  // ---------- escritura (una a la vez por documento) ----------
+  var cadenas = {};
+  function guardarSeg(id, cambios) {
+    if (!S.db) return Promise.resolve();
+    var base = Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}, cambios, { actualizado: new Date().toISOString() });
+    S.seg[id] = base;
+    cadenas[id] = (cadenas[id] || Promise.resolve()).then(function () { return S.db.doc('seguimiento/' + id).set(base); }).catch(function (e) {
+      if (e && e.code === 'invalid_argument') { S.puedeEscribir = false; pintarTodo(); } else aviso('Error al guardar (' + (e && e.code) + ')');
+    });
+    return cadenas[id];
+  }
+  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.db) estadoCon('En línea', 'on'); }, 4000); }
+
+  // ---------- modelo ----------
+  function seg(id) { return Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}); }
+  function codigosDe(id) {
+    var n = S.neg[id], m = seg(id), det = {}, manual = {};
+    (n.codigos || []).forEach(function (c) { det[c.id] = (c.evidencia || []).slice(); });
+    (m.senales || []).forEach(function (sid) { var s = SEN[sid]; if (!s) return; s.c.forEach(function (cid) { if (!det[cid]) manual[cid] = true; (det[cid] = det[cid] || []).push(s.g + ': ' + s.t); }); });
+    var cods = Object.keys(det).filter(function (cid) { return C.porId[cid]; }).map(function (cid) { var c = C.porId[cid]; return { id: cid, g: c.g, nombre: c.nombre, evidencia: det[cid], manual: !!manual[cid] }; })
+      .sort(function (a, b) { return b.g - a.g || a.id.localeCompare(b.id); });
+    return { cods: cods, sols: C.rankearSoluciones(det, 5), det: det };
+  }
+  function gancho(cods) { var o = cods.slice().sort(function (a, b) { return (GANCHO.indexOf(a.id) + 99) % 99 - (GANCHO.indexOf(b.id) + 99) % 99; }); return o[0]; }
+  function lista() { return Object.keys(S.neg).map(function (id) { return Object.assign({ _id: id }, S.neg[id]); }).sort(function (a, b) { return (b.oportunidad || 0) - (a.oportunidad || 0); }); }
+  function haceDias(iso, d) { return iso && (Date.now() - new Date(iso).getTime()) < d * 864e5; }
+
+  // ---------- pestañas ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () { irA(t.getAttribute('data-v')); });
+  });
+  function irA(v, abrir) {
+    S.vista = v; if (abrir !== undefined) S.abierto = abrir;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.setAttribute('aria-selected', t.getAttribute('data-v') === v ? 'true' : 'false'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.vista'), function (s) { s.hidden = s.id !== 'v-' + v; });
+    try { localStorage.setItem('centro-vista', v); } catch (e) {}
+    pintarTodo();
+    if (abrir) setTimeout(function () { var el = document.querySelector('.fila[data-id="' + abrir + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+    else window.scrollTo({ top: 0 });
+  }
+  try { var vg = localStorage.getItem('centro-vista'); if (vg && $('v-' + vg)) { S.vista = vg; } } catch (e) {}
+
+  function pintarTodo() {
+    var L = lista(), porContactar = L.filter(function (n) { return n.nivel === 'Escribir hoy' && seg(n._id).estado === 'Por contactar'; });
+    $('b-hoy').textContent = porContactar.length; $('b-neg').textContent = L.length;
+    $('b-cola').textContent = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.setAttribute('aria-selected', t.getAttribute('data-v') === S.vista ? 'true' : 'false'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.vista'), function (s) { s.hidden = s.id !== 'v-' + S.vista; });
+    if (S.vista === 'hoy') pintarHoy(L);
+    if (S.vista === 'negocios') pintarNegocios(L);
+    if (S.vista === 'mercado') pintarMercado(L);
+    if (S.vista === 'escanear') pintarCola();
+  }
+
+  // ---------- HOY ----------
+  function pintarHoy(L) {
+    var cuenta = function (est) { return L.filter(function (n) { return seg(n._id).estado === est; }).length; };
+    var semana = L.filter(function (n) { return haceDias(seg(n._id).contactadoEn, 7); }).length;
+    var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length;
+    var hoyN = L.filter(function (n) { return n.nivel === 'Escribir hoy' && seg(n._id).estado === 'Por contactar'; }).length;
+    $('hoy-stats').innerHTML =
+      '<div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + hoyN + '</div><div class="d">sin contactar</div></div>' +
+      '<div class="stat"><div class="l">Mensajes esta semana</div><div class="v">' + semana + '<span style="font-size:14px;color:var(--muted)"> / ' + META_SEMANA + '</span></div><div class="meta-bar"><i style="width:' + Math.min(100, semana / META_SEMANA * 100) + '%"></i></div></div>' +
+      '<div class="stat"><div class="l">Respondieron</div><div class="v">' + cuenta('Respondió') + '</div></div>' +
+      '<div class="stat"><div class="l">Reuniones</div><div class="v">' + cuenta('Reunión') + '</div></div>' +
+      '<div class="stat ok"><div class="l">Clientes</div><div class="v">' + cuenta('Cliente') + '</div></div>' +
+      '<div class="stat"><div class="l">En cola por escanear</div><div class="v">' + pend + '</div></div>';
+    if (!S.cargado.neg) { $('hoy-lista').innerHTML = '<div class="vacio">Cargando tus negocios…</div>'; }
+    else if (!L.length) { $('hoy-lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios escaneados</b>Agrega una lista en Escanear y pídeme en el chat que la escanee.</div>'; }
+    else {
+      var cand = L.filter(function (n) { return seg(n._id).estado === 'Por contactar' && (n.nivel === 'Escribir hoy' || n.nivel === 'Esta semana'); }).slice(0, 10);
+      $('hoy-lista').innerHTML = cand.length ? cand.map(function (n, i) {
+        var g = gancho(codigosDe(n._id).cods);
+        return '<div class="hoy-item"><span class="pos">' + (i + 1) + '</span><div style="min-width:0"><div class="nom">' + esc(n.nombre) + ' <span class="nivel ' + NIVEL_CLS[n.nivel] + '" style="font-size:9.5px;padding:2px 5px;vertical-align:2px">' + esc(n.nivel) + '</span><small>' + esc([n.rubro, n.ciudad].filter(Boolean).join(' · ')) + '</small></div>' +
+          (g ? '<div class="gancho"><span class="chip g' + g.g + '">' + g.id + '</span> ' + esc(g.nombre) + '</div>' : '') + '</div><button class="btn btn-sm" data-ir="' + esc(n._id) + '">Escribir</button></div>';
+      }).join('') : '<div class="vacio"><b>Lista de hoy al día</b>Ya contactaste a todos los de "Escribir hoy" y "Esta semana".</div>';
+      Array.prototype.forEach.call($('hoy-lista').querySelectorAll('[data-ir]'), function (b) { b.addEventListener('click', function () { irA('negocios', b.getAttribute('data-ir')); }); });
+    }
+    var etapas = ['Contactado', 'Respondió', 'Reunión', 'Propuesta', 'Cliente'];
+    var alcanzo = function (e) { var k = ESTADOS.indexOf(e); return L.filter(function (n) { var s = seg(n._id).estado; return s !== 'Descartado' && ESTADOS.indexOf(s) >= k; }).length; };
+    var max = Math.max(1, alcanzo('Contactado'));
+    $('embudo').innerHTML = etapas.map(function (e) { var v = alcanzo(e); return '<div class="fila-e"><span>' + e + '</span><div class="tr"><i style="width:' + (v / max * 100) + '%"></i></div><span class="n">' + v + '</span></div>'; }).join('');
+    var c = alcanzo('Contactado'), r = alcanzo('Respondió');
+    $('hoy-consejo').innerHTML = !c ? '<b>Para partir:</b> abre el primero de la lista, revisa su web 30 segundos, copia el mensaje y envíalo. Al copiar queda marcado como contactado.'
+      : r === 0 && c >= 20 ? '<b>Ojo:</b> llevas ' + c + ' contactados y nadie ha respondido. Prueba otro gancho o cambia de rubro antes de mandar más.'
+      : '<b>Ritmo:</b> ' + c + ' contactados y ' + r + ' respuestas. La meta es ' + META_SEMANA + ' mensajes por semana para cerrar una reparación.';
+  }
+
+  // ---------- NEGOCIOS ----------
+  ESTADOS.forEach(function (e) { var o = document.createElement('option'); o.textContent = e; $('f-estado').appendChild(o); });
+  ['f-buscar', 'f-nivel', 'f-estado', 'f-rubro', 'f-lote'].forEach(function (id) { $(id).addEventListener('input', function () { pintarTodo(); }); });
+  function opciones(sel, valores, todos) {
+    var actual = sel.value, v = Object.keys(valores).sort();
+    var html = '<option value="">' + todos + '</option>' + v.map(function (x) { return '<option' + (x === actual ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+    if (sel.getAttribute('data-ult') !== html) { sel.innerHTML = html; sel.setAttribute('data-ult', html); }
+  }
+  function pintarNegocios(L) {
+    var rubros = {}, lotes = {}; L.forEach(function (n) { if (n.rubro) rubros[n.rubro] = 1; if (n.lote) lotes[n.lote] = 1; });
+    opciones($('f-rubro'), rubros, 'Todos los rubros'); opciones($('f-lote'), lotes, 'Todas las listas');
+    var q = $('f-buscar').value.trim().toLowerCase(), fn = $('f-nivel').value, fe = $('f-estado').value, fr = $('f-rubro').value, fl = $('f-lote').value;
+    var vis = L.filter(function (n) {
+      var m = seg(n._id);
+      if (fn && n.nivel !== fn) return false; if (fe && m.estado !== fe) return false; if (fr && n.rubro !== fr) return false; if (fl && n.lote !== fl) return false;
+      if (q) { var t = (n.nombre + ' ' + (n.rubro || '') + ' ' + (n.ciudad || '') + ' ' + codigosDe(n._id).cods.map(function (c) { return c.id; }).join(' ')).toLowerCase(); if (t.indexOf(q) < 0) return false; }
+      return true;
+    });
+    $('cuenta-neg').textContent = vis.length + ' de ' + L.length + ' negocios';
+    if (!S.cargado.neg) { $('lista').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
+    if (!L.length) { $('lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios</b>Agrega una lista en Escanear.</div>'; return; }
+    if (!vis.length) { $('lista').innerHTML = '<div class="vacio">Ningún negocio con esos filtros.</div>'; return; }
+    // conservar lo que se está escribiendo en el detalle abierto
+    var foco = document.activeElement && document.activeElement.closest && document.activeElement.closest('.detalle') ? document.activeElement.id : null;
+    if (foco && S.abierto) return;
+    $('lista').innerHTML = vis.map(function (n) {
+      var m = seg(n._id), e = codigosDe(n._id), ab = S.abierto === n._id;
+      return '<div><button class="fila' + (ab ? ' abierta' : '') + '" data-id="' + esc(n._id) + '" aria-expanded="' + ab + '"><span class="nivel ' + (NIVEL_CLS[n.nivel] || 'mano') + '">' + esc(n.nivel || '') + '</span><span class="score">' + (n.oportunidad || 0) + '</span>' +
+        '<span class="nom">' + esc(n.nombre) + (m.estado !== 'Por contactar' ? '<span class="tag-est">' + esc(m.estado) + '</span>' : '') + '<small>' + esc([n.rubro, n.ciudad, n.info && n.info.plataforma].filter(Boolean).join(' · ')) + '</small></span>' +
+        '<span class="chips">' + e.cods.map(function (c) { return '<span class="chip g' + c.g + (c.manual ? ' man' : '') + '">' + c.id + '</span>'; }).join('') + '</span><span class="flecha">▼</span></button>' +
+        (ab ? detalle(n, m, e) : '') + '</div>';
+    }).join('');
+    Array.prototype.forEach.call($('lista').querySelectorAll('.fila'), function (f) { f.addEventListener('click', function () { var id = f.getAttribute('data-id'); S.abierto = S.abierto === id ? null : id; pintarTodo(); }); });
+    if (S.abierto && S.neg[S.abierto]) conectarDetalle(S.abierto);
+  }
+  function detalle(n, m, e) {
+    var web = n.web ? (/^https?:/.test(n.web) ? n.web : 'https://' + n.web) : '';
+    var inf = n.info || {};
+    var datos = [inf.plataforma && 'Plataforma: ' + inf.plataforma, inf.ms && 'Carga: ' + (inf.ms / 1000).toFixed(1) + ' s', inf.camino && 'Camino de compra: ' + inf.camino, inf.revisar && 'Revisar: ' + inf.revisar, n.lote && 'Lista: ' + n.lote, n.escaneado && 'Escaneado: ' + new Date(n.escaneado).toLocaleDateString('es-CL')].filter(Boolean).join(' · ');
+    var msg = m.mensaje != null ? m.mensaje : (n.mensaje || '');
+    var dis = S.puedeEscribir ? '' : ' disabled';
+    return '<div class="detalle">' +
+      '<div><div class="bloque"><h3>Códigos de falla</h3>' + (e.cods.length ? e.cods.map(function (c) { return '<div class="cod g' + c.g + '"><div class="t"><span class="chip g' + c.g + '">' + c.id + '</span>' + esc(c.nombre) + (c.manual ? ' <span class="q">(marcado a mano)</span>' : '') + '</div>' + c.evidencia.map(function (x) { return '<div class="e">' + esc(x) + '</div>'; }).join('') + '</div>'; }).join('') : '<div class="info">Sin fallas detectadas en la web.</div>') + '</div>' +
+      '<div class="bloque"><h3>Soluciones, de la mejor a la peor</h3>' + (e.sols.length ? e.sols.map(function (t, k) { return '<div class="solx"><b>' + (k + 1) + '</b><span>' + esc(t.s.nombre) + ' <span class="q' + (t.s.quien === 'influence' ? ' inf' : '') + '">· ' + QUIEN[t.s.quien] + ' · repara ' + t.nuevos.join(', ') + '</span></span></div>'; }).join('') : '<div class="info">Sin soluciones: no hay fallas.</div>') + '</div></div>' +
+      '<div><div class="bloque"><h3>Primer mensaje</h3><textarea id="d-msg"' + dis + '>' + esc(msg) + '</textarea>' +
+        '<div class="fila-btns"><button class="btn btn-teal" id="d-copiar">Copiar mensaje</button>' + (S.sample ? '<button class="btn" id="d-otra"' + dis + '>Otra versión</button>' : '') + '<span class="aviso" id="d-aviso"></span></div></div>' +
+      '<div class="bloque"><h3>Seguimiento</h3><select class="inp" id="d-estado"' + dis + '>' + ESTADOS.map(function (s) { return '<option' + (s === m.estado ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
+        '<textarea class="nota" id="d-nota" placeholder="Notas: con quién hablaste, qué te dijo, cuándo volver a escribir"' + dis + ' style="margin-top:8px">' + esc(m.nota || '') + '</textarea></div>' +
+      '<div class="bloque"><h3>Revisar antes de escribir</h3><div class="links">' +
+        (web ? '<a href="' + esc(web) + '" target="_blank" rel="noopener">Web</a>' : '') +
+        '<a href="https://www.google.com/maps/search/' + encodeURIComponent(n.nombre + ' ' + (n.ciudad || '')) + '" target="_blank" rel="noopener">Google Maps</a>' +
+        '<a href="https://www.instagram.com/explore/search/keyword/?q=' + encodeURIComponent(n.nombre) + '" target="_blank" rel="noopener">Instagram</a>' +
+        '<a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=CL&q=' + encodeURIComponent(n.nombre) + '" target="_blank" rel="noopener">Anuncios en Meta</a></div>' +
+        (datos ? '<div class="info">' + esc(datos) + '</div>' : '') + '</div>' +
+      '<div class="bloque"><details class="taller"' + ((m.senales || []).length ? ' open' : '') + '><summary>Modo taller · marca lo que veas a mano (' + (m.senales || []).length + ')</summary>' +
+        C.SENALES.map(function (g) { return '<div class="grupo"><b>' + esc(g.grupo) + '</b>' + g.items.map(function (it) { return '<label><input type="checkbox" data-s="' + it.id + '"' + ((m.senales || []).indexOf(it.id) >= 0 ? ' checked' : '') + dis + '>' + esc(it.t) + '</label>'; }).join('') + '</div>'; }).join('') +
+      '</details></div></div></div>';
+  }
+  var tMsg = null, tNota = null;
+  function conectarDetalle(id) {
+    var n = S.neg[id], ta = $('d-msg'); if (!ta) return;
+    ta.addEventListener('input', function () { clearTimeout(tMsg); tMsg = setTimeout(function () { guardarSeg(id, { mensaje: ta.value }); }, 800); });
+    $('d-nota').addEventListener('input', function () { var v = this.value; clearTimeout(tNota); tNota = setTimeout(function () { guardarSeg(id, { nota: v }); }, 800); });
+    $('d-estado').addEventListener('change', function () { var est = this.value, cam = { estado: est }; if (est !== 'Por contactar' && !seg(id).contactadoEn) cam.contactadoEn = new Date().toISOString(); guardarSeg(id, cam).then(pintarTodo); });
+    $('d-copiar').addEventListener('click', function () {
+      var b = this, ok = function () {
+        b.textContent = 'Copiado ✓';
+        if (seg(id).estado === 'Por contactar' && S.puedeEscribir) guardarSeg(id, { estado: 'Contactado', contactadoEn: new Date().toISOString() });
+        setTimeout(function () { b.textContent = 'Copiar mensaje'; pintarTodo(); }, 1200);
+      };
+      var fb = function () { ta.disabled = false; ta.select(); try { document.execCommand('copy'); } catch (e) {} ok(); };
+      try { navigator.clipboard.writeText(ta.value).then(ok, fb); } catch (e) { fb(); }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.detalle input[data-s]'), function (cb) {
+      cb.addEventListener('change', function () { var s = cb.getAttribute('data-s'), ss = (seg(id).senales || []).filter(function (x) { return x !== s; }); if (cb.checked) ss.push(s); guardarSeg(id, { senales: ss }).then(pintarTodo); pintarTodo(); });
+    });
+    var otra = $('d-otra');
+    if (otra) otra.addEventListener('click', async function () {
+      var e = codigosDe(id), g = gancho(e.cods), sol = e.sols[0];
+      if (!g) { $('d-aviso').textContent = 'Este negocio no tiene fallas para citar.'; return; }
+      otra.disabled = true; $('d-aviso').className = 'aviso'; $('d-aviso').textContent = 'Escribiendo…';
+      var prompt = 'Escribe el primer mensaje de prospección que Gabriel, de la agencia Influence Chile, le enviará por WhatsApp o Instagram al dueño de un negocio. ' +
+        'Reglas: español de Chile, tuteo cercano y profesional, máximo 65 palabras, sin emojis, sin precios, sin promesas de resultados. ' +
+        'Debe: presentarse en una línea, citar el hallazgo concreto tal como viene, decir en una frase cómo se resuelve, y terminar ofreciendo enviar un diagnóstico gratuito con una pregunta. ' +
+        'Escribe una versión distinta a la actual. Responde solo con el mensaje.\n\n' +
+        'Negocio: ' + n.nombre + (n.rubro ? '\nRubro: ' + n.rubro : '') + (n.ciudad ? '\nComuna: ' + n.ciudad : '') +
+        '\nHallazgo principal (' + g.id + ' ' + g.nombre + '): ' + g.evidencia[0].replace(/\s*\(Antes de escribir[^)]*\)/, '') +
+        (sol ? '\nCómo se resuelve: ' + sol.s.nombre + ' — ' + sol.s.que : '') +
+        '\nOtras fallas detectadas: ' + (e.cods.length - 1) +
+        '\nMensaje actual:\n' + ta.value;
+      try {
+        var r = await S.sample(prompt, { modelTier: 'quick', cache: false, onText: function (u) { ta.value = u.text; } });
+        ta.value = r.text.trim(); guardarSeg(id, { mensaje: ta.value }); $('d-aviso').textContent = 'Nueva versión guardada. Revísala antes de enviar.';
+      } catch (err) {
+        $('d-aviso').className = 'aviso err';
+        $('d-aviso').textContent = err && err.code === 'not_granted' ? 'Sin permiso para pedir otra versión.' : err && err.code === 'rate_limited' ? 'Demasiadas solicitudes. Prueba en un rato.' : 'No se pudo generar otra versión.';
+        if (err && err.code === 'not_granted') otra.remove();
+      } finally { if (otra.isConnected) otra.disabled = false; }
+    });
+  }
+  $('exportar').addEventListener('click', async function () {
+    var q = function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; };
+    var filas = [['estado', 'nivel', 'oportunidad', 'nombre', 'rubro', 'comuna', 'web', 'lista', 'codigos', 'solucion_top1', 'nota', 'mensaje'].join(',')].concat(lista().map(function (n) {
+      var m = seg(n._id), e = codigosDe(n._id);
+      return [m.estado, n.nivel, n.oportunidad, n.nombre, n.rubro, n.ciudad, n.web, n.lote, e.cods.map(function (c) { return c.id; }).join(' '), e.sols[0] ? e.sols[0].s.nombre : '', m.nota, m.mensaje != null ? m.mensaje : n.mensaje].map(q).join(',');
+    }));
+    if (!S.downloads) { aviso('Descarga no disponible en esta vista'); return; }
+    try { await S.downloads.save({ filename: 'seguimiento-influence.csv', data: '﻿' + filas.join('\n') }); } catch (e) { if (e && e.code !== 'declined' && e.code !== 'cancelled') aviso('No se pudo descargar'); }
+  });
+
+  // ---------- MERCADO ----------
+  function pintarMercado(L) {
+    var lotes = {}; L.forEach(function (n) { if (n.lote) lotes[n.lote] = (lotes[n.lote] || 0) + 1; });
+    var sel = $('m-lote'), act = sel.value;
+    var html = '<option value="">Todas las listas (' + L.length + ' negocios)</option>' + Object.keys(lotes).sort().map(function (k) { return '<option value="' + esc(k) + '"' + (k === act ? ' selected' : '') + '>' + esc(k) + ' (' + lotes[k] + ')</option>'; }).join('');
+    if (sel.getAttribute('data-ult') !== html) { sel.innerHTML = html; sel.setAttribute('data-ult', html); }
+    var N = L.filter(function (n) { return !sel.value || n.lote === sel.value; });
+    var ok = N.filter(function (n) { return !(n.info && n.info.revisar && !(n.codigos || []).length); });
+    var freq = {}, sf = {};
+    ok.forEach(function (n) {
+      var e = codigosDe(n._id);
+      e.cods.forEach(function (c) { freq[c.id] = (freq[c.id] || 0) + 1; });
+      e.sols.slice(0, 3).forEach(function (t, i) { var s = sf[t.s.id] = sf[t.s.id] || { s: t.s, top3: 0, top1: 0 }; s.top3++; if (!i) s.top1++; });
+    });
+    var cods = Object.keys(freq).map(function (id) { return { id: id, c: C.porId[id], n: freq[id], pct: Math.round(freq[id] / Math.max(ok.length, 1) * 100) }; }).sort(function (a, b) { return b.n - a.n || b.c.g - a.c.g; });
+    var sols = Object.keys(sf).map(function (k) { return sf[k]; }).sort(function (a, b) { return b.top3 - a.top3 || b.top1 - a.top1; });
+    var nN = function (k) { return N.filter(function (n) { return n.nivel === k; }).length; };
+    $('m-stats').innerHTML = '<div class="stat"><div class="l">Negocios</div><div class="v">' + N.length + '</div></div><div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + nN('Escribir hoy') + '</div></div><div class="stat"><div class="l">Esta semana</div><div class="v">' + nN('Esta semana') + '</div></div><div class="stat"><div class="l">Revisar a mano</div><div class="v">' + nN('Revisar a mano') + '</div></div>';
+    if (!N.length) { $('m-fallas').innerHTML = '<div class="vacio">Sin negocios en esta lista.</div>'; $('m-vender').innerHTML = ''; $('m-oferta').innerHTML = ''; return; }
+    $('m-fallas').innerHTML = cods.slice(0, 10).map(function (x) { return '<div class="barra"><span class="id g' + x.c.g + 'c">' + x.id + '</span><div style="min-width:0"><div class="nm">' + esc(x.c.nombre) + '</div><div class="tr"><i class="bg' + x.c.g + '" style="width:' + x.pct + '%"></i></div></div><span class="pct">' + x.pct + '%</span></div>'; }).join('');
+    $('m-vender').innerHTML = sols.slice(0, 6).map(function (s, i) { return '<div class="solm"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(s.s.nombre) + ' <span class="c">· ' + QUIEN[s.s.quien] + '</span></span><span class="c">' + s.top3 + ' negocios</span></div>'; }).join('');
+    var top = sols.filter(function (s) { return s.s.quien === 'influence'; })[0], f0 = cods[0];
+    $('m-oferta').innerHTML = top && f0 ? '<b>Oferta para este mercado:</b> empaqueta "' + esc(top.s.nombre) + '" a precio fijo. Aparece en el Top 3 de ' + top.top3 + ' negocios. La falla más común es ' + f0.id + ' (' + esc(f0.c.nombre) + '), en el ' + f0.pct + '% de las webs.' : '';
+  }
+  $('m-lote').addEventListener('input', function () { pintarTodo(); });
+
+  // ---------- ESCANEAR ----------
+  try { $('c-lote').value = localStorage.getItem('centro-lote') || ''; } catch (e) {}
+  $('c-lote').addEventListener('input', function () { try { localStorage.setItem('centro-lote', this.value); } catch (e) {} });
+  function limpiaWeb(w) { return String(w || '').trim().replace(/\s+/g, ''); }
+  function loteActual() { return ($('c-lote').value.trim() || 'lista-' + new Date().toISOString().slice(0, 10)).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  async function encolar(items, avisoEl) {
+    if (!S.db) { avisoEl.textContent = 'Sin conexión con la base.'; return 0; }
+    if (!S.puedeEscribir) { avisoEl.textContent = 'Esta vista es solo de lectura.'; return 0; }
+    var lote = loteActual(), hechos = 0;
+    for (var i = 0; i < items.length; i++) {
+      try { await S.db.collection('cola').add({ nombre: items[i].nombre, web: items[i].web, rubro: items[i].rubro || '', ciudad: items[i].ciudad || '', lote: lote, estado: 'pendiente', creado: new Date().toISOString() }); hechos++; }
+      catch (e) { avisoEl.className = 'aviso err'; avisoEl.textContent = e && e.code === 'quota_exceeded' ? 'La base está llena: borra negocios antiguos de la cola.' : 'Error al agregar (' + (e && e.code) + ')'; break; }
+    }
+    return hechos;
+  }
+  $('c-agregar').addEventListener('click', async function () {
+    var it = { nombre: $('c-nombre').value.trim(), web: limpiaWeb($('c-web').value), rubro: $('c-rubro').value.trim(), ciudad: $('c-ciudad').value.trim() };
+    var av = $('c-aviso'); av.className = 'aviso';
+    if (!it.nombre || !it.web) { av.className = 'aviso err'; av.textContent = 'Falta el nombre o la web.'; return; }
+    var n = await encolar([it], av);
+    if (n) { av.textContent = 'Agregado a la cola.'; $('c-nombre').value = ''; $('c-web').value = ''; $('c-nombre').focus(); }
+  });
+  $('c-agregar-masivo').addEventListener('click', async function () {
+    var av = $('c-aviso-masivo'); av.className = 'aviso';
+    var lineas = $('c-masivo').value.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+    var items = [], malas = 0;
+    lineas.forEach(function (l) { var p = l.split(/\t|;|,/).map(function (x) { return x.trim(); }); var w = p.find(function (x) { return /\.[a-z]{2,}/i.test(x) && !/\s/.test(x); }); if (!w || !p[0] || p[0] === w) { malas++; return; } items.push({ nombre: p[0], web: limpiaWeb(w), rubro: p[2] && p[2] !== w ? p[2] : '', ciudad: p[3] || '' }); });
+    if (!items.length) { av.className = 'aviso err'; av.textContent = 'No encontré líneas con negocio y web.'; return; }
+    av.textContent = 'Agregando ' + items.length + '…';
+    var n = await encolar(items, av);
+    if (n) { av.textContent = n + ' agregados a la cola' + (malas ? '. ' + (malas === 1 ? '1 línea sin web se saltó.' : malas + ' líneas sin web se saltaron.') : '.'); $('c-masivo').value = ''; }
+  });
+  function pintarCola() {
+    var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }), otros = S.cola.filter(function (c) { return c.estado !== 'pendiente'; }).sort(function (a, b) { return String(b.creado).localeCompare(String(a.creado)); }).slice(0, 20);
+    $('cola-resumen').textContent = pend.length + ' por escanear' + (otros.length ? ' · últimos escaneados abajo' : '');
+    if (!S.cargado.cola) { $('cola').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
+    if (!S.cola.length) { $('cola').innerHTML = '<div class="vacio"><b>La cola está vacía</b>Agrega negocios arriba. Después escríbeme en el chat "escanea la cola".</div>'; return; }
+    var fila = function (c) { return '<div class="cola-item"><div style="min-width:0"><b>' + esc(c.nombre) + '</b><small>' + esc([c.web, c.rubro, c.ciudad, c.lote].filter(Boolean).join(' · ')) + (c.error ? ' · ' + esc(c.error) : '') + '</small></div><span class="est-cola ' + esc(c.estado) + '">' + esc(c.estado) + '</span>' + (c.estado === 'pendiente' && S.puedeEscribir ? '<button class="x" title="Quitar de la cola" aria-label="Quitar ' + esc(c.nombre) + ' de la cola" data-del="' + esc(c._id) + '">×</button>' : '<span></span>') + '</div>'; };
+    $('cola').innerHTML = pend.map(fila).join('') + otros.map(fila).join('');
+    Array.prototype.forEach.call($('cola').querySelectorAll('[data-del]'), function (b) { b.addEventListener('click', function () { S.db.doc('cola/' + b.getAttribute('data-del')).delete().catch(function (e) { aviso('No se pudo quitar (' + (e && e.code) + ')'); }); }); });
+  }
+
+  irA(S.vista);
+})();
+
+</script>

@@ -19,3 +19,6 @@ desktop.ini
 
 # Escáner de mercado: resultados con datos de prospectos (el repo es público)
 detector-dolores/mercado/resultados/
+
+# Centro de escaneo: CSV temporales de la cola
+detector-dolores/centro/cola-csv/

@@ -42,6 +42,24 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
 - Una **ficha de observación** o **ficha de entrevista** ya llenada
 - **Un proceso descrito paso a paso** (quién hace qué, cuánto demora, cuánto espera, qué se repite, qué se pierde), o un JSON de `detector-dolores/proceso/`
 
+## Centro de escaneo (la app privada del usuario)
+
+El usuario trabaja en su app **Centro de escaneo**: https://claude.ai/artifact/AigkdLF23xrbdioh4zTcgf
+(código en `detector-dolores/centro/centro-de-escaneo.html`). Su base tiene tres colecciones:
+`cola` (lo que él agrega para escanear), `negocios` (resultados, los escribes tú) y
+`seguimiento` (lo escribe la app: estado, notas, modo taller; nunca lo sobrescribas).
+
+Cuando diga **"escanea la cola"**:
+1. `ArtifactData` list de `cola` con `out_dir` (o query `estado == pendiente`).
+2. `cd detector-dolores/centro && node centro.js csv <out_dir>/cola` (un CSV por lista).
+3. `cd ../mercado && node escanear-mercado.js ../centro/cola-csv/<lista>.csv --nombre <lista>`.
+4. Verifica a mano los hallazgos de los "Escribir hoy" (ver abajo).
+5. `cd ../centro && node centro.js docs ../mercado/resultados/<lista>.json <lista> <salida>`.
+6. `ArtifactData` batch con las entradas de `<salida>/batch-N.json` (50 por tanda; si un
+   negocio ya existía, léelo y pasa su `version` como `if_version`), y `update` de cada
+   `cola/<id>` a `estado: "escaneado"` (o `"error"` con `error: "<motivo>"`).
+7. Responde cuántos quedaron en Escribir hoy y Esta semana y las 3 fallas más comunes.
+
 ## Si piden escanear muchos negocios o un rubro completo
 
 Usa el escáner de mercado: arma un CSV con nombre y web (o usa uno existente) y corre

@@ -30,6 +30,7 @@ oferta que la destraba.
 | [03-entrevista-de-diagnostico.md](03-entrevista-de-diagnostico.md) | La conversación de 20 min: pregunta llave por área, 5 porqués, cómo cuantificar, ficha de entrevista |
 | [04-de-dolor-a-oferta.md](04-de-dolor-a-oferta.md) | Catálogo de soluciones, matriz dolor → oferta de 30 días → estructural, priorización y cómo presentar |
 | [07-plan-30-dias-clientes.md](07-plan-30-dias-clientes.md) | **El plan comercial**: posicionamiento por reparaciones (diagnóstico gratis, reparación a precio fijo, operación mensual), rutina semanal de mensajes y metas |
+| [centro/](centro/) | **Centro de escaneo**: la app privada en claude.ai para trabajar todo desde una pantalla (Hoy, Negocios, Mercado, Escanear), con seguimiento guardado en la nube. `centro.js` conecta su cola con el escáner de mercado |
 | [mercado/](mercado/) | **Escáner de mercado (interno)**: escanea decenas de webs de un rubro, detecta fallas, ordena a quién escribir y con qué mensaje, y muestra qué servicio venderle a ese mercado. Ver su README |
 | [06-escaner-y-codigos.md](06-escaner-y-codigos.md) | **El escáner**: cómo funciona, los 8 sistemas, el catálogo de 43 códigos de falla con síntoma, causa y reparación, y qué sensor dispara cada uno. Se genera desde `escaner/codigos.js` |
 | [escaner/](escaner/) | **La app del escáner**: conectar → 16 lecturas (+ señales en modo taller) → escaneo por sistema → códigos de falla → informe imprimible y WhatsApp. Es la puerta de entrada y el captador de leads |
