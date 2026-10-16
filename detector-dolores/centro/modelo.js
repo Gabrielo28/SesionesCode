@@ -1,8 +1,10 @@
 /*
  * Modelo compartido del Centro de escaneo: cómo se identifica un negocio y cómo se
  * convierte un resultado del escáner de mercado en un registro del Centro.
- * Lo usan centro.js (puente con la app en claude.ai) y servidor-centro.js (versión independiente).
+ * Lo usan centro.js (puente con la app en claude.ai), servidor-centro.js (versión independiente)
+ * y la propia app en el navegador (window.MODELO), para importar archivos en cualquiera de las dos.
  */
+(function (raiz) {
 const slug = t => String(t == null ? '' : t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
 const dominio = w => String(w || '').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
 // Nombre + dominio: un reescaneo actualiza el mismo negocio y nunca pisa su seguimiento.
@@ -28,4 +30,9 @@ function registrosDe(resultados, lote) {
   return out;
 }
 
-module.exports = { slug, dominio, idDe, aRegistro, registrosDe };
+// Une un seguimiento importado con el actual: gana el que se actualizó más tarde.
+const masNuevo = (actual, nuevo) => !actual || String(nuevo && nuevo.actualizado || '') > String(actual.actualizado || '');
+
+const M = { slug, dominio, idDe, aRegistro, registrosDe, masNuevo };
+if (typeof module !== 'undefined' && module.exports) module.exports = M; else raiz.MODELO = M;
+})(this);

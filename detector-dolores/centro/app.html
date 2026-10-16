@@ -127,6 +127,8 @@
   .solm .c { font-family: var(--mono); color: var(--muted); font-size: 11.5px; white-space: nowrap; }
   .oferta { margin-top: 10px; background: var(--teal-w); border: 1px solid rgba(46,196,204,.35); border-radius: 9px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); }
   .oferta b { color: var(--teal); }
+  .analisis { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); background: var(--teal-w); border: 1px solid rgba(46,196,204,.35); border-radius: 9px; padding: 10px 12px; margin-top: 8px; }
+  .analisis:empty { display: none; }
   .hoy-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,.07); }
   .hoy-item:last-child { border-bottom: 0; }
   .hoy-item .pos { font-family: var(--mono); color: var(--teal); font-weight: 700; text-align: center; }
@@ -167,6 +169,7 @@
   <section class="vista" id="v-hoy">
     <h1>Hoy</h1>
     <p class="sub">A quién escribirle hoy, cómo va la semana y cómo avanza el embudo.</p>
+    <div class="oferta" id="aviso-respaldo" hidden style="margin:0 0 12px"></div>
     <div class="stats" id="hoy-stats"></div>
     <div class="grid2">
       <div class="panel"><h2>Tu lista de hoy <small>los mejores sin contactar, con el hallazgo para el mensaje</small></h2><div id="hoy-lista"></div></div>
@@ -243,10 +246,11 @@
       </div>
     </div>
     <div class="panel"><h2>La cola <small id="cola-resumen"></small></h2><div id="cola"></div></div>
-    <div class="panel" id="respaldo" hidden style="margin-top:12px">
-      <h2>Respaldo e importación <small>tus datos son tuyos: guárdalos o muévelos cuando quieras</small></h2>
-      <p>Descarga un respaldo con todos tus negocios, el seguimiento y la cola. Para importar, sirve un respaldo, un resultado del escáner de mercado (.json) o un tablero (.html).</p>
-      <div class="fila-btns"><a class="btn" href="/api/respaldo" id="bajar-respaldo">Descargar respaldo</a>
+    <div class="panel" id="respaldo" style="margin-top:12px">
+      <h2>Respaldo y plan de emergencia <small>tus datos son tuyos: guárdalos o muévelos cuando quieras</small></h2>
+      <p id="respaldo-texto">Descarga un respaldo con todos tus negocios, el seguimiento y la cola. Para importar, sirve un respaldo, un resultado del escáner de mercado (.json) o un tablero (.html).</p>
+      <p class="aviso" id="respaldo-fecha" style="margin:0 0 10px"></p>
+      <div class="fila-btns"><button class="btn" id="bajar-respaldo">Descargar respaldo</button>
         <label class="btn" for="importar-archivo" style="cursor:pointer">Importar archivo</label><input type="file" id="importar-archivo" accept=".json,.html,application/json,text/html" hidden>
         <span class="aviso" id="importar-aviso"></span></div>
     </div>
@@ -256,6 +260,7 @@
 </div>
 
 <script src="/escaner/codigos.js"></script>
+<script src="/centro/modelo.js"></script>
 <script>
 (function () {
   var C = window.CODIGOS;
@@ -269,7 +274,7 @@
   var SEN = {}; C.SENALES.forEach(function (g) { g.items.forEach(function (it) { SEN[it.id] = { g: g.grupo, t: it.t, c: it.c }; }); });
   var META_SEMANA = 50;
 
-  var S = { neg: {}, seg: {}, cola: [], B: null, escaneo: null, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
+  var S = { neg: {}, seg: {}, cola: [], B: null, escaneo: null, analizando: {}, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
 
   // ---------- conexión ----------
   // Dos motores con la misma forma: el servidor propio (/api, funciona sin Claude) o la base de claude.ai.
@@ -297,7 +302,7 @@
           // no pisar lo que se está escribiendo y aún no se guarda
           Object.keys(j.seguimiento || {}).forEach(function (id) { if (!cadenasVivas[id]) S.seg[id] = j.seguimiento[id]; });
           var antes = S.escaneo && S.escaneo.activo; S.escaneo = j.escaneo || null;
-          S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · tu servidor', 'on');
+          S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · sin Claude', 'on');
           pintarTodo(); B.programar(antes);
         }, function (e) { if (e && e.code !== 'sesion') { estadoCon('Sin conexión con tu servidor', 'off'); B.programar(); } });
       },
@@ -306,7 +311,7 @@
       encolar: function (items, lote) { return api('POST', '/api/cola', { items: items, lote: lote }).then(function (j) { B.cargar(); return j.agregados || 0; }); },
       quitarCola: function (id) { return api('DELETE', '/api/cola/' + encodeURIComponent(id)).then(B.cargar); },
       lanzarEscaneo: function () { return api('POST', '/api/escanear', {}).then(B.cargar); },
-      importar: function (nombre, texto) { return api('POST', '/api/importar?nombre=' + encodeURIComponent(nombre), texto).then(function (j) { B.cargar(); return j; }); },
+      importar: function (paq) { return api('POST', '/api/importar?nombre=respaldo.json', { version: 1, negocios: paq.negocios, seguimiento: paq.seguimiento, cola: paq.cola }).then(B.cargar); },
       descargar: function (nombre, datos) { descargaNavegador(nombre, datos); return Promise.resolve(); },
       sample: null
     };
@@ -333,6 +338,17 @@
         return hechos;
       },
       quitarCola: function (id) { return db.doc('cola/' + id).delete(); },
+      importar: async function (paq, progreso) {
+        var tareas = [];
+        Object.keys(paq.negocios).forEach(function (id) { tareas.push(function () { return db.doc('negocios/' + id).set(paq.negocios[id]); }); });
+        Object.keys(paq.seguimiento).forEach(function (id) { if (MODELO.masNuevo(S.seg[id], paq.seguimiento[id])) tareas.push(function () { return db.doc('seguimiento/' + id).set(paq.seguimiento[id]); }); });
+        var ya = {}; S.cola.forEach(function (c) { ya[c.nombre + '|' + c.web] = 1; });
+        paq.cola.filter(function (c) { return c.estado === 'pendiente' && !ya[c.nombre + '|' + c.web]; }).forEach(function (c) {
+          tareas.push(function () { return db.collection('cola').add({ nombre: c.nombre, web: c.web, rubro: c.rubro || '', ciudad: c.ciudad || '', lote: c.lote || 'importado', estado: 'pendiente', creado: c.creado || new Date().toISOString() }); });
+        });
+        // de a 10 en paralelo, una sola escritura por documento
+        for (var i = 0; i < tareas.length; i += 10) { await Promise.all(tareas.slice(i, i + 10).map(function (t) { return t(); })); progreso(Math.min(i + 10, tareas.length), tareas.length); }
+      },
       descargar: null, sample: null
     };
     var dl = await window.claude.use('downloads');
@@ -348,11 +364,17 @@
     var B = window.claude && window.claude.use ? await motorClaude() : /^https?:$/.test(location.protocol) ? motorLocal() : null;
     if (!B) { estadoCon('Abre esta página desde tu servidor (npm start) o desde tu cuenta de claude.ai', 'off'); pintarTodo(); return; }
     S.B = B; estadoCon('Conectando…', '');
-    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('respaldo').hidden = !B.local; $('salir').hidden = !B.local;
-    if (B.local) $('sub-escanear').textContent = 'Agrega los negocios que quieres revisar y escanéalos aquí mismo, sin depender del chat.';
-    if (B.local) $('pie').textContent = 'Todo se guarda en tu servidor (archivo centro.json) y funciona sin Claude. Descarga un respaldo de vez en cuando. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.';
+    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('salir').hidden = !B.local;
+    if (B.local) {
+      $('sub-escanear').textContent = 'Agrega los negocios que quieres revisar y escanéalos aquí mismo, sin depender del chat.';
+      $('pie').textContent = 'Modo sin Claude: todo se guarda en tu servidor (archivo centro.json). Escaneo, prioridades, soluciones y mensajes funcionan igual; lo que escribe Claude (otra versión a medida y el análisis a fondo) vuelve cuando regreses a la versión de claude.ai. Para volver, descarga un respaldo aquí e impórtalo allá.';
+      $('respaldo-texto').textContent = 'Descarga un respaldo con todos tus negocios, el seguimiento y la cola, para volver a la versión con Claude cuando quieras. Para importar sirve un respaldo de cualquiera de las dos versiones, un resultado del escáner de mercado (.json) o un tablero (.html).';
+    } else {
+      $('pie').textContent = 'Versión con Claude: tus negocios y el seguimiento se guardan en esta página y se ven igual en el celular y el computador. Si algún día se acaban los créditos, descarga un respaldo e impórtalo en la versión sin Claude (npm start o tu dominio de Railway, en /centro): sigues trabajando con todo.';
+      $('respaldo-texto').textContent = 'Tu seguro por si se acaban los créditos de Claude: descarga un respaldo cada semana. Se importa en la versión sin Claude (npm start o Railway, en /centro) y sigues trabajando con todos tus negocios y el seguimiento. También sirve para traer un respaldo de allá, un resultado del escáner de mercado (.json) o un tablero (.html).';
+    }
     B.cargar();
-    if (!B.local) estadoCon('En línea', 'on');
+    if (!B.local) estadoCon(B.sample ? 'En línea · con Claude' : 'En línea', 'on');
     pintarTodo();
   })();
 
@@ -367,7 +389,7 @@
     }).then(function () { cadenasVivas[id]--; if (!cadenasVivas[id]) delete cadenasVivas[id]; });
     return cadenas[id];
   }
-  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.B) estadoCon(S.B.local ? 'En línea · tu servidor' : 'En línea', 'on'); }, 4000); }
+  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.B) estadoCon(S.B.local ? 'En línea · sin Claude' : S.B.sample ? 'En línea · con Claude' : 'En línea', 'on'); }, 4000); }
 
   // ---------- modelo ----------
   function seg(id) { return Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}); }
@@ -416,6 +438,13 @@
     var semana = L.filter(function (n) { return haceDias(seg(n._id).contactadoEn, 7); }).length;
     var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length;
     var hoyN = L.filter(function (n) { return n.nivel === 'Escribir hoy' && seg(n._id).estado === 'Por contactar'; }).length;
+    var ult = ultimoRespaldo(), dias = ult ? Math.floor((Date.now() - ult) / 864e5) : null;
+    var avisar = S.B && !S.B.local && L.length && (dias === null || dias >= 7);
+    $('aviso-respaldo').hidden = !avisar;
+    if (avisar) {
+      $('aviso-respaldo').innerHTML = '<b>Respaldo:</b> ' + (dias === null ? 'todavía no descargas uno desde este equipo' : 'el último es de hace ' + dias + ' días') + '. Si se acaban los créditos de Claude, con ese archivo sigues trabajando en la versión sin Claude. <button class="btn btn-sm" id="ir-respaldo" style="margin-left:6px">Descargar respaldo</button>';
+      $('ir-respaldo').addEventListener('click', bajarRespaldo);
+    }
     $('hoy-stats').innerHTML =
       '<div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + hoyN + '</div><div class="d">sin contactar</div></div>' +
       '<div class="stat"><div class="l">Mensajes esta semana</div><div class="v">' + semana + '<span style="font-size:14px;color:var(--muted)"> / ' + META_SEMANA + '</span></div><div class="meta-bar"><i style="width:' + Math.min(100, semana / META_SEMANA * 100) + '%"></i></div></div>' +
@@ -490,6 +519,7 @@
       '<div class="bloque"><h3>Soluciones, de la mejor a la peor</h3>' + (e.sols.length ? e.sols.map(function (t, k) { return '<div class="solx"><b>' + (k + 1) + '</b><span>' + esc(t.s.nombre) + ' <span class="q' + (t.s.quien === 'influence' ? ' inf' : '') + '">· ' + QUIEN[t.s.quien] + ' · repara ' + t.nuevos.join(', ') + '</span></span></div>'; }).join('') : '<div class="info">Sin soluciones: no hay fallas.</div>') + '</div></div>' +
       '<div><div class="bloque"><h3>Primer mensaje</h3><textarea id="d-msg"' + dis + '>' + esc(msg) + '</textarea>' +
         '<div class="fila-btns"><button class="btn btn-teal" id="d-copiar">Copiar mensaje</button><button class="btn" id="d-otra"' + dis + ' title="' + (S.B && S.B.sample ? 'La escribe Claude' : 'Cambia entre versiones ya escritas') + '">Otra versión</button>' + '<span class="aviso" id="d-aviso"></span></div></div>' +
+      bloqueAnalisis(n, m, dis) +
       '<div class="bloque"><h3>Seguimiento</h3><select class="inp" id="d-estado"' + dis + '>' + ESTADOS.map(function (s) { return '<option' + (s === m.estado ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
         '<textarea class="nota" id="d-nota" placeholder="Notas: con quién hablaste, qué te dijo, cuándo volver a escribir"' + dis + ' style="margin-top:8px">' + esc(m.nota || '') + '</textarea></div>' +
       '<div class="bloque"><h3>Revisar antes de escribir</h3><div class="links">' +
@@ -501,6 +531,35 @@
       '<div class="bloque"><details class="taller"' + ((m.senales || []).length ? ' open' : '') + '><summary>Modo taller · marca lo que veas a mano (' + (m.senales || []).length + ')</summary>' +
         C.SENALES.map(function (g) { return '<div class="grupo"><b>' + esc(g.grupo) + '</b>' + g.items.map(function (it) { return '<label><input type="checkbox" data-s="' + it.id + '"' + ((m.senales || []).indexOf(it.id) >= 0 ? ' checked' : '') + dis + '>' + esc(it.t) + '</label>'; }).join('') + '</div>'; }).join('') +
       '</details></div></div></div>';
+  }
+  function bloqueAnalisis(n, m, dis) {
+    var conClaude = S.B && S.B.sample, vivo = S.analizando[n._id] != null;
+    var an = vivo ? S.analizando[n._id] : (m.analisis && m.analisis.texto) || '';
+    return '<div class="bloque"><h3>Análisis a fondo</h3>' +
+      (conClaude ? '<div class="fila-btns" style="margin-top:0"><button class="btn" id="d-analizar"' + (vivo ? ' disabled' : dis) + '>' + (vivo ? 'Analizando…' : an ? 'Volver a analizar' : 'Analizar con Claude') + '</button><span class="aviso" id="d-aviso-an"></span></div>' : '') +
+      '<div class="analisis" id="d-analisis">' + esc(an) + '</div>' +
+      (!vivo && m.analisis && m.analisis.fecha ? '<div class="info">Escrito por Claude el ' + new Date(m.analisis.fecha).toLocaleDateString('es-CL') + '</div>' : '') +
+      (!conClaude && !an ? '<div class="info">Lo escribe Claude: qué le está costando, qué ofrecerle primero, la objeción probable y qué confirmar antes de escribir. Está en la versión con Claude.</div>' : '') +
+      '</div>';
+  }
+  function promptAnalisis(n, m, e) {
+    var limpia = function (t) { return String(t).replace(/\s*\(Antes de escribir[^)]*\)/, ''); };
+    var inf = n.info || {};
+    return 'Eres el consultor comercial de Influence Chile, una agencia chilena que vende soluciones con IA, automatizaciones, páginas web y plataformas a pymes (además de marketing). ' +
+      'Gabriel va a prospectar este negocio. Con los datos del escaneo de su web, escríbele a él (no al dueño) un análisis breve y práctico.\n\n' +
+      'Formato: texto plano, sin markdown ni asteriscos, máximo 200 palabras, con estas 5 secciones, cada una en su propio párrafo y empezando con su título en mayúsculas seguido de dos puntos:\n' +
+      'LO QUE LE CUESTA: qué está perdiendo el negocio por estas fallas, en clientes o pesos si se puede estimar (marca lo que es supuesto).\n' +
+      'QUÉ OFRECERLE PRIMERO: una sola reparación concreta que haga Influence, con plazo, y por qué esa.\n' +
+      'LO QUE VIENE DESPUÉS: el servicio mensual o la etapa siguiente que tendría sentido.\n' +
+      'OBJECIÓN PROBABLE: la que más probablemente diga el dueño y cómo responderla en una frase.\n' +
+      'ANTES DE ESCRIBIR, CONFIRMA: 1 o 2 cosas que Gabriel debe verificar a mano.\n' +
+      'No inventes datos del negocio que no estén abajo. Español de Chile.\n\n' +
+      'Negocio: ' + n.nombre + (n.rubro ? '\nRubro: ' + n.rubro : '') + (n.ciudad ? '\nComuna: ' + n.ciudad : '') + (n.web ? '\nWeb: ' + n.web : '') +
+      (inf.plataforma ? '\nPlataforma: ' + inf.plataforma : '') + (inf.ms ? '\nCarga en celular: ' + (inf.ms / 1000).toFixed(1) + ' s' : '') +
+      '\nPrioridad del sistema: ' + (n.nivel || '') + ' · oportunidad ' + (n.oportunidad || 0) + '/100' +
+      '\nEstado del seguimiento: ' + m.estado + (m.nota ? '\nNotas de Gabriel: ' + m.nota : '') +
+      '\n\nFallas detectadas:\n' + (e.cods.length ? e.cods.map(function (c) { return '- ' + c.id + ' ' + c.nombre + ' (gravedad ' + c.g + ' de 3): ' + c.evidencia.map(limpia).join(' / '); }).join('\n') : '- ninguna') +
+      '\n\nSoluciones ordenadas por el sistema (de la mejor a la peor):\n' + (e.sols.length ? e.sols.map(function (t, k) { return (k + 1) + '. ' + t.s.nombre + ' (' + QUIEN[t.s.quien] + '): ' + t.s.que; }).join('\n') : '- ninguna');
   }
   var tMsg = null, tNota = null;
   function conectarDetalle(id) {
@@ -519,6 +578,22 @@
     });
     Array.prototype.forEach.call(document.querySelectorAll('.detalle input[data-s]'), function (cb) {
       cb.addEventListener('change', function () { var s = cb.getAttribute('data-s'), ss = (seg(id).senales || []).filter(function (x) { return x !== s; }); if (cb.checked) ss.push(s); guardarSeg(id, { senales: ss }).then(pintarTodo); pintarTodo(); });
+    });
+    var anB = $('d-analizar');
+    if (anB) anB.addEventListener('click', async function () {
+      if (S.analizando[id] != null) return;
+      S.analizando[id] = ''; anB.disabled = true; anB.textContent = 'Analizando…';
+      var prompt = promptAnalisis(n, seg(id), codigosDe(id)), error = '';
+      try {
+        var r = await S.B.sample(prompt, { modelTier: 'default', cache: false, onText: function (u) { S.analizando[id] = u.text; var d = $('d-analisis'); if (d && S.abierto === id) d.textContent = u.text; } });
+        delete S.analizando[id];
+        await guardarSeg(id, { analisis: { texto: r.text.trim(), fecha: new Date().toISOString() } });
+      } catch (err) {
+        delete S.analizando[id];
+        error = err && err.code === 'not_granted' ? 'Sin permiso para usar Claude en esta página.' : err && err.code === 'rate_limited' ? 'Claude está ocupado o se acabó el cupo. Prueba en un rato.' : 'No se pudo analizar.';
+      }
+      pintarTodo();
+      var av = $('d-aviso-an'); if (av && error) { av.className = 'aviso err'; av.textContent = error; }
     });
     var otra = $('d-otra');
     if (otra) otra.addEventListener('click', async function () {
@@ -643,7 +718,7 @@
   });
   function pintarCola() {
     var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }), otros = S.cola.filter(function (c) { return c.estado !== 'pendiente'; }).sort(function (a, b) { return String(b.creado).localeCompare(String(a.creado)); }).slice(0, 20);
-    pintarProgreso();
+    pintarProgreso(); pintarRespaldo();
     $('cola-resumen').textContent = pend.length + ' por escanear' + (otros.length ? ' · últimos escaneados abajo' : '');
     if (!S.cargado.cola) { $('cola').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
     if (!S.cola.length) { $('cola').innerHTML = '<div class="vacio"><b>La cola está vacía</b>Agrega negocios arriba. ' + (S.B && S.B.local ? 'Después toca Escanear la cola ahora.' : 'Después escríbeme en el chat "escanea la cola".') + '</div>'; return; }
@@ -664,14 +739,46 @@
     var b = this; b.disabled = true; b.textContent = 'Partiendo…';
     S.B.lanzarEscaneo().catch(function (e) { aviso(e && e.message ? 'No se pudo escanear: ' + e.message : 'No se pudo escanear'); b.disabled = false; });
   });
+  // ---------- RESPALDO (el puente entre la versión con Claude y la versión sin Claude) ----------
+  function ultimoRespaldo() { try { return +localStorage.getItem('centro-ultimo-respaldo') || 0; } catch (e) { return 0; } }
+  function pintarRespaldo() {
+    var u = ultimoRespaldo();
+    $('respaldo-fecha').textContent = u ? 'Último respaldo desde este equipo: ' + new Date(u).toLocaleDateString('es-CL') + '.' : 'Todavía no descargas un respaldo desde este equipo.';
+  }
+  async function bajarRespaldo() {
+    if (!S.B) return;
+    var marcar = function () { try { localStorage.setItem('centro-ultimo-respaldo', String(Date.now())); } catch (e) {} pintarRespaldo(); pintarTodo(); };
+    if (S.B.local) { location.href = '/api/respaldo'; marcar(); return; }
+    if (!S.B.descargar) { aviso('Descarga no disponible en esta vista'); return; }
+    var datos = JSON.stringify({ version: 1, exportado: new Date().toISOString(), negocios: S.neg, seguimiento: S.seg, cola: S.cola });
+    try { await S.B.descargar('centro-respaldo-' + new Date().toISOString().slice(0, 10) + '.json', datos); marcar(); }
+    catch (e) { if (e && e.code !== 'declined' && e.code !== 'cancelled') aviso('No se pudo descargar'); }
+  }
+  $('bajar-respaldo').addEventListener('click', bajarRespaldo);
+  // Lee un respaldo (de cualquiera de las dos versiones), un resultado del escáner de mercado o un tablero
+  function leerArchivo(nombre, texto) {
+    var t = texto.trim(), obj;
+    if (t.charAt(0) === '{') obj = JSON.parse(t);
+    else { var m = t.match(/var DATOS = (\{[\s\S]*?\});\s*\n\(function/); if (!m) throw new Error('no encontré datos en ese archivo'); obj = JSON.parse(m[1]); }
+    if (obj.negocios && !Array.isArray(obj.negocios)) return { tipo: 'respaldo', negocios: obj.negocios, seguimiento: obj.seguimiento || {}, cola: obj.cola || [] };
+    if (Array.isArray(obj.negocios)) {
+      var lote = MODELO.slug(nombre.replace(/\.(json|html)$/i, '').replace(/^tablero-/, '') || obj.rubro || 'importado');
+      return { tipo: 'resultados', lote: lote, negocios: MODELO.registrosDe(obj, lote), seguimiento: {}, cola: [] };
+    }
+    throw new Error('no tiene el formato del Centro ni del escáner de mercado');
+  }
   $('importar-archivo').addEventListener('change', function () {
     var f = this.files && this.files[0], av = $('importar-aviso'), inp = this; if (!f) return;
-    av.className = 'aviso'; av.textContent = 'Importando ' + f.name + '…';
+    if (!S.B || !S.puedeEscribir) { av.className = 'aviso err'; av.textContent = 'Esta vista es solo de lectura.'; inp.value = ''; return; }
+    av.className = 'aviso'; av.textContent = 'Leyendo ' + f.name + '…';
     var lector = new FileReader();
     lector.onload = function () {
-      S.B.importar(f.name, String(lector.result)).then(function (r) {
-        av.textContent = r.negocios + ' negocios importados' + (r.lote ? ' en la lista "' + r.lote + '"' : '') + (r.tipo === 'respaldo' ? ' con su seguimiento' : '') + '.';
-      }, function (e) { av.className = 'aviso err'; av.textContent = 'No se pudo importar: ' + ((e && e.message) || 'archivo no válido'); }).then(function () { inp.value = ''; });
+      var paq; try { paq = leerArchivo(f.name, String(lector.result)); } catch (e) { av.className = 'aviso err'; av.textContent = 'No se pudo importar: ' + e.message + '.'; inp.value = ''; return; }
+      var n = Object.keys(paq.negocios).length, ns = Object.keys(paq.seguimiento).length;
+      av.textContent = 'Importando ' + n + ' negocios…';
+      Promise.resolve(S.B.importar(paq, function (h, t) { av.textContent = 'Importando… ' + h + ' de ' + t; })).then(function () {
+        av.textContent = n + ' negocios importados' + (paq.lote ? ' en la lista "' + paq.lote + '"' : '') + (ns ? ', con el seguimiento de ' + ns : '') + '.';
+      }, function (e) { av.className = 'aviso err'; av.textContent = 'No se pudo importar: ' + ((e && (e.message || e.code)) || 'error') + '.'; }).then(function () { inp.value = ''; });
     };
     lector.onerror = function () { av.className = 'aviso err'; av.textContent = 'No se pudo leer el archivo.'; };
     lector.readAsText(f);

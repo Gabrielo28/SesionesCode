@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { spawn } = require('child_process');
-const { slug, registrosDe } = require('./modelo.js');
+const { slug, registrosDe, masNuevo } = require('./modelo.js');
 
 const DIR = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', 'datos'));
 const ARCHIVO = path.join(DIR, 'centro.json');
@@ -109,8 +109,11 @@ function importar(texto, nombreArchivo) {
   if (t.startsWith('{')) obj = JSON.parse(t);
   else { const m = t.match(/var DATOS = (\{[\s\S]*?\});\s*\n\(function/); if (!m) throw new Error('No encontré datos en ese archivo.'); obj = JSON.parse(m[1]); }
   if (obj.negocios && !Array.isArray(obj.negocios) && obj.seguimiento) { // respaldo del Centro
-    Object.assign(datos.negocios, obj.negocios); Object.assign(datos.seguimiento, obj.seguimiento || {});
-    const ids = new Set(datos.cola.map(c => c.id)); (obj.cola || []).forEach(c => { if (!ids.has(c.id)) datos.cola.push(c); });
+    Object.assign(datos.negocios, obj.negocios);
+    Object.entries(obj.seguimiento || {}).forEach(([id, s]) => { if (masNuevo(datos.seguimiento[id], s)) datos.seguimiento[id] = s; });
+    // de la cola solo se traen los pendientes que no estén ya
+    const ya = new Set(datos.cola.map(c => c.nombre + '|' + c.web));
+    (obj.cola || []).filter(c => c.estado === 'pendiente' && !ya.has(c.nombre + '|' + c.web)).forEach(c => datos.cola.push(Object.assign({}, c, { id: /^[a-f0-9]{1,40}$/.test(c.id || '') ? c.id : crypto.randomBytes(6).toString('hex') })));
     return { negocios: Object.keys(obj.negocios).length, tipo: 'respaldo' };
   }
   if (Array.isArray(obj.negocios)) { // resultados del escáner de mercado (o tablero)
@@ -150,6 +153,7 @@ async function manejar(req, res) {
   }
 
   if (ruta === '/centro' || ruta === '/centro/') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }); fs.createReadStream(APP).pipe(res); return true; }
+  if (ruta === '/centro/modelo.js') { res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-cache' }); fs.createReadStream(path.join(__dirname, 'modelo.js')).pipe(res); return true; }
   if (ruta === '/centro/salir') { res.writeHead(302, { 'Set-Cookie': 'centro=; Path=/; Max-Age=0', Location: '/centro/entrar' }); res.end(); return true; }
 
   try {

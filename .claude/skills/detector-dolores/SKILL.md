@@ -46,12 +46,15 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
 
 Hay dos formas de usarlo, con el mismo código (`detector-dolores/centro/`):
 
-- **Independiente, sin Claude** (la principal): `npm start` en `detector-dolores` → `/centro`,
+- **Artifact en claude.ai** (la de todos los días, abajo): Claude escribe el análisis a fondo y
+  otras versiones del mensaje; la cola se escanea desde el chat.
+- **Independiente, sin Claude** (emergencia si se acaban los créditos): `npm start` en `detector-dolores` → `/centro`,
   o el dominio de Railway → `/centro` con la contraseña `CENTRO_CLAVE`. Guarda en
   `DATA_DIR/centro.json` y escanea la cola desde el botón "Escanear la cola ahora"
   (`centro/servidor-centro.js`). Respaldo e importación desde la misma pantalla. Si el
   usuario pide escanear y usa esta versión, recuérdale el botón: no hace falta el chat.
-- **Artifact en claude.ai** (abajo): la cola se escanea desde el chat.
+- El puente entre las dos es el respaldo (.json): se descarga en una y se importa en la otra
+  (gana el seguimiento más reciente). Recuérdale al usuario descargarlo cada semana.
 
 La fuente de la app es `centro/app.html`. La versión artifact `centro/centro-de-escaneo.html`
 se genera desde ella con `node centro/armar-artifact.js`: edita solo app.html.
