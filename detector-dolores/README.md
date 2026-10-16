@@ -123,6 +123,11 @@ octubre de 2026 con estos cambios:
   (diagnóstico, reparación, operación) y el cotizador queda plegado. Se abre solo
   cuando alguien toca "Cotizar este plan" u otro botón que lleve a él. En celular la
   página baja de unas 23 a unas 19 pantallas.
+- **Marketing en una sola sección con pestañas**: contenido, anuncios e influencers.
+- **Formulario de agendar más corto**: sin "teléfono o correo" (termina en WhatsApp) y con
+  la hora legible en el celular.
+- **Cotizador con las soluciones primero**: sitios, WhatsApp y automatización pasan al
+  grupo 1. En total la página baja de unas 23 a unas 15 pantallas en el celular.
 
 Para publicar: Netlify → tu sitio → Deploys → arrastrar la carpeta `influencechile-web`.
 Si tienes cambios en tu copia local de la web que no estén publicados, aplica estos

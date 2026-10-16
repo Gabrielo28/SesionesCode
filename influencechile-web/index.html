@@ -592,6 +592,16 @@
 
   .hero-escaner{display:block;margin-bottom:8px;font-weight:800}
   .quiz-escaner{margin-top:16px;font-size:.92rem;color:var(--muted);font-weight:600}.quiz-escaner a{color:var(--teal-dark);font-weight:800}
+  /* Agendar: la fecha no aplasta a la hora en el celular */
+  #agendar .row2 .fld{min-width:0}
+  #agendar .row2 input,#agendar .row2 select{min-width:0;width:100%}
+  /* Marketing en una sección con pestañas */
+  .mk-cab{padding-bottom:0}
+  .mk-cab .section-head{margin-bottom:26px}
+  .mk-tabs{margin-bottom:0}
+  @media(max-width:520px){.mk-tabs{flex-wrap:nowrap;gap:4px;padding:6px}.mk-tabs .tabbtn{padding:11px 12px;font-size:.72rem;letter-spacing:.2px}}
+  .mk-panel{display:none}
+  .mk-panel.mk-on{display:block;padding-top:44px}
   /* Cotizador plegado: se abre con el botón o al llegar desde "Cotizar este plan" */
   #cotizador.plegado .quote-grid{display:none}
   .cotiz-toggle{text-align:center;margin-top:-18px}
@@ -911,8 +921,24 @@
   </div>
 </section>
 
+<!-- MARKETING: influencers, contenido y pauta en una sección con pestañas -->
+<section id="marketing" class="mk-cab">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Marketing y contenido</span>
+      <h2>Para crecer, <span class="coral">después de reparar</span></h2>
+      <p>Contenido, pauta e influencers hechos por el mismo equipo. Elige qué quieres ver.</p>
+    </div>
+    <div class="tabbar mk-tabs" role="tablist">
+      <button type="button" class="tabbtn mk-btn active" data-mk="contenido">Contenido</button>
+      <button type="button" class="tabbtn mk-btn" data-mk="metaads">Anuncios</button>
+      <button type="button" class="tabbtn mk-btn" data-mk="influencers">Influencers</button>
+    </div>
+  </div>
+</section>
+
 <!-- INFLUENCERS (servicio secundario, incluido en algunos planes) -->
-<section id="influencers">
+<section id="influencers" class="mk-panel">
   <div class="wrap">
     <div class="inf-head">
       <span class="inf-badge">Campañas con influencers</span>
@@ -952,7 +978,7 @@
 </section>
 
 <!-- CONTENIDO / REELS (propio + clientes, en una sola sección) -->
-<section id="contenido">
+<section id="contenido" class="mk-panel mk-on">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Nuestro trabajo</span>
@@ -992,7 +1018,7 @@
 </section>
 
 <!-- META ADS -->
-<section id="metaads">
+<section id="metaads" class="mk-panel">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Meta Ads / Google Ads</span>
@@ -1148,41 +1174,15 @@
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow" style="color:#fff">Cotizador en línea</span>
-      <h2>Arma tu plan y cotiza <span style="color:#123638">al instante</span></h2>
-      <p>Selecciona los servicios que necesitas, mira el total en vivo y envíanos tu cotización por WhatsApp.</p>
+      <h2>Arma tu cotización <span style="color:#123638">al instante</span></h2>
+      <p>Elige soluciones, plan mensual o pauta, mira el total en vivo y envíanos tu cotización por WhatsApp.</p>
     </div>
     <div class="cotiz-toggle"><button type="button" class="btn btn-white" id="cotizAbrir">Armar mi cotización</button></div>
     <div class="quote-grid">
       <!-- Selector -->
       <div class="quote-card">
         <div class="qgroup">
-          <label class="lbl">1 · Plan mensual</label>
-          <label class="opt"><input type="radio" name="plan" value="0" data-name="Sin plan mensual" checked><span class="op-name">Sin plan mensual</span></label>
-          <label class="opt"><input type="radio" name="plan" value="350000" data-name="Plan Presencia"><span class="op-name">Plan Presencia</span><span class="op-price">$350.000</span></label>
-          <label class="opt"><input type="radio" name="plan" value="450000" data-name="Plan Crecimiento"><span class="op-name">Plan Crecimiento</span><span class="op-price">$450.000</span></label>
-          <label class="opt"><input type="radio" name="plan" value="749990" data-name="Plan Autoridad"><span class="op-name">Plan Autoridad</span><span class="op-price">$749.990</span></label>
-        </div>
-        <div class="qgroup">
-          <label class="lbl">2 · Gestión de Meta Ads (opcional)</label>
-          <p class="q-note"><b>Incluida en todos los planes</b> (con creatividades propias). Si no tomas plan, elige una opción. Recomendamos pauta desde $400.000/mes; <b>la pauta se paga directo a Meta</b>, aquí cotizas solo la gestión.</p>
-          <label class="opt"><input type="radio" name="ads" value="0" data-name="Sin Meta Ads" checked><span class="op-name">Sin gestión de Meta Ads</span></label>
-          <label class="opt"><input type="radio" name="ads" value="150000" data-name="Armado de campaña"><span class="op-name">Armado de campaña<small>Configuración completa · pago único</small></span><span class="op-price" id="adsSetupPrice">$150.000</span></label>
-          <label class="opt"><input type="radio" name="ads" value="250000" data-name="Gestión mensual de Meta Ads"><span class="op-name">Gestión mensual<small>Optimización semanal · para pauta sobre $700.000</small></span><span class="op-price" id="adsMgmtPrice">Desde $250.000</span></label>
-        </div>
-        <div class="qgroup">
-          <label class="lbl">3 · Gestión de Google Ads (opcional)</label>
-          <p class="q-note">Servicio independiente, no incluido en los planes de contenido. Recomendamos pauta desde $300.000/mes; aquí cotizas solo la gestión.</p>
-          <label class="opt"><input type="radio" name="gads" value="0" data-name="Sin Google Ads" checked><span class="op-name">Sin gestión de Google Ads</span></label>
-          <label class="opt"><input type="radio" name="gads" value="150000" data-name="Armado de campaña Google Ads"><span class="op-name">Armado de campaña<small>Palabras clave, estructura y anuncios · pago único</small></span><span class="op-price">$150.000</span></label>
-          <label class="opt"><input type="radio" name="gads" value="250000" data-name="Gestión mensual de Google Ads"><span class="op-name">Gestión mensual<small>Optimización de palabras clave y pujas</small></span><span class="op-price">Desde $250.000</span></label>
-        </div>
-        <div class="qgroup">
-          <label class="lbl">4 · Extras (opcional)</label>
-          <label class="opt"><input type="checkbox" name="extra" value="69990" data-name="Contenido Estratégico"><span class="op-name">Contenido Estratégico</span><span class="op-price">$69.990</span></label>
-          <label class="opt"><input type="checkbox" name="extra" value="99990" data-name="Campaña Influencers"><span class="op-name">Campaña Influencers</span><span class="op-price" id="infPrice">$99.990</span></label>
-        </div>
-        <div class="qgroup" style="margin-bottom:0">
-          <label class="lbl">5 · Servicios de desarrollo (opcional)</label>
+          <label class="lbl">1 · Soluciones: sitios, WhatsApp y automatización (pago único)</label>
           <p class="q-note">Valores desde, referenciales — el alcance final se ajusta en el diagnóstico sin costo.</p>
           <label class="opt"><input type="checkbox" name="extra" value="250000" data-name="Landing de campaña"><span class="op-name">Landing de campaña</span><span class="op-price">Desde $250.000</span></label>
           <label class="opt"><input type="checkbox" name="extra" value="500000" data-name="Sitio web con módulo"><span class="op-name">Sitio web con módulo</span><span class="op-price">Desde $500.000</span></label>
@@ -1190,6 +1190,32 @@
           <label class="opt"><input type="checkbox" name="extra" value="350000" data-name="WhatsApp que responde y agenda"><span class="op-name">WhatsApp que responde y agenda</span><span class="op-price">Desde $350.000</span></label>
           <label class="opt"><input type="checkbox" name="extra" value="250000" data-name="Cotizadores y paneles a medida"><span class="op-name">Cotizadores y paneles a medida</span><span class="op-price">Desde $250.000</span></label>
           <label class="opt"><input type="checkbox" name="extra" value="500000" data-name="Automatización de procesos"><span class="op-name">Automatización de procesos</span><span class="op-price">Desde $500.000</span></label>
+        </div>
+        <div class="qgroup">
+          <label class="lbl">2 · Plan mensual de redes</label>
+          <label class="opt"><input type="radio" name="plan" value="0" data-name="Sin plan mensual" checked><span class="op-name">Sin plan mensual</span></label>
+          <label class="opt"><input type="radio" name="plan" value="350000" data-name="Plan Presencia"><span class="op-name">Plan Presencia</span><span class="op-price">$350.000</span></label>
+          <label class="opt"><input type="radio" name="plan" value="450000" data-name="Plan Crecimiento"><span class="op-name">Plan Crecimiento</span><span class="op-price">$450.000</span></label>
+          <label class="opt"><input type="radio" name="plan" value="749990" data-name="Plan Autoridad"><span class="op-name">Plan Autoridad</span><span class="op-price">$749.990</span></label>
+        </div>
+        <div class="qgroup">
+          <label class="lbl">3 · Gestión de Meta Ads (opcional)</label>
+          <p class="q-note"><b>Incluida en todos los planes</b> (con creatividades propias). Si no tomas plan, elige una opción. Recomendamos pauta desde $400.000/mes; <b>la pauta se paga directo a Meta</b>, aquí cotizas solo la gestión.</p>
+          <label class="opt"><input type="radio" name="ads" value="0" data-name="Sin Meta Ads" checked><span class="op-name">Sin gestión de Meta Ads</span></label>
+          <label class="opt"><input type="radio" name="ads" value="150000" data-name="Armado de campaña"><span class="op-name">Armado de campaña<small>Configuración completa · pago único</small></span><span class="op-price" id="adsSetupPrice">$150.000</span></label>
+          <label class="opt"><input type="radio" name="ads" value="250000" data-name="Gestión mensual de Meta Ads"><span class="op-name">Gestión mensual<small>Optimización semanal · para pauta sobre $700.000</small></span><span class="op-price" id="adsMgmtPrice">Desde $250.000</span></label>
+        </div>
+        <div class="qgroup">
+          <label class="lbl">4 · Gestión de Google Ads (opcional)</label>
+          <p class="q-note">Servicio independiente, no incluido en los planes de contenido. Recomendamos pauta desde $300.000/mes; aquí cotizas solo la gestión.</p>
+          <label class="opt"><input type="radio" name="gads" value="0" data-name="Sin Google Ads" checked><span class="op-name">Sin gestión de Google Ads</span></label>
+          <label class="opt"><input type="radio" name="gads" value="150000" data-name="Armado de campaña Google Ads"><span class="op-name">Armado de campaña<small>Palabras clave, estructura y anuncios · pago único</small></span><span class="op-price">$150.000</span></label>
+          <label class="opt"><input type="radio" name="gads" value="250000" data-name="Gestión mensual de Google Ads"><span class="op-name">Gestión mensual<small>Optimización de palabras clave y pujas</small></span><span class="op-price">Desde $250.000</span></label>
+        </div>
+        <div class="qgroup" style="margin-bottom:0">
+          <label class="lbl">5 · Extras de marketing (opcional)</label>
+          <label class="opt"><input type="checkbox" name="extra" value="69990" data-name="Contenido Estratégico"><span class="op-name">Contenido Estratégico</span><span class="op-price">$69.990</span></label>
+          <label class="opt"><input type="checkbox" name="extra" value="99990" data-name="Campaña Influencers"><span class="op-name">Campaña Influencers</span><span class="op-price" id="infPrice">$99.990</span></label>
         </div>
       </div>
       <!-- Summary -->
@@ -1283,7 +1309,7 @@
         <p class="sub">Elige tu preferencia y te confirmamos por WhatsApp.</p>
         <div class="fld"><label>Nombre</label><input type="text" id="aName" placeholder="Tu nombre"></div>
         <div class="fld"><label>Negocio / rubro</label><input type="text" id="aBiz" placeholder="Nombre de tu negocio"></div>
-        <div class="fld"><label>Instagram o sitio web</label><input type="text" id="aSocial" placeholder="@tu_instagram o www.tusitio.cl"></div>
+        <div class="fld"><label>Instagram o sitio web <small style="font-weight:500;text-transform:none;letter-spacing:0;opacity:.75">(opcional, para revisar tu negocio antes)</small></label><input type="text" id="aSocial" placeholder="@tu_instagram o www.tusitio.cl"></div>
         <div class="row2">
           <div class="fld"><label>Día preferido</label><input type="date" id="aDate"></div>
           <div class="fld"><label>Hora preferida</label>
@@ -1296,7 +1322,7 @@
             </select>
           </div>
         </div>
-        <div class="row2">
+        <div class="row2" style="grid-template-columns:1fr">
           <div class="fld"><label>Modalidad</label>
             <select id="aMode">
               <option>Videollamada (Zoom)</option>
@@ -1305,7 +1331,6 @@
               <option>Llamada telefónica</option>
             </select>
           </div>
-          <div class="fld"><label>Teléfono o correo</label><input type="text" id="aContact" placeholder="Para contactarte"></div>
         </div>
         <button class="btn btn-coral" id="agendaBtn">Agendar por WhatsApp</button>
       </div>
@@ -1708,7 +1733,7 @@
     const d=document.getElementById("aDate").value;
     const h=document.getElementById("aTime").value;
     const mode=document.getElementById("aMode").value;
-    const c=document.getElementById("aContact").value.trim();
+    const cEl=document.getElementById("aContact"); const c=cEl?cEl.value.trim():"";
     if(!n||!d){alert("Por favor indica tu nombre y el día preferido.");return;}
     const [Y,M,D]=d.split("-");
     let msg=`¡Hola Influence Chile! 👋 Quiero agendar una reunión.%0A%0A`;
@@ -1731,6 +1756,23 @@
   if (b) b.addEventListener('click', function () { abrir(); var g = s.querySelector('.quote-grid'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href="#cotizador"]'); if (a) abrir(); }, true);
   if (location.hash === '#cotizador') abrir();
+})();
+</script>
+<script>
+/* Marketing: una sola sección con pestañas (Contenido, Meta Ads, Influencers) */
+(function () {
+  var ids = ['contenido', 'metaads', 'influencers'];
+  function mostrar(id) {
+    ids.forEach(function (x) { var s = document.getElementById(x); if (s) s.classList.toggle('mk-on', x === id); });
+    document.querySelectorAll('.mk-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-mk') === id); });
+    requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')); });
+  }
+  document.querySelectorAll('.mk-btn').forEach(function (b) { b.addEventListener('click', function () { mostrar(b.getAttribute('data-mk')); }); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+    var id = a.getAttribute('href').slice(1); if (ids.indexOf(id) >= 0) mostrar(id);
+  }, true);
+  var h = location.hash.slice(1); if (ids.indexOf(h) >= 0) mostrar(h);
 })();
 </script>
 </body>
