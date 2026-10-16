@@ -592,10 +592,6 @@
 
   .hero-escaner{display:block;margin-bottom:8px;font-weight:800}
   .quiz-escaner{margin-top:16px;font-size:.92rem;color:var(--muted);font-weight:600}.quiz-escaner a{color:var(--teal-dark);font-weight:800}
-  /* Cotizador plegado: se abre con el botón o al llegar desde "Cotizar este plan" */
-  #cotizador.plegado .quote-grid{display:none}
-  .cotiz-toggle{text-align:center;margin-top:-18px}
-  #cotizador:not(.plegado) .cotiz-toggle{display:none}
   /* Preguntas frecuentes */
   .faq{background:var(--paper)}
   .faq-list{max-width:820px;margin:0 auto;display:grid;gap:12px}
@@ -621,11 +617,6 @@
   .esc-cod{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#10292B;border-left:4px solid #FF6B6B;border-radius:8px;padding:10px 12px;color:#E6F1F1;font-family:Montserrat,system-ui,sans-serif;font-weight:700;font-size:.9rem}
   .esc-cod em{font-style:normal;font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;background:rgba(255,107,107,.14);color:#FF6B6B;padding:2px 7px;border-radius:5px;font-size:.78rem}
   .esc-cod span{margin-left:auto;color:#FF6B6B;font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.68rem;letter-spacing:.08em}
-  .esc-pasos{list-style:none;display:grid;gap:10px;margin-top:22px;padding-top:18px;border-top:1px dashed #1F4548}
-  .esc-pasos li{display:flex;gap:12px;align-items:flex-start}
-  .esc-pasos b{flex:0 0 28px;height:28px;border-radius:50%;background:rgba(46,196,204,.14);color:#2EC4CC;font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center}
-  .esc-pasos span{color:#B9D2D3;font-size:.92rem;line-height:1.45;font-weight:500}
-  .esc-pasos strong{display:block;color:#fff;font-weight:800}
   @media (max-width:820px){.esc-card{grid-template-columns:1fr}}
 </style>
 <script type="application/ld+json">
@@ -718,9 +709,11 @@
   <div class="wrap nav-in">
     <a href="#top" class="logo"><img src="/img/logo-influence.webp" alt="Influence · Agencia de Marketing"></a>
     <nav class="links" id="menu">
-      <a href="#servicios">Soluciones</a>
+      <a href="#servicios">Servicios</a>
       <a href="/escaner/" class="nav-escaner">Escáner gratis</a>
+      <a href="#metaads">Meta Ads / Google Ads</a>
       <a href="#planes">Planes</a>
+      <a href="#cotizador">Cotizador</a>
       <a href="#preguntas">Preguntas</a>
       <a href="#agendar">Contacto</a>
       <a href="#agendar" class="btn btn-coral nav-cta">Agendar</a>
@@ -736,18 +729,19 @@
   </svg>
   <div class="wrap">
     <span class="eyebrow" style="color:#fff;opacity:.85">Agencia de Marketing y Desarrollo · Chile</span>
-    <h1>Encontramos lo que le está <span class="coral">costando ventas</span> a tu negocio.<br>Y lo reparamos.</h1>
-    <p class="lead">Un <b>escáner gratis</b> para detectar qué falla. <b>Webs, WhatsApp con IA y automatizaciones</b> para repararlo. Contenido, Meta Ads e influencers para crecer. 9 años en marketing y más de 15 marcas activas, para negocios de cualquier tamaño.</p>
+    <h1>Convertimos tus <span class="coral">redes</span> en clientes.<br>Y construimos lo que te falta.</h1>
+    <p class="lead">Estrategia, contenido y gestión de redes — más <b>campañas con influencers</b>, sitios y automatizaciones con WhatsApp. 9 años de experiencia en marketing, gestionando comunidades de redes sociales desde 2020, con +2 millones de seguidores alcanzados. Para negocios de cualquier tamaño.</p>
     <div class="cta-row">
-      <a href="/escaner/" class="btn btn-coral">Escanear mi negocio gratis</a>
-      <a href="#agendar" class="btn btn-white">Agendar reunión</a>
+      <a href="#cotizador" class="btn btn-white">Cotiza tu plan</a>
+      <a href="#agendar" class="btn btn-coral">Agendar reunión gratis</a>
     </div>
     <div class="stats">
       <div><b>+9</b><span>Años de experiencia</span></div>
       <div><b>+2M</b><span>Seguidores gestionados</span></div>
       <div><b>+15</b><span>Marcas activas</span></div>
     </div>
-    <a href="#servicios" data-tab-target="dev" class="hero-link">¿Ya sabes lo que necesitas? Ver soluciones y precios →</a>
+    <a href="/escaner/" class="hero-link hero-escaner">¿No sabes qué le falla a tu negocio? Escanéalo gratis en 3 minutos →</a>
+    <a href="#servicios" data-tab-target="dev" class="hero-link">¿Buscas un sitio o sistema a medida? Ver desarrollo y precios →</a>
   </div>
 </section>
 <svg class="tear" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M0,60 L0,28 L120,10 L240,30 L360,8 L480,28 L600,6 L720,26 L840,6 L960,28 L1080,8 L1200,28 L1320,10 L1440,26 L1440,60 Z"/></svg>
@@ -777,8 +771,8 @@
 
     <div class="tabgroup">
     <div class="tabbar tabbar-hero" role="tablist">
-      <button type="button" class="tabbtn tabbtn-hero active" data-tab="dev">Sitios y automatización</button>
-      <button type="button" class="tabbtn tabbtn-hero" data-tab="marketing">Marketing y contenido</button>
+      <button type="button" class="tabbtn tabbtn-hero active" data-tab="marketing">Marketing y contenido</button>
+      <button type="button" class="tabbtn tabbtn-hero" data-tab="dev">Sitios y automatización</button>
     </div>
 
     <div class="section-head section-head-sub">
@@ -786,7 +780,7 @@
       <p>Nos encargamos de la estrategia, el contenido, la conversación — y si lo necesitas, del sitio o sistema detrás. Para persona natural, emprendedor, pyme o gran empresa.</p>
     </div>
 
-    <div class="tabpanel" id="tab-marketing">
+    <div class="tabpanel active" id="tab-marketing">
       <div class="reel-carousel">
         <button type="button" class="rc-nav prev" aria-label="Anterior">&lsaquo;</button>
         <div class="reel-grid" id="marketingGrid">
@@ -825,7 +819,7 @@
       </div>
     </div>
 
-    <div class="tabpanel active" id="tab-dev">
+    <div class="tabpanel" id="tab-dev">
       <div class="reel-carousel">
         <button type="button" class="rc-nav prev" aria-label="Anterior">&lsaquo;</button>
         <div class="reel-grid" id="devGrid">
@@ -887,16 +881,11 @@
   <div class="wrap">
     <div class="esc-card">
       <div class="esc-texto">
-        <span class="eyebrow">Cómo trabajamos</span>
+        <span class="eyebrow">Diagnóstico gratis · 3 minutos</span>
         <h2>Pasa tu negocio por el <span class="coral">escáner</span></h2>
         <p>Como el escáner de un auto: lee los 8 sistemas de tu negocio, desde cómo llegan los clientes hasta cómo entra la plata, y te entrega los códigos de falla con su gravedad y las 5 mejores soluciones, de la mejor a la peor.</p>
         <a href="/escaner/" class="btn btn-coral">Escanear mi negocio</a>
-        <small>Gratis, sin registro y desde el celular. 3 minutos.</small>
-        <ol class="esc-pasos">
-          <li><b>1</b><span><strong>Diagnóstico gratis</strong>El escáner te dice qué falla y qué tan grave es.</span></li>
-          <li><b>2</b><span><strong>Reparación a precio fijo</strong>Propuesta con precio y fecha en 48 horas.</span></li>
-          <li><b>3</b><span><strong>Operación mensual</strong>Lo mantenemos funcionando y medido.</span></li>
-        </ol>
+        <small>Sin registro. Desde el celular. Para cualquier negocio que venda algo.</small>
       </div>
       <div class="esc-pantalla" aria-hidden="true">
         <div class="esc-top"><i></i>ESCÁNER DE NEGOCIO</div>
@@ -906,6 +895,79 @@
         <div class="esc-linea"><b>CAJ</b> Caja y cobro<span class="g3">2 fallas</span></div>
         <div class="esc-linea"><b>RET</b> Retención<span class="g2">1 falla</span></div>
         <div class="esc-cod"><em>CAP-01</em> Invisible en Google <span>CRÍTICO</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEST DE ORIENTACIÓN -->
+<section class="quiz" id="test">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">¿No sabes por dónde empezar?</span>
+      <h2>Responde <span class="coral">5 preguntas</span> y te decimos qué contratar</h2>
+      <p>Menos de un minuto. Al final te recomendamos un plan o servicio concreto — sin compromiso, y puedes cambiar tus respuestas cuando quieras.</p>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+
+      <div class="quiz-step active" data-step="1">
+        <h3>¿Qué tipo de negocio tienes?</h3>
+        <div class="quiz-opts">
+          <button type="button" class="quiz-opt" data-q="tipo" data-v="natural">Persona natural o emprendedor</button>
+          <button type="button" class="quiz-opt" data-q="tipo" data-v="pyme">Pyme</button>
+          <button type="button" class="quiz-opt" data-q="tipo" data-v="empresa">Empresa establecida</button>
+          <button type="button" class="quiz-opt" data-q="tipo" data-v="corp">Gran empresa o corporación</button>
+        </div>
+      </div>
+
+      <div class="quiz-step" data-step="2">
+        <h3>¿Qué necesitas principalmente?</h3>
+        <div class="quiz-opts">
+          <button type="button" class="quiz-opt" data-q="necesidad" data-v="redes">Presencia en redes y contenido</button>
+          <button type="button" class="quiz-opt" data-q="necesidad" data-v="sitio">Un sitio web o herramienta digital</button>
+          <button type="button" class="quiz-opt" data-q="necesidad" data-v="automatizar">Automatizar tareas repetitivas</button>
+          <button type="button" class="quiz-opt" data-q="necesidad" data-v="no-seguro">No estoy seguro, quiero orientación</button>
+        </div>
+      </div>
+
+      <div class="quiz-step" data-step="3">
+        <h3>¿Ya tienes presencia activa en redes sociales?</h3>
+        <div class="quiz-opts">
+          <button type="button" class="quiz-opt" data-q="presencia" data-v="si">Sí, quiero mejorarla</button>
+          <button type="button" class="quiz-opt" data-q="presencia" data-v="no">No, estoy partiendo de cero</button>
+          <button type="button" class="quiz-opt" data-q="presencia" data-v="na">No aplica a mi caso</button>
+        </div>
+      </div>
+
+      <div class="quiz-step" data-step="4">
+        <h3>¿Cuál es tu prioridad ahora mismo?</h3>
+        <div class="quiz-opts">
+          <button type="button" class="quiz-opt" data-q="prioridad" data-v="ventas">Conseguir más clientes o ventas</button>
+          <button type="button" class="quiz-opt" data-q="prioridad" data-v="profesional">Verme más profesional</button>
+          <button type="button" class="quiz-opt" data-q="prioridad" data-v="tiempo">Ahorrar tiempo en tareas manuales</button>
+          <button type="button" class="quiz-opt" data-q="prioridad" data-v="lanzar">Lanzar algo nuevo</button>
+        </div>
+      </div>
+
+      <div class="quiz-step" data-step="5">
+        <h3>¿Cuál es tu rango de inversión mensual aproximado?</h3>
+        <div class="quiz-opts">
+          <button type="button" class="quiz-opt" data-q="presupuesto" data-v="bajo">Menos de $300.000</button>
+          <button type="button" class="quiz-opt" data-q="presupuesto" data-v="medio">$300.000 – $700.000</button>
+          <button type="button" class="quiz-opt" data-q="presupuesto" data-v="alto">Más de $700.000</button>
+          <button type="button" class="quiz-opt" data-q="presupuesto" data-v="cotizar">Prefiero que me coticen primero</button>
+        </div>
+      </div>
+
+      <div class="quiz-step quiz-result" data-step="6">
+        <div id="quizResult"></div>
+      </div>
+
+      <div class="quiz-foot">
+        <button type="button" class="quiz-back" id="quizBack" disabled>&larr; Atrás</button>
+        <span class="quiz-count" id="quizCount">Pregunta 1 de 5</span>
       </div>
     </div>
   </div>
@@ -1144,14 +1206,13 @@
 </section>
 
 <!-- COTIZADOR -->
-<section id="cotizador" class="plegado">
+<section id="cotizador">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow" style="color:#fff">Cotizador en línea</span>
       <h2>Arma tu plan y cotiza <span style="color:#123638">al instante</span></h2>
       <p>Selecciona los servicios que necesitas, mira el total en vivo y envíanos tu cotización por WhatsApp.</p>
     </div>
-    <div class="cotiz-toggle"><button type="button" class="btn btn-white" id="cotizAbrir">Armar mi cotización</button></div>
     <div class="quote-grid">
       <!-- Selector -->
       <div class="quote-card">
@@ -1318,8 +1379,7 @@
   <div class="wrap">
     <div class="logo"><img src="/img/logo-influence-footer.webp" alt="Influence · Agencia de Marketing"></div>
     <div class="fnav">
-      <a href="#servicios">Soluciones</a>
-      <a href="/escaner/">Escáner gratis</a>
+      <a href="#servicios">Servicios</a>
       <a href="#influencers">Influencers</a>
       <a href="#contenido">Contenido</a>
       <a href="#metaads">Meta Ads / Google Ads</a>
@@ -1721,17 +1781,6 @@
     if(c)msg+=`%0AContacto: ${c}`;
     window.open(`https://wa.me/${WA}?text=${msg}`,"_blank");
   };
-</script>
-<script>
-/* Cotizador plegado: se abre con su botón o desde cualquier link a #cotizador */
-(function () {
-  var s = document.getElementById('cotizador'); if (!s) return;
-  function abrir() { s.classList.remove('plegado'); }
-  var b = document.getElementById('cotizAbrir');
-  if (b) b.addEventListener('click', function () { abrir(); var g = s.querySelector('.quote-grid'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href="#cotizador"]'); if (a) abrir(); }, true);
-  if (location.hash === '#cotizador') abrir();
-})();
 </script>
 </body>
 </html>

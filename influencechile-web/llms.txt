@@ -1,6 +1,6 @@
 # Influence Chile
 
-> Agencia de soluciones digitales y marketing en Chile. Detecta lo que le está costando ventas a un negocio con un diagnóstico gratuito (Escáner de Negocio) y lo repara: sitios web, tiendas online, asistentes de WhatsApp con IA y automatizaciones, además de gestión de redes, Meta Ads, Google Ads y campañas con influencers. Trabaja con negocios de cualquier tamaño.
+> Agencia de marketing digital y desarrollo en Chile. Gestiona redes sociales (estrategia, reels, community management), campañas de Meta Ads y Google Ads, campañas con influencers, y construye sitios web, tiendas online y automatizaciones con WhatsApp para negocios de cualquier tamaño. Ofrece un diagnóstico gratuito de negocios llamado Escáner de Negocio.
 
 - Sitio: https://influencechile.cl/
 - WhatsApp: +56 9 6545 0723
@@ -34,6 +34,7 @@
 ## Herramientas gratuitas
 
 - [Escáner de Negocio](https://influencechile.cl/escaner/): diagnóstico en 3 minutos de 8 sistemas del negocio (captación, conversión, margen, operación, caja, retención, personas y datos). Entrega códigos de falla con gravedad y las 5 mejores soluciones ordenadas.
+- Test de orientación de 5 preguntas en la página principal: recomienda qué plan o servicio contratar.
 
 ## Cómo contratar
 
