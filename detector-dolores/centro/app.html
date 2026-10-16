@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:,">
+<title>Centro de escaneo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* Herramienta interna con look de instrumento (mismo mundo visual que el escáner): una sola apariencia oscura, a propósito.
+     Layout: barra superior con pestañas; cada pestaña es una vista de trabajo, resumen arriba y detalle abajo. */
+  :root {
+    color-scheme: dark;
+    --bg: #0B1A1B; --panel: #10292B; --panel-2: #153537; --line: #1F4548; --ink: #E6F1F1; --ink-2: #B9D2D3; --muted: #8FB0B2; --faint: #6A8C8E;
+    --teal: #2EC4CC; --teal-w: rgba(46,196,204,.14); --coral: #FF8A8A;
+    --g3: #FF6B6B; --g3-w: rgba(255,107,107,.14); --g2: #F5B942; --g2-w: rgba(245,185,66,.14); --g1: #7FB7FF; --g1-w: rgba(127,183,255,.14); --ok: #4CD28A; --ok-w: rgba(76,210,138,.14);
+    --font: 'Montserrat', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { margin: 0; font-family: var(--font); font-size: 14px; line-height: 1.45; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 14px 60px; }
+  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-bottom: 12px; }
+  .marca { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); }
+  .led { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); }
+  .led.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .led.off { background: var(--g3); box-shadow: 0 0 10px var(--g3); }
+  .estado-con { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 16px; overflow-x: auto; }
+  .tab { flex: 1 0 auto; border: 0; background: transparent; color: var(--ink-2); font-weight: 700; font-size: 13.5px; padding: 10px 14px; border-radius: 9px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--teal); color: #06191A; }
+  .tab .badge { font-family: var(--mono); font-size: 11px; background: rgba(0,0,0,.18); border-radius: 10px; padding: 1px 7px; }
+  .tab[aria-selected="false"] .badge { background: var(--g3-w); color: var(--g3); }
+  .vista[hidden] { display: none !important; }
+  h1 { font-size: clamp(22px, 4vw, 28px); line-height: 1.15; letter-spacing: -.02em; margin: 2px 0 6px; text-wrap: balance; }
+  h2 { font-size: 15px; margin: 0 0 10px; }
+  h2 small { font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  p { margin: 0 0 10px; color: var(--ink-2); }
+  .sub { color: var(--muted); margin-bottom: 16px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .stat .l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+  .stat .v { font-family: var(--mono); font-size: 26px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .d { font-size: 11.5px; color: var(--muted); }
+  .stat.hoy .v { color: var(--coral); }
+  .stat.ok .v { color: var(--ok); }
+  .meta-bar { height: 10px; background: rgba(255,255,255,.06); border-radius: 0 5px 5px 0; margin-top: 8px; }
+  .meta-bar i { display: block; height: 10px; background: var(--teal); border-radius: 0 5px 5px 0; }
+  .embudo { display: grid; gap: 6px; }
+  .embudo .fila-e { display: grid; grid-template-columns: 96px minmax(0, 1fr) 40px; gap: 10px; align-items: center; font-size: 12.5px; }
+  .embudo .fila-e span:first-child { color: var(--ink-2); font-weight: 600; }
+  .embudo .tr { height: 12px; background: rgba(255,255,255,.05); border-radius: 0 4px 4px 0; }
+  .embudo .tr i { display: block; height: 12px; background: var(--teal); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .embudo .n { font-family: var(--mono); text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .btn { border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font-weight: 700; font-size: 13px; padding: 8px 14px; border-radius: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+  .btn:hover { border-color: var(--teal); }
+  .btn-teal { background: var(--teal); border-color: var(--teal); color: #06191A; }
+  .btn-teal:hover { background: #5AD6DC; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn[disabled] { opacity: .5; cursor: default; }
+  .lista { display: grid; gap: 6px; }
+  .fila { display: grid; grid-template-columns: 108px 42px minmax(0, 1.4fr) minmax(0, 1.5fr) 16px; gap: 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; width: 100%; color: var(--ink); }
+  .fila:hover { border-color: var(--teal); }
+  .fila.abierta { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  @media (max-width: 720px) { .fila { grid-template-columns: auto 36px minmax(0, 1fr) 14px; } .fila .chips { grid-column: 1 / -1; } }
+  .nivel { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; text-align: center; white-space: nowrap; }
+  .nivel.hoy { background: var(--g3-w); color: var(--g3); } .nivel.semana { background: var(--g2-w); color: var(--g2); } .nivel.nutrir { background: var(--g1-w); color: var(--g1); } .nivel.mano { background: rgba(255,255,255,.07); color: var(--ink-2); }
+  .score { font-family: var(--mono); font-weight: 700; font-size: 17px; text-align: right; font-variant-numeric: tabular-nums; }
+  .nom { font-weight: 700; font-size: 14px; line-height: 1.25; min-width: 0; }
+  .nom small { display: block; font-weight: 500; color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tag-est { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--ok-w); color: var(--ok); margin-left: 6px; vertical-align: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+  .chip { font-family: var(--mono); font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .chip.g3 { background: var(--g3-w); color: var(--g3); } .chip.g2 { background: var(--g2-w); color: var(--g2); } .chip.g1 { background: var(--g1-w); color: var(--g1); }
+  .chip.man { outline: 1px dashed currentColor; }
+  .flecha { color: var(--faint); font-size: 11px; transition: transform .2s; }
+  .fila.abierta .flecha { transform: rotate(180deg); }
+  .detalle { background: var(--panel-2); border: 1px solid var(--teal); border-top: 0; border-radius: 0 0 10px 10px; padding: 14px; margin-top: -6px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .detalle { grid-template-columns: 1fr; } }
+  .detalle h3 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); margin: 0 0 8px; }
+  .bloque + .bloque { margin-top: 16px; }
+  .cod { border-left: 4px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+  .cod.g3 { border-left-color: var(--g3); } .cod.g2 { border-left-color: var(--g2); } .cod.g1 { border-left-color: var(--g1); }
+  .cod .t { font-weight: 700; font-size: 13px; } .cod .t .chip { margin-right: 6px; }
+  .cod .e { font-size: 12.5px; color: var(--ink-2); margin-top: 3px; }
+  .solx { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .solx b { font-family: var(--mono); color: var(--teal); min-width: 20px; }
+  .q { font-size: 11px; color: var(--muted); } .q.inf { color: var(--teal); }
+  textarea, .inp, select.inp { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 9px 10px; font-size: 13.5px; line-height: 1.5; min-width: 0; }
+  textarea { resize: vertical; min-height: 120px; }
+  textarea.nota { min-height: 60px; }
+  .fila-btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+  .aviso { font-size: 12px; color: var(--muted); }
+  .aviso.err { color: var(--g3); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px; }
+  .links a { font-size: 12px; color: var(--teal); text-decoration: none; border: 1px solid var(--line); border-radius: 20px; padding: 4px 10px; }
+  .links a:hover { border-color: var(--teal); }
+  .info { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+  details.taller summary { cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--teal); }
+  details.taller .grupo { margin-top: 8px; }
+  details.taller .grupo b { font-size: 11.5px; color: var(--muted); display: block; margin-bottom: 2px; }
+  details.taller label { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--ink-2); padding: 3px 0; cursor: pointer; }
+  details.taller input { accent-color: var(--teal); margin-top: 3px; }
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .filtros .inp { width: auto; flex: 1 1 150px; }
+  .filtros input.inp { flex: 2 1 220px; }
+  .barra { display: grid; grid-template-columns: 58px minmax(0, 1fr) 44px; gap: 10px; align-items: center; padding: 5px 0; font-size: 12.5px; }
+  .barra .id { font-family: var(--mono); font-weight: 700; font-size: 11.5px; }
+  .barra .nm { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+  .barra .tr { height: 8px; background: rgba(255,255,255,.05); border-radius: 0 4px 4px 0; }
+  .barra .tr i { display: block; height: 8px; border-radius: 0 4px 4px 0; }
+  .barra .pct { font-family: var(--mono); text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .g3c { color: var(--g3); } .g2c { color: var(--g2); } .g1c { color: var(--g1); }
+  .bg3 { background: var(--g3); } .bg2 { background: var(--g2); } .bg1 { background: var(--g1); }
+  .solm { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed rgba(255,255,255,.06); font-size: 13px; }
+  .solm:last-child { border-bottom: 0; }
+  .solm .n { font-family: var(--mono); color: var(--teal); font-weight: 700; min-width: 20px; }
+  .solm .t { flex: 1; min-width: 0; }
+  .solm .c { font-family: var(--mono); color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+  .oferta { margin-top: 10px; background: var(--teal-w); border: 1px solid rgba(46,196,204,.35); border-radius: 9px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); }
+  .oferta b { color: var(--teal); }
+  .hoy-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,.07); }
+  .hoy-item:last-child { border-bottom: 0; }
+  .hoy-item .pos { font-family: var(--mono); color: var(--teal); font-weight: 700; text-align: center; }
+  .hoy-item .gancho { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .form-grid label, .campo label { display: block; font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+  .cola-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,.07); font-size: 13px; }
+  .cola-item small { display: block; color: var(--muted); font-size: 11.5px; overflow-wrap: anywhere; }
+  .est-cola { font-family: var(--mono); font-size: 10.5px; font-weight: 700; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; background: var(--g2-w); color: var(--g2); white-space: nowrap; }
+  .est-cola.escaneado { background: var(--ok-w); color: var(--ok); } .est-cola.error { background: var(--g3-w); color: var(--g3); }
+  .x { border: 0; background: none; color: var(--faint); cursor: pointer; font-size: 17px; line-height: 1; padding: 4px; }
+  .x:hover { color: var(--g3); }
+  .pasos-escaneo { counter-reset: p; list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .pasos-escaneo li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+  .pasos-escaneo li::before { counter-increment: p; content: counter(p); flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--teal-w); color: var(--teal); font-family: var(--mono); font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; }
+  .frase { font-family: var(--mono); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; color: var(--ink); }
+  .vacio { text-align: center; color: var(--muted); padding: 28px 12px; }
+  .vacio b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  .pie { font-size: 12px; color: var(--faint); margin-top: 18px; line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div class="marca"><span class="led" id="led"></span>Centro de escaneo · Influence</div>
+    <span style="display:flex;gap:12px;align-items:center"><span class="estado-con" id="estado-con">Conectando…</span><a href="/centro/salir" id="salir" class="estado-con" style="color:var(--teal);text-decoration:none" hidden>Salir</a></span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-v="hoy">Hoy <span class="badge" id="b-hoy">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-v="negocios">Negocios <span class="badge" id="b-neg">0</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-v="mercado">Mercado</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="escanear">Escanear <span class="badge" id="b-cola">0</span></button>
+  </div>
+
+  <!-- HOY -->
+  <section class="vista" id="v-hoy">
+    <h1>Hoy</h1>
+    <p class="sub">A quién escribirle hoy, cómo va la semana y cómo avanza el embudo.</p>
+    <div class="stats" id="hoy-stats"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Tu lista de hoy <small>los mejores sin contactar, con el hallazgo para el mensaje</small></h2><div id="hoy-lista"></div></div>
+      <div class="panel"><h2>Embudo <small>negocios por etapa</small></h2><div class="embudo" id="embudo"></div>
+        <div class="oferta" id="hoy-consejo" style="margin-top:14px"></div></div>
+    </div>
+  </section>
+
+  <!-- NEGOCIOS -->
+  <section class="vista" id="v-negocios" hidden>
+    <h1>Negocios</h1>
+    <p class="sub">Toca un negocio para ver sus fallas, las soluciones de la mejor a la peor, el mensaje y el seguimiento.</p>
+    <div class="filtros">
+      <input class="inp" id="f-buscar" type="search" placeholder="Buscar negocio, rubro o código (ej: CON-07)">
+      <select class="inp" id="f-nivel"><option value="">Todos los niveles</option><option>Escribir hoy</option><option>Esta semana</option><option>Nutrir</option><option>Revisar a mano</option></select>
+      <select class="inp" id="f-estado"><option value="">Todo el seguimiento</option></select>
+      <select class="inp" id="f-rubro"><option value="">Todos los rubros</option></select>
+      <select class="inp" id="f-lote"><option value="">Todas las listas</option></select>
+    </div>
+    <div class="fila-btns" style="margin:-2px 0 10px"><span class="aviso" id="cuenta-neg"></span><button class="btn btn-sm" id="exportar">Exportar seguimiento (CSV)</button></div>
+    <div class="lista" id="lista"></div>
+  </section>
+
+  <!-- MERCADO -->
+  <section class="vista" id="v-mercado" hidden>
+    <h1>Mercado</h1>
+    <p class="sub">Qué falla más en cada lista escaneada y qué servicio conviene empaquetar para ese mercado.</p>
+    <div class="filtros"><select class="inp" id="m-lote" style="max-width:340px"></select></div>
+    <div class="stats" id="m-stats"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Qué falla <small>% de negocios con cada código</small></h2><div id="m-fallas"></div></div>
+      <div class="panel"><h2>Qué venderle <small>soluciones que más aparecen en el Top 3</small></h2><div id="m-vender"></div><div class="oferta" id="m-oferta"></div></div>
+    </div>
+  </section>
+
+  <!-- ESCANEAR -->
+  <section class="vista" id="v-escanear" hidden>
+    <h1>Escanear</h1>
+    <p class="sub" id="sub-escanear">Agrega los negocios que quieres revisar. Quedan en la cola hasta que me pidas escanearlos.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h2>Agregar a la cola</h2>
+        <div class="campo" style="margin-bottom:10px"><label for="c-lote">Nombre de la lista</label><input class="inp" id="c-lote" placeholder="Ej: dentistas-providencia"></div>
+        <div class="form-grid">
+          <div><label for="c-nombre">Negocio</label><input class="inp" id="c-nombre" placeholder="Clínica Sonrisa"></div>
+          <div><label for="c-web">Web</label><input class="inp" id="c-web" placeholder="clinicasonrisa.cl"></div>
+          <div><label for="c-rubro">Rubro</label><input class="inp" id="c-rubro" placeholder="Odontología"></div>
+          <div><label for="c-ciudad">Comuna</label><input class="inp" id="c-ciudad" placeholder="Providencia"></div>
+        </div>
+        <div class="fila-btns"><button class="btn btn-teal" id="c-agregar">Agregar</button><span class="aviso" id="c-aviso"></span></div>
+        <div class="campo" style="margin-top:18px"><label for="c-lote-masivo">Varios a la vez · uno por línea: negocio, web, rubro, comuna</label>
+          <textarea id="c-masivo" placeholder="Clínica Sonrisa, clinicasonrisa.cl, Odontología, Providencia&#10;Dental Norte, dentalnorte.cl, Odontología, Recoleta"></textarea></div>
+        <div class="fila-btns"><button class="btn" id="c-agregar-masivo">Agregar todos</button><span class="aviso" id="c-aviso-masivo"></span></div>
+      </div>
+      <div class="panel">
+        <h2>Cómo se escanea</h2>
+        <div id="modo-chat">
+        <ol class="pasos-escaneo">
+          <li>Agrega los negocios a la cola, de a uno o varios a la vez.</li>
+          <li>Escríbeme en el chat <span class="frase">escanea la cola</span>.</li>
+          <li>Reviso cada web con un navegador real y los resultados aparecen en Hoy y Negocios, sin recargar.</li>
+        </ol>
+        </div>
+        <div id="modo-local" hidden>
+          <ol class="pasos-escaneo">
+            <li>Agrega los negocios a la cola, de a uno o varios a la vez.</li>
+            <li><span>Toca <b>Escanear la cola ahora</b>. Cada web se revisa con un navegador real, unas 15 por minuto.</span></li>
+            <li>Los resultados aparecen en Hoy y Negocios apenas termina.</li>
+          </ol>
+          <div class="fila-btns" style="margin-top:14px"><button class="btn btn-teal" id="escanear-ahora">Escanear la cola ahora</button></div>
+          <div id="progreso" hidden style="margin-top:12px"><div class="meta-bar"><i id="progreso-barra" style="width:0%"></i></div><p class="aviso" id="progreso-texto" style="margin-top:6px"></p></div>
+        </div>
+        <p class="aviso" style="margin-top:12px">Antes de mandar un mensaje, abre la web 30 segundos y confirma el hallazgo que vas a citar.</p>
+      </div>
+    </div>
+    <div class="panel"><h2>La cola <small id="cola-resumen"></small></h2><div id="cola"></div></div>
+    <div class="panel" id="respaldo" hidden style="margin-top:12px">
+      <h2>Respaldo e importación <small>tus datos son tuyos: guárdalos o muévelos cuando quieras</small></h2>
+      <p>Descarga un respaldo con todos tus negocios, el seguimiento y la cola. Para importar, sirve un respaldo, un resultado del escáner de mercado (.json) o un tablero (.html).</p>
+      <div class="fila-btns"><a class="btn" href="/api/respaldo" id="bajar-respaldo">Descargar respaldo</a>
+        <label class="btn" for="importar-archivo" style="cursor:pointer">Importar archivo</label><input type="file" id="importar-archivo" accept=".json,.html,application/json,text/html" hidden>
+        <span class="aviso" id="importar-aviso"></span></div>
+    </div>
+  </section>
+
+  <p class="pie" id="pie">Tus negocios, el seguimiento y el modo taller se guardan en el Centro y se ven igual en el celular y el computador. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.</p>
+</div>
+
+<script src="/escaner/codigos.js"></script>
+<script>
+(function () {
+  var C = window.CODIGOS;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var ESTADOS = ['Por contactar', 'Contactado', 'Respondió', 'Reunión', 'Propuesta', 'Cliente', 'Descartado'];
+  var NIVELES = ['Escribir hoy', 'Esta semana', 'Nutrir', 'Revisar a mano'];
+  var NIVEL_CLS = { 'Escribir hoy': 'hoy', 'Esta semana': 'semana', 'Nutrir': 'nutrir', 'Revisar a mano': 'mano' };
+  var QUIEN = { influence: 'Influence', partner: 'Se deriva', 'dueño': 'Dueño' };
+  var GANCHO = ['CAP-06', 'CON-07', 'CON-03', 'CON-06', 'DAT-05', 'CAP-03', 'CON-05', 'CON-04', 'DAT-02', 'CAP-01', 'RET-01', 'CAP-02'];
+  var SEN = {}; C.SENALES.forEach(function (g) { g.items.forEach(function (it) { SEN[it.id] = { g: g.grupo, t: it.t, c: it.c }; }); });
+  var META_SEMANA = 50;
+
+  var S = { neg: {}, seg: {}, cola: [], B: null, escaneo: null, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
+
+  // ---------- conexión ----------
+  // Dos motores con la misma forma: el servidor propio (/api, funciona sin Claude) o la base de claude.ai.
+  function estadoCon(txt, cls) { $('estado-con').textContent = txt; $('led').className = 'led ' + (cls || ''); }
+  function errDb(e) { estadoCon('Sin conexión con la base (' + (e && e.code || 'error') + ')', 'off'); }
+  function descargaNavegador(nombre, datos, tipo) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([datos], { type: tipo || 'text/csv;charset=utf-8' })); a.download = nombre;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  function motorLocal() {
+    var api = function (metodo, ruta, cuerpo) {
+      return fetch(ruta, { method: metodo, headers: cuerpo != null ? { 'Content-Type': 'application/json' } : {}, body: cuerpo == null ? undefined : typeof cuerpo === 'string' ? cuerpo : JSON.stringify(cuerpo), credentials: 'same-origin' })
+        .then(function (r) {
+          if (r.status === 401) { location.href = '/centro/entrar'; throw { code: 'sesion' }; }
+          return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw { code: r.status, message: j.error || 'error' }; return j; });
+        });
+    };
+    var timer = null;
+    var B = {
+      local: true,
+      cargar: function () {
+        return api('GET', '/api/estado').then(function (j) {
+          S.neg = j.negocios || {}; S.cola = j.cola || [];
+          // no pisar lo que se está escribiendo y aún no se guarda
+          Object.keys(j.seguimiento || {}).forEach(function (id) { if (!cadenasVivas[id]) S.seg[id] = j.seguimiento[id]; });
+          var antes = S.escaneo && S.escaneo.activo; S.escaneo = j.escaneo || null;
+          S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · tu servidor', 'on');
+          pintarTodo(); B.programar(antes);
+        }, function (e) { if (e && e.code !== 'sesion') { estadoCon('Sin conexión con tu servidor', 'off'); B.programar(); } });
+      },
+      programar: function () { clearTimeout(timer); timer = setTimeout(B.cargar, S.escaneo && S.escaneo.activo ? 2500 : 30000); },
+      guardarSeg: function (id, doc) { return api('PUT', '/api/seguimiento/' + encodeURIComponent(id), doc); },
+      encolar: function (items, lote) { return api('POST', '/api/cola', { items: items, lote: lote }).then(function (j) { B.cargar(); return j.agregados || 0; }); },
+      quitarCola: function (id) { return api('DELETE', '/api/cola/' + encodeURIComponent(id)).then(B.cargar); },
+      lanzarEscaneo: function () { return api('POST', '/api/escanear', {}).then(B.cargar); },
+      importar: function (nombre, texto) { return api('POST', '/api/importar?nombre=' + encodeURIComponent(nombre), texto).then(function (j) { B.cargar(); return j; }); },
+      descargar: function (nombre, datos) { descargaNavegador(nombre, datos); return Promise.resolve(); },
+      sample: null
+    };
+    return B;
+  }
+
+  async function motorClaude() {
+    if (!window.claude || !window.claude.use) return null;
+    var db = await window.claude.use('db');
+    if (!db) return null;
+    var B = {
+      local: false,
+      cargar: function () {
+        db.collection('negocios').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.neg = m; S.cargado.neg = true; pintarTodo(); }, errDb);
+        db.collection('seguimiento').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.seg = m; S.cargado.seg = true; pintarTodo(); }, errDb);
+        db.collection('cola').limit(1000).onSnapshot(function (snap) { S.cola = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }); S.cargado.cola = true; pintarTodo(); }, errDb);
+      },
+      guardarSeg: function (id, doc) { return db.doc('seguimiento/' + id).set(doc); },
+      encolar: async function (items, lote) {
+        var hechos = 0;
+        for (var i = 0; i < items.length; i++) {
+          await db.collection('cola').add({ nombre: items[i].nombre, web: items[i].web, rubro: items[i].rubro || '', ciudad: items[i].ciudad || '', lote: lote, estado: 'pendiente', creado: new Date().toISOString() }); hechos++;
+        }
+        return hechos;
+      },
+      quitarCola: function (id) { return db.doc('cola/' + id).delete(); },
+      descargar: null, sample: null
+    };
+    var dl = await window.claude.use('downloads');
+    if (dl) B.descargar = function (nombre, datos) { return dl.save({ filename: nombre, data: datos }); };
+    var user = await window.claude.use('user');
+    if (user && user.can) { var w = await user.can('data.write'); if (w === false) S.puedeEscribir = false; }
+    B.sample = await window.claude.use('sample');
+    return B;
+  }
+
+  (async function iniciar() {
+    // Como artifact de claude.ai existe window.claude → la base de Claude. Servido por tu servidor (npm start o Railway) no existe → motor local.
+    var B = window.claude && window.claude.use ? await motorClaude() : /^https?:$/.test(location.protocol) ? motorLocal() : null;
+    if (!B) { estadoCon('Abre esta página desde tu servidor (npm start) o desde tu cuenta de claude.ai', 'off'); pintarTodo(); return; }
+    S.B = B; estadoCon('Conectando…', '');
+    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('respaldo').hidden = !B.local; $('salir').hidden = !B.local;
+    if (B.local) $('sub-escanear').textContent = 'Agrega los negocios que quieres revisar y escanéalos aquí mismo, sin depender del chat.';
+    if (B.local) $('pie').textContent = 'Todo se guarda en tu servidor (archivo centro.json) y funciona sin Claude. Descarga un respaldo de vez en cuando. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.';
+    B.cargar();
+    if (!B.local) estadoCon('En línea', 'on');
+    pintarTodo();
+  })();
+
+  // ---------- escritura (una a la vez por documento) ----------
+  var cadenas = {}, cadenasVivas = {};
+  function guardarSeg(id, cambios) {
+    if (!S.B) return Promise.resolve();
+    var base = Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}, cambios, { actualizado: new Date().toISOString() });
+    S.seg[id] = base; cadenasVivas[id] = (cadenasVivas[id] || 0) + 1;
+    cadenas[id] = (cadenas[id] || Promise.resolve()).then(function () { return S.B.guardarSeg(id, base); }).catch(function (e) {
+      if (e && e.code === 'invalid_argument') { S.puedeEscribir = false; pintarTodo(); } else aviso('Error al guardar (' + (e && e.code) + ')');
+    }).then(function () { cadenasVivas[id]--; if (!cadenasVivas[id]) delete cadenasVivas[id]; });
+    return cadenas[id];
+  }
+  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.B) estadoCon(S.B.local ? 'En línea · tu servidor' : 'En línea', 'on'); }, 4000); }
+
+  // ---------- modelo ----------
+  function seg(id) { return Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}); }
+  function codigosDe(id) {
+    var n = S.neg[id], m = seg(id), det = {}, manual = {};
+    (n.codigos || []).forEach(function (c) { det[c.id] = (c.evidencia || []).slice(); });
+    (m.senales || []).forEach(function (sid) { var s = SEN[sid]; if (!s) return; s.c.forEach(function (cid) { if (!det[cid]) manual[cid] = true; (det[cid] = det[cid] || []).push(s.g + ': ' + s.t); }); });
+    var cods = Object.keys(det).filter(function (cid) { return C.porId[cid]; }).map(function (cid) { var c = C.porId[cid]; return { id: cid, g: c.g, nombre: c.nombre, evidencia: det[cid], manual: !!manual[cid] }; })
+      .sort(function (a, b) { return b.g - a.g || a.id.localeCompare(b.id); });
+    return { cods: cods, sols: C.rankearSoluciones(det, 5), det: det };
+  }
+  function gancho(cods) { var o = cods.slice().sort(function (a, b) { return (GANCHO.indexOf(a.id) + 99) % 99 - (GANCHO.indexOf(b.id) + 99) % 99; }); return o[0]; }
+  function lista() { return Object.keys(S.neg).map(function (id) { return Object.assign({ _id: id }, S.neg[id]); }).sort(function (a, b) { return (b.oportunidad || 0) - (a.oportunidad || 0); }); }
+  function haceDias(iso, d) { return iso && (Date.now() - new Date(iso).getTime()) < d * 864e5; }
+
+  // ---------- pestañas ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () { irA(t.getAttribute('data-v')); });
+  });
+  function irA(v, abrir) {
+    S.vista = v; if (abrir !== undefined) S.abierto = abrir;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.setAttribute('aria-selected', t.getAttribute('data-v') === v ? 'true' : 'false'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.vista'), function (s) { s.hidden = s.id !== 'v-' + v; });
+    try { localStorage.setItem('centro-vista', v); } catch (e) {}
+    pintarTodo();
+    if (abrir) setTimeout(function () { var el = document.querySelector('.fila[data-id="' + abrir + '"]'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+    else window.scrollTo({ top: 0 });
+  }
+  try { var vg = localStorage.getItem('centro-vista'); if (vg && $('v-' + vg)) { S.vista = vg; } } catch (e) {}
+
+  function pintarTodo() {
+    var L = lista(), porContactar = L.filter(function (n) { return n.nivel === 'Escribir hoy' && seg(n._id).estado === 'Por contactar'; });
+    $('b-hoy').textContent = porContactar.length; $('b-neg').textContent = L.length;
+    $('b-cola').textContent = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length;
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.setAttribute('aria-selected', t.getAttribute('data-v') === S.vista ? 'true' : 'false'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.vista'), function (s) { s.hidden = s.id !== 'v-' + S.vista; });
+    if (S.vista === 'hoy') pintarHoy(L);
+    if (S.vista === 'negocios') pintarNegocios(L);
+    if (S.vista === 'mercado') pintarMercado(L);
+    if (S.vista === 'escanear') pintarCola();
+  }
+
+  // ---------- HOY ----------
+  function pintarHoy(L) {
+    var cuenta = function (est) { return L.filter(function (n) { return seg(n._id).estado === est; }).length; };
+    var semana = L.filter(function (n) { return haceDias(seg(n._id).contactadoEn, 7); }).length;
+    var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length;
+    var hoyN = L.filter(function (n) { return n.nivel === 'Escribir hoy' && seg(n._id).estado === 'Por contactar'; }).length;
+    $('hoy-stats').innerHTML =
+      '<div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + hoyN + '</div><div class="d">sin contactar</div></div>' +
+      '<div class="stat"><div class="l">Mensajes esta semana</div><div class="v">' + semana + '<span style="font-size:14px;color:var(--muted)"> / ' + META_SEMANA + '</span></div><div class="meta-bar"><i style="width:' + Math.min(100, semana / META_SEMANA * 100) + '%"></i></div></div>' +
+      '<div class="stat"><div class="l">Respondieron</div><div class="v">' + cuenta('Respondió') + '</div></div>' +
+      '<div class="stat"><div class="l">Reuniones</div><div class="v">' + cuenta('Reunión') + '</div></div>' +
+      '<div class="stat ok"><div class="l">Clientes</div><div class="v">' + cuenta('Cliente') + '</div></div>' +
+      '<div class="stat"><div class="l">En cola por escanear</div><div class="v">' + pend + '</div></div>';
+    if (!S.cargado.neg) { $('hoy-lista').innerHTML = '<div class="vacio">Cargando tus negocios…</div>'; }
+    else if (!L.length) { $('hoy-lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios escaneados</b>' + (S.B && S.B.local ? 'Agrega una lista en Escanear y toca Escanear la cola ahora, o importa un archivo de resultados.' : 'Agrega una lista en Escanear y pídeme en el chat que la escanee.') + '</div>'; }
+    else {
+      var cand = L.filter(function (n) { return seg(n._id).estado === 'Por contactar' && (n.nivel === 'Escribir hoy' || n.nivel === 'Esta semana'); }).slice(0, 10);
+      $('hoy-lista').innerHTML = cand.length ? cand.map(function (n, i) {
+        var g = gancho(codigosDe(n._id).cods);
+        return '<div class="hoy-item"><span class="pos">' + (i + 1) + '</span><div style="min-width:0"><div class="nom">' + esc(n.nombre) + ' <span class="nivel ' + NIVEL_CLS[n.nivel] + '" style="font-size:9.5px;padding:2px 5px;vertical-align:2px">' + esc(n.nivel) + '</span><small>' + esc([n.rubro, n.ciudad].filter(Boolean).join(' · ')) + '</small></div>' +
+          (g ? '<div class="gancho"><span class="chip g' + g.g + '">' + g.id + '</span> ' + esc(g.nombre) + '</div>' : '') + '</div><button class="btn btn-sm" data-ir="' + esc(n._id) + '">Escribir</button></div>';
+      }).join('') : '<div class="vacio"><b>Lista de hoy al día</b>Ya contactaste a todos los de "Escribir hoy" y "Esta semana".</div>';
+      Array.prototype.forEach.call($('hoy-lista').querySelectorAll('[data-ir]'), function (b) { b.addEventListener('click', function () { irA('negocios', b.getAttribute('data-ir')); }); });
+    }
+    var etapas = ['Contactado', 'Respondió', 'Reunión', 'Propuesta', 'Cliente'];
+    var alcanzo = function (e) { var k = ESTADOS.indexOf(e); return L.filter(function (n) { var s = seg(n._id).estado; return s !== 'Descartado' && ESTADOS.indexOf(s) >= k; }).length; };
+    var max = Math.max(1, alcanzo('Contactado'));
+    $('embudo').innerHTML = etapas.map(function (e) { var v = alcanzo(e); return '<div class="fila-e"><span>' + e + '</span><div class="tr"><i style="width:' + (v / max * 100) + '%"></i></div><span class="n">' + v + '</span></div>'; }).join('');
+    var c = alcanzo('Contactado'), r = alcanzo('Respondió');
+    $('hoy-consejo').innerHTML = !c ? '<b>Para partir:</b> abre el primero de la lista, revisa su web 30 segundos, copia el mensaje y envíalo. Al copiar queda marcado como contactado.'
+      : r === 0 && c >= 20 ? '<b>Ojo:</b> llevas ' + c + ' contactados y nadie ha respondido. Prueba otro gancho o cambia de rubro antes de mandar más.'
+      : '<b>Ritmo:</b> ' + c + ' contactados y ' + r + ' respuestas. La meta es ' + META_SEMANA + ' mensajes por semana para cerrar una reparación.';
+  }
+
+  // ---------- NEGOCIOS ----------
+  ESTADOS.forEach(function (e) { var o = document.createElement('option'); o.textContent = e; $('f-estado').appendChild(o); });
+  ['f-buscar', 'f-nivel', 'f-estado', 'f-rubro', 'f-lote'].forEach(function (id) { $(id).addEventListener('input', function () { pintarTodo(); }); });
+  function opciones(sel, valores, todos) {
+    var actual = sel.value, v = Object.keys(valores).sort();
+    var html = '<option value="">' + todos + '</option>' + v.map(function (x) { return '<option' + (x === actual ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+    if (sel.getAttribute('data-ult') !== html) { sel.innerHTML = html; sel.setAttribute('data-ult', html); }
+  }
+  function pintarNegocios(L) {
+    var rubros = {}, lotes = {}; L.forEach(function (n) { if (n.rubro) rubros[n.rubro] = 1; if (n.lote) lotes[n.lote] = 1; });
+    opciones($('f-rubro'), rubros, 'Todos los rubros'); opciones($('f-lote'), lotes, 'Todas las listas');
+    var q = $('f-buscar').value.trim().toLowerCase(), fn = $('f-nivel').value, fe = $('f-estado').value, fr = $('f-rubro').value, fl = $('f-lote').value;
+    var vis = L.filter(function (n) {
+      var m = seg(n._id);
+      if (fn && n.nivel !== fn) return false; if (fe && m.estado !== fe) return false; if (fr && n.rubro !== fr) return false; if (fl && n.lote !== fl) return false;
+      if (q) { var t = (n.nombre + ' ' + (n.rubro || '') + ' ' + (n.ciudad || '') + ' ' + codigosDe(n._id).cods.map(function (c) { return c.id; }).join(' ')).toLowerCase(); if (t.indexOf(q) < 0) return false; }
+      return true;
+    });
+    $('cuenta-neg').textContent = vis.length + ' de ' + L.length + ' negocios';
+    if (!S.cargado.neg) { $('lista').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
+    if (!L.length) { $('lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios</b>Agrega una lista en Escanear.</div>'; return; }
+    if (!vis.length) { $('lista').innerHTML = '<div class="vacio">Ningún negocio con esos filtros.</div>'; return; }
+    // conservar lo que se está escribiendo en el detalle abierto
+    var foco = document.activeElement && document.activeElement.closest && document.activeElement.closest('.detalle') ? document.activeElement.id : null;
+    if (foco && S.abierto) return;
+    $('lista').innerHTML = vis.map(function (n) {
+      var m = seg(n._id), e = codigosDe(n._id), ab = S.abierto === n._id;
+      return '<div><button class="fila' + (ab ? ' abierta' : '') + '" data-id="' + esc(n._id) + '" aria-expanded="' + ab + '"><span class="nivel ' + (NIVEL_CLS[n.nivel] || 'mano') + '">' + esc(n.nivel || '') + '</span><span class="score">' + (n.oportunidad || 0) + '</span>' +
+        '<span class="nom">' + esc(n.nombre) + (m.estado !== 'Por contactar' ? '<span class="tag-est">' + esc(m.estado) + '</span>' : '') + '<small>' + esc([n.rubro, n.ciudad, n.info && n.info.plataforma].filter(Boolean).join(' · ')) + '</small></span>' +
+        '<span class="chips">' + e.cods.map(function (c) { return '<span class="chip g' + c.g + (c.manual ? ' man' : '') + '">' + c.id + '</span>'; }).join('') + '</span><span class="flecha">▼</span></button>' +
+        (ab ? detalle(n, m, e) : '') + '</div>';
+    }).join('');
+    Array.prototype.forEach.call($('lista').querySelectorAll('.fila'), function (f) { f.addEventListener('click', function () { var id = f.getAttribute('data-id'); S.abierto = S.abierto === id ? null : id; pintarTodo(); }); });
+    if (S.abierto && S.neg[S.abierto]) conectarDetalle(S.abierto);
+  }
+  function detalle(n, m, e) {
+    var web = n.web ? (/^https?:/.test(n.web) ? n.web : 'https://' + n.web) : '';
+    var inf = n.info || {};
+    var datos = [inf.plataforma && 'Plataforma: ' + inf.plataforma, inf.ms && 'Carga: ' + (inf.ms / 1000).toFixed(1) + ' s', inf.camino && 'Camino de compra: ' + inf.camino, inf.revisar && 'Revisar: ' + inf.revisar, n.lote && 'Lista: ' + n.lote, n.escaneado && 'Escaneado: ' + new Date(n.escaneado).toLocaleDateString('es-CL')].filter(Boolean).join(' · ');
+    var msg = m.mensaje != null ? m.mensaje : (n.mensaje || '');
+    var dis = S.puedeEscribir ? '' : ' disabled';
+    return '<div class="detalle">' +
+      '<div><div class="bloque"><h3>Códigos de falla</h3>' + (e.cods.length ? e.cods.map(function (c) { return '<div class="cod g' + c.g + '"><div class="t"><span class="chip g' + c.g + '">' + c.id + '</span>' + esc(c.nombre) + (c.manual ? ' <span class="q">(marcado a mano)</span>' : '') + '</div>' + c.evidencia.map(function (x) { return '<div class="e">' + esc(x) + '</div>'; }).join('') + '</div>'; }).join('') : '<div class="info">Sin fallas detectadas en la web.</div>') + '</div>' +
+      '<div class="bloque"><h3>Soluciones, de la mejor a la peor</h3>' + (e.sols.length ? e.sols.map(function (t, k) { return '<div class="solx"><b>' + (k + 1) + '</b><span>' + esc(t.s.nombre) + ' <span class="q' + (t.s.quien === 'influence' ? ' inf' : '') + '">· ' + QUIEN[t.s.quien] + ' · repara ' + t.nuevos.join(', ') + '</span></span></div>'; }).join('') : '<div class="info">Sin soluciones: no hay fallas.</div>') + '</div></div>' +
+      '<div><div class="bloque"><h3>Primer mensaje</h3><textarea id="d-msg"' + dis + '>' + esc(msg) + '</textarea>' +
+        '<div class="fila-btns"><button class="btn btn-teal" id="d-copiar">Copiar mensaje</button><button class="btn" id="d-otra"' + dis + ' title="' + (S.B && S.B.sample ? 'La escribe Claude' : 'Cambia entre versiones ya escritas') + '">Otra versión</button>' + '<span class="aviso" id="d-aviso"></span></div></div>' +
+      '<div class="bloque"><h3>Seguimiento</h3><select class="inp" id="d-estado"' + dis + '>' + ESTADOS.map(function (s) { return '<option' + (s === m.estado ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
+        '<textarea class="nota" id="d-nota" placeholder="Notas: con quién hablaste, qué te dijo, cuándo volver a escribir"' + dis + ' style="margin-top:8px">' + esc(m.nota || '') + '</textarea></div>' +
+      '<div class="bloque"><h3>Revisar antes de escribir</h3><div class="links">' +
+        (web ? '<a href="' + esc(web) + '" target="_blank" rel="noopener">Web</a>' : '') +
+        '<a href="https://www.google.com/maps/search/' + encodeURIComponent(n.nombre + ' ' + (n.ciudad || '')) + '" target="_blank" rel="noopener">Google Maps</a>' +
+        '<a href="https://www.instagram.com/explore/search/keyword/?q=' + encodeURIComponent(n.nombre) + '" target="_blank" rel="noopener">Instagram</a>' +
+        '<a href="https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=CL&q=' + encodeURIComponent(n.nombre) + '" target="_blank" rel="noopener">Anuncios en Meta</a></div>' +
+        (datos ? '<div class="info">' + esc(datos) + '</div>' : '') + '</div>' +
+      '<div class="bloque"><details class="taller"' + ((m.senales || []).length ? ' open' : '') + '><summary>Modo taller · marca lo que veas a mano (' + (m.senales || []).length + ')</summary>' +
+        C.SENALES.map(function (g) { return '<div class="grupo"><b>' + esc(g.grupo) + '</b>' + g.items.map(function (it) { return '<label><input type="checkbox" data-s="' + it.id + '"' + ((m.senales || []).indexOf(it.id) >= 0 ? ' checked' : '') + dis + '>' + esc(it.t) + '</label>'; }).join('') + '</div>'; }).join('') +
+      '</details></div></div></div>';
+  }
+  var tMsg = null, tNota = null;
+  function conectarDetalle(id) {
+    var n = S.neg[id], ta = $('d-msg'); if (!ta) return;
+    ta.addEventListener('input', function () { clearTimeout(tMsg); tMsg = setTimeout(function () { guardarSeg(id, { mensaje: ta.value }); }, 800); });
+    $('d-nota').addEventListener('input', function () { var v = this.value; clearTimeout(tNota); tNota = setTimeout(function () { guardarSeg(id, { nota: v }); }, 800); });
+    $('d-estado').addEventListener('change', function () { var est = this.value, cam = { estado: est }; if (est !== 'Por contactar' && !seg(id).contactadoEn) cam.contactadoEn = new Date().toISOString(); guardarSeg(id, cam).then(pintarTodo); });
+    $('d-copiar').addEventListener('click', function () {
+      var b = this, ok = function () {
+        b.textContent = 'Copiado ✓';
+        if (seg(id).estado === 'Por contactar' && S.puedeEscribir) guardarSeg(id, { estado: 'Contactado', contactadoEn: new Date().toISOString() });
+        setTimeout(function () { b.textContent = 'Copiar mensaje'; pintarTodo(); }, 1200);
+      };
+      var fb = function () { ta.disabled = false; ta.select(); try { document.execCommand('copy'); } catch (e) {} ok(); };
+      try { navigator.clipboard.writeText(ta.value).then(ok, fb); } catch (e) { fb(); }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.detalle input[data-s]'), function (cb) {
+      cb.addEventListener('change', function () { var s = cb.getAttribute('data-s'), ss = (seg(id).senales || []).filter(function (x) { return x !== s; }); if (cb.checked) ss.push(s); guardarSeg(id, { senales: ss }).then(pintarTodo); pintarTodo(); });
+    });
+    var otra = $('d-otra');
+    if (otra) otra.addEventListener('click', async function () {
+      var e = codigosDe(id), g = gancho(e.cods), sol = e.sols[0];
+      if (!g) { $('d-aviso').textContent = 'Este negocio no tiene fallas para citar.'; return; }
+      if (!S.B || !S.B.sample) {
+        var vs = variantes(n, e), k = (vueltas[id] = ((vueltas[id] || 0) + 1) % vs.length);
+        ta.value = vs[k]; guardarSeg(id, { mensaje: ta.value });
+        $('d-aviso').className = 'aviso'; $('d-aviso').textContent = 'Versión ' + (k + 1) + ' de ' + vs.length + '. Revísala antes de enviar.';
+        return;
+      }
+      otra.disabled = true; $('d-aviso').className = 'aviso'; $('d-aviso').textContent = 'Escribiendo…';
+      var prompt = 'Escribe el primer mensaje de prospección que Gabriel, de la agencia Influence Chile, le enviará por WhatsApp o Instagram al dueño de un negocio. ' +
+        'Reglas: español de Chile, tuteo cercano y profesional, máximo 65 palabras, sin emojis, sin precios, sin promesas de resultados. ' +
+        'Debe: presentarse en una línea, citar el hallazgo concreto tal como viene, decir en una frase cómo se resuelve, y terminar ofreciendo enviar un diagnóstico gratuito con una pregunta. ' +
+        'Escribe una versión distinta a la actual. Responde solo con el mensaje.\n\n' +
+        'Negocio: ' + n.nombre + (n.rubro ? '\nRubro: ' + n.rubro : '') + (n.ciudad ? '\nComuna: ' + n.ciudad : '') +
+        '\nHallazgo principal (' + g.id + ' ' + g.nombre + '): ' + g.evidencia[0].replace(/\s*\(Antes de escribir[^)]*\)/, '') +
+        (sol ? '\nCómo se resuelve: ' + sol.s.nombre + ' — ' + sol.s.que : '') +
+        '\nOtras fallas detectadas: ' + (e.cods.length - 1) +
+        '\nMensaje actual:\n' + ta.value;
+      try {
+        var r = await S.B.sample(prompt, { modelTier: 'quick', cache: false, onText: function (u) { ta.value = u.text; } });
+        ta.value = r.text.trim(); guardarSeg(id, { mensaje: ta.value }); $('d-aviso').textContent = 'Nueva versión guardada. Revísala antes de enviar.';
+      } catch (err) {
+        $('d-aviso').className = 'aviso err';
+        $('d-aviso').textContent = err && err.code === 'not_granted' ? 'Sin permiso para pedir otra versión.' : err && err.code === 'rate_limited' ? 'Demasiadas solicitudes. Prueba en un rato.' : 'No se pudo generar otra versión.';
+        if (err && err.code === 'not_granted') S.B.sample = null;
+      } finally { if (otra.isConnected) otra.disabled = false; }
+    });
+  }
+
+  // Versiones escritas de antemano: funcionan sin Claude. Mismo tono y plazos que el escáner de mercado.
+  var vueltas = {};
+  var ARREGLO = {
+    'CAP-06': 'una landing nueva en su propio dominio, lista en 5 a 7 días',
+    'CON-07': 'un botón y un asistente de WhatsApp que responde, califica y agenda, listo en una semana',
+    'CON-03': 'una landing o agenda online donde se pueda reservar o comprar en dos toques, lista en 5 a 7 días',
+    'CON-06': 'una landing liviana pensada para el celular, lista en 5 a 7 días',
+    'DAT-05': 'dejar instalada la medición (píxel y analytics) en una semana, para que cada peso en publicidad se pueda medir',
+    'CAP-01': 'una landing con su información, precios y WhatsApp, lista en 5 a 7 días'
+  };
+  var PLAZO = { 1: 'en una semana', 2: 'en 2 a 4 semanas', 3: 'en 1 a 3 meses' };
+  function limpiaEv(t) { t = String(t || '').replace(/\s*\(Antes de escribir[^)]*\)/, '').replace(/\.$/, ''); return t.charAt(0).toLowerCase() + t.slice(1); }
+  function variantes(n, e) {
+    var g = gancho(e.cods), ev = limpiaEv(g.evidencia[0]);
+    var solCat = C.SOLUCIONES.filter(function (s) { return s.quien === 'influence' && s.codigos.indexOf(g.id) >= 0; }).sort(function (a, b) { return a.esfuerzo - b.esfuerzo; })[0];
+    var arreglo = ARREGLO[g.id] || (solCat ? solCat.nombre.charAt(0).toLowerCase() + solCat.nombre.slice(1) + ' ' + PLAZO[solCat.esfuerzo] : '');
+    var nom = n.nombre.length > 40 ? n.nombre.split(/[,(|-]/)[0].trim() : n.nombre;
+    var resto = e.cods.length - 1, otras = resto ? (resto === 1 ? 'otra cosa' : resto + ' cosas más') : '';
+    var se = arreglo ? ' Se resuelve con ' + arreglo + '.' : '';
+    return [
+      'Hola, soy Gabriel de Influence Chile. Revisé la web de ' + nom + ' desde el celular y encontré algo que les puede estar costando clientes: ' + ev + '.' + (otras ? ' Vi ' + otras + ' que se ' + (resto === 1 ? 'puede' : 'pueden') + ' mejorar.' : '') + se + ' ¿Te mando el diagnóstico completo? Son 2 minutos de lectura, sin costo.',
+      'Hola, ¿cómo estás? Te escribe Gabriel, de Influence Chile. Estuve mirando ' + nom + ' como lo haría un cliente nuevo y me encontré con esto: ' + ev + '.' + se + ' Armé un diagnóstico corto con lo que vi' + (otras ? ' (hay ' + otras + ')' : '') + '. ¿Te lo envío?',
+      'Hola, soy Gabriel de Influence Chile. Un detalle de ' + nom + ' que probablemente nadie les ha comentado: ' + ev + '. Es de esas cosas que hacen que un cliente se vaya a la competencia sin avisar.' + se + ' ¿Te paso el diagnóstico gratis para que lo revises con calma?',
+      'Hola, te escribo por ' + nom + '. Soy Gabriel, de Influence Chile, y reviso webs de ' + (n.rubro ? n.rubro.toLowerCase() : 'negocios') + (n.ciudad ? ' en ' + n.ciudad : '') + '. En la suya vi que ' + ev + '.' + se + ' Si te sirve, te mando el diagnóstico completo, sin costo ni compromiso. ¿Te parece?'
+    ];
+  }
+  $('exportar').addEventListener('click', async function () {
+    var q = function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; };
+    var filas = [['estado', 'nivel', 'oportunidad', 'nombre', 'rubro', 'comuna', 'web', 'lista', 'codigos', 'solucion_top1', 'nota', 'mensaje'].join(',')].concat(lista().map(function (n) {
+      var m = seg(n._id), e = codigosDe(n._id);
+      return [m.estado, n.nivel, n.oportunidad, n.nombre, n.rubro, n.ciudad, n.web, n.lote, e.cods.map(function (c) { return c.id; }).join(' '), e.sols[0] ? e.sols[0].s.nombre : '', m.nota, m.mensaje != null ? m.mensaje : n.mensaje].map(q).join(',');
+    }));
+    if (!S.B || !S.B.descargar) { aviso('Descarga no disponible en esta vista'); return; }
+    try { await S.B.descargar('seguimiento-influence.csv', '﻿' + filas.join('\n')); } catch (e) { if (e && e.code !== 'declined' && e.code !== 'cancelled') aviso('No se pudo descargar'); }
+  });
+
+  // ---------- MERCADO ----------
+  function pintarMercado(L) {
+    var lotes = {}; L.forEach(function (n) { if (n.lote) lotes[n.lote] = (lotes[n.lote] || 0) + 1; });
+    var sel = $('m-lote'), act = sel.value;
+    var html = '<option value="">Todas las listas (' + L.length + ' negocios)</option>' + Object.keys(lotes).sort().map(function (k) { return '<option value="' + esc(k) + '"' + (k === act ? ' selected' : '') + '>' + esc(k) + ' (' + lotes[k] + ')</option>'; }).join('');
+    if (sel.getAttribute('data-ult') !== html) { sel.innerHTML = html; sel.setAttribute('data-ult', html); }
+    var N = L.filter(function (n) { return !sel.value || n.lote === sel.value; });
+    var ok = N.filter(function (n) { return !(n.info && n.info.revisar && !(n.codigos || []).length); });
+    var freq = {}, sf = {};
+    ok.forEach(function (n) {
+      var e = codigosDe(n._id);
+      e.cods.forEach(function (c) { freq[c.id] = (freq[c.id] || 0) + 1; });
+      e.sols.slice(0, 3).forEach(function (t, i) { var s = sf[t.s.id] = sf[t.s.id] || { s: t.s, top3: 0, top1: 0 }; s.top3++; if (!i) s.top1++; });
+    });
+    var cods = Object.keys(freq).map(function (id) { return { id: id, c: C.porId[id], n: freq[id], pct: Math.round(freq[id] / Math.max(ok.length, 1) * 100) }; }).sort(function (a, b) { return b.n - a.n || b.c.g - a.c.g; });
+    var sols = Object.keys(sf).map(function (k) { return sf[k]; }).sort(function (a, b) { return b.top3 - a.top3 || b.top1 - a.top1; });
+    var nN = function (k) { return N.filter(function (n) { return n.nivel === k; }).length; };
+    $('m-stats').innerHTML = '<div class="stat"><div class="l">Negocios</div><div class="v">' + N.length + '</div></div><div class="stat hoy"><div class="l">Escribir hoy</div><div class="v">' + nN('Escribir hoy') + '</div></div><div class="stat"><div class="l">Esta semana</div><div class="v">' + nN('Esta semana') + '</div></div><div class="stat"><div class="l">Revisar a mano</div><div class="v">' + nN('Revisar a mano') + '</div></div>';
+    if (!N.length) { $('m-fallas').innerHTML = '<div class="vacio">Sin negocios en esta lista.</div>'; $('m-vender').innerHTML = ''; $('m-oferta').innerHTML = ''; return; }
+    $('m-fallas').innerHTML = cods.slice(0, 10).map(function (x) { return '<div class="barra"><span class="id g' + x.c.g + 'c">' + x.id + '</span><div style="min-width:0"><div class="nm">' + esc(x.c.nombre) + '</div><div class="tr"><i class="bg' + x.c.g + '" style="width:' + x.pct + '%"></i></div></div><span class="pct">' + x.pct + '%</span></div>'; }).join('');
+    $('m-vender').innerHTML = sols.slice(0, 6).map(function (s, i) { return '<div class="solm"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(s.s.nombre) + ' <span class="c">· ' + QUIEN[s.s.quien] + '</span></span><span class="c">' + s.top3 + ' negocios</span></div>'; }).join('');
+    var top = sols.filter(function (s) { return s.s.quien === 'influence'; })[0], f0 = cods[0];
+    $('m-oferta').innerHTML = top && f0 ? '<b>Oferta para este mercado:</b> empaqueta "' + esc(top.s.nombre) + '" a precio fijo. Aparece en el Top 3 de ' + top.top3 + ' negocios. La falla más común es ' + f0.id + ' (' + esc(f0.c.nombre) + '), en el ' + f0.pct + '% de las webs.' : '';
+  }
+  $('m-lote').addEventListener('input', function () { pintarTodo(); });
+
+  // ---------- ESCANEAR ----------
+  try { $('c-lote').value = localStorage.getItem('centro-lote') || ''; } catch (e) {}
+  $('c-lote').addEventListener('input', function () { try { localStorage.setItem('centro-lote', this.value); } catch (e) {} });
+  function limpiaWeb(w) { return String(w || '').trim().replace(/\s+/g, ''); }
+  function loteActual() { return ($('c-lote').value.trim() || 'lista-' + new Date().toISOString().slice(0, 10)).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  async function encolar(items, avisoEl) {
+    if (!S.B) { avisoEl.textContent = 'Sin conexión con la base.'; return 0; }
+    if (!S.puedeEscribir) { avisoEl.textContent = 'Esta vista es solo de lectura.'; return 0; }
+    try { return await S.B.encolar(items, loteActual()); }
+    catch (e) { avisoEl.className = 'aviso err'; avisoEl.textContent = e && e.code === 'quota_exceeded' ? 'La base está llena: borra negocios antiguos de la cola.' : 'Error al agregar (' + (e && (e.message || e.code)) + ')'; return 0; }
+  }
+  $('c-agregar').addEventListener('click', async function () {
+    var it = { nombre: $('c-nombre').value.trim(), web: limpiaWeb($('c-web').value), rubro: $('c-rubro').value.trim(), ciudad: $('c-ciudad').value.trim() };
+    var av = $('c-aviso'); av.className = 'aviso';
+    if (!it.nombre || !it.web) { av.className = 'aviso err'; av.textContent = 'Falta el nombre o la web.'; return; }
+    var n = await encolar([it], av);
+    if (n) { av.textContent = 'Agregado a la cola.'; $('c-nombre').value = ''; $('c-web').value = ''; $('c-nombre').focus(); }
+  });
+  $('c-agregar-masivo').addEventListener('click', async function () {
+    var av = $('c-aviso-masivo'); av.className = 'aviso';
+    var lineas = $('c-masivo').value.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+    var items = [], malas = 0;
+    lineas.forEach(function (l) { var p = l.split(/\t|;|,/).map(function (x) { return x.trim(); }); var w = p.find(function (x) { return /\.[a-z]{2,}/i.test(x) && !/\s/.test(x); }); if (!w || !p[0] || p[0] === w) { malas++; return; } items.push({ nombre: p[0], web: limpiaWeb(w), rubro: p[2] && p[2] !== w ? p[2] : '', ciudad: p[3] || '' }); });
+    if (!items.length) { av.className = 'aviso err'; av.textContent = 'No encontré líneas con negocio y web.'; return; }
+    av.textContent = 'Agregando ' + items.length + '…';
+    var n = await encolar(items, av);
+    if (n) { av.textContent = n + ' agregados a la cola' + (malas ? '. ' + malas + ' líneas sin web se saltaron.' : '.'); $('c-masivo').value = ''; }
+  });
+  function pintarCola() {
+    var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }), otros = S.cola.filter(function (c) { return c.estado !== 'pendiente'; }).sort(function (a, b) { return String(b.creado).localeCompare(String(a.creado)); }).slice(0, 20);
+    pintarProgreso();
+    $('cola-resumen').textContent = pend.length + ' por escanear' + (otros.length ? ' · últimos escaneados abajo' : '');
+    if (!S.cargado.cola) { $('cola').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
+    if (!S.cola.length) { $('cola').innerHTML = '<div class="vacio"><b>La cola está vacía</b>Agrega negocios arriba. ' + (S.B && S.B.local ? 'Después toca Escanear la cola ahora.' : 'Después escríbeme en el chat "escanea la cola".') + '</div>'; return; }
+    var fila = function (c) { return '<div class="cola-item"><div style="min-width:0"><b>' + esc(c.nombre) + '</b><small>' + esc([c.web, c.rubro, c.ciudad, c.lote].filter(Boolean).join(' · ')) + (c.error ? ' · ' + esc(c.error) : '') + '</small></div><span class="est-cola ' + esc(c.estado) + '">' + esc(c.estado) + '</span>' + (c.estado === 'pendiente' && S.puedeEscribir ? '<button class="x" title="Quitar de la cola" aria-label="Quitar ' + esc(c.nombre) + ' de la cola" data-del="' + esc(c.id) + '">×</button>' : '<span></span>') + '</div>'; };
+    $('cola').innerHTML = pend.map(fila).join('') + otros.map(fila).join('');
+    Array.prototype.forEach.call($('cola').querySelectorAll('[data-del]'), function (b) { b.addEventListener('click', function () { b.disabled = true; S.B.quitarCola(b.getAttribute('data-del')).catch(function (e) { b.disabled = false; aviso('No se pudo quitar (' + (e && e.code) + ')'); }); }); });
+  }
+  function pintarProgreso() {
+    if (!S.B || !S.B.local) return;
+    var es = S.escaneo || {}, pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length, b = $('escanear-ahora');
+    b.disabled = !!es.activo || !pend || !S.puedeEscribir;
+    b.textContent = es.activo ? 'Escaneando…' : pend ? 'Escanear la cola ahora (' + pend + ')' : 'La cola está al día';
+    $('progreso').hidden = !es.activo && !es.mensaje;
+    $('progreso-barra').style.width = (es.total ? Math.min(100, es.hechos / es.total * 100) : es.activo ? 3 : 100) + '%';
+    $('progreso-texto').textContent = es.activo ? (es.mensaje || 'Escaneando…') + ' ' + (es.hechos || 0) + ' de ' + (es.total || 0) : (es.mensaje || '');
+  }
+  $('escanear-ahora').addEventListener('click', function () {
+    var b = this; b.disabled = true; b.textContent = 'Partiendo…';
+    S.B.lanzarEscaneo().catch(function (e) { aviso(e && e.message ? 'No se pudo escanear: ' + e.message : 'No se pudo escanear'); b.disabled = false; });
+  });
+  $('importar-archivo').addEventListener('change', function () {
+    var f = this.files && this.files[0], av = $('importar-aviso'), inp = this; if (!f) return;
+    av.className = 'aviso'; av.textContent = 'Importando ' + f.name + '…';
+    var lector = new FileReader();
+    lector.onload = function () {
+      S.B.importar(f.name, String(lector.result)).then(function (r) {
+        av.textContent = r.negocios + ' negocios importados' + (r.lote ? ' en la lista "' + r.lote + '"' : '') + (r.tipo === 'respaldo' ? ' con su seguimiento' : '') + '.';
+      }, function (e) { av.className = 'aviso err'; av.textContent = 'No se pudo importar: ' + ((e && e.message) || 'archivo no válido'); }).then(function () { inp.value = ''; });
+    };
+    lector.onerror = function () { av.className = 'aviso err'; av.textContent = 'No se pudo leer el archivo.'; };
+    lector.readAsText(f);
+  });
+
+  irA(S.vista);
+})();
+
+</script>
+</body>
+</html>

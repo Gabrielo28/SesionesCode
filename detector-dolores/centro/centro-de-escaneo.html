@@ -63,8 +63,7 @@
   .fila { display: grid; grid-template-columns: 108px 42px minmax(0, 1.4fr) minmax(0, 1.5fr) 16px; gap: 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; width: 100%; color: var(--ink); }
   .fila:hover { border-color: var(--teal); }
   .fila.abierta { border-color: var(--teal); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-  @media (max-width: 720px) { .fila { grid-template-columns: auto 36px minmax(0, 1fr) 14px; } .fila .flecha { grid-row: 1; grid-column: 4; } .fila .chips { grid-column: 1 / -1; grid-row: 2; } }
-  @media (max-width: 520px) { .tabs { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; } .tab { padding: 9px 8px; font-size: 13px; } }
+  @media (max-width: 720px) { .fila { grid-template-columns: auto 36px minmax(0, 1fr) 14px; } .fila .chips { grid-column: 1 / -1; } }
   .nivel { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; text-align: center; white-space: nowrap; }
   .nivel.hoy { background: var(--g3-w); color: var(--g3); } .nivel.semana { background: var(--g2-w); color: var(--g2); } .nivel.nutrir { background: var(--g1-w); color: var(--g1); } .nivel.mano { background: rgba(255,255,255,.07); color: var(--ink-2); }
   .score { font-family: var(--mono); font-weight: 700; font-size: 17px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -146,7 +145,7 @@
 <div class="wrap">
   <div class="top">
     <div class="marca"><span class="led" id="led"></span>Centro de escaneo · Influence</div>
-    <span class="estado-con" id="estado-con">Conectando…</span>
+    <span style="display:flex;gap:12px;align-items:center"><span class="estado-con" id="estado-con">Conectando…</span><a href="/centro/salir" id="salir" class="estado-con" style="color:var(--teal);text-decoration:none" hidden>Salir</a></span>
   </div>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-v="hoy">Hoy <span class="badge" id="b-hoy">0</span></button>
@@ -197,7 +196,7 @@
   <!-- ESCANEAR -->
   <section class="vista" id="v-escanear" hidden>
     <h1>Escanear</h1>
-    <p class="sub">Agrega los negocios que quieres revisar. Quedan en la cola hasta que me pidas escanearlos.</p>
+    <p class="sub" id="sub-escanear">Agrega los negocios que quieres revisar. Quedan en la cola hasta que me pidas escanearlos.</p>
     <div class="grid2">
       <div class="panel">
         <h2>Agregar a la cola</h2>
@@ -215,18 +214,36 @@
       </div>
       <div class="panel">
         <h2>Cómo se escanea</h2>
+        <div id="modo-chat">
         <ol class="pasos-escaneo">
           <li>Agrega los negocios a la cola, de a uno o varios a la vez.</li>
           <li>Escríbeme en el chat <span class="frase">escanea la cola</span>.</li>
           <li>Reviso cada web con un navegador real y los resultados aparecen en Hoy y Negocios, sin recargar.</li>
         </ol>
+        </div>
+        <div id="modo-local" hidden>
+          <ol class="pasos-escaneo">
+            <li>Agrega los negocios a la cola, de a uno o varios a la vez.</li>
+            <li><span>Toca <b>Escanear la cola ahora</b>. Cada web se revisa con un navegador real, unas 15 por minuto.</span></li>
+            <li>Los resultados aparecen en Hoy y Negocios apenas termina.</li>
+          </ol>
+          <div class="fila-btns" style="margin-top:14px"><button class="btn btn-teal" id="escanear-ahora">Escanear la cola ahora</button></div>
+          <div id="progreso" hidden style="margin-top:12px"><div class="meta-bar"><i id="progreso-barra" style="width:0%"></i></div><p class="aviso" id="progreso-texto" style="margin-top:6px"></p></div>
+        </div>
         <p class="aviso" style="margin-top:12px">Antes de mandar un mensaje, abre la web 30 segundos y confirma el hallazgo que vas a citar.</p>
       </div>
     </div>
     <div class="panel"><h2>La cola <small id="cola-resumen"></small></h2><div id="cola"></div></div>
+    <div class="panel" id="respaldo" hidden style="margin-top:12px">
+      <h2>Respaldo e importación <small>tus datos son tuyos: guárdalos o muévelos cuando quieras</small></h2>
+      <p>Descarga un respaldo con todos tus negocios, el seguimiento y la cola. Para importar, sirve un respaldo, un resultado del escáner de mercado (.json) o un tablero (.html).</p>
+      <div class="fila-btns"><a class="btn" href="/api/respaldo" id="bajar-respaldo">Descargar respaldo</a>
+        <label class="btn" for="importar-archivo" style="cursor:pointer">Importar archivo</label><input type="file" id="importar-archivo" accept=".json,.html,application/json,text/html" hidden>
+        <span class="aviso" id="importar-aviso"></span></div>
+    </div>
   </section>
 
-  <p class="pie">Tus negocios, el seguimiento y el modo taller se guardan en esta página y se ven igual en el celular y el computador. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.</p>
+  <p class="pie" id="pie">Tus negocios, el seguimiento y el modo taller se guardan en el Centro y se ven igual en el celular y el computador. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.</p>
 </div>
 
 <script>
@@ -482,37 +499,105 @@
   var SEN = {}; C.SENALES.forEach(function (g) { g.items.forEach(function (it) { SEN[it.id] = { g: g.grupo, t: it.t, c: it.c }; }); });
   var META_SEMANA = 50;
 
-  var S = { neg: {}, seg: {}, cola: [], db: null, sample: null, downloads: null, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
+  var S = { neg: {}, seg: {}, cola: [], B: null, escaneo: null, puedeEscribir: true, vista: 'hoy', abierto: null, cargado: { neg: false, seg: false, cola: false } };
 
   // ---------- conexión ----------
+  // Dos motores con la misma forma: el servidor propio (/api, funciona sin Claude) o la base de claude.ai.
   function estadoCon(txt, cls) { $('estado-con').textContent = txt; $('led').className = 'led ' + (cls || ''); }
   function errDb(e) { estadoCon('Sin conexión con la base (' + (e && e.code || 'error') + ')', 'off'); }
+  function descargaNavegador(nombre, datos, tipo) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([datos], { type: tipo || 'text/csv;charset=utf-8' })); a.download = nombre;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  function motorLocal() {
+    var api = function (metodo, ruta, cuerpo) {
+      return fetch(ruta, { method: metodo, headers: cuerpo != null ? { 'Content-Type': 'application/json' } : {}, body: cuerpo == null ? undefined : typeof cuerpo === 'string' ? cuerpo : JSON.stringify(cuerpo), credentials: 'same-origin' })
+        .then(function (r) {
+          if (r.status === 401) { location.href = '/centro/entrar'; throw { code: 'sesion' }; }
+          return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw { code: r.status, message: j.error || 'error' }; return j; });
+        });
+    };
+    var timer = null;
+    var B = {
+      local: true,
+      cargar: function () {
+        return api('GET', '/api/estado').then(function (j) {
+          S.neg = j.negocios || {}; S.cola = j.cola || [];
+          // no pisar lo que se está escribiendo y aún no se guarda
+          Object.keys(j.seguimiento || {}).forEach(function (id) { if (!cadenasVivas[id]) S.seg[id] = j.seguimiento[id]; });
+          var antes = S.escaneo && S.escaneo.activo; S.escaneo = j.escaneo || null;
+          S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · tu servidor', 'on');
+          pintarTodo(); B.programar(antes);
+        }, function (e) { if (e && e.code !== 'sesion') { estadoCon('Sin conexión con tu servidor', 'off'); B.programar(); } });
+      },
+      programar: function () { clearTimeout(timer); timer = setTimeout(B.cargar, S.escaneo && S.escaneo.activo ? 2500 : 30000); },
+      guardarSeg: function (id, doc) { return api('PUT', '/api/seguimiento/' + encodeURIComponent(id), doc); },
+      encolar: function (items, lote) { return api('POST', '/api/cola', { items: items, lote: lote }).then(function (j) { B.cargar(); return j.agregados || 0; }); },
+      quitarCola: function (id) { return api('DELETE', '/api/cola/' + encodeURIComponent(id)).then(B.cargar); },
+      lanzarEscaneo: function () { return api('POST', '/api/escanear', {}).then(B.cargar); },
+      importar: function (nombre, texto) { return api('POST', '/api/importar?nombre=' + encodeURIComponent(nombre), texto).then(function (j) { B.cargar(); return j; }); },
+      descargar: function (nombre, datos) { descargaNavegador(nombre, datos); return Promise.resolve(); },
+      sample: null
+    };
+    return B;
+  }
+
+  async function motorClaude() {
+    if (!window.claude || !window.claude.use) return null;
+    var db = await window.claude.use('db');
+    if (!db) return null;
+    var B = {
+      local: false,
+      cargar: function () {
+        db.collection('negocios').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.neg = m; S.cargado.neg = true; pintarTodo(); }, errDb);
+        db.collection('seguimiento').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.seg = m; S.cargado.seg = true; pintarTodo(); }, errDb);
+        db.collection('cola').limit(1000).onSnapshot(function (snap) { S.cola = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }); S.cargado.cola = true; pintarTodo(); }, errDb);
+      },
+      guardarSeg: function (id, doc) { return db.doc('seguimiento/' + id).set(doc); },
+      encolar: async function (items, lote) {
+        var hechos = 0;
+        for (var i = 0; i < items.length; i++) {
+          await db.collection('cola').add({ nombre: items[i].nombre, web: items[i].web, rubro: items[i].rubro || '', ciudad: items[i].ciudad || '', lote: lote, estado: 'pendiente', creado: new Date().toISOString() }); hechos++;
+        }
+        return hechos;
+      },
+      quitarCola: function (id) { return db.doc('cola/' + id).delete(); },
+      descargar: null, sample: null
+    };
+    var dl = await window.claude.use('downloads');
+    if (dl) B.descargar = function (nombre, datos) { return dl.save({ filename: nombre, data: datos }); };
+    var user = await window.claude.use('user');
+    if (user && user.can) { var w = await user.can('data.write'); if (w === false) S.puedeEscribir = false; }
+    B.sample = await window.claude.use('sample');
+    return B;
+  }
 
   (async function iniciar() {
-    var db = await window.claude.use('db');
-    if (!db) { estadoCon('Abre esta página desde tu cuenta de claude.ai para ver tus datos', 'off'); pintarTodo(); return; }
-    S.db = db; estadoCon('En línea', 'on');
-    db.collection('negocios').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.neg = m; S.cargado.neg = true; pintarTodo(); }, errDb);
-    db.collection('seguimiento').limit(1000).onSnapshot(function (snap) { var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.seg = m; S.cargado.seg = true; pintarTodo(); }, errDb);
-    db.collection('cola').limit(1000).onSnapshot(function (snap) { S.cola = snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); }); S.cargado.cola = true; pintarTodo(); }, errDb);
-    var user = await window.claude.use('user');
-    if (user && user.can) { var w = await user.can('data.write'); if (w === false) { S.puedeEscribir = false; pintarTodo(); } }
-    S.sample = await window.claude.use('sample'); S.downloads = await window.claude.use('downloads');
+    // Como artifact de claude.ai existe window.claude → la base de Claude. Servido por tu servidor (npm start o Railway) no existe → motor local.
+    var B = window.claude && window.claude.use ? await motorClaude() : /^https?:$/.test(location.protocol) ? motorLocal() : null;
+    if (!B) { estadoCon('Abre esta página desde tu servidor (npm start) o desde tu cuenta de claude.ai', 'off'); pintarTodo(); return; }
+    S.B = B; estadoCon('Conectando…', '');
+    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('respaldo').hidden = !B.local; $('salir').hidden = !B.local;
+    if (B.local) $('sub-escanear').textContent = 'Agrega los negocios que quieres revisar y escanéalos aquí mismo, sin depender del chat.';
+    if (B.local) $('pie').textContent = 'Todo se guarda en tu servidor (archivo centro.json) y funciona sin Claude. Descarga un respaldo de vez en cuando. Los niveles y la oportunidad vienen del escaneo; lo que marques en el modo taller suma códigos y reordena las soluciones al tiro.';
+    B.cargar();
+    if (!B.local) estadoCon('En línea', 'on');
     pintarTodo();
   })();
 
   // ---------- escritura (una a la vez por documento) ----------
-  var cadenas = {};
+  var cadenas = {}, cadenasVivas = {};
   function guardarSeg(id, cambios) {
-    if (!S.db) return Promise.resolve();
+    if (!S.B) return Promise.resolve();
     var base = Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}, cambios, { actualizado: new Date().toISOString() });
-    S.seg[id] = base;
-    cadenas[id] = (cadenas[id] || Promise.resolve()).then(function () { return S.db.doc('seguimiento/' + id).set(base); }).catch(function (e) {
+    S.seg[id] = base; cadenasVivas[id] = (cadenasVivas[id] || 0) + 1;
+    cadenas[id] = (cadenas[id] || Promise.resolve()).then(function () { return S.B.guardarSeg(id, base); }).catch(function (e) {
       if (e && e.code === 'invalid_argument') { S.puedeEscribir = false; pintarTodo(); } else aviso('Error al guardar (' + (e && e.code) + ')');
-    });
+    }).then(function () { cadenasVivas[id]--; if (!cadenasVivas[id]) delete cadenasVivas[id]; });
     return cadenas[id];
   }
-  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.db) estadoCon('En línea', 'on'); }, 4000); }
+  function aviso(t) { estadoCon(t, 'off'); setTimeout(function () { if (S.B) estadoCon(S.B.local ? 'En línea · tu servidor' : 'En línea', 'on'); }, 4000); }
 
   // ---------- modelo ----------
   function seg(id) { return Object.assign({ estado: 'Por contactar', senales: [], nota: '', mensaje: null }, S.seg[id] || {}); }
@@ -569,7 +654,7 @@
       '<div class="stat ok"><div class="l">Clientes</div><div class="v">' + cuenta('Cliente') + '</div></div>' +
       '<div class="stat"><div class="l">En cola por escanear</div><div class="v">' + pend + '</div></div>';
     if (!S.cargado.neg) { $('hoy-lista').innerHTML = '<div class="vacio">Cargando tus negocios…</div>'; }
-    else if (!L.length) { $('hoy-lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios escaneados</b>Agrega una lista en Escanear y pídeme en el chat que la escanee.</div>'; }
+    else if (!L.length) { $('hoy-lista').innerHTML = '<div class="vacio"><b>Todavía no hay negocios escaneados</b>' + (S.B && S.B.local ? 'Agrega una lista en Escanear y toca Escanear la cola ahora, o importa un archivo de resultados.' : 'Agrega una lista en Escanear y pídeme en el chat que la escanee.') + '</div>'; }
     else {
       var cand = L.filter(function (n) { return seg(n._id).estado === 'Por contactar' && (n.nivel === 'Escribir hoy' || n.nivel === 'Esta semana'); }).slice(0, 10);
       $('hoy-lista').innerHTML = cand.length ? cand.map(function (n, i) {
@@ -634,7 +719,7 @@
       '<div><div class="bloque"><h3>Códigos de falla</h3>' + (e.cods.length ? e.cods.map(function (c) { return '<div class="cod g' + c.g + '"><div class="t"><span class="chip g' + c.g + '">' + c.id + '</span>' + esc(c.nombre) + (c.manual ? ' <span class="q">(marcado a mano)</span>' : '') + '</div>' + c.evidencia.map(function (x) { return '<div class="e">' + esc(x) + '</div>'; }).join('') + '</div>'; }).join('') : '<div class="info">Sin fallas detectadas en la web.</div>') + '</div>' +
       '<div class="bloque"><h3>Soluciones, de la mejor a la peor</h3>' + (e.sols.length ? e.sols.map(function (t, k) { return '<div class="solx"><b>' + (k + 1) + '</b><span>' + esc(t.s.nombre) + ' <span class="q' + (t.s.quien === 'influence' ? ' inf' : '') + '">· ' + QUIEN[t.s.quien] + ' · repara ' + t.nuevos.join(', ') + '</span></span></div>'; }).join('') : '<div class="info">Sin soluciones: no hay fallas.</div>') + '</div></div>' +
       '<div><div class="bloque"><h3>Primer mensaje</h3><textarea id="d-msg"' + dis + '>' + esc(msg) + '</textarea>' +
-        '<div class="fila-btns"><button class="btn btn-teal" id="d-copiar">Copiar mensaje</button>' + (S.sample ? '<button class="btn" id="d-otra"' + dis + '>Otra versión</button>' : '') + '<span class="aviso" id="d-aviso"></span></div></div>' +
+        '<div class="fila-btns"><button class="btn btn-teal" id="d-copiar">Copiar mensaje</button><button class="btn" id="d-otra"' + dis + ' title="' + (S.B && S.B.sample ? 'La escribe Claude' : 'Cambia entre versiones ya escritas') + '">Otra versión</button>' + '<span class="aviso" id="d-aviso"></span></div></div>' +
       '<div class="bloque"><h3>Seguimiento</h3><select class="inp" id="d-estado"' + dis + '>' + ESTADOS.map(function (s) { return '<option' + (s === m.estado ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select>' +
         '<textarea class="nota" id="d-nota" placeholder="Notas: con quién hablaste, qué te dijo, cuándo volver a escribir"' + dis + ' style="margin-top:8px">' + esc(m.nota || '') + '</textarea></div>' +
       '<div class="bloque"><h3>Revisar antes de escribir</h3><div class="links">' +
@@ -669,6 +754,12 @@
     if (otra) otra.addEventListener('click', async function () {
       var e = codigosDe(id), g = gancho(e.cods), sol = e.sols[0];
       if (!g) { $('d-aviso').textContent = 'Este negocio no tiene fallas para citar.'; return; }
+      if (!S.B || !S.B.sample) {
+        var vs = variantes(n, e), k = (vueltas[id] = ((vueltas[id] || 0) + 1) % vs.length);
+        ta.value = vs[k]; guardarSeg(id, { mensaje: ta.value });
+        $('d-aviso').className = 'aviso'; $('d-aviso').textContent = 'Versión ' + (k + 1) + ' de ' + vs.length + '. Revísala antes de enviar.';
+        return;
+      }
       otra.disabled = true; $('d-aviso').className = 'aviso'; $('d-aviso').textContent = 'Escribiendo…';
       var prompt = 'Escribe el primer mensaje de prospección que Gabriel, de la agencia Influence Chile, le enviará por WhatsApp o Instagram al dueño de un negocio. ' +
         'Reglas: español de Chile, tuteo cercano y profesional, máximo 65 palabras, sin emojis, sin precios, sin promesas de resultados. ' +
@@ -680,14 +771,41 @@
         '\nOtras fallas detectadas: ' + (e.cods.length - 1) +
         '\nMensaje actual:\n' + ta.value;
       try {
-        var r = await S.sample(prompt, { modelTier: 'quick', cache: false, onText: function (u) { ta.value = u.text; } });
+        var r = await S.B.sample(prompt, { modelTier: 'quick', cache: false, onText: function (u) { ta.value = u.text; } });
         ta.value = r.text.trim(); guardarSeg(id, { mensaje: ta.value }); $('d-aviso').textContent = 'Nueva versión guardada. Revísala antes de enviar.';
       } catch (err) {
         $('d-aviso').className = 'aviso err';
         $('d-aviso').textContent = err && err.code === 'not_granted' ? 'Sin permiso para pedir otra versión.' : err && err.code === 'rate_limited' ? 'Demasiadas solicitudes. Prueba en un rato.' : 'No se pudo generar otra versión.';
-        if (err && err.code === 'not_granted') otra.remove();
+        if (err && err.code === 'not_granted') S.B.sample = null;
       } finally { if (otra.isConnected) otra.disabled = false; }
     });
+  }
+
+  // Versiones escritas de antemano: funcionan sin Claude. Mismo tono y plazos que el escáner de mercado.
+  var vueltas = {};
+  var ARREGLO = {
+    'CAP-06': 'una landing nueva en su propio dominio, lista en 5 a 7 días',
+    'CON-07': 'un botón y un asistente de WhatsApp que responde, califica y agenda, listo en una semana',
+    'CON-03': 'una landing o agenda online donde se pueda reservar o comprar en dos toques, lista en 5 a 7 días',
+    'CON-06': 'una landing liviana pensada para el celular, lista en 5 a 7 días',
+    'DAT-05': 'dejar instalada la medición (píxel y analytics) en una semana, para que cada peso en publicidad se pueda medir',
+    'CAP-01': 'una landing con su información, precios y WhatsApp, lista en 5 a 7 días'
+  };
+  var PLAZO = { 1: 'en una semana', 2: 'en 2 a 4 semanas', 3: 'en 1 a 3 meses' };
+  function limpiaEv(t) { t = String(t || '').replace(/\s*\(Antes de escribir[^)]*\)/, '').replace(/\.$/, ''); return t.charAt(0).toLowerCase() + t.slice(1); }
+  function variantes(n, e) {
+    var g = gancho(e.cods), ev = limpiaEv(g.evidencia[0]);
+    var solCat = C.SOLUCIONES.filter(function (s) { return s.quien === 'influence' && s.codigos.indexOf(g.id) >= 0; }).sort(function (a, b) { return a.esfuerzo - b.esfuerzo; })[0];
+    var arreglo = ARREGLO[g.id] || (solCat ? solCat.nombre.charAt(0).toLowerCase() + solCat.nombre.slice(1) + ' ' + PLAZO[solCat.esfuerzo] : '');
+    var nom = n.nombre.length > 40 ? n.nombre.split(/[,(|-]/)[0].trim() : n.nombre;
+    var resto = e.cods.length - 1, otras = resto ? (resto === 1 ? 'otra cosa' : resto + ' cosas más') : '';
+    var se = arreglo ? ' Se resuelve con ' + arreglo + '.' : '';
+    return [
+      'Hola, soy Gabriel de Influence Chile. Revisé la web de ' + nom + ' desde el celular y encontré algo que les puede estar costando clientes: ' + ev + '.' + (otras ? ' Vi ' + otras + ' que se ' + (resto === 1 ? 'puede' : 'pueden') + ' mejorar.' : '') + se + ' ¿Te mando el diagnóstico completo? Son 2 minutos de lectura, sin costo.',
+      'Hola, ¿cómo estás? Te escribe Gabriel, de Influence Chile. Estuve mirando ' + nom + ' como lo haría un cliente nuevo y me encontré con esto: ' + ev + '.' + se + ' Armé un diagnóstico corto con lo que vi' + (otras ? ' (hay ' + otras + ')' : '') + '. ¿Te lo envío?',
+      'Hola, soy Gabriel de Influence Chile. Un detalle de ' + nom + ' que probablemente nadie les ha comentado: ' + ev + '. Es de esas cosas que hacen que un cliente se vaya a la competencia sin avisar.' + se + ' ¿Te paso el diagnóstico gratis para que lo revises con calma?',
+      'Hola, te escribo por ' + nom + '. Soy Gabriel, de Influence Chile, y reviso webs de ' + (n.rubro ? n.rubro.toLowerCase() : 'negocios') + (n.ciudad ? ' en ' + n.ciudad : '') + '. En la suya vi que ' + ev + '.' + se + ' Si te sirve, te mando el diagnóstico completo, sin costo ni compromiso. ¿Te parece?'
+    ];
   }
   $('exportar').addEventListener('click', async function () {
     var q = function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; };
@@ -695,8 +813,8 @@
       var m = seg(n._id), e = codigosDe(n._id);
       return [m.estado, n.nivel, n.oportunidad, n.nombre, n.rubro, n.ciudad, n.web, n.lote, e.cods.map(function (c) { return c.id; }).join(' '), e.sols[0] ? e.sols[0].s.nombre : '', m.nota, m.mensaje != null ? m.mensaje : n.mensaje].map(q).join(',');
     }));
-    if (!S.downloads) { aviso('Descarga no disponible en esta vista'); return; }
-    try { await S.downloads.save({ filename: 'seguimiento-influence.csv', data: '﻿' + filas.join('\n') }); } catch (e) { if (e && e.code !== 'declined' && e.code !== 'cancelled') aviso('No se pudo descargar'); }
+    if (!S.B || !S.B.descargar) { aviso('Descarga no disponible en esta vista'); return; }
+    try { await S.B.descargar('seguimiento-influence.csv', '﻿' + filas.join('\n')); } catch (e) { if (e && e.code !== 'declined' && e.code !== 'cancelled') aviso('No se pudo descargar'); }
   });
 
   // ---------- MERCADO ----------
@@ -731,14 +849,10 @@
   function limpiaWeb(w) { return String(w || '').trim().replace(/\s+/g, ''); }
   function loteActual() { return ($('c-lote').value.trim() || 'lista-' + new Date().toISOString().slice(0, 10)).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   async function encolar(items, avisoEl) {
-    if (!S.db) { avisoEl.textContent = 'Sin conexión con la base.'; return 0; }
+    if (!S.B) { avisoEl.textContent = 'Sin conexión con la base.'; return 0; }
     if (!S.puedeEscribir) { avisoEl.textContent = 'Esta vista es solo de lectura.'; return 0; }
-    var lote = loteActual(), hechos = 0;
-    for (var i = 0; i < items.length; i++) {
-      try { await S.db.collection('cola').add({ nombre: items[i].nombre, web: items[i].web, rubro: items[i].rubro || '', ciudad: items[i].ciudad || '', lote: lote, estado: 'pendiente', creado: new Date().toISOString() }); hechos++; }
-      catch (e) { avisoEl.className = 'aviso err'; avisoEl.textContent = e && e.code === 'quota_exceeded' ? 'La base está llena: borra negocios antiguos de la cola.' : 'Error al agregar (' + (e && e.code) + ')'; break; }
-    }
-    return hechos;
+    try { return await S.B.encolar(items, loteActual()); }
+    catch (e) { avisoEl.className = 'aviso err'; avisoEl.textContent = e && e.code === 'quota_exceeded' ? 'La base está llena: borra negocios antiguos de la cola.' : 'Error al agregar (' + (e && (e.message || e.code)) + ')'; return 0; }
   }
   $('c-agregar').addEventListener('click', async function () {
     var it = { nombre: $('c-nombre').value.trim(), web: limpiaWeb($('c-web').value), rubro: $('c-rubro').value.trim(), ciudad: $('c-ciudad').value.trim() };
@@ -755,17 +869,43 @@
     if (!items.length) { av.className = 'aviso err'; av.textContent = 'No encontré líneas con negocio y web.'; return; }
     av.textContent = 'Agregando ' + items.length + '…';
     var n = await encolar(items, av);
-    if (n) { av.textContent = n + ' agregados a la cola' + (malas ? '. ' + (malas === 1 ? '1 línea sin web se saltó.' : malas + ' líneas sin web se saltaron.') : '.'); $('c-masivo').value = ''; }
+    if (n) { av.textContent = n + ' agregados a la cola' + (malas ? '. ' + malas + ' líneas sin web se saltaron.' : '.'); $('c-masivo').value = ''; }
   });
   function pintarCola() {
     var pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }), otros = S.cola.filter(function (c) { return c.estado !== 'pendiente'; }).sort(function (a, b) { return String(b.creado).localeCompare(String(a.creado)); }).slice(0, 20);
+    pintarProgreso();
     $('cola-resumen').textContent = pend.length + ' por escanear' + (otros.length ? ' · últimos escaneados abajo' : '');
     if (!S.cargado.cola) { $('cola').innerHTML = '<div class="vacio">Cargando…</div>'; return; }
-    if (!S.cola.length) { $('cola').innerHTML = '<div class="vacio"><b>La cola está vacía</b>Agrega negocios arriba. Después escríbeme en el chat "escanea la cola".</div>'; return; }
-    var fila = function (c) { return '<div class="cola-item"><div style="min-width:0"><b>' + esc(c.nombre) + '</b><small>' + esc([c.web, c.rubro, c.ciudad, c.lote].filter(Boolean).join(' · ')) + (c.error ? ' · ' + esc(c.error) : '') + '</small></div><span class="est-cola ' + esc(c.estado) + '">' + esc(c.estado) + '</span>' + (c.estado === 'pendiente' && S.puedeEscribir ? '<button class="x" title="Quitar de la cola" aria-label="Quitar ' + esc(c.nombre) + ' de la cola" data-del="' + esc(c._id) + '">×</button>' : '<span></span>') + '</div>'; };
+    if (!S.cola.length) { $('cola').innerHTML = '<div class="vacio"><b>La cola está vacía</b>Agrega negocios arriba. ' + (S.B && S.B.local ? 'Después toca Escanear la cola ahora.' : 'Después escríbeme en el chat "escanea la cola".') + '</div>'; return; }
+    var fila = function (c) { return '<div class="cola-item"><div style="min-width:0"><b>' + esc(c.nombre) + '</b><small>' + esc([c.web, c.rubro, c.ciudad, c.lote].filter(Boolean).join(' · ')) + (c.error ? ' · ' + esc(c.error) : '') + '</small></div><span class="est-cola ' + esc(c.estado) + '">' + esc(c.estado) + '</span>' + (c.estado === 'pendiente' && S.puedeEscribir ? '<button class="x" title="Quitar de la cola" aria-label="Quitar ' + esc(c.nombre) + ' de la cola" data-del="' + esc(c.id) + '">×</button>' : '<span></span>') + '</div>'; };
     $('cola').innerHTML = pend.map(fila).join('') + otros.map(fila).join('');
-    Array.prototype.forEach.call($('cola').querySelectorAll('[data-del]'), function (b) { b.addEventListener('click', function () { S.db.doc('cola/' + b.getAttribute('data-del')).delete().catch(function (e) { aviso('No se pudo quitar (' + (e && e.code) + ')'); }); }); });
+    Array.prototype.forEach.call($('cola').querySelectorAll('[data-del]'), function (b) { b.addEventListener('click', function () { b.disabled = true; S.B.quitarCola(b.getAttribute('data-del')).catch(function (e) { b.disabled = false; aviso('No se pudo quitar (' + (e && e.code) + ')'); }); }); });
   }
+  function pintarProgreso() {
+    if (!S.B || !S.B.local) return;
+    var es = S.escaneo || {}, pend = S.cola.filter(function (c) { return c.estado === 'pendiente'; }).length, b = $('escanear-ahora');
+    b.disabled = !!es.activo || !pend || !S.puedeEscribir;
+    b.textContent = es.activo ? 'Escaneando…' : pend ? 'Escanear la cola ahora (' + pend + ')' : 'La cola está al día';
+    $('progreso').hidden = !es.activo && !es.mensaje;
+    $('progreso-barra').style.width = (es.total ? Math.min(100, es.hechos / es.total * 100) : es.activo ? 3 : 100) + '%';
+    $('progreso-texto').textContent = es.activo ? (es.mensaje || 'Escaneando…') + ' ' + (es.hechos || 0) + ' de ' + (es.total || 0) : (es.mensaje || '');
+  }
+  $('escanear-ahora').addEventListener('click', function () {
+    var b = this; b.disabled = true; b.textContent = 'Partiendo…';
+    S.B.lanzarEscaneo().catch(function (e) { aviso(e && e.message ? 'No se pudo escanear: ' + e.message : 'No se pudo escanear'); b.disabled = false; });
+  });
+  $('importar-archivo').addEventListener('change', function () {
+    var f = this.files && this.files[0], av = $('importar-aviso'), inp = this; if (!f) return;
+    av.className = 'aviso'; av.textContent = 'Importando ' + f.name + '…';
+    var lector = new FileReader();
+    lector.onload = function () {
+      S.B.importar(f.name, String(lector.result)).then(function (r) {
+        av.textContent = r.negocios + ' negocios importados' + (r.lote ? ' en la lista "' + r.lote + '"' : '') + (r.tipo === 'respaldo' ? ' con su seguimiento' : '') + '.';
+      }, function (e) { av.className = 'aviso err'; av.textContent = 'No se pudo importar: ' + ((e && e.message) || 'archivo no válido'); }).then(function () { inp.value = ''; });
+    };
+    lector.onerror = function () { av.className = 'aviso err'; av.textContent = 'No se pudo leer el archivo.'; };
+    lector.readAsText(f);
+  });
 
   irA(S.vista);
 })();

@@ -1,0 +1,3 @@
+# Railway: Node + Chromium para que el Centro de escaneo pueda revisar webs con un navegador real.
+[phases.setup]
+nixPkgs = ["...", "chromium"]

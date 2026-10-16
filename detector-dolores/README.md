@@ -30,7 +30,7 @@ oferta que la destraba.
 | [03-entrevista-de-diagnostico.md](03-entrevista-de-diagnostico.md) | La conversación de 20 min: pregunta llave por área, 5 porqués, cómo cuantificar, ficha de entrevista |
 | [04-de-dolor-a-oferta.md](04-de-dolor-a-oferta.md) | Catálogo de soluciones, matriz dolor → oferta de 30 días → estructural, priorización y cómo presentar |
 | [07-plan-30-dias-clientes.md](07-plan-30-dias-clientes.md) | **El plan comercial**: posicionamiento por reparaciones (diagnóstico gratis, reparación a precio fijo, operación mensual), rutina semanal de mensajes y metas |
-| [centro/](centro/) | **Centro de escaneo**: la app privada en claude.ai para trabajar todo desde una pantalla (Hoy, Negocios, Mercado, Escanear), con seguimiento guardado en la nube. `centro.js` conecta su cola con el escáner de mercado |
+| [centro/](centro/) | **Centro de escaneo**: la app privada para trabajar todo desde una pantalla (Hoy, Negocios, Mercado, Escanear). Funciona **sola, sin Claude**, en `/centro` de tu servidor (`npm start` o Railway), y también como artifact en claude.ai. Ver [Centro de escaneo sin Claude](#centro-de-escaneo-sin-claude) |
 | [mercado/](mercado/) | **Escáner de mercado (interno)**: escanea decenas de webs de un rubro, detecta fallas, ordena a quién escribir y con qué mensaje, y muestra qué servicio venderle a ese mercado. Ver su README |
 | [06-escaner-y-codigos.md](06-escaner-y-codigos.md) | **El escáner**: cómo funciona, los 8 sistemas, el catálogo de 43 códigos de falla con síntoma, causa y reparación, y qué sensor dispara cada uno. Se genera desde `escaner/codigos.js` |
 | [escaner/](escaner/) | **La app del escáner**: conectar → 16 lecturas (+ señales en modo taller) → escaneo por sistema → códigos de falla → informe imprimible y WhatsApp. Es la puerta de entrada y el captador de leads |
@@ -120,10 +120,45 @@ Para publicar: Netlify → tu sitio → Deploys → arrastrar la carpeta `influe
 Si tienes cambios en tu copia local de la web que no estén publicados, aplica estos
 cambios sobre esa copia en vez de subir esta carpeta.
 
+## Centro de escaneo sin Claude
+
+El Centro funciona completo aunque se acaben los créditos de Claude: guarda todo en un
+archivo propio, escanea con el mismo motor del escáner de mercado y escribe los
+mensajes con plantillas. Lo único que necesita Claude es el botón "Otra versión" escrita
+por IA; sin Claude ese botón alterna entre 4 versiones ya redactadas.
+
+**En tu computador** (Windows, Mac o Linux, con Node 18+ y Chrome instalado):
+
+```bash
+cd detector-dolores
+npm install        # una vez: instala el conector del navegador (usa tu Chrome)
+npm start          # abre http://localhost:5180/centro
+```
+
+Sin contraseña, el Centro solo se abre desde ese mismo computador. Tus datos quedan en
+`detector-dolores/datos/centro.json` (no se sube a GitHub).
+
+**En Railway** queda en `https://<tu-dominio>/centro`, con contraseña. El script
+`desplegar-railway.js` deja creado el disco persistente (`/data`), la variable
+`DATA_DIR=/data` y la contraseña `CENTRO_CLAVE` (si no la defines, la genera; la ves en
+Railway → servicio escaner → Variables). Chromium se instala solo (`nixpacks.toml`).
+
+Qué se puede hacer desde la pantalla Escanear:
+
+- **Escanear la cola ahora**: revisa cada web con un navegador real (unas 15 por minuto)
+  y los resultados aparecen en Hoy y Negocios.
+- **Descargar respaldo**: un `.json` con negocios, seguimiento y cola. Guárdalo de vez
+  en cuando.
+- **Importar archivo**: un respaldo del Centro, un resultado del escáner de mercado
+  (`mercado/resultados/*.json`) o un tablero (`*.html`). Así pasas tus datos del artifact
+  de claude.ai, del PC o de Railway a cualquiera de los otros.
+
 ## Publicarlo en Railway
 
-La carpeta trae `server.js` (servidor estático Node, sin dependencias), `package.json`
-y `railway.json`. Sirve el escáner en `/` y la radiografía de proceso en `/proceso`.
+La carpeta trae `server.js` (servidor Node), `package.json`, `railway.json` y
+`nixpacks.toml`. Sirve el escáner en `/`, la radiografía de proceso en `/proceso` y el
+Centro de escaneo en `/centro` (con contraseña). Solo se entregan los archivos públicos:
+los datos del Centro y los resultados de escaneos nunca se sirven.
 
 **Automático (un comando).** Con un token de Railway (Account Settings → Tokens):
 
@@ -133,8 +168,10 @@ RAILWAY_API_TOKEN=... node desplegar-railway.js
 ```
 
 Crea el proyecto `escaner-de-negocio`, el servicio con Root Directory
-`/detector-dolores` conectado a `main`, genera el dominio, lanza el deploy, espera a
-que termine y prueba las rutas. Es idempotente: correrlo dos veces no duplica nada.
+`/detector-dolores` conectado a `main`, el disco persistente y la contraseña del Centro,
+genera el dominio, lanza el deploy, espera a que termine y prueba las rutas. Es
+idempotente: correrlo dos veces no duplica nada. Para elegir tú la contraseña:
+`CENTRO_CLAVE=tu-clave RAILWAY_API_TOKEN=... node desplegar-railway.js`.
 
 **A mano**, si prefieres el panel:
 
@@ -143,12 +180,14 @@ que termine y prueba las rutas. Es idempotente: correrlo dos veces no duplica na
    (el repo tiene varios proyectos; esto le dice a Railway cuál es).
 3. **Settings → Networking → Generate Domain.** Listo: cada push a la rama
    configurada redespliega solo.
+4. Para el Centro: en el servicio, **clic derecho → Attach Volume** con Mount Path
+   `/data`, y en **Variables** agrega `DATA_DIR=/data` y `CENTRO_CLAVE=<tu contraseña>`.
 
 Para probarlo en local:
 
 ```bash
 cd detector-dolores
-npm start          # http://localhost:5180  y  http://localhost:5180/proceso
+npm start          # http://localhost:5180, /proceso y /centro
 ```
 
 El link que se manda a los dueños es el dominio de Railway tal cual (abre el escáner en

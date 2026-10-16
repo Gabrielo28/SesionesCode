@@ -44,6 +44,18 @@ Cualquier combinación. Trabaja con lo que haya y di qué falta.
 
 ## Centro de escaneo (la app privada del usuario)
 
+Hay dos formas de usarlo, con el mismo código (`detector-dolores/centro/`):
+
+- **Independiente, sin Claude** (la principal): `npm start` en `detector-dolores` → `/centro`,
+  o el dominio de Railway → `/centro` con la contraseña `CENTRO_CLAVE`. Guarda en
+  `DATA_DIR/centro.json` y escanea la cola desde el botón "Escanear la cola ahora"
+  (`centro/servidor-centro.js`). Respaldo e importación desde la misma pantalla. Si el
+  usuario pide escanear y usa esta versión, recuérdale el botón: no hace falta el chat.
+- **Artifact en claude.ai** (abajo): la cola se escanea desde el chat.
+
+La fuente de la app es `centro/app.html`. La versión artifact `centro/centro-de-escaneo.html`
+se genera desde ella con `node centro/armar-artifact.js`: edita solo app.html.
+
 El usuario trabaja en su app **Centro de escaneo**: https://claude.ai/artifact/AigkdLF23xrbdioh4zTcgf
 (código en `detector-dolores/centro/centro-de-escaneo.html`). Su base tiene tres colecciones:
 `cola` (lo que él agrega para escanear), `negocios` (resultados, los escribes tú) y

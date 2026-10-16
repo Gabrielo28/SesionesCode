@@ -42,7 +42,9 @@ const PARALELO = 4, TIMEOUT = 15000, AÑO = new Date().getFullYear();
 // Navegador real (opcional pero recomendado): carga las webs hechas con JavaScript igual que un
 // visitante. Usa el Chrome que ya tienes instalado. En tu PC: `npm install` dentro de esta carpeta.
 const CHROME_CANDIDATOS = [process.env.CHROME, 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].filter(Boolean);
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome']
+  // En Railway (Nixpacks) Chromium queda en el PATH
+  .concat(String(process.env.PATH || '').split(path.delimiter).filter(Boolean).flatMap(d => ['chromium', 'chromium-browser', 'google-chrome'].map(x => path.join(d, x)))).filter(Boolean);
 let navegador = null;
 async function abrirNavegador() {
   if (args.includes('--sin-navegador')) return null;

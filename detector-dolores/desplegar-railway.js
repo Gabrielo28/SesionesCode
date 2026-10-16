@@ -11,8 +11,12 @@
  *   2. Crea el servicio "escaner", le fija Root Directory = /detector-dolores y el
  *      comando de arranque, y recién ahí lo conecta al repo Gabrielo28/SesionesCode,
  *      rama main (así el primer build ya usa la carpeta correcta).
- *   3. Genera el dominio público.
- *   4. Lanza el deploy, espera a que termine y prueba que / y /proceso respondan.
+ *   3. Crea el disco persistente (volumen en /data) donde el Centro de escaneo guarda tus
+ *      negocios y el seguimiento, y las variables DATA_DIR=/data y CENTRO_CLAVE (la
+ *      contraseña del Centro). Si no defines CENTRO_CLAVE al correr el script, se genera una
+ *      al azar la primera vez: la ves en Railway → servicio escaner → Variables.
+ *   4. Genera el dominio público.
+ *   5. Lanza el deploy, espera a que termine y prueba que / y /proceso respondan.
  *
  * Desde ese momento cada push a main redespliega solo.
  */
@@ -61,7 +65,21 @@ const espera = ms => new Promise(r => setTimeout(r, ms));
   await gql('mutation($id: String!, $i: ServiceConnectInput!) { serviceConnect(id: $id, input: $i) { id } }', { id: servicio.id, i: { repo: REPO, branch: RAMA } });
   console.log('Conectado a', REPO, '·', RAMA);
 
-  // 3. Dominio
+  // 3. Disco persistente y variables del Centro de escaneo
+  const { project } = await gql('query($p: String!) { project(id: $p) { volumes { edges { node { id name volumeInstances { edges { node { mountPath serviceId } } } } } } } }', { p: proyecto.id });
+  const conDisco = project.volumes.edges.some(v => v.node.volumeInstances.edges.some(i => i.node.serviceId === servicio.id));
+  if (!conDisco) {
+    await gql('mutation($i: VolumeCreateInput!) { volumeCreate(input: $i) { id } }', { i: { projectId: proyecto.id, serviceId: servicio.id, environmentId: env.id, mountPath: '/data' } });
+    console.log('Disco persistente creado en /data');
+  } else console.log('Disco persistente existente');
+  const { variables } = await gql('query($p: String!, $e: String!, $s: String) { variables(projectId: $p, environmentId: $e, serviceId: $s) }', { p: proyecto.id, e: env.id, s: servicio.id });
+  const fijar = (name, value) => gql('mutation($i: VariableUpsertInput!) { variableUpsert(input: $i) }', { i: { projectId: proyecto.id, environmentId: env.id, serviceId: servicio.id, name, value } });
+  if (variables.DATA_DIR !== '/data') await fijar('DATA_DIR', '/data');
+  if (process.env.CENTRO_CLAVE) { await fijar('CENTRO_CLAVE', process.env.CENTRO_CLAVE); console.log('CENTRO_CLAVE: la que definiste'); }
+  else if (!variables.CENTRO_CLAVE) { await fijar('CENTRO_CLAVE', require('crypto').randomBytes(12).toString('base64url')); console.log('CENTRO_CLAVE generada: búscala en Railway → escaner → Variables'); }
+  else console.log('CENTRO_CLAVE ya estaba definida');
+
+  // 4. Dominio
   const { domains } = await gql('query($p: String!, $e: String!, $s: String!) { domains(projectId: $p, environmentId: $e, serviceId: $s) { serviceDomains { domain } } }', { p: proyecto.id, e: env.id, s: servicio.id });
   let dominio = domains.serviceDomains[0] && domains.serviceDomains[0].domain;
   if (!dominio) {
@@ -70,7 +88,7 @@ const espera = ms => new Promise(r => setTimeout(r, ms));
   }
   console.log('Dominio: https://' + dominio);
 
-  // 4. Deploy y verificación
+  // 5. Deploy y verificación
   await gql('mutation($s: String!, $e: String!) { serviceInstanceDeployV2(serviceId: $s, environmentId: $e) }', { s: servicio.id, e: env.id });
   console.log('Deploy lanzado. Esperando…');
   let estado = '';
@@ -82,9 +100,9 @@ const espera = ms => new Promise(r => setTimeout(r, ms));
     if (['SUCCESS', 'FAILED', 'CRASHED', 'REMOVED', 'SKIPPED'].includes(estado)) break;
   }
   if (estado !== 'SUCCESS') { console.error('El deploy terminó en', estado || 'tiempo agotado', '. Revisa los logs en Railway.'); process.exit(2); }
-  for (const ruta of ['/', '/proceso', '/escaner/codigos.js']) {
+  for (const ruta of ['/', '/proceso', '/escaner/codigos.js', '/centro/entrar']) {
     const r = await fetch('https://' + dominio + ruta).catch(e => ({ status: 'error ' + e.message }));
     console.log('  ', r.status, 'https://' + dominio + ruta);
   }
-  console.log('\nListo: https://' + dominio);
+  console.log('\nListo: https://' + dominio + '\nCentro de escaneo: https://' + dominio + '/centro');
 })().catch(e => { console.error('Error:', e.message); process.exit(1); });

@@ -22,3 +22,6 @@ detector-dolores/mercado/resultados/
 
 # Centro de escaneo: CSV temporales de la cola
 detector-dolores/centro/cola-csv/
+
+# Centro de escaneo: datos locales (prospectos y seguimiento)
+detector-dolores/datos/

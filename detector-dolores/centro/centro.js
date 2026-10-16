@@ -20,10 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const slug = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
-const dom = w => String(w || '').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-// Mismo id que usa la app: nombre + dominio. Así un reescaneo actualiza el mismo negocio y no pisa su seguimiento.
-const idDe = n => slug(n.nombre + '-' + (dom(n.web) || 'sin-web'));
+const { slug, registrosDe } = require('./modelo.js');
 const q = x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"';
 
 const [cmd, a, b, c] = process.argv.slice(2);
@@ -48,14 +45,8 @@ if (cmd === 'csv') {
 } else if (cmd === 'docs') {
   const r = JSON.parse(fs.readFileSync(a, 'utf8')); const lote = slug(b || r.rubro || 'lista');
   const out = c || 'salida'; fs.mkdirSync(path.join(out, 'negocios'), { recursive: true });
-  const vistos = {}; const ids = [];
-  for (const n of r.negocios) {
-    let id = idDe(n); if (vistos[id]) id += '-' + (++vistos[id]); else vistos[id] = 1;
-    const info = {}; ['plataforma', 'ms', 'camino', 'revisar', 'whatsapp', 'pixel', 'analytics'].forEach(k => { if (n.info && n.info[k] != null) info[k] = n.info[k]; });
-    const doc = { nombre: n.nombre, web: n.web || '', rubro: n.rubro || '', ciudad: n.ciudad || '', lote, nivel: n.nivel, oportunidad: n.oportunidad,
-      codigos: n.codigos.map(x => ({ id: x.id, evidencia: x.evidencia })), mensaje: n.mensaje || '', info, escaneado: r.generado };
-    fs.writeFileSync(path.join(out, 'negocios', id + '.json'), JSON.stringify(doc)); ids.push(id);
-  }
+  const regs = registrosDe(r, lote); const ids = Object.keys(regs);
+  ids.forEach(id => fs.writeFileSync(path.join(out, 'negocios', id + '.json'), JSON.stringify(regs[id])));
   const abs = path.resolve(out);
   for (let k = 0; k < ids.length; k += 50) {
     const w = ids.slice(k, k + 50).map(id => ({ op: 'set', collection: 'negocios', doc_id: id, file_path: path.join(abs, 'negocios', id + '.json') }));
