@@ -25,3 +25,13 @@ detector-dolores/centro/cola-csv/
 
 # Centro de escaneo: datos locales (prospectos y seguimiento)
 detector-dolores/datos/
+
+# Marketing Machine: videos e imágenes pesadas quedan fuera de git
+marketing-machine/**/*.mp4
+marketing-machine/**/*.mov
+marketing-machine/creativos/**/*.png
+marketing-machine/creativos/**/*.jpg
+
+# Marketing Machine: reportes con datos reales de la cuenta publicitaria (el repo es público)
+marketing-machine/reportes/*
+!marketing-machine/reportes/README.md

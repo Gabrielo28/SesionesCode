@@ -1,0 +1,7 @@
+[
+  { "rol": "gancho", "nombre": "redes dar mas", "desde": "00:01.0", "hasta": "00:03.8", "texto": "¿Sientes que tus redes sociales podrían dar mucho más?" },
+  { "rol": "gancho", "nombre": "son las 11", "desde": "00:05.2", "hasta": "00:08.6", "texto": "Son las 11 de la noche y te acordaste: no publicaste nada hoy." },
+  { "rol": "gancho", "nombre": "se ve lindo", "desde": "00:10.0", "hasta": "00:12.9", "texto": "Tu negocio se ve lindo… pero no vende en redes." },
+  { "rol": "cuerpo", "nombre": "auditoria gratis", "desde": "00:15.0", "hasta": "00:34.5", "texto": "Te revisamos tu cuenta gratis y te decimos qué le falta..." },
+  { "rol": "cta", "nombre": "whatsapp diagnostico", "desde": "00:36.0", "hasta": "00:40.2", "texto": "Escríbenos por WhatsApp y te mandamos tu diagnóstico gratis." }
+]

@@ -1,0 +1,105 @@
+{
+  "_que_es": "Configuración de la Marketing Machine de Influence Chile. La leen el skill .claude/skills/marketing-machine y el piloto automático. Los valores marcados como supuesto hay que reemplazarlos por datos reales apenas existan.",
+  "cuenta": {
+    "ad_account_id": "874019311966265",
+    "moneda": "CLP",
+    "pagina_facebook": {
+      "id": "944811115371168",
+      "nombre": "Influence Chile SPA",
+      "leadgen_tos": true
+    },
+    "instagram": null,
+    "pixel": null,
+    "destino_principal": "WHATSAPP",
+    "pais": "CL"
+  },
+  "economia": {
+    "_ver": "marketing-machine/00-economia.md",
+    "ticket_mensual_promedio": 400000,
+    "meses_retencion_promedio": 6,
+    "margen_bruto": 0.5,
+    "ratio_ltv_cac": 3,
+    "tasa_conversacion_a_reunion": 0.15,
+    "tasa_reunion_a_cliente": 0.25,
+    "supuestos": [
+      "meses_retencion_promedio",
+      "margen_bruto",
+      "tasa_conversacion_a_reunion",
+      "tasa_reunion_a_cliente"
+    ]
+  },
+  "campanas": {
+    "_ver": "marketing-machine/01-campanas.md",
+    "laboratorio": {
+      "nombre": "MM · 1 Laboratorio · Conversaciones WA",
+      "id": "52545637341860",
+      "presupuesto": "ABO · cada conjunto de tanda $4.000/día",
+      "conjunto_actual": {
+        "nombre": "Tanda S43 · Chile abierto",
+        "id": "52545637376260"
+      }
+    },
+    "remarketing": {
+      "nombre": "MM · 2 Remarketing · Conversaciones WA",
+      "id": "52545637344660",
+      "presupuesto": "CBO $1.000/día",
+      "conjunto": {
+        "nombre": "Interactuaron página 365d · Chile",
+        "id": "52545637401460"
+      },
+      "publico": {
+        "nombre": "MM · Interactuaron con la página Influence Chile · 365d",
+        "id": "52545637386660"
+      }
+    },
+    "escala": {
+      "nombre": "MM · 3 Escala · Conversaciones WA",
+      "id": "52545637348060",
+      "presupuesto": "sin conjunto hasta el primer ganador"
+    }
+  },
+  "juez": {
+    "_ver": "marketing-machine/05-juez.md",
+    "modo": "recomendar",
+    "resultado": "conversaciones de WhatsApp iniciadas",
+    "costo_objetivo": 1500,
+    "costo_techo": 3000,
+    "gasto_minimo_para_juzgar": 1500,
+    "reglas": {
+      "apagar_sin_resultado": {
+        "gasto_desde": 3000,
+        "resultados_max": 0
+      },
+      "apagar_caro": {
+        "gasto_desde": 6000,
+        "costo_mayor_a": 3000
+      },
+      "apagar_gancho_muerto": {
+        "gasto_desde": 3000,
+        "ctr_menor_a": 0.8
+      },
+      "ganador": {
+        "resultados_min": 5,
+        "costo_max": 1500,
+        "ctr_min": 1.5
+      },
+      "fatiga": {
+        "frecuencia_7d_mayor_a": 3,
+        "costo_7d_vs_historico_mayor_a": 1.5
+      }
+    },
+    "limites": {
+      "nunca_apagar_el_ultimo_anuncio_activo_del_conjunto": true,
+      "max_apagados_por_dia": 5,
+      "subida_max_presupuesto_escala_por_dia": 0.2,
+      "en_modo_auto_solo_puede": [
+        "pausar anuncios"
+      ]
+    }
+  },
+  "laboratorio": {
+    "anuncios_nuevos_por_semana": 6,
+    "max_anuncios_activos": 8
+  },
+  "presupuesto_diario_total": 5000
+}
