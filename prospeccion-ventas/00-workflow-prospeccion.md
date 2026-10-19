@@ -152,7 +152,8 @@ Un entrante vale cinco contactos en frío. Reglas:
 3. Canal          Lo que la empresa publica como canal principal manda:
                   inmobiliaria → WhatsApp · legal/contable/RR.HH./seguros → email
                   (+ LinkedIn) · estudio chico sin correo → llamada.
-4. Mensaje        3 partes, ≤ 6 líneas: contexto (quién soy y por qué le escribo, con un
+4. Mensaje        3 partes, ≤ 6 líneas: contexto ("Gabriel, de Influence Chile, una agencia de
+                  marketing y automatización con IA" y por qué le escribo, con un
                   dato público y neutro de ellos) · qué hacemos en una frase · una pregunta
                   de sí o no. Sin suponer sus problemas, sin cifras de su equipo, sin
                   "trabajo con…" si no hay clientes que mostrar. Sin precios ni adjuntos.
