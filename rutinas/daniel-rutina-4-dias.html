@@ -1,0 +1,699 @@
+<title>Rutina Daniel 4 Días</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style id="page-style">
+  /* Layout: una columna de lectura (max 920px). Cabecera oscura, tira semanal,
+     glosario de técnicas, 5 bloques de sesión con tabla y notas finales.
+     El contenido se renderiza desde el JSON #routine-data; el modo edición
+     (solo para quien puede escribir el artefacto) republica la página. */
+  :root {
+    --bg: #F2F4F7;
+    --surface: #FFFFFF;
+    --surface-2: #E9EDF3;
+    --ink: #13171E;
+    --muted: #5A6373;
+    --line: #D5DAE2;
+    --accent: #1B55D4;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E1E9FB;
+    --danger: #B42318;
+    --head-bg: #13171E;
+    --head-ink: #F4F6FA;
+    --head-muted: #9AA4B5;
+    --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+    --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
+      --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743; --danger: #F08A80;
+      --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5;
+    --line: #2A303B; --accent: #5E8EF2; --accent-ink: #0B1220; --accent-soft: #1A2743; --danger: #F08A80;
+    --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin: 0; }
+  .wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 0 96px; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
+  p { margin: 0; }
+  .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+  .head { background: var(--head-bg); color: var(--head-ink); margin-inline: -16px; padding: 36px 16px 32px; }
+  .head-in { max-width: 888px; margin: 0 auto; display: grid; gap: 22px; }
+  .head .eyebrow { color: var(--head-muted); }
+  .head h1 { font-size: clamp(44px, 9vw, 84px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; }
+  .head h1 span { color: var(--accent); }
+  .split-line { font-family: var(--font-display); font-size: clamp(18px, 3.2vw, 24px); font-weight: 500; color: var(--head-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .split-line b { color: var(--head-ink); font-weight: 700; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: #2A303B; border: 1px solid #2A303B; }
+  .fact { background: var(--head-bg); padding: 12px 14px; display: grid; gap: 2px; }
+  .fact .k { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--head-muted); font-weight: 600; }
+  .fact .v { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .fact .v small { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--head-muted); margin-left: 6px; }
+
+  section { margin-top: 40px; }
+  .sec-title { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 18px; }
+  .sec-title h2 { font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .sec-title .eyebrow { margin-left: auto; }
+
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day { background: var(--surface); border: 1px solid var(--line); padding: 10px 8px; min-height: 92px; display: grid; align-content: start; gap: 4px; }
+  .day .d { font-family: var(--font-display); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .day .n { font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+  .day .s { font-size: 12px; color: var(--muted); }
+  .day.on { border-top: 4px solid var(--accent); }
+  .day.off { background: var(--surface-2); border-style: dashed; }
+  .day.off .n { color: var(--muted); font-weight: 500; }
+  @media (max-width: 560px) { .week { grid-template-columns: repeat(4, 1fr); } }
+  .note { color: var(--muted); font-size: 14px; margin-top: 12px; max-width: 65ch; }
+
+  .guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .g { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .g .t { font-family: var(--font-display); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .g p { font-size: 14px; color: var(--muted); }
+
+  .session { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); }
+  .s-head { display: grid; grid-template-columns: auto 1fr; border-bottom: 1px solid var(--line); }
+  .s-num { background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; font-size: 40px; padding: 14px 18px; display: grid; place-items: center; min-width: 88px; line-height: 1; }
+  .s-num small { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .s-meta { padding: 14px 18px; display: grid; gap: 4px; min-width: 0; }
+  .s-meta h3 { font-size: clamp(26px, 5vw, 34px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .s-meta h3 small { font-family: var(--font-display); font-size: 0.5em; font-weight: 600; color: var(--muted); letter-spacing: 0.1em; margin-left: 10px; }
+  .s-meta .focus { font-size: 14px; color: var(--muted); }
+  .s-meta .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .chip { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; background: var(--accent-soft); color: var(--ink); padding: 3px 8px; }
+
+  .tbl { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 600px; }
+  th { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 600; background: var(--surface-2); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.ex { min-width: 250px; }
+  td.ex .name { font-weight: 600; }
+  td.ex .cue { font-size: 13px; color: var(--muted); margin-top: 2px; max-width: 46ch; }
+  td.c { text-align: center; white-space: nowrap; }
+  td.c.big { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+  td.tech { min-width: 150px; font-size: 13px; }
+  td.tech .tag { display: inline-block; font-family: var(--font-display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--accent); }
+  td.tech .ta { color: var(--muted); display: block; margin-top: 2px; }
+  td.load { min-width: 80px; }
+  td.load .box { height: 26px; border: 1px dashed var(--line); background: var(--bg); }
+  th.c { text-align: center; }
+  .s-foot { padding: 12px 18px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
+  .s-foot b { color: var(--ink); }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .cols h3 { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; }
+  ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+  li { max-width: 65ch; }
+  .foot { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 20px; }
+
+  /* Modo edición */
+  .editing [data-f] { outline: 1px dashed var(--accent); outline-offset: 1px; background: var(--accent-soft); min-height: 1.4em; cursor: text; }
+  .editing [data-f]:focus { outline: 2px solid var(--accent); }
+  .editing [data-f]:empty::before { content: attr(data-ph); color: var(--muted); opacity: .7; }
+  .editing td.c { white-space: normal; }
+  .editing td.tech .ta { margin-top: 6px; }
+  .rm { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--danger); width: 30px; height: 30px; cursor: pointer; }
+  .rm:hover, .rm:focus-visible { border-color: var(--danger); outline: none; }
+  .add-row { margin: 10px 18px 14px; font: 600 13px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; border: 1px dashed var(--accent); background: transparent; color: var(--accent); padding: 8px 12px; cursor: pointer; }
+  .add-row:hover, .add-row:focus-visible { background: var(--accent-soft); outline: none; }
+
+  .toolbar { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--head-bg); color: var(--head-ink); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; z-index: 10; border-top: 1px solid #2A303B; }
+  .toolbar .st { font-size: 13px; color: var(--head-muted); margin-right: auto; min-width: 0; }
+  .toolbar button { font: 700 14px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .toolbar button.ghost { background: transparent; color: var(--head-ink); border-color: #4A5260; }
+  .toolbar button:disabled { opacity: .55; cursor: default; }
+  .toolbar button:focus-visible { outline: 2px solid var(--head-ink); outline-offset: 2px; }
+
+  @media print {
+    body { background: #fff; color: #000; font-size: 12px; }
+    .head { background: #000 !important; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .session, section { break-inside: avoid; page-break-inside: avoid; }
+    table { min-width: 0; }
+    .toolbar { display: none; }
+  }
+</style>
+
+<script type="application/json" id="routine-data">
+{
+ "titulo": "Rutina Daniel 4 Días",
+ "cliente": "Daniel",
+ "subtitulo": "4 días",
+ "eyebrow": "Planificación de entrenamiento · Rutina 4 días",
+ "semanaEyebrow": "Orden sugerido",
+ "semana": [
+  {
+   "d": "Lun",
+   "n": "Inferior A",
+   "s": "RDL · hack · cuádriceps · gemelo",
+   "on": true
+  },
+  {
+   "d": "Mar",
+   "n": "Superior A",
+   "s": "Dominadas · press · hombro · brazos",
+   "on": true
+  },
+  {
+   "d": "Mié",
+   "n": "Descanso",
+   "s": "",
+   "on": false
+  },
+  {
+   "d": "Jue",
+   "n": "Inferior B",
+   "s": "Búlgaras · femoral · péndulo",
+   "on": true
+  },
+  {
+   "d": "Vie",
+   "n": "Superior B",
+   "s": "Banca · barra T · fondos · bíceps",
+   "on": true
+  },
+  {
+   "d": "Sáb",
+   "n": "Descanso",
+   "s": "",
+   "on": false
+  },
+  {
+   "d": "Dom",
+   "n": "Descanso",
+   "s": "",
+   "on": false
+  }
+ ],
+ "notaSemana": "Cuatro sesiones repartidas en dos pares inferior/superior. Las versiones A y B cambian los ejercicios para repartir el estímulo. El orden sugerido deja un día libre entre cada par, pero puedes mover los días siempre que no juntes dos inferiores seguidos.",
+ "glosario": [
+  {
+   "t": "RIR · Reps en reserva",
+   "p": "Repeticiones que podrías hacer y no haces. RIR 0 es llegar al fallo; RIR 2 es parar con 2 reps en el tanque."
+  },
+  {
+   "t": "Top set (TS)",
+   "p": "La serie principal del ejercicio: la más pesada dentro del rango de repeticiones marcado."
+  },
+  {
+   "t": "Load set (LS)",
+   "p": "Serie de carga: pocas repeticiones (2–6) con más peso que el top set. Técnica impecable."
+  },
+  {
+   "t": "Back-off (BO)",
+   "p": "Serie final más ligera y con más repeticiones, para sumar volumen después del trabajo pesado."
+  }
+ ],
+ "dias": [
+  {
+   "nombre": "Inferior A",
+   "dia": "Lunes",
+   "focus": "Cadena posterior y cuádriceps con el hack como ejercicio principal.",
+   "chips": [
+    "Isquios",
+    "Glúteo",
+    "Cuádriceps",
+    "Abductores",
+    "Gemelo"
+   ],
+   "ejercicios": [
+    {
+     "nombre": "Peso muerto rumano (RDL)",
+     "nota": "Cadera atrás, espalda neutra, barra pegada a las piernas.",
+     "series": "3",
+     "reps": "6–8",
+     "tag": "RIR 3–2",
+     "tecnica": "Empieza el bloque con RIR 3 y acércate a RIR 2 conforme avanzan las semanas."
+    },
+    {
+     "nombre": "Hack squat",
+     "nota": "Pies a media altura de la plataforma, espalda apoyada, baja profundo.",
+     "series": "3",
+     "reps": "6–8 · 2–4 · 10–12",
+     "tag": "Top · Load · Back-off",
+     "tecnica": "Serie 1 top set 6–8 · serie 2 load set 2–4 · serie 3 back-off 10–12. Todas a RIR 0."
+    },
+    {
+     "nombre": "Abductores en máquina",
+     "nota": "Torso ligeramente inclinado adelante, pausa breve en la apertura.",
+     "series": "2",
+     "reps": "15",
+     "tag": "RIR 2",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Extensión de cuádriceps",
+     "nota": "Pausa de 1 segundo arriba, baja controlado.",
+     "series": "3",
+     "reps": "12",
+     "tag": "RIR 1",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Elevación de gemelo",
+     "nota": "Estira abajo 1 segundo y sube hasta la punta.",
+     "series": "4",
+     "reps": "12",
+     "tag": "RIR 0",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Abdomen",
+     "nota": "El ejercicio que prefieras: crunch en polea, rueda o elevación de piernas.",
+     "series": "2",
+     "reps": "10–15",
+     "tag": "Opcional",
+     "tecnica": "Hazlo si te queda energía; no sustituye a nada de lo anterior."
+    }
+   ],
+   "foot": "Descansos: 2–3 min en RDL y hack; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Superior A",
+   "dia": "Martes",
+   "focus": "Tirón vertical, empuje inclinado y trabajo de hombro y brazos al fallo.",
+   "chips": [
+    "Dorsal",
+    "Pecho",
+    "Hombro",
+    "Bíceps",
+    "Tríceps"
+   ],
+   "ejercicios": [
+    {
+     "nombre": "Dominadas (pull ups)",
+     "nota": "Pecho hacia la barra, sin balanceo. Lastre si sobran reps.",
+     "series": "3",
+     "reps": "10",
+     "tag": "RIR 1–2",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Press inclinado en Smith, agarre estrecho",
+     "nota": "Manos a la anchura de hombros, codos cerca del cuerpo, barra a la parte alta del pecho.",
+     "series": "4",
+     "reps": "8",
+     "tag": "RIR 2",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Jalón unilateral",
+     "nota": "Un brazo. Tira del codo hacia la cadera y estira completo arriba.",
+     "series": "3",
+     "reps": "6–8 · 3–6 · 10–15",
+     "tag": "Top · Load · Back-off",
+     "tecnica": "Por brazo. Serie 1 top set 6–8 · serie 2 load set 3–6 · serie 3 back-off 10–15. Todas a RIR 0."
+    },
+    {
+     "nombre": "Elevaciones laterales",
+     "nota": "El codo guía el movimiento, sin impulso.",
+     "series": "4",
+     "reps": "10",
+     "tag": "RIR 0",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Curl de bíceps",
+     "nota": "Codos fijos, sin balanceo del torso.",
+     "series": "3",
+     "reps": "8–10",
+     "tag": "RIR 0",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Extensión de tríceps sobre cabeza",
+     "nota": "Codos apuntando al techo, estira bien la cabeza larga del tríceps.",
+     "series": "2",
+     "reps": "12",
+     "tag": "RIR 0",
+     "tecnica": ""
+    }
+   ],
+   "foot": "Descansos: 2–3 min en dominadas, press y jalón; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Inferior B",
+   "dia": "Jueves",
+   "focus": "Trabajo unilateral, isquios y el péndulo como ejercicio principal de cuádriceps.",
+   "chips": [
+    "Aductores",
+    "Glúteo",
+    "Isquios",
+    "Cuádriceps",
+    "Lumbar"
+   ],
+   "ejercicios": [
+    {
+     "nombre": "Aductores en máquina",
+     "nota": "Cierra con control y pausa 1 segundo.",
+     "series": "2",
+     "reps": "15",
+     "tag": "RIR 2",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Sentadilla búlgara",
+     "nota": "Pie trasero en banco, torso levemente inclinado adelante.",
+     "series": "3",
+     "reps": "8 / pierna",
+     "tag": "RIR 2–3",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Curl femoral sentado",
+     "nota": "Cadera pegada al asiento, bajada controlada.",
+     "series": "4",
+     "reps": "10",
+     "tag": "RIR 0",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Sentadilla péndulo",
+     "nota": "Espalda pegada al respaldo, baja profundo sin despegar los talones.",
+     "series": "3",
+     "reps": "8 · 5 · 12",
+     "tag": "Top · Load · Back-off",
+     "tecnica": "Serie 1 top set 8 · serie 2 load set 5 · serie 3 back-off 12."
+    },
+    {
+     "nombre": "Hiperextensiones",
+     "nota": "Bisagra de cadera, sube hasta la línea del cuerpo sin forzar la lumbar.",
+     "series": "2",
+     "reps": "12",
+     "tag": "RIR 1",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Abdominales",
+     "nota": "Controla la bajada y exhala al contraer.",
+     "series": "3",
+     "reps": "10",
+     "tag": "",
+     "tecnica": ""
+    }
+   ],
+   "foot": "Descansos: 2–3 min en búlgaras y péndulo; 60–90 s en el resto."
+  },
+  {
+   "nombre": "Superior B",
+   "dia": "Viernes",
+   "focus": "Press banca pesado, remo, hombro y brazos con series al fallo.",
+   "chips": [
+    "Pecho",
+    "Espalda",
+    "Hombro",
+    "Tríceps",
+    "Bíceps"
+   ],
+   "ejercicios": [
+    {
+     "nombre": "Press banca",
+     "nota": "Escápulas retraídas, pies firmes. Descanso completo entre series.",
+     "series": "4",
+     "reps": "4–6",
+     "tag": "RIR 2",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Remo en barra T",
+     "nota": "Pecho alto, tira con los codos hacia atrás.",
+     "series": "4",
+     "reps": "8–12",
+     "tag": "",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Elevaciones laterales en polea",
+     "nota": "Cable por detrás del cuerpo, tensión constante.",
+     "series": "3",
+     "reps": "12",
+     "tag": "",
+     "tecnica": ""
+    },
+    {
+     "nombre": "Pullover",
+     "nota": "Brazos casi rectos, siente el dorsal en todo el recorrido.",
+     "series": "2",
+     "reps": "8–12 · 12–18",
+     "tag": "Top · Back-off",
+     "tecnica": "Serie 1 top set 8–12 · serie 2 back-off 12–18."
+    },
+    {
+     "nombre": "Fondos en paralelas",
+     "nota": "Baja profundo con control, sin dolor de hombro.",
+     "series": "3",
+     "reps": "Fallo",
+     "tag": "Al fallo",
+     "tecnica": "Anota las reps de cada serie."
+    },
+    {
+     "nombre": "Curl en predicador",
+     "nota": "Brazo totalmente apoyado, extensión completa abajo.",
+     "series": "3",
+     "reps": "6–8 · 2–6 · 12–15",
+     "tag": "Top · Load · Back-off",
+     "tecnica": "Serie 1 top set 6–8 · serie 2 load set 2–6 · serie 3 back-off 12–15. Todas a RIR 0."
+    }
+   ],
+   "foot": "Descansos: 3 min en press banca; 2 min en barra T; 60–90 s en el resto."
+  }
+ ],
+ "pautas": [
+  {
+   "h": "En cada sesión",
+   "items": [
+    "Calienta 5–8 min y haz 2–3 series de aproximación en el primer ejercicio del día.",
+    "Anota el peso en la columna de carga y las reps en las series al fallo.",
+    "RIR 0 significa llegar al fallo técnico: la última rep sale limpia y la siguiente ya no saldría."
+   ]
+  },
+  {
+   "h": "Progresión",
+   "items": [
+    "En los top sets, sube el peso cuando llegues al tope del rango con el RIR indicado.",
+    "El load set siempre pesa más que el top set; el back-off, menos.",
+    "Cualquier molestia articular: cambia el ejercicio por una variante y avísame."
+   ]
+  }
+ ]
+}
+</script>
+
+<div id="app"></div>
+
+<script id="app-script">
+(function () {
+  'use strict';
+  // Reset que el publicador añade en <head>; se replica tal cual al republicar la página.
+  var RESET = ':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  var FONT_LINKS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">\n';
+
+  var app = document.getElementById('app');
+  var state = JSON.parse(document.getElementById('routine-data').textContent);
+  var editing = false;
+  var artifactNs = null;
+  var toolbar = null;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  // Campo editable: en modo edición lleva contenteditable y placeholder.
+  function f(path, cls, text, ph, tag) {
+    tag = tag || 'span';
+    return '<' + tag + ' class="' + cls + '" data-f="' + path + '" data-ph="' + esc(ph) + '"' +
+      (editing ? ' contenteditable="true" spellcheck="false"' : '') + '>' + esc(text) + '</' + tag + '>';
+  }
+  function setPath(obj, path, value) {
+    var parts = path.split('.');
+    var cur = obj;
+    for (var i = 0; i < parts.length - 1; i++) cur = cur[parts[i]];
+    cur[parts[parts.length - 1]] = value;
+  }
+
+  function header(s) {
+    var days = s.dias;
+    var facts = '<div class="fact"><span class="k">Frecuencia</span><span class="v">' + days.length + ' sesiones<small>por semana</small></span></div>';
+    days.forEach(function (d) {
+      facts += '<div class="fact"><span class="k">' + esc(d.dia) + '</span><span class="v">' + esc(d.nombre) + '</span></div>';
+    });
+    var split = days.map(function (d) { return '<b>' + esc(d.nombre) + '</b>'; }).join(' · ');
+    return '<header class="head"><div class="head-in">' +
+      '<p class="eyebrow">' + esc(s.eyebrow) + '</p>' +
+      '<h1>' + esc(s.cliente) + '<br><span>' + esc(s.subtitulo) + '</span></h1>' +
+      '<p class="split-line">' + split + '</p>' +
+      '<div class="facts">' + facts + '</div></div></header>';
+  }
+
+  function week(s) {
+    var cells = s.semana.map(function (c) {
+      return '<div class="day ' + (c.on ? 'on' : 'off') + '"><span class="d">' + esc(c.d) + '</span><span class="n">' + esc(c.n) + '</span><span class="s">' + esc(c.s) + '</span></div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Estructura semanal</h2><span class="eyebrow">' + esc(s.semanaEyebrow || 'Semana tipo') + '</span></div>' +
+      '<div class="week">' + cells + '</div>' + f('notaSemana', 'note', s.notaSemana, 'Nota sobre la semana', 'p') + '</section>';
+  }
+
+  function glossary(s) {
+    var items = s.glosario.map(function (g, i) {
+      return '<div class="g">' + f('glosario.' + i + '.t', 't', g.t, 'Técnica') + f('glosario.' + i + '.p', '', g.p, 'Explicación', 'p') + '</div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Técnicas usadas en la rutina</h2></div><div class="guide">' + items + '</div></section>';
+  }
+
+  function session(d, i) {
+    var p = 'dias.' + i + '.';
+    var total = d.ejercicios.reduce(function (n, e) { return n + (parseInt(e.series, 10) || 0); }, 0);
+    var rows = d.ejercicios.map(function (e, j) {
+      var q = p + 'ejercicios.' + j + '.';
+      var tech;
+      if (editing) {
+        tech = f(q + 'tag', 'tag', e.tag, 'Técnica (opcional)') + f(q + 'tecnica', 'ta', e.tecnica, 'Instrucción de la técnica (opcional)');
+      } else {
+        tech = (e.tag ? '<span class="tag">' + esc(e.tag) + '</span>' : '') + (e.tecnica ? '<span class="ta">' + esc(e.tecnica) + '</span>' : '');
+      }
+      var last = editing
+        ? '<td class="load"><button type="button" class="rm" data-rm="' + i + '.' + j + '" title="Eliminar ejercicio" aria-label="Eliminar ejercicio">×</button></td>'
+        : '<td class="load"><div class="box"></div></td>';
+      return '<tr><td class="ex">' + f(q + 'nombre', 'name', e.nombre, 'Nombre del ejercicio', 'div') + f(q + 'nota', 'cue', e.nota, 'Instrucción técnica', 'div') + '</td>' +
+        f(q + 'series', 'c big', e.series, '0', 'td') + f(q + 'reps', 'c', e.reps, 'reps', 'td') +
+        '<td class="tech">' + tech + '</td>' + last + '</tr>';
+    }).join('');
+    var chips = d.chips.map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('');
+    var add = editing ? '<button type="button" class="add-row" data-add="' + i + '">+ Añadir ejercicio</button>' : '';
+    return '<article class="session"><div class="s-head"><div class="s-num"><small>Día</small>' + (i + 1) + '</div>' +
+      '<div class="s-meta"><h3>' + esc(d.nombre) + ' <small>' + esc(d.dia) + '</small></h3>' +
+      f(p + 'focus', 'focus', d.focus, 'Descripción de la sesión', 'p') +
+      '<div class="chips">' + chips + '</div></div></div>' +
+      '<div class="tbl"><table><thead><tr><th>Ejercicio</th><th class="c">Series</th><th class="c">Reps</th><th>Técnica / nota</th><th>' + (editing ? '' : 'Carga') + '</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' + add +
+      '<div class="s-foot"><b>Total:</b> ' + total + ' series · ' + f(p + 'foot', '', d.foot, 'Descansos y nota de la sesión') + '</div></article>';
+  }
+
+  function pautas(s) {
+    var cols = s.pautas.map(function (c, i) {
+      var lis = c.items.map(function (t, j) { return f('pautas.' + i + '.items.' + j, '', t, 'Pauta', 'li'); }).join('');
+      return '<div><h3>' + esc(c.h) + '</h3><ul>' + lis + '</ul></div>';
+    }).join('');
+    return '<section><div class="sec-title"><h2>Pautas</h2></div><div class="cols">' + cols + '</div></section>';
+  }
+
+  function footer(s) {
+    return '<footer class="foot"><span>' + esc(s.titulo) + '</span><span>' + s.dias.map(function (d) { return esc(d.nombre); }).join(' · ') + '</span></footer>';
+  }
+
+  function render() {
+    state.titulo = state.titulo || 'Rutina';
+    app.innerHTML = '<div class="wrap">' + header(state) + week(state) + glossary(state) +
+      state.dias.map(session).join('') + pautas(state) + footer(state) + '</div>';
+    document.body.classList.toggle('editing', editing);
+  }
+
+  // Lee los campos editados del DOM al estado (solo los valores, nunca el marcado).
+  // Texto tal cual se escribió (textContent no aplica el text-transform del CSS, innerText sí).
+  function plainText(node) {
+    var out = '';
+    for (var c = node.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === 3) out += c.data;
+      else if (c.nodeType === 1) out += ' ' + plainText(c) + ' ';
+    }
+    return out;
+  }
+  function collect() {
+    var els = app.querySelectorAll('[data-f]');
+    for (var i = 0; i < els.length; i++) {
+      setPath(state, els[i].getAttribute('data-f'), plainText(els[i]).replace(/\s+/g, ' ').trim());
+    }
+  }
+
+  // Documento completo regenerado desde el estado, con la misma forma que publica la herramienta.
+  function buildDoc(s) {
+    var json = JSON.stringify(s, null, 1).replace(/</g, '\\u003c');
+    var style = document.getElementById('page-style').textContent;
+    var script = document.getElementById('app-script').textContent;
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET + '</style></head><body>\n' +
+      '<title>' + esc(s.titulo) + '</title>\n' + FONT_LINKS +
+      '<style id="page-style">' + style + '</style>\n\n' +
+      '<script type="application/json" id="routine-data">\n' + json + '\n<\/script>\n\n' +
+      '<div id="app"></div>\n\n' +
+      '<script id="app-script">' + script + '<\/script>\n' +
+      '</body></html>';
+  }
+
+  function setStatus(msg) { if (toolbar) toolbar.querySelector('.st').textContent = msg; }
+
+  function showTools() {
+    toolbar = document.createElement('div');
+    toolbar.className = 'toolbar';
+    toolbar.innerHTML = '<span class="st">Solo tú ves esta barra. Pulsa Editar para cambiar textos, series, reps e instrucciones.</span>' +
+      '<button type="button" class="ghost" id="btn-cancel" hidden>Cancelar</button>' +
+      '<button type="button" id="btn-edit">Editar</button>' +
+      '<button type="button" id="btn-save" hidden>Guardar</button>';
+    document.body.appendChild(toolbar);
+    var bEdit = toolbar.querySelector('#btn-edit'), bSave = toolbar.querySelector('#btn-save'), bCancel = toolbar.querySelector('#btn-cancel');
+    bEdit.addEventListener('click', function () {
+      editing = true; render();
+      bEdit.hidden = true; bSave.hidden = false; bCancel.hidden = false;
+      setStatus('Toca cualquier texto resaltado para cambiarlo. Guardar publica la nueva versión para Andrés.');
+    });
+    bCancel.addEventListener('click', function () {
+      editing = false; render();
+      bEdit.hidden = false; bSave.hidden = true; bCancel.hidden = true;
+      setStatus('Cambios descartados.');
+    });
+    bSave.addEventListener('click', function () { save(bSave, bCancel); });
+  }
+  function hideTools() { if (toolbar) { toolbar.remove(); toolbar = null; } editing = false; render(); }
+
+  function save(bSave, bCancel) {
+    collect();
+    var html = buildDoc(state);
+    bSave.disabled = true; bCancel.disabled = true;
+    setStatus('Guardando…');
+    artifactNs.publish(html).then(function () {
+      setStatus('Guardado. Recargando la página…');
+    }).catch(function (err) {
+      var code = err && err.code;
+      if (code === 'conflict') { setStatus('Alguien guardó otra versión antes. Se recarga con la última.'); return; }
+      if (code === 'not_writer' || code === 'not_granted' || code === 'not_declared') { hideTools(); return; }
+      bSave.disabled = false; bCancel.disabled = false;
+      setStatus('No se pudo guardar (' + (code || 'error') + '). Tus cambios siguen en pantalla, prueba de nuevo.');
+    });
+  }
+
+  app.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-rm],[data-add]');
+    if (!t || !editing) return;
+    collect();
+    if (t.hasAttribute('data-rm')) {
+      var ij = t.getAttribute('data-rm').split('.');
+      state.dias[+ij[0]].ejercicios.splice(+ij[1], 1);
+    } else {
+      state.dias[+t.getAttribute('data-add')].ejercicios.push({ nombre: '', nota: '', series: '3', reps: '10', tag: '', tecnica: '' });
+    }
+    render();
+    if (t.hasAttribute('data-add')) {
+      var rows = app.querySelectorAll('.session')[+t.getAttribute('data-add')].querySelectorAll('tbody tr');
+      var cell = rows[rows.length - 1].querySelector('.name');
+      if (cell) cell.focus();
+    }
+  });
+
+  render();
+
+  // Herramientas de edición solo cuando el visor puede escribir el artefacto.
+  if (window.claude && typeof window.claude.use === 'function') {
+    Promise.all([window.claude.use('artifact'), window.claude.use('user')]).then(function (r) {
+      var art = r[0], user = r[1];
+      if (!art || !user) return;
+      return user.canEdit().then(function (can) { if (can) { artifactNs = art; showTools(); } });
+    }).catch(function () {});
+  }
+})();
+</script>
