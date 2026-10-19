@@ -482,6 +482,70 @@ Si contesta la persona que decide: se le dice lo mismo y se le pregunta si prefi
 
 ---
 
+## NUEVAS DEL 19-OCT — 8 empresas (todas B)
+
+Mismo formato v3. Confirmar lo marcado antes de escribir.
+
+**ZM Corretaje Inmobiliario — Alejandra Zuleta** · WhatsApp +56 9 6333 3665 — *confirmar si tiene equipo*
+> Hola Alejandra, soy Gabriel, de Influence Chile. Te escribo porque vi que ZM trabaja venta, arriendo y arriendo diario en Antofagasta y Calama.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita o la reserva agendada.
+>
+> ¿Te interesaría ver cómo funciona? Son 15 minutos.
+
+**Rojo Propiedades** · WhatsApp +56 9 9538 0795 — *identificar dueño*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Rojo Propiedades trabaja venta, arriendo y temporada en varias zonas de la Región de Valparaíso.
+>
+> Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+**Leal Propiedades Quilpué** · WhatsApp +56 9 8148 0362 — *confirmar si Irene Leal es la dueña*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Leal Propiedades trabaja arriendo, venta y administración en Quilpué.
+>
+> Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
+>
+> ¿Les interesaría conversarlo 15 minutos?
+
+**Servicont Asesorías & Contabilidad** · WhatsApp +56 9 7760 6322 — *identificar dueño*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Servicont atiende a pymes y personas en Osorno con atención personalizada.
+>
+> Implementamos automatizaciones para estudios contables: recordatorios mensuales a cada cliente y recepción ordenada de documentos, para que la atención personal se use en lo que importa. Sin cambiar su software.
+>
+> ¿Les interesaría conversarlo 15 minutos?
+
+**Contabilidad Astor** · WhatsApp +56 9 4812 6677 · asistente@contabilidadastor.cl — *identificar socio*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que Contabilidad Astor atiende pymes de todo Chile y recibe las cotizaciones por WhatsApp.
+>
+> Implementamos un asistente que hace las preguntas iniciales de cada cotización según el tipo de empresa y les entrega la solicitud completa para responder.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+**Águila & Cía. Abogados — Mario Enrique Águila** · correo general del sitio — *cautela: usan IA solo en el blog*
+> **Asunto:** Atención de consultas nuevas en Águila & Cía.
+>
+> Estimado Mario Enrique, soy Gabriel, de Influence Chile. Le escribo porque vi que Águila & Cía. atiende a personas y empresas en varias áreas del derecho desde Puerto Montt.
+>
+> Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área y con los antecedentes básicos, y se agenda directo con el abogado que corresponde.
+>
+> ¿Le interesaría conversarlo 15 minutos?
+
+**Asesoría Legal Puerto Montt — Edgar Alvarado** · WhatsApp +56 9 9323 2118 — *son dos abogados*
+> Hola Edgar, soy Gabriel, de Influence Chile. Te escribo porque vi que Asesoría Legal Puerto Montt atiende a pymes y personas en varias áreas.
+>
+> Implementamos un asistente de WhatsApp para estudios jurídicos que hace las preguntas iniciales de cada consulta, identifica el área y agenda la reunión con ustedes.
+>
+> ¿Te interesaría verlo en 15 minutos?
+
+**Centro de Kinesiología Más Salud** · WhatsApp +56 9 4190 8181 — *confirmar cantidad de profesionales*
+> Hola, soy Gabriel, de Influence Chile. Les escribo porque vi que en Más Salud las horas y cotizaciones de kinesiología se toman por WhatsApp.
+>
+> Implementamos un asistente de WhatsApp para centros de salud que agenda horas a cualquier hora, pide la orden y la previsión, y envía el recordatorio al paciente.
+>
+> ¿Les interesaría ver cómo funciona? Son 15 minutos.
+
+---
+
 ## Verificar antes de cualquier mensaje
 
 **Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
@@ -494,12 +558,12 @@ persona, pasa a C.
 
 | Canal | A | B | Total |
 |---|---|---|---|
-| WhatsApp | 7 | 20 | 27 |
-| Email | 8 | 10 | 18 |
+| WhatsApp | 7 | 27 | 34 |
+| Email | 8 | 11 | 19 |
 | Llamada (y luego correo) | 4 | 3 | 7 |
 | LinkedIn | 1 | 2 | 3 |
 | Verificar antes | 0 | 1 | 1 |
-| **Total** | **20** | **36** | **56** |
+| **Total** | **20** | **44** | **64** |
 
 Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
 invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y
