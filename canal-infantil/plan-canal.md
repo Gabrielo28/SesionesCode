@@ -116,7 +116,7 @@ profesional, los niños los interpretan voces adultas de personajes animados.
 | Mamá Pompón | Jhenny - Cozy, Nurturing (latino neutro, cuentos infantiles) | `EDitztUwd7lban76PAZs` |
 | Tobi | Carito - Silly & Comical (latino) | `WtRYgQbAJ4i0AckgdVbq` |
 | Raffa | Blackie - Sweet and Friendly (latino, personaje animado) | `iFhPOZcajR7W3sDL39qJ` |
-| Papá Pompón | Pendiente (opciones: Charlee, Alejandro, Jahdiel) | — |
+| Papá Pompón | Gabrielo (voz clonada del creador del canal, español chileno) | `zSBw9G2zyuOd68yDdWPY` |
 | Abuela Lela | Pendiente | — |
 
 Pruebas de audio en `voces/`. Modelo recomendado: `eleven_v4` (permite marcar emociones

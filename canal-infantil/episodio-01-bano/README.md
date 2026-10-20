@@ -2,7 +2,7 @@
 
 ## Audio de diálogos (`audio/`)
 
-Una línea por archivo, en orden. Voces: Raffa = Blackie, Tobi = Carito, Mamá = Jhenny.
+Una línea por archivo, en orden. Voces: Raffa = Blackie, Tobi = Carito, Mamá = Jhenny, Papá = Gabrielo.
 
 | # | Personaje | Línea | Escena |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Una línea por archivo, en orden. Voces: Raffa = Blackie, Tobi = Carito, Mamá =
 | 08 | Tobi | Agua... fría. | 2 |
 | 09 | Mamá | Ah, tienes miedo de que el agua esté fría. Vamos a ver juntos. | 2 |
 | 10 | Mamá | Mira... Calentita. | 3 |
-| 11 | Papá | ¿Alguien pidió burbujas? | 3 (**pendiente: falta elegir voz**) |
+| 11 | Papá | ¿Alguien pidió burbujas? | 3 (voz Gabrielo; otras tomas en `tomas/`) |
 | 12 | Tobi | ¡Calentita! | 3 |
 | 13 | Raffa | ¡Y con burbujas! | 3 |
 | — | — | Canción "Agua, jabón, burbujas" | 4 (**pendiente**) |
