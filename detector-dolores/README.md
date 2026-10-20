@@ -115,6 +115,20 @@ octubre de 2026 con estos cambios:
 - **Medición lista** en `medicion.js`: pegas tu ID de Google Analytics y tu píxel de Meta
   y queda midiendo clics a WhatsApp y uso del escáner.
 - **Modo taller oculto** al público: se abre con `influencechile.cl/escaner/?taller`.
+- **Una sola herramienta de diagnóstico**: se quitó el test de 5 preguntas, porque el
+  escáner hace lo mismo y además recomienda las 5 mejores soluciones.
+- **Mensaje de soluciones**: el inicio dice "Encontramos lo que le está costando ventas a
+  tu negocio. Y lo reparamos", con el escáner como acción principal y agendar como
+  secundaria. Servicios abre en "Sitios y automatización".
+- **Menos ruido**: menú de 8 a 6 ítems, el bloque del escáner explica los 3 pasos
+  (diagnóstico, reparación, operación) y el cotizador queda plegado. Se abre solo
+  cuando alguien toca "Cotizar este plan" u otro botón que lleve a él. En celular la
+  página baja de unas 23 a unas 19 pantallas.
+- **Marketing en una sola sección con pestañas**: contenido, anuncios e influencers.
+- **Formulario de agendar más corto**: sin "teléfono o correo" (termina en WhatsApp) y con
+  la hora legible en el celular.
+- **Cotizador con las soluciones primero**: sitios, WhatsApp y automatización pasan al
+  grupo 1. En total la página baja de unas 23 a unas 15 pantallas en el celular.
 
 Para publicar: Netlify → tu sitio → Deploys → arrastrar la carpeta `influencechile-web`.
 Si tienes cambios en tu copia local de la web que no estén publicados, aplica estos
