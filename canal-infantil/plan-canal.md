@@ -115,7 +115,7 @@ profesional, los niños los interpretan voces adultas de personajes animados.
 |---|---|---|
 | Mamá Pompón | Jhenny - Cozy, Nurturing (latino neutro, cuentos infantiles) | `EDitztUwd7lban76PAZs` |
 | Tobi | Carito - Silly & Comical (latino) | `WtRYgQbAJ4i0AckgdVbq` |
-| Raffa | Pendiente (opciones: Denisse, Betty, Blackie) | — |
+| Raffa | Blackie - Sweet and Friendly (latino, personaje animado) | `iFhPOZcajR7W3sDL39qJ` |
 | Papá Pompón | Pendiente (opciones: Charlee, Alejandro, Jahdiel) | — |
 | Abuela Lela | Pendiente | — |
 
