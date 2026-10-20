@@ -126,19 +126,31 @@ como `[cheerful]` o `[shy]` dentro del texto).
 
 ## 3. Formato de cada corto
 
-**Duración:** 2 a 4 minutos (un corto) + recopilaciones de 20 a 60 minutos que juntan episodios.
-Las recopilaciones son las que más reproducciones acumulan en canales infantiles.
+**Duración: unos 5 minutos por capítulo**, con una sola enseñanza. Además, recopilaciones de
+20 a 60 minutos que juntan capítulos (son las que más reproducciones acumulan).
 
-**Estructura fija (siempre igual):**
+**Estructura fija de 5 minutos (siempre igual):**
 
 | Tiempo | Bloque | Qué pasa |
 |---|---|---|
-| 0:00-0:10 | Saludo | "¡Hola, amiguitos! ¡Soy Raffa!" + jingle de 3 segundos |
-| 0:10-0:40 | Situación | Algo cotidiano y un pequeño problema (Tobi no quiere bañarse) |
-| 0:40-1:40 | Intento | Lo hacen mal o tienen una emoción (llanto, enojo, miedo) |
-| 1:40-2:20 | Solución | Un adulto ayuda con algo simple y concreto, nunca con un reto |
-| 2:20-3:00 | Canción | 4 a 8 versos que repiten la enseñanza, con gestos que el niño puede imitar |
-| 3:00-3:10 | Cierre | "¡Chao, amiguitos!" + mismo jingle |
+| 0:00-0:15 | Entrada | Jingle + "¡Hola, amiguitos! ¡Soy Raffa!" + presentación |
+| 0:15-1:20 | Escena 1: juego | Algo divertido con un amigo (Pipo) o la familia; termina en el problema |
+| 1:20-2:25 | Escena 2: el problema | Emoción (miedo, enojo, celos). Raffa le pregunta al niño "¿por qué será?". Aparece un adulto o la Abuela Lela con un consejo |
+| 2:25-3:35 | Escena 3: solución + English Time | Se resuelve con algo simple y concreto. Segmento de inglés: contar y 3-5 palabras |
+| 3:35-4:25 | Canción | 2 estrofas + coro que repiten la enseñanza, con gestos para imitar |
+| 4:25-4:50 | Cierre | Raffa resume: "Hoy aprendimos que...". Chiste final con Coco |
+| 4:50-5:00 | Despedida | "¡Chao, amiguitos!" + jingle |
+
+Cómo se llenan 5 minutos sin aburrir: más personajes con algo que hacer (amigo, abuela,
+mascota), momentos sin diálogo (juego, música, risas), preguntas al niño con pausas, el
+segmento de inglés y la canción. Nunca agregar una segunda enseñanza.
+
+**Personajes recurrentes de apoyo:**
+
+| Personaje | Rol | Diseño | Voz |
+|---|---|---|---|
+| **Pipo** | Perrito vecino, 4 años, mejor amigo de Raffa. Juguetón, siempre con botas de agua | Crema con mancha café en un ojo, overol azul, botas rojas | Charlee - Playful Character (`cQIBhnciTWugZAxX52uW`), por confirmar |
+| **Abuela Lela** | Aparece en persona o por videollamada con un consejo o una historia | Ver arriba | Por elegir |
 
 **Reglas de guion para 1 a 5 años:**
 
@@ -226,7 +238,7 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 ## 5. Guiones completos de los dos primeros episodios
 
-### Episodio 1: "Hora del baño" (~3 min)
+### Episodio 1: "Hora del baño" (versión corta; la de 5 minutos está en `episodio-01-bano/guion.md`)
 
 **ESCENA 1: Living de la casa. Tarde.**
 
