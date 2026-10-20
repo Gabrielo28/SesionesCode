@@ -25,3 +25,7 @@ detector-dolores/centro/cola-csv/
 
 # Centro de escaneo: datos locales (prospectos y seguimiento)
 detector-dolores/datos/
+
+# Canal infantil: video maestro (>100 MB, límite de GitHub) y caché de Python
+canal-infantil/episodio-01-bano/episodio-01-hora-del-bano.mp4
+canal-infantil/**/__pycache__/
