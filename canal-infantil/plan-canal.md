@@ -51,11 +51,11 @@ formas redondas (nada puntiagudo ni agresivo).
 
 | Personaje | Edad / rol | Rasgo | Diseño |
 |---|---|---|---|
-| **Lulú** | 4 años, protagonista | Curiosa, pregunta "¿por qué?" todo el tiempo | Gatita calicó, vestido rosado, rosita en la oreja |
-| **Tobi** | 2 años, hermanito | Imita a Lulú, dice pocas palabras, muy risueño | Gatito blanco con naranjo, pijama azul |
+| **Raffa** | 4 años, protagonista | Curiosa, pregunta "¿por qué?" todo el tiempo | Gatita calicó, vestido rosado, rosita en la oreja |
+| **Tobi** | 2 años, hermanito | Imita a Raffa, dice pocas palabras, muy risueño | Gatito blanco con naranjo, pijama azul |
 | **Mamá Pompón** | Mamá | Paciente, canta | Atigrada naranja, chaleco morado, jeans |
 | **Papá Pompón** | Papá | Juguetón, torpe a propósito (da risa) | Atigrado gris, chaleco verde, jeans |
-| **Abuela Nona** | Abuela | Cuenta historias, aparece en episodios especiales | Gata blanca crema, lentes redondos, chaleco lila |
+| **Abuela Lela** | Abuela | Cuenta historias, aparece en episodios especiales | Gata blanca crema, lentes redondos, chaleco lila |
 | **Coco** | Mascota | No habla, reacciona; recurso cómico | Pollito amarillo esponjoso |
 
 Reglas de consistencia (clave si se usa IA para generar imágenes y video):
@@ -104,7 +104,7 @@ Las recopilaciones son las que más reproducciones acumulan en canales infantile
 
 | Tiempo | Bloque | Qué pasa |
 |---|---|---|
-| 0:00-0:10 | Saludo | "¡Hola, amiguitos! ¡Soy Lulú!" + jingle de 3 segundos |
+| 0:00-0:10 | Saludo | "¡Hola, amiguitos! ¡Soy Raffa!" + jingle de 3 segundos |
 | 0:10-0:40 | Situación | Algo cotidiano y un pequeño problema (Tobi no quiere bañarse) |
 | 0:40-1:40 | Intento | Lo hacen mal o tienen una emoción (llanto, enojo, miedo) |
 | 1:40-2:20 | Solución | Un adulto ayuda con algo simple y concreto, nunca con un reto |
@@ -142,10 +142,10 @@ Ordenados por demanda: los primeros son temas que los padres buscan mucho.
 | 11 | Probar comida nueva | Probar sin miedo, verduras | "Un mordisquito" |
 | 12 | Gracias y por favor | Palabras mágicas | "Palabras mágicas" |
 
-### Segmento fijo: "English Time with Lulú" (inglés para principiantes)
+### Segmento fijo: "English Time with Raffa" (inglés para principiantes)
 
 Cada episodio incluye **30 a 45 segundos de inglés** dentro de la historia, no como una clase
-aparte: Lulú cuenta objetos de la escena o nombra cosas, primero en español y luego en inglés.
+aparte: Raffa cuenta objetos de la escena o nombra cosas, primero en español y luego en inglés.
 Además, cada cierto tiempo sale un video dedicado solo al inglés.
 
 **Números del 1 al 20, en bloques que avanzan poco a poco:**
@@ -156,7 +156,7 @@ Además, cada cierto tiempo sale un video dedicado solo al inglés.
 | 2 | 6 a 10 | Dos manos | Contar bloques al ordenar |
 | 3 | 11 a 15 | Objetos grupales | Contar manzanas en la feria |
 | 4 | 16 a 20 | Saltos y movimiento | Contar saltos en el patio |
-| Repaso | 1 a 20 | Canción completa | "Count to Twenty with Lulú" (video propio + Short) |
+| Repaso | 1 a 20 | Canción completa | "Count to Twenty with Raffa" (video propio + Short) |
 
 Regla: el número **aparece en pantalla** (grande, con su cantidad de objetos al lado), se dice
 en español y en inglés, y el niño tiene una pausa de 1 a 2 segundos para repetirlo.
@@ -180,10 +180,10 @@ bubbles, towel*; en "Lavarse los dientes", *teeth, brush, water, mouth, smile*.
 
 **Videos dedicados al inglés (1 cada 2 semanas):**
 
-1. *Count 1 to 5 with Lulú*: patitos en la tina.
+1. *Count 1 to 5 with Raffa*: patitos en la tina.
 2. *Count 6 to 10*: bloques y juguetes.
 3. *Colors with Tobi*: globos de colores.
-4. *Farm Animals*: visita a la granja de la Abuela Nona.
+4. *Farm Animals*: visita a la granja de la Abuela Lela.
 5. *Count 11 to 20*: saltos en el parque.
 6. *My Family*: presentación de la familia.
 7. *Body Parts Song*: *head, shoulders...* en versión propia.
@@ -201,13 +201,13 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 **ESCENA 1: Living de la casa. Tarde.**
 
-> *(Jingle de entrada. Lulú aparece saltando.)*
+> *(Jingle de entrada. Raffa aparece saltando.)*
 >
-> **LULÚ:** ¡Hola, amiguitos! ¡Soy Lulú!
+> **RAFFA:** ¡Hola, amiguitos! ¡Soy Raffa!
 >
 > *(Tobi entra corriendo, embarrado de pies a cabeza. Coco, el pollito, lo sigue con barro también.)*
 >
-> **LULÚ:** ¡Tobi! ¡Estás todo sucio!
+> **RAFFA:** ¡Tobi! ¡Estás todo sucio!
 >
 > **TOBI:** *(se ríe)* ¡Barro! ¡Barro!
 
@@ -219,7 +219,7 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 >
 > *(Tobi se esconde detrás del sillón. Solo se ven sus orejas.)*
 >
-> **LULÚ:** *(a cámara)* Tobi no quiere bañarse. ¿Por qué será?
+> **RAFFA:** *(a cámara)* Tobi no quiere bañarse. ¿Por qué será?
 >
 > **MAMÁ:** *(se agacha a su altura, suave)* ¿Qué pasa, Tobi?
 >
@@ -239,9 +239,9 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 >
 > **TOBI:** ¡Calentita!
 >
-> **LULÚ:** ¡Y con burbujas!
+> **RAFFA:** ¡Y con burbujas!
 
-**ESCENA 4: Canción "Agua, jabón, burbujas".** *(Tobi y Lulú en la tina, gestos simples)*
+**ESCENA 4: Canción "Agua, jabón, burbujas".** *(Tobi y Raffa en la tina, gestos simples)*
 
 > 🎵 *Agua, agua, en mi cabeza* *(manos en la cabeza)*
 > *Jabón, jabón, en mi pancita* *(frotan la panza)*
@@ -254,9 +254,9 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 > **TOBI:** ¡Limpio!
 >
-> **LULÚ:** Bañarse es divertido. ¡Y nos cuida!
+> **RAFFA:** Bañarse es divertido. ¡Y nos cuida!
 >
-> **LULÚ y TOBI:** ¡Chao, amiguitos!
+> **RAFFA y TOBI:** ¡Chao, amiguitos!
 >
 > *(Jingle de salida. Coco pasa sucio y Mamá lo mira: "Coco... ¡tu turno!". Fin.)*
 
@@ -268,11 +268,11 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 > *(Jingle.)*
 >
-> **LULÚ:** ¡Hola, amiguitos! ¡Soy Lulú! Hoy estoy jugando con mi camión rojo.
+> **RAFFA:** ¡Hola, amiguitos! ¡Soy Raffa! Hoy estoy jugando con mi camión rojo.
 >
 > *(Tobi se acerca y toma el camión.)*
 >
-> **LULÚ:** ¡No! ¡Es mío! *(tira del camión)*
+> **RAFFA:** ¡No! ¡Es mío! *(tira del camión)*
 >
 > **TOBI:** ¡Mío! *(tira también)*
 >
@@ -282,7 +282,7 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 > **PAPÁ:** Uy, uy. ¿Qué pasó aquí?
 >
-> **LULÚ:** Tobi me quitó el camión. ¡Estoy enojada!
+> **RAFFA:** Tobi me quitó el camión. ¡Estoy enojada!
 >
 > **PAPÁ:** Estás enojada. Está bien sentirse así. Y Tobi, ¿tú querías jugar?
 >
@@ -293,17 +293,17 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 **ESCENA 3: Turnos.**
 
-> *(Lulú juega. Papá, Tobi y Coco cuentan con los dedos: uno, dos... diez.)*
+> *(Raffa juega. Papá, Tobi y Coco cuentan con los dedos: uno, dos... diez.)*
 >
 > **PAPÁ:** ¡Ahora le toca a Tobi!
 >
-> *(Lulú duda un segundo... y le pasa el camión. Tobi aplaude.)*
+> *(Raffa duda un segundo... y le pasa el camión. Tobi aplaude.)*
 >
-> **TOBI:** ¡Gracias, Lulú!
+> **TOBI:** ¡Gracias, Raffa!
 >
-> **LULÚ:** *(a cámara, sorprendida)* ¡Esperar no fue tan difícil!
+> **RAFFA:** *(a cámara, sorprendida)* ¡Esperar no fue tan difícil!
 >
-> *(Al final, juegan los dos juntos: Lulú carga bloques y Tobi maneja el camión.)*
+> *(Al final, juegan los dos juntos: Raffa carga bloques y Tobi maneja el camión.)*
 
 **ESCENA 4: Canción "Ahora tú, ahora yo".**
 
@@ -314,9 +314,9 @@ animales de la granja, estaciones del año, fiestas (Navidad, cumpleaños, Fiest
 
 **ESCENA 5: Cierre.**
 
-> **LULÚ:** Compartir y esperar el turno nos hace más amigos.
+> **RAFFA:** Compartir y esperar el turno nos hace más amigos.
 >
-> **LULÚ y TOBI:** ¡Chao, amiguitos!
+> **RAFFA y TOBI:** ¡Chao, amiguitos!
 
 ---
 
@@ -346,7 +346,7 @@ Herramientas ya conectadas a esta cuenta de Claude (se pueden usar desde aquí):
 
 **Recomendación:** empezar con IA para validar rápido qué temas funcionan, pero apuntar a un
 **rig 2D fijo** de los personajes cuando el canal crezca. La consistencia visual es lo que
-hace que un niño reconozca "a Lulú".
+hace que un niño reconozca "a Raffa".
 
 ### Ritmo de publicación sugerido
 
@@ -408,7 +408,7 @@ dominio público (ej. "Los pollitos dicen") sí se pueden usar, con arreglo y gr
 
 1. Elegir nombre y revisar disponibilidad (YouTube, Instagram, TikTok, dominio).
 2. Definir el estilo visual: 2D plano o 3D suave. Generar las hojas de personajes.
-3. Elegir las voces de Lulú, Tobi, Mamá y Papá.
+3. Elegir las voces de Raffa, Tobi, Mamá y Papá.
 4. Componer el jingle de entrada/salida y la primera canción.
 5. Producir el **episodio 1 completo** como piloto y ajustar el flujo.
 6. Producir los episodios 2 a 4 y lanzar el canal con 4 videos listos.
