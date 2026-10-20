@@ -71,19 +71,32 @@ La **casa de los gatitos es el centro de la serie** (la mayoría de los episodio
 rutinas, emociones, hábitos). Cada cierto tiempo la familia **viaja** a otro mundo donde vive
 otra especie de animales. Así el canal crece sin perder su identidad.
 
-Regla visual: **los gatitos se dibujan siempre igual** (crayón + témpera). Lo que cambia en
-cada mundo es la **paleta de colores, el paisaje y los animales locales**, dibujados con la misma
-técnica para que todo se vea como una sola serie.
+**Regla visual: cada mundo tiene su propio estilo de dibujo.** Cuando la familia viaja,
+todo cambia según las características de ese mundo: técnica, texturas, paleta y paisaje. **Los
+gatitos también se dibujan en el estilo del mundo**, pero conservan sus rasgos para que el niño
+los reconozca siempre: colores del pelaje, ropa (chaleco verde del papá, morado de la mamá),
+la rosita de Raffa, el pijama azul de Tobi, los lentes de la Abuela Lela y Coco amarillo.
 
-| Mundo | Quiénes viven ahí | Paleta | Temas y enseñanzas | Inglés |
-|---|---|---|---|---|
-| **Casa Pompón** (base) | La familia de gatitos | Cálida: naranjo, rosado, verde | Rutinas, emociones, hábitos | Familia, casa, rutinas |
-| **Villa Nieve** | Pingüinos (+ foca, osito polar) | Azules hielo, blanco, lila | Abrigarse, el frío, hacer amigos nuevos | snow, cold, hat, ice, fish |
-| **Pradera Conejo** | Conejos | Verde menta, rosado, amarillo | Huerta, comer verduras, primavera | carrot, garden, flower, hop |
-| **Bosque de los tíos** | Tío Oso, Tía Osa y su cachorro | Otoño: naranjo, café, verde bosque | Visitar a la familia, extrañar, compartir | bear, tree, honey, leaf |
-| **Granja** (idea) | Chancho, vaca, oveja, pollitos | Rojo granero, amarillo trigo | De dónde viene la comida, cuidar animales | cow, pig, milk, egg |
-| **Playa** (idea) | Ranas, cangrejos, tortugas | Turquesa, arena | Cuidarse del sol, el mar | sea, sun, sand, shell |
-| **Ciudad** (idea) | Perros, ratones | Colores urbanos | Cruzar la calle, el bus, el súper | bus, car, stop, go |
+**Regla de color (todos los mundos): nada sobreestimulante.**
+- Paletas suaves y poco saturadas: de 4 a 6 colores por mundo, sin neón ni contrastes fuertes.
+- Composiciones despejadas: pocos elementos y un foco claro por escena.
+- Movimientos y cortes lentos, sin destellos ni parpadeos.
+- La casa es el mundo más cálido. Los viajes cambian de técnica, pero no suben la intensidad.
+
+| Mundo | Quiénes viven ahí | Estilo de dibujo | Paleta (suave) | Temas y enseñanzas | Inglés |
+|---|---|---|---|---|---|
+| **Casa Pompón** (base) | La familia de gatitos | Crayón + témpera | Naranjo, rosado, verde, crema | Rutinas, emociones, hábitos | Familia, casa, rutinas |
+| **Villa Nieve** | Pingüinos (+ foca, osito polar) | Papel recortado + fieltro | Azul hielo, blanco, lila apagado, durazno | Abrigarse, el frío, amigos nuevos | snow, cold, hat, ice, fish |
+| **Pradera Conejo** | Conejos | Acuarela + lápiz de color | Verde salvia, rosa palo, amarillo mantequilla | Huerta, comer verduras, primavera | carrot, garden, flower, hop |
+| **Bosque de los tíos** | Tío Oso, Tía Osa y su cachorro | Grabado / linóleo con textura | Terracota, ocre, verde oliva, café | Visitar a la familia, extrañar, compartir | bear, tree, honey, leaf |
+| **Granja** (idea) | Chancho, vaca, oveja, pollitos | Plastilina / stop motion suave | Rojo granero apagado, trigo, verde | De dónde viene la comida, cuidar animales | cow, pig, milk, egg |
+| **Playa** (idea) | Ranas, cangrejos, tortugas | Gouache plano, formas simples | Turquesa suave, arena, coral pálido | Cuidarse del sol, el mar | sea, sun, sand, shell |
+| **Ciudad** (idea) | Perros, ratones | Vectorial geométrico | Grises cálidos, mostaza, azul pizarra | Cruzar la calle, el bus, el súper | bus, car, stop, go |
+
+**El cambio de estilo es parte del viaje:** al llegar a un mundo nuevo, la imagen pasa del
+crayón al nuevo estilo con una transición suave (por ejemplo, una página que se da vuelta, o
+la nieve que "pinta" la pantalla). Al volver a casa se vuelve al crayón. Para el niño es como
+entrar a otro libro de cuentos.
 
 **Cómo funciona un viaje:** 1 o 2 episodios de ida (preparar la maleta, el viaje en auto,
 tren o avión), 2 a 4 episodios en el mundo nuevo y 1 de regreso a casa ("¡qué rico volver a
