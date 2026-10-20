@@ -106,6 +106,22 @@ casa!"). Cada mundo puede ser una **mini temporada** o una lista de reproducció
 vocabulario nuevo en inglés y paisajes distintos para las miniaturas. Además, si un mundo
 (por ejemplo, los pingüinos) funciona muy bien, puede tener sus propios episodios.
 
+### Voces (ElevenLabs)
+
+ElevenLabs no permite crear voces que imiten a niños reales, así que, como en la animación
+profesional, los niños los interpretan voces adultas de personajes animados.
+
+| Personaje | Voz elegida | ID de voz |
+|---|---|---|
+| Mamá Pompón | Jhenny - Cozy, Nurturing (latino neutro, cuentos infantiles) | `EDitztUwd7lban76PAZs` |
+| Tobi | Carito - Silly & Comical (latino) | `WtRYgQbAJ4i0AckgdVbq` |
+| Raffa | Pendiente (opciones: Denisse, Betty, Blackie) | — |
+| Papá Pompón | Pendiente (opciones: Charlee, Alejandro, Jahdiel) | — |
+| Abuela Lela | Pendiente | — |
+
+Pruebas de audio en `voces/`. Modelo recomendado: `eleven_v4` (permite marcar emociones
+como `[cheerful]` o `[shy]` dentro del texto).
+
 ---
 
 ## 3. Formato de cada corto
