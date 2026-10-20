@@ -405,7 +405,7 @@
     bEdit.addEventListener('click', function () {
       editing = true; render();
       bEdit.hidden = true; bSave.hidden = false; bCancel.hidden = false;
-      setStatus('Toca cualquier texto resaltado para cambiarlo. Guardar publica la nueva versión para Andrés.');
+      setStatus('Toca cualquier texto resaltado para cambiarlo. Guardar publica la nueva versión para ' + state.cliente + '.');
     });
     bCancel.addEventListener('click', function () {
       editing = false; render();
