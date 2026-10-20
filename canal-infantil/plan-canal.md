@@ -9,6 +9,10 @@
 
 ## 1. Concepto
 
+**Referencias de tono:** series como *Bluey* y *Daniel Tigre* (historias familiares,
+emociones bien nombradas, ritmo calmado, humor para padres e hijos). Se toma el **tono**, no el
+diseño: personajes y estilo visual propios.
+
 **Una familia de animalitos que vive situaciones del día a día de un niño pequeño**
 (bañarse, compartir, dormir, ir al doctor, tener un hermanito) y en cada corto aprende
 **una sola enseñanza**, cerrando con una canción corta que la repite.
@@ -105,6 +109,53 @@ Ordenados por demanda: los primeros son temas que los padres buscan mucho.
 | 10 | Un hermanito nuevo | Celos y amor de hermanos | "Somos familia" |
 | 11 | Probar comida nueva | Probar sin miedo, verduras | "Un mordisquito" |
 | 12 | Gracias y por favor | Palabras mágicas | "Palabras mágicas" |
+
+### Segmento fijo: "English Time with Lulú" (inglés para principiantes)
+
+Cada episodio incluye **30 a 45 segundos de inglés** dentro de la historia, no como una clase
+aparte: Lulú cuenta objetos de la escena o nombra cosas, primero en español y luego en inglés.
+Además, cada cierto tiempo sale un video dedicado solo al inglés.
+
+**Números del 1 al 20, en bloques que avanzan poco a poco:**
+
+| Bloque | Números | Cómo se enseñan | Ejemplo en la historia |
+|---|---|---|---|
+| 1 | 1 a 5 | Dedos de una mano | Contar patitos en la tina: *one, two, three...* |
+| 2 | 6 a 10 | Dos manos | Contar bloques al ordenar |
+| 3 | 11 a 15 | Objetos grupales | Contar manzanas en la feria |
+| 4 | 16 a 20 | Saltos y movimiento | Contar saltos en el patio |
+| Repaso | 1 a 20 | Canción completa | "Count to Twenty with Lulú" (video propio + Short) |
+
+Regla: el número **aparece en pantalla** (grande, con su cantidad de objetos al lado), se dice
+en español y en inglés, y el niño tiene una pausa de 1 a 2 segundos para repetirlo.
+
+**Palabras básicas por categoría (5 palabras por episodio, máximo):**
+
+| Categoría | Palabras |
+|---|---|
+| Familia | mom, dad, baby, brother, sister, grandma |
+| Colores | red, blue, yellow, green, pink, orange |
+| Animales | dog, cat, duck, cow, pig, bird, fish |
+| Juguetes | ball, car, doll, blocks, train, teddy bear |
+| Naturaleza | sun, moon, tree, flower, rain, water |
+| Cuerpo | hands, feet, eyes, nose, mouth, teeth |
+| Comida | apple, banana, milk, bread, water |
+| Saludos y modales | hello, bye-bye, please, thank you, sorry |
+| Rutinas | bath, sleep, eat, brush, wash |
+
+Las palabras se eligen según la historia: en "Hora del baño" se enseñan *water, soap, duck,
+bubbles, towel*; en "Lavarse los dientes", *teeth, brush, water, mouth, smile*.
+
+**Videos dedicados al inglés (1 cada 2 semanas):**
+
+1. *Count 1 to 5 with Lulú*: patitos en la tina.
+2. *Count 6 to 10*: bloques y juguetes.
+3. *Colors with Tobi*: globos de colores.
+4. *Farm Animals*: visita a la granja de la Abuela Nona.
+5. *Count 11 to 20*: saltos en el parque.
+6. *My Family*: presentación de la familia.
+7. *Body Parts Song*: *head, shoulders...* en versión propia.
+8. *Hello & Goodbye*: saludos y modales.
 
 Ideas para temporadas siguientes: primer día en el jardín, miedo a la oscuridad, perderse en el
 súper, cruzar la calle de la mano, cuidar las plantas, visitar a la abuela, colores, números,
