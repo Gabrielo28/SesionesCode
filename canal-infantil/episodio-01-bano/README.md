@@ -1,6 +1,10 @@
 # Episodio 1: "Hora del baño" (piloto, versión 5 minutos)
 
-**Video final:** `episodio-01-hora-del-bano.mp4` (1920×1080, 30 fps, ~4:40).
+**Video final (v2):** `episodio-01-hora-del-bano-v2.mp4` (1920×1080, 30 fps, 4:30, 71 planos), armado con `montaje_v2.py`.
+
+v2 es un remontaje con el mismo material, sin gastar créditos: cada línea corta a un primer plano del personaje que habla (recortes de las animaciones cuando existen), las animaciones de acción van donde ocurre la acción, los efectos de sonido caen en el momento del salto/barro/tablet, y en el English Time se marca cada patito al contarlo. No hay sincronía labial real: para eso hace falta generar animación con lip-sync (créditos).
+
+Versión anterior: `episodio-01-hora-del-bano-web.mp4` (`montaje.py`).
 
 - Guion: `guion.md`
 - Escenas (keyframes): `escenas/K01-K13.jpg` · hoja: `escenas-hoja.jpg`
