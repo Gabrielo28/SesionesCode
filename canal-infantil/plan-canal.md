@@ -30,7 +30,7 @@ Por qué funciona para 1 a 5 años:
 
 | Nombre | Idea |
 |---|---|
-| **La Familia Pompón** | Conejitos; "pompón" es la colita. Suena tierno y fácil de decir. |
+| **La Familia Pompón** | Gatitos esponjosos como un pompón. Suena tierno y fácil de decir. |
 | **Osito Tito y su familia** | Nombre repetitivo, fácil para un niño de 2 años. |
 | **Casita Lunares** | La casa como marca; permite sumar personajes. |
 | **Los Pequeños Patitos** | Muy reconocible, pero más genérico y difícil de posicionar. |
@@ -42,17 +42,21 @@ YouTube, Instagram, TikTok y como dominio.
 
 ## 2. Personajes (biblia básica)
 
-Familia de conejitos, estilo 2D o 3D suave, colores pastel, ojos grandes, formas redondas
-(nada puntiagudo ni agresivo).
+**Estilo elegido (20 oct 2026): gatitos en 2D con trazo de crayón y relleno de témpera**
+(estilo F de `estilos-comparativa.jpg`; lo eligió una niña de 3 años, el público real).
+Referencia base: `estilos/F1.jpg`. Hojas de personajes en `personajes/`.
 
-| Personaje | Edad / rol | Rasgo | Color |
+Familia de gatitos: contornos gruesos de crayón, colores vivos pero suaves, ojos grandes,
+formas redondas (nada puntiagudo ni agresivo).
+
+| Personaje | Edad / rol | Rasgo | Diseño |
 |---|---|---|---|
-| **Lulú** | 4 años, protagonista | Curiosa, pregunta "¿por qué?" todo el tiempo | Rosado claro, cintillo amarillo |
-| **Tobi** | 2 años, hermanito | Imita a Lulú, dice pocas palabras, muy risueño | Celeste, pañal/pantaloneta verde |
-| **Mamá Pompón** | Mamá | Paciente, canta | Lila, delantal |
-| **Papá Pompón** | Papá | Juguetón, torpe a propósito (da risa) | Café claro, polera a rayas |
-| **Abuela Nona** | Abuela | Cuenta historias, aparece en episodios especiales | Gris, lentes redondos |
-| **Coco** | Mascota (pollito o caracol) | No habla, reacciona; recurso cómico | Amarillo |
+| **Lulú** | 4 años, protagonista | Curiosa, pregunta "¿por qué?" todo el tiempo | Gatita calicó, vestido rosado, rosita en la oreja |
+| **Tobi** | 2 años, hermanito | Imita a Lulú, dice pocas palabras, muy risueño | Gatito blanco con naranjo, pijama azul |
+| **Mamá Pompón** | Mamá | Paciente, canta | Atigrada naranja, chaleco morado, jeans |
+| **Papá Pompón** | Papá | Juguetón, torpe a propósito (da risa) | Atigrado gris, chaleco verde, jeans |
+| **Abuela Nona** | Abuela | Cuenta historias, aparece en episodios especiales | Gata blanca crema, lentes redondos, chaleco lila |
+| **Coco** | Mascota | No habla, reacciona; recurso cómico | Pollito amarillo esponjoso |
 
 Reglas de consistencia (clave si se usa IA para generar imágenes y video):
 
