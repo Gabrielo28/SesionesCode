@@ -149,7 +149,7 @@ segmento de inglés y la canción. Nunca agregar una segunda enseñanza.
 
 | Personaje | Rol | Diseño | Voz |
 |---|---|---|---|
-| **Pipo** | Perrito vecino, 4 años, mejor amigo de Raffa. Juguetón, siempre con botas de agua | Crema con mancha café en un ojo, overol azul, botas rojas | Charlee - Playful Character (`cQIBhnciTWugZAxX52uW`), por confirmar |
+| **Pipo** | Perrito vecino, 4 años, mejor amigo de Raffa. Juguetón, siempre con botas de agua | Crema con orejas y mancha café, chaqueta de lluvia amarilla, overol azul, botas rojas (`personajes/pipo.jpg`) | Charlee - Playful Character (`cQIBhnciTWugZAxX52uW`), por confirmar |
 | **Abuela Lela** | Aparece en persona o por videollamada con un consejo o una historia | Ver arriba | Por elegir |
 
 **Reglas de guion para 1 a 5 años:**
