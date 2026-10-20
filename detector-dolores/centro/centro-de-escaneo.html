@@ -572,6 +572,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = M; else ra
           // no pisar lo que se está escribiendo y aún no se guarda
           Object.keys(j.seguimiento || {}).forEach(function (id) { if (!cadenasVivas[id]) S.seg[id] = j.seguimiento[id]; });
           var antes = S.escaneo && S.escaneo.activo; S.escaneo = j.escaneo || null;
+          $('salir').hidden = !j.conClave;
           S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · sin Claude', 'on');
           pintarTodo(); B.programar(antes);
         }, function (e) { if (e && e.code !== 'sesion') { estadoCon('Sin conexión con tu servidor', 'off'); B.programar(); } });

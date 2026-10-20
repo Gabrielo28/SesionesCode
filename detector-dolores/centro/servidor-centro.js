@@ -157,7 +157,7 @@ async function manejar(req, res) {
   if (ruta === '/centro/salir') { res.writeHead(302, { 'Set-Cookie': 'centro=; Path=/; Max-Age=0', Location: '/centro/entrar' }); res.end(); return true; }
 
   try {
-    if (ruta === '/api/estado' && req.method === 'GET') { json(res, 200, { negocios: datos.negocios, seguimiento: datos.seguimiento, cola: datos.cola, escaneo }); return true; }
+    if (ruta === '/api/estado' && req.method === 'GET') { json(res, 200, { negocios: datos.negocios, seguimiento: datos.seguimiento, cola: datos.cola, escaneo, conClave: !!CLAVE }); return true; }
     let m;
     if ((m = ruta.match(/^\/api\/seguimiento\/([A-Za-z0-9._~:@+-]{1,200})$/)) && req.method === 'PUT') {
       const doc = JSON.parse(await cuerpo(req, 2e5)); datos.seguimiento[m[1]] = doc; guardar(); json(res, 200, { ok: true }); return true;
