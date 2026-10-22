@@ -1,0 +1,15 @@
+# Cabeceras de seguridad para Netlify (el equivalente al "parche" de seguridad en un hosting con PHP).
+# Netlify lee este archivo solo al subir la carpeta. No toca el diseño ni las funciones de la web.
+/*
+  # Solo HTTPS, también en www y subdominios
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Nadie puede meter la web dentro de otra página (evita clics engañosos)
+  X-Frame-Options: DENY
+  # El navegador no adivina tipos de archivo
+  X-Content-Type-Options: nosniff
+  # Al salir a otro sitio solo se comparte el dominio, no la ruta completa
+  Referrer-Policy: strict-origin-when-cross-origin
+  # La web no usa cámara, micrófono, ubicación ni pagos
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  # Qué puede cargar la página: lo propio + Google Fonts, Instagram (reels), Google Analytics y píxel de Meta
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.instagram.com https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.google.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net; frame-src https://www.instagram.com https://instagram.com https://www.facebook.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com; frame-ancestors 'none'; upgrade-insecure-requests

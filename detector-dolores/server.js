@@ -22,10 +22,21 @@ const ALIAS = { '/': '/escaner/index.html', '/escaner': '/escaner/index.html', '
   '/codigos.js': '/escaner/codigos.js' };
 const PUBLICO = [/^\/escaner\/(index\.html|codigos\.js)$/, /^\/proceso\/index\.html$/, /^\/medicion\.js$/];
 
+// Cabeceras de seguridad para todas las respuestas (escáner público y Centro)
+const SEGURIDAD = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.google.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+};
+
 function noEncontrado(res) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('No encontrado'); }
 
 http.createServer(async (req, res) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
+  for (const [k, v] of Object.entries(SEGURIDAD)) res.setHeader(k, v);
+  // HSTS solo detrás de HTTPS (Railway); en el PC se usa http://localhost
+  if (req.headers['x-forwarded-proto'] === 'https') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   try { if (await centro.manejar(req, res)) return; } catch (e) { console.error(e); if (!res.headersSent) { res.writeHead(500); res.end('Error'); } return; }
   let ruta;
   try { ruta = decodeURIComponent((req.url || '/').split('?')[0]); } catch (e) { return noEncontrado(res); }
