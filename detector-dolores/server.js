@@ -17,7 +17,9 @@ const centro = require('./centro/servidor-centro.js');
 const RAIZ = __dirname;
 const PUERTO = process.env.PORT || 5180;
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.pdf': 'application/pdf', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8' };
-const ALIAS = { '/': '/escaner/index.html', '/escaner': '/escaner/index.html', '/escaner/': '/escaner/index.html', '/proceso': '/proceso/index.html', '/proceso/': '/proceso/index.html' };
+const ALIAS = { '/': '/escaner/index.html', '/escaner': '/escaner/index.html', '/escaner/': '/escaner/index.html', '/proceso': '/proceso/index.html', '/proceso/': '/proceso/index.html',
+  // el escáner pide codigos.js con ruta relativa: desde / apunta aquí
+  '/codigos.js': '/escaner/codigos.js' };
 const PUBLICO = [/^\/escaner\/(index\.html|codigos\.js)$/, /^\/proceso\/index\.html$/, /^\/medicion\.js$/];
 
 function noEncontrado(res) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('No encontrado'); }
