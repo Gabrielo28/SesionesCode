@@ -156,7 +156,7 @@
 <div class="wrap">
   <div class="top">
     <div class="marca"><span class="led" id="led"></span>Centro de escaneo · Influence</div>
-    <span style="display:flex;gap:12px;align-items:center"><span class="estado-con" id="estado-con">Conectando…</span><a href="/centro/salir" id="salir" class="estado-con" style="color:var(--teal);text-decoration:none" hidden>Salir</a></span>
+    <span style="display:flex;gap:12px;align-items:center"><span class="estado-con" id="estado-con">Conectando…</span><a href="/centro/salir" id="salir" class="estado-con" style="color:var(--teal);text-decoration:none" hidden>Salir</a><a href="/centro/salir?todas=1" id="salir-todas" class="estado-con" style="color:var(--teal);text-decoration:none" title="Cierra la sesión en todos los dispositivos" hidden>Salir de todos</a></span>
   </div>
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-v="hoy">Hoy <span class="badge" id="b-hoy">0</span></button>
@@ -302,7 +302,7 @@
           // no pisar lo que se está escribiendo y aún no se guarda
           Object.keys(j.seguimiento || {}).forEach(function (id) { if (!cadenasVivas[id]) S.seg[id] = j.seguimiento[id]; });
           var antes = S.escaneo && S.escaneo.activo; S.escaneo = j.escaneo || null;
-          $('salir').hidden = !j.conClave;
+          $('salir').hidden = !j.conClave; $('salir-todas').hidden = !j.conClave;
           S.cargado = { neg: true, seg: true, cola: true }; estadoCon('En línea · sin Claude', 'on');
           pintarTodo(); B.programar(antes);
         }, function (e) { if (e && e.code !== 'sesion') { estadoCon('Sin conexión con tu servidor', 'off'); B.programar(); } });
@@ -365,7 +365,7 @@
     var B = window.claude && window.claude.use ? await motorClaude() : /^https?:$/.test(location.protocol) ? motorLocal() : null;
     if (!B) { estadoCon('Abre esta página desde tu servidor (npm start) o desde tu cuenta de claude.ai', 'off'); pintarTodo(); return; }
     S.B = B; estadoCon('Conectando…', '');
-    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('salir').hidden = !B.local;
+    $('modo-chat').hidden = B.local; $('modo-local').hidden = !B.local; $('salir').hidden = !B.local; $('salir-todas').hidden = !B.local;
     if (B.local) {
       $('sub-escanear').textContent = 'Agrega los negocios que quieres revisar y escanéalos aquí mismo, sin depender del chat.';
       $('pie').textContent = 'Modo sin Claude: todo se guarda en tu servidor (archivo centro.json). Escaneo, prioridades, soluciones y mensajes funcionan igual; lo que escribe Claude (otra versión a medida y el análisis a fondo) vuelve cuando regreses a la versión de claude.ai. Para volver, descarga un respaldo aquí e impórtalo allá.';

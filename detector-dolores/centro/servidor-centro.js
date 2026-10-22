@@ -82,16 +82,40 @@ function escanearCola() {
 }
 
 // ---------- sesión ----------
-const firma = () => crypto.createHmac('sha256', CLAVE || 'local').update('centro-ok').digest('hex');
-function cookies(req) { const o = {}; String(req.headers.cookie || '').split(';').forEach(p => { const i = p.indexOf('='); if (i > 0) o[p.slice(0, i).trim()] = decodeURIComponent(p.slice(i + 1).trim()); }); return o; }
-function esLocal(req) { const a = req.socket.remoteAddress || ''; return !req.headers['x-forwarded-for'] && (a === '127.0.0.1' || a === '::1' || a === '::ffff:127.0.0.1'); }
-function autorizado(req) {
-  if (!CLAVE) return esLocal(req);
-  const c = cookies(req).centro || '';
-  const a = Buffer.from(c), b = Buffer.from(firma());
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+// Cada inicio de sesión crea un token aleatorio; en disco solo queda su hash (DATA_DIR/sesiones.json),
+// así sobrevive a reinicios y se puede revocar. Cambiar CENTRO_CLAVE invalida todas las sesiones.
+const ARCHIVO_SESIONES = path.join(DIR, 'sesiones.json');
+const DURACION_SESION = 14 * 24 * 60 * 60e3;
+const huellaClave = crypto.createHash('sha256').update('centro-clave:' + CLAVE).digest('hex');
+const hashToken = t => crypto.createHash('sha256').update(t).digest('hex');
+let sesiones = {}; // hash del token -> vence (ms)
+try { const s = JSON.parse(fs.readFileSync(ARCHIVO_SESIONES, 'utf8')); if (s.clave === huellaClave && s.sesiones) sesiones = s.sesiones; } catch (e) { if (e.code !== 'ENOENT') console.error('No pude leer ' + ARCHIVO_SESIONES + ': ' + e.message); }
+function guardarSesiones() {
+  try { const tmp = ARCHIVO_SESIONES + '.tmp'; fs.writeFileSync(tmp, JSON.stringify({ clave: huellaClave, sesiones }), { mode: 0o600 }); fs.renameSync(tmp, ARCHIVO_SESIONES); } catch (e) { console.error('No pude guardar ' + ARCHIVO_SESIONES + ': ' + e.message); }
 }
-const intentos = {};
+function crearSesion() {
+  const ahora = Date.now();
+  Object.keys(sesiones).forEach(h => { if (sesiones[h] <= ahora) delete sesiones[h]; });
+  const token = crypto.randomBytes(32).toString('base64url');
+  sesiones[hashToken(token)] = ahora + DURACION_SESION; guardarSesiones();
+  return token;
+}
+function cookies(req) { const o = {}; String(req.headers.cookie || '').split(';').forEach(p => { const i = p.indexOf('='); if (i > 0) { try { o[p.slice(0, i).trim()] = decodeURIComponent(p.slice(i + 1).trim()); } catch (e) { /* cookie mal formada */ } } }); return o; }
+function sesionDe(req) { // hash de la sesión válida o null
+  const c = cookies(req).centro; if (!c) return null;
+  const h = hashToken(c); const vence = Object.prototype.hasOwnProperty.call(sesiones, h) ? sesiones[h] : 0;
+  if (!vence) return null;
+  if (vence <= Date.now()) { delete sesiones[h]; guardarSesiones(); return null; }
+  return h;
+}
+function esLocal(req) { const a = req.socket.remoteAddress || ''; return !req.headers['x-forwarded-for'] && (a === '127.0.0.1' || a === '::1' || a === '::ffff:127.0.0.1'); }
+function autorizado(req) { return CLAVE ? !!sesionDe(req) : esLocal(req); }
+
+// ---------- límite de intentos ----------
+// En Railway el proxy de borde sobrescribe x-real-ip con la IP real (x-forwarded-for lo puede inventar el cliente).
+const ipCliente = req => String(req.headers['x-real-ip'] || '').trim() || req.socket.remoteAddress || 'desconocida';
+const VENTANA = 10 * 60e3, MAX_POR_IP = 10, MAX_GLOBAL = 50;
+const intentos = {}; let fallosGlobales = [];
 
 // ---------- utilidades http ----------
 function json(res, code, obj) { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(obj)); }
@@ -131,16 +155,17 @@ async function manejar(req, res) {
 
   if (ruta === '/centro/entrar') {
     if (req.method === 'POST') {
-      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress; const ahora = Date.now();
-      intentos[ip] = (intentos[ip] || []).filter(t => ahora - t < 10 * 60e3);
-      if (intentos[ip].length >= 10) { res.writeHead(429, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(paginaEntrar('Demasiados intentos. Espera 10 minutos.')); return true; }
+      const ip = ipCliente(req); const ahora = Date.now();
+      Object.keys(intentos).forEach(k => { intentos[k] = intentos[k].filter(t => ahora - t < VENTANA); if (!intentos[k].length) delete intentos[k]; });
+      intentos[ip] = intentos[ip] || []; fallosGlobales = fallosGlobales.filter(t => ahora - t < VENTANA);
+      if (intentos[ip].length >= MAX_POR_IP || fallosGlobales.length >= MAX_GLOBAL) { res.writeHead(429, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(paginaEntrar('Demasiados intentos. Espera 10 minutos.')); return true; }
       const clave = new URLSearchParams(await cuerpo(req, 1e4)).get('clave') || '';
       const a = crypto.createHash('sha256').update(clave).digest(), b = crypto.createHash('sha256').update(CLAVE).digest();
       if (CLAVE && crypto.timingSafeEqual(a, b)) {
         const seguro = req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '';
-        res.writeHead(302, { 'Set-Cookie': `centro=${firma()}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${60 * 60 * 24 * 60}${seguro}`, Location: '/centro' }); res.end(); return true;
+        res.writeHead(302, { 'Set-Cookie': `centro=${crearSesion()}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${DURACION_SESION / 1000}${seguro}`, Location: '/centro' }); res.end(); return true;
       }
-      intentos[ip].push(ahora);
+      intentos[ip].push(ahora); fallosGlobales.push(ahora);
       res.writeHead(401, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(paginaEntrar(CLAVE ? 'Contraseña incorrecta.' : 'Falta configurar CENTRO_CLAVE en el servidor.')); return true;
     }
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(paginaEntrar('')); return true;
@@ -154,7 +179,10 @@ async function manejar(req, res) {
 
   if (ruta === '/centro' || ruta === '/centro/') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }); fs.createReadStream(APP).pipe(res); return true; }
   if (ruta === '/centro/modelo.js') { res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-cache' }); fs.createReadStream(path.join(__dirname, 'modelo.js')).pipe(res); return true; }
-  if (ruta === '/centro/salir') { res.writeHead(302, { 'Set-Cookie': 'centro=; Path=/; Max-Age=0', Location: '/centro/entrar' }); res.end(); return true; }
+  if (ruta === '/centro/salir') { // ?todas=1 cierra también las sesiones de otros dispositivos
+    if (CLAVE) { if (url.searchParams.get('todas') === '1') sesiones = {}; else delete sesiones[sesionDe(req)]; guardarSesiones(); }
+    res.writeHead(302, { 'Set-Cookie': 'centro=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0', Location: '/centro/entrar' }); res.end(); return true;
+  }
 
   try {
     if (ruta === '/api/estado' && req.method === 'GET') { json(res, 200, { negocios: datos.negocios, seguimiento: datos.seguimiento, cola: datos.cola, escaneo, conClave: !!CLAVE }); return true; }
