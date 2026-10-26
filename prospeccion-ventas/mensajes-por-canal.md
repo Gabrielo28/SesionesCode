@@ -915,6 +915,113 @@ Implementamos un asistente de WhatsApp para centros de salud que agenda horas a 
 
 ---
 
+## NUEVAS DEL 26-OCT — 8 empresas (todas B)
+
+### WhatsApp
+
+**Nelly Bravo Propiedades** · +56 9 8937 1708 — *confirmar tamaño de equipo*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Nelly Bravo Propiedades trabaja arriendo, venta y administración en Rancagua y Machalí.
+
+Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
+
+¿Les interesaría conversarlo 15 minutos?
+```
+
+**Centro de Salud SEPYA** · WhatsApp +56 9 9627 1360 — *directora: Dra. Carmen Betancur*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que en SEPYA las horas se solicitan por formulario, teléfono o WhatsApp.
+
+Implementamos un asistente de WhatsApp para centros de salud que agenda la primera evaluación a cualquier hora, pide los datos básicos y envía el recordatorio al paciente, con el cuidado que requiere la salud mental.
+
+¿Les interesaría ver cómo funciona? Son 15 minutos.
+```
+
+**Desicam** · WhatsApp del sitio — *identificar dueño o director*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que en Desicam las horas de psicología se agendan por WhatsApp.
+
+Implementamos un asistente que agenda horas a cualquier hora, identifica si la atención es infantil, adolescente o adulta, y envía el recordatorio al paciente.
+
+¿Les interesaría ver cómo funciona? Son 15 minutos.
+```
+
+**Ñuble Contable** · +56 9 6159 6826 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Ñuble Contable atiende micro y pequeñas empresas con planes mensuales y cotiza por WhatsApp.
+
+Implementamos un asistente que responde las consultas de planes y precios a cualquier hora, hace las preguntas de cotización y les entrega la solicitud completa.
+
+¿Les interesaría ver cómo funciona? Son 15 minutos.
+```
+
+**BAF Asesorías Contables y Financieras — Cristian Ramírez** · +56 9 8739 7436
+```
+Hola Cristian, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que BAF publica sus honorarios según facturación y recibe las solicitudes por WhatsApp.
+
+Implementamos un asistente que hace las preguntas iniciales, entrega el valor del plan según la facturación del cliente y te deja la solicitud completa para responder.
+
+¿Te interesaría verlo en 15 minutos?
+```
+
+### Email
+
+**Bilancia — Felipe Muñoz Torres** · equipo@bilanciapymes.com (+ LinkedIn) — *candidata a A*
+Asunto:
+```
+Atención de clientes en Bilancia
+```
+Cuerpo:
+```
+Felipe, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que en Bilancia cada cliente tiene un ejecutivo asignado y atienden pymes de todo Chile.
+
+Implementamos automatizaciones para estudios contables: recordatorios mensuales, recepción ordenada de documentos y respuesta a consultas frecuentes, para que cada ejecutivo dedique su tiempo a la asesoría. Sin cambiar su software.
+
+¿Te interesaría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+**BS & Asociados Abogados** · contacto@bsyasociados.cl — *cautela: confirmar si "Agenda una reunión" ya es un calendario*
+Asunto:
+```
+Atención de consultas en BS & Asociados
+```
+Cuerpo:
+```
+Estimado Daniel, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Le escribo porque vi que BS & Asociados atiende a personas, empresas y sindicatos en varias áreas desde La Serena.
+
+Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área, con los antecedentes básicos, y se agenda con el abogado que corresponde.
+
+¿Le interesaría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+**Defensa Laboral La Serena — Sandra Arzola** · contacto@defensalaborallaserena.cl
+Asunto:
+```
+Atención de consultas laborales
+```
+Cuerpo:
+```
+Estimada Sandra, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Le escribo porque vi que Defensa Laboral atiende a trabajadores y empresas en materias laborales desde La Serena.
+
+Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega con los antecedentes básicos pedidos de antemano y se agenda directo con el abogado que corresponde.
+
+¿Le interesaría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+---
+
 ## Verificar antes de cualquier mensaje
 
 **Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
@@ -927,12 +1034,12 @@ persona, pasa a C.
 
 | Canal | A | B | Total |
 |---|---|---|---|
-| WhatsApp | 7 | 27 | 34 |
-| Email | 8 | 11 | 19 |
+| WhatsApp | 7 | 32 | 39 |
+| Email | 8 | 14 | 22 |
 | Llamada (y luego correo) | 4 | 3 | 7 |
 | LinkedIn | 1 | 2 | 3 |
 | Verificar antes | 0 | 1 | 1 |
-| **Total** | **20** | **44** | **64** |
+| **Total** | **20** | **52** | **72** |
 
 Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
 invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y
