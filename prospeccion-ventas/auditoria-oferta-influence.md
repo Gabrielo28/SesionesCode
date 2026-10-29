@@ -114,3 +114,11 @@ Se dice explícitamente en la web — es un buen argumento de honestidad para us
 - Un bloque "Qué necesitamos de ti" — baja la fricción de la primera reunión.
 - Llenar la pestaña Registro del tracker, o reemplazar el tracker por algo que se llene solo;
   es la evidencia de cumplimiento que un cliente como Situ va a pedir al mes 3.
+
+## 6. Gestión de Meta Ads para pautas chicas (decisión 29-oct-2026)
+
+La web publica "gestión mensual desde $250.000" para pautas sobre $700.000/mes. Para clientes que
+solo quieren anuncios con pautas menores (caso: $70.000 semanales, ~$300.000/mes) se ofrece
+**$150.000 neto/mes con el armado incluido el primer mes** (armado de referencia $150.000), con
+revisión semanal, 2-3 creatividades nuevas al mes e informe. Piso de negociación: $120.000.
+Conviene publicarlo en la web como tramo "pautas bajo $700.000".
