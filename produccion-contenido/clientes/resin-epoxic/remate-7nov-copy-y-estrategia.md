@@ -1,8 +1,17 @@
 # Resin Epoxic — Último remate · Sábado 7 de noviembre
 
-Video: `remate-7nov-video.mp4` (1080×1920, 61 s, voz en off + subtítulos quemados).
-Portada sugerida: `remate-7nov-portada.jpg` (frame "ÚLTIMO REMATE").
-Voz: ElevenLabs, "Cami" (español chileno). Guion en `remate-7nov-guion.txt`.
+## Versiones
+
+| Archivo | Duración | Para qué |
+|---|---|---|
+| `remate-7nov-video-corto.mp4` | 30 s | **Versión principal.** Ritmo rápido: 19 cortes, montaje de productos palabra a palabra, subtítulos de 1-2 palabras, música. La que más conviene para alcance (TikTok, Reels, Shorts). |
+| `remate-7nov-video-con-musica.mp4` | 61 s | Versión completa narrada con música de fondo. Para Facebook, WhatsApp y para quien ya está interesada. |
+| `remate-7nov-video.mp4` | 61 s | La misma versión larga sin música, por si quieren poner un audio en tendencia desde la app. |
+
+Portadas: `remate-7nov-corto-portada.jpg` y `remate-7nov-portada.jpg`.
+Música: `remate-7nov-musica.mp3` (instrumental generada con ElevenLabs Music, 65 s, libre de derechos de terceros).
+Mezcla: la música baja sola cuando habla la voz (ducking) y el total está normalizado a -14 LUFS, el estándar de Instagram y TikTok.
+Voz: ElevenLabs, "Cami" (español chileno). Guiones en `remate-7nov-corto-guion.txt` y `remate-7nov-guion.txt`.
 
 ## Copy del post (Reels / TikTok)
 
@@ -21,7 +30,7 @@ Hashtags (máx. 5-8, mezclar grandes y de nicho):
 ## Qué hacer para que llegue a la máxima gente
 
 1. **Subir como Reel en Instagram y también en TikTok y Facebook Reels** el mismo día. Formato, duración y subtítulos ya cumplen los tres.
-2. **Agregar un audio en tendencia a volumen bajo** (10-15 %) desde la app. La voz ya está normalizada; el audio trending ayuda a la distribución y no estorba.
+2. **Audio**: las dos versiones con música ya van listas. Si prefieren probar un audio en tendencia, usar `remate-7nov-video.mp4` (sin música) y agregarlo desde la app a volumen bajo (10-15 %).
 3. **Portada**: usar el frame "ÚLTIMO REMATE" (o el cuadro del segundo 5) para que en el perfil se lea sin reproducir.
 4. **Comentario fijado** con dirección, horario y "stock limitado, no se reserva". Responder cada comentario las primeras 2 horas (sube el alcance).
 5. **Publicación en colaboración** ("Invitar colaborador") con 1-3 resineras o cuentas aliadas: el mismo reel aparece en sus perfiles y suma sus audiencias.
