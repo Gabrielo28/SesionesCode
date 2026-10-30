@@ -1,0 +1,202 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Inter Display Black,86,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,8,4,5,60,60,0,1
+Style: Head,Inter Display Black,64,&H00C8E04E,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,4,0,1,6,3,8,60,60,330,1
+Style: Big,Inter Display Black,150,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,10,6,8,40,40,430,1
+Style: Sub,Inter Display Black,60,&H00C8E04E,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,5,0,1,6,3,8,60,60,330,1
+Style: Sub2,Inter Display Black,60,&H00C8E04E,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,5,0,1,6,3,8,60,60,700,1
+Style: End,Inter Display Black,120,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,10,6,8,40,40,1110,1
+Style: Num,Inter Display Black,260,&H00C8E04E,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,12,8,7,70,60,300,1
+Style: Tip,Inter Display Black,112,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,-2,0,1,10,6,7,70,60,600,1
+Style: Mark,Inter Display Black,40,&H00C8E04E,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,2,0,1,4,2,2,60,60,110,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 2,0:00:00.03,0:00:00.07,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}FAST-PACED,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:00.07,0:00:00.44,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}¿TRABAJAS{\c&H00FFFFFF&\fscx100\fscy100} CON RESINA?
+Dialogue: 2,0:00:00.44,0:00:00.56,Cap,,0,0,0,,¿TRABAJAS {\c&H00C8E04E&\fscx108\fscy108}CON{\c&H00FFFFFF&\fscx100\fscy100} RESINA?
+Dialogue: 2,0:00:00.56,0:00:01.36,Cap,,0,0,0,,¿TRABAJAS CON {\c&H00C8E04E&\fscx108\fscy108}RESINA?{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:01.36,0:00:01.92,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}ENTONCES{\c&H00FFFFFF&\fscx100\fscy100} PARA TODO
+Dialogue: 2,0:00:01.92,0:00:02.24,Cap,,0,0,0,,ENTONCES {\c&H00C8E04E&\fscx108\fscy108}PARA{\c&H00FFFFFF&\fscx100\fscy100} TODO
+Dialogue: 2,0:00:02.24,0:00:02.64,Cap,,0,0,0,,ENTONCES PARA {\c&H00C8E04E&\fscx108\fscy108}TODO{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:02.64,0:00:02.80,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} ESCUCHA ESTO.
+Dialogue: 2,0:00:02.80,0:00:03.28,Cap,,0,0,0,,Y {\c&H00C8E04E&\fscx108\fscy108}ESCUCHA{\c&H00FFFFFF&\fscx100\fscy100} ESTO.
+Dialogue: 2,0:00:03.28,0:00:04.00,Cap,,0,0,0,,Y ESCUCHA {\c&H00C8E04E&\fscx108\fscy108}ESTO.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:04.00,0:00:04.16,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}EL{\c&H00FFFFFF&\fscx100\fscy100} SÁBADO 7 NOV ES
+Dialogue: 2,0:00:04.16,0:00:05.60,Cap,,0,0,0,,EL {\c&H00C8E04E&\fscx108\fscy108}SÁBADO 7 NOV{\c&H00FFFFFF&\fscx100\fscy100} ES
+Dialogue: 2,0:00:05.60,0:00:05.88,Cap,,0,0,0,,EL SÁBADO 7 NOV {\c&H00C8E04E&\fscx108\fscy108}ES{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:05.88,0:00:06.16,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}EL{\c&H00FFFFFF&\fscx100\fscy100} ÚLTIMO REMATE
+Dialogue: 2,0:00:06.16,0:00:06.56,Cap,,0,0,0,,EL {\c&H00C8E04E&\fscx108\fscy108}ÚLTIMO{\c&H00FFFFFF&\fscx100\fscy100} REMATE
+Dialogue: 2,0:00:06.56,0:00:06.92,Cap,,0,0,0,,EL ÚLTIMO {\c&H00C8E04E&\fscx108\fscy108}REMATE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:06.92,0:00:07.04,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100} RESIN EPOXIC.
+Dialogue: 2,0:00:07.04,0:00:07.36,Cap,,0,0,0,,DE {\c&H00C8E04E&\fscx108\fscy108}RESIN{\c&H00FFFFFF&\fscx100\fscy100} EPOXIC.
+Dialogue: 2,0:00:07.36,0:00:08.35,Cap,,0,0,0,,DE RESIN {\c&H00C8E04E&\fscx108\fscy108}EPOXIC.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:08.35,0:00:08.56,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}EL{\c&H00FFFFFF&\fscx100\fscy100} ÚLTIMO.
+Dialogue: 2,0:00:08.56,0:00:09.39,Cap,,0,0,0,,EL {\c&H00C8E04E&\fscx108\fscy108}ÚLTIMO.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:09.39,0:00:09.64,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DESPUÉS{\c&H00FFFFFF&\fscx100\fscy100} DE ESTE,
+Dialogue: 2,0:00:09.64,0:00:09.76,Cap,,0,0,0,,DESPUÉS {\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100} ESTE,
+Dialogue: 2,0:00:09.76,0:00:10.40,Cap,,0,0,0,,DESPUÉS DE {\c&H00C8E04E&\fscx108\fscy108}ESTE,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:10.40,0:00:10.56,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}NO{\c&H00FFFFFF&\fscx100\fscy100} HAY MÁS.
+Dialogue: 2,0:00:10.56,0:00:10.68,Cap,,0,0,0,,NO {\c&H00C8E04E&\fscx108\fscy108}HAY{\c&H00FFFFFF&\fscx100\fscy100} MÁS.
+Dialogue: 2,0:00:10.68,0:00:11.43,Cap,,0,0,0,,NO HAY {\c&H00C8E04E&\fscx108\fscy108}MÁS.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:11.43,0:00:11.92,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}MOLDES,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:11.92,0:00:12.64,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}PIGMENTOS,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:12.64,0:00:13.28,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}GLITTERS,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:13.28,0:00:13.76,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DIJES,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:13.76,0:00:14.24,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}PIEDRAS{\c&H00FFFFFF&\fscx100\fscy100} Y ACCESORIOS
+Dialogue: 2,0:00:14.24,0:00:14.35,Cap,,0,0,0,,PIEDRAS {\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} ACCESORIOS
+Dialogue: 2,0:00:14.35,0:00:14.96,Cap,,0,0,0,,PIEDRAS Y {\c&H00C8E04E&\fscx108\fscy108}ACCESORIOS{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:14.96,0:00:15.28,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}A{\c&H00FFFFFF&\fscx100\fscy100} PRECIO DE
+Dialogue: 2,0:00:15.28,0:00:15.48,Cap,,0,0,0,,A {\c&H00C8E04E&\fscx108\fscy108}PRECIO{\c&H00FFFFFF&\fscx100\fscy100} DE
+Dialogue: 2,0:00:15.48,0:00:15.60,Cap,,0,0,0,,A PRECIO {\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:15.60,0:00:16.24,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}REMATE,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:16.24,0:00:16.64,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TODO{\c&H00FFFFFF&\fscx100\fscy100} EN UN
+Dialogue: 2,0:00:16.64,0:00:16.88,Cap,,0,0,0,,TODO {\c&H00C8E04E&\fscx108\fscy108}EN{\c&H00FFFFFF&\fscx100\fscy100} UN
+Dialogue: 2,0:00:16.88,0:00:17.12,Cap,,0,0,0,,TODO EN {\c&H00C8E04E&\fscx108\fscy108}UN{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:17.12,0:00:17.36,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}SOLO{\c&H00FFFFFF&\fscx100\fscy100} LUGAR:
+Dialogue: 2,0:00:17.36,0:00:18.00,Cap,,0,0,0,,SOLO {\c&H00C8E04E&\fscx108\fscy108}LUGAR:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:18.00,0:00:18.08,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}LA{\c&H00FFFFFF&\fscx100\fscy100} CONCEPCIÓN 165,
+Dialogue: 2,0:00:18.08,0:00:18.72,Cap,,0,0,0,,LA {\c&H00C8E04E&\fscx108\fscy108}CONCEPCIÓN{\c&H00FFFFFF&\fscx100\fscy100} 165,
+Dialogue: 2,0:00:18.72,0:00:19.84,Cap,,0,0,0,,LA CONCEPCIÓN {\c&H00C8E04E&\fscx108\fscy108}165,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:19.84,0:00:20.56,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}PROVIDENCIA,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:20.56,0:00:20.80,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DESDE{\c&H00FFFFFF&\fscx100\fscy100} LAS 9:00 AM.
+Dialogue: 2,0:00:20.80,0:00:22.32,Cap,,0,0,0,,DESDE {\c&H00C8E04E&\fscx108\fscy108}LAS 9:00 AM.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:22.32,0:00:22.40,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} COMO VA
+Dialogue: 2,0:00:22.40,0:00:22.60,Cap,,0,0,0,,Y {\c&H00C8E04E&\fscx108\fscy108}COMO{\c&H00FFFFFF&\fscx100\fscy100} VA
+Dialogue: 2,0:00:22.60,0:00:22.67,Cap,,0,0,0,,Y COMO {\c&H00C8E04E&\fscx108\fscy108}VA{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:22.67,0:00:22.72,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}A{\c&H00FFFFFF&\fscx100\fscy100} LLEGAR MUCHA
+Dialogue: 2,0:00:22.72,0:00:23.16,Cap,,0,0,0,,A {\c&H00C8E04E&\fscx108\fscy108}LLEGAR{\c&H00FFFFFF&\fscx100\fscy100} MUCHA
+Dialogue: 2,0:00:23.16,0:00:23.52,Cap,,0,0,0,,A LLEGAR {\c&H00C8E04E&\fscx108\fscy108}MUCHA{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:23.52,0:00:23.92,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}GENTE,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:23.92,0:00:24.08,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TE{\c&H00FFFFFF&\fscx100\fscy100} DEJO CINCO
+Dialogue: 2,0:00:24.08,0:00:24.48,Cap,,0,0,0,,TE {\c&H00C8E04E&\fscx108\fscy108}DEJO{\c&H00FFFFFF&\fscx100\fscy100} CINCO
+Dialogue: 2,0:00:24.48,0:00:24.80,Cap,,0,0,0,,TE DEJO {\c&H00C8E04E&\fscx108\fscy108}CINCO{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:24.80,0:00:25.36,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}CONSEJOS{\c&H00FFFFFF&\fscx100\fscy100} PARA QUE
+Dialogue: 2,0:00:25.36,0:00:25.52,Cap,,0,0,0,,CONSEJOS {\c&H00C8E04E&\fscx108\fscy108}PARA{\c&H00FFFFFF&\fscx100\fscy100} QUE
+Dialogue: 2,0:00:25.52,0:00:25.76,Cap,,0,0,0,,CONSEJOS PARA {\c&H00C8E04E&\fscx108\fscy108}QUE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:25.76,0:00:25.88,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}NO{\c&H00FFFFFF&\fscx100\fscy100} TE QUEDES
+Dialogue: 2,0:00:25.88,0:00:26.00,Cap,,0,0,0,,NO {\c&H00C8E04E&\fscx108\fscy108}TE{\c&H00FFFFFF&\fscx100\fscy100} QUEDES
+Dialogue: 2,0:00:26.00,0:00:26.32,Cap,,0,0,0,,NO TE {\c&H00C8E04E&\fscx108\fscy108}QUEDES{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:26.32,0:00:26.44,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}SIN{\c&H00FFFFFF&\fscx100\fscy100} NADA.
+Dialogue: 2,0:00:26.44,0:00:27.20,Cap,,0,0,0,,SIN {\c&H00C8E04E&\fscx108\fscy108}NADA.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:27.20,0:00:27.81,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}UNO:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:27.81,0:00:28.08,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}LLEGA{\c&H00FFFFFF&\fscx100\fscy100} TEMPRANO.
+Dialogue: 2,0:00:28.08,0:00:28.85,Cap,,0,0,0,,LLEGA {\c&H00C8E04E&\fscx108\fscy108}TEMPRANO.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:28.85,0:00:28.96,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}LO{\c&H00FFFFFF&\fscx100\fscy100} MÁS BUSCADO
+Dialogue: 2,0:00:28.96,0:00:29.20,Cap,,0,0,0,,LO {\c&H00C8E04E&\fscx108\fscy108}MÁS{\c&H00FFFFFF&\fscx100\fscy100} BUSCADO
+Dialogue: 2,0:00:29.20,0:00:29.68,Cap,,0,0,0,,LO MÁS {\c&H00C8E04E&\fscx108\fscy108}BUSCADO{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:29.68,0:00:29.84,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}SE{\c&H00FFFFFF&\fscx100\fscy100} VA PRIMERO,
+Dialogue: 2,0:00:29.84,0:00:30.04,Cap,,0,0,0,,SE {\c&H00C8E04E&\fscx108\fscy108}VA{\c&H00FFFFFF&\fscx100\fscy100} PRIMERO,
+Dialogue: 2,0:00:30.04,0:00:30.56,Cap,,0,0,0,,SE VA {\c&H00C8E04E&\fscx108\fscy108}PRIMERO,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:30.56,0:00:30.80,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} NO SE
+Dialogue: 2,0:00:30.80,0:00:30.96,Cap,,0,0,0,,Y {\c&H00C8E04E&\fscx108\fscy108}NO{\c&H00FFFFFF&\fscx100\fscy100} SE
+Dialogue: 2,0:00:30.96,0:00:31.12,Cap,,0,0,0,,Y NO {\c&H00C8E04E&\fscx108\fscy108}SE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:31.12,0:00:32.43,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}RESERVA.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:32.43,0:00:32.75,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DOS:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:32.75,0:00:32.96,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TRAE{\c&H00FFFFFF&\fscx100\fscy100} TU LISTA.
+Dialogue: 2,0:00:32.96,0:00:33.36,Cap,,0,0,0,,TRAE {\c&H00C8E04E&\fscx108\fscy108}TU{\c&H00FFFFFF&\fscx100\fscy100} LISTA.
+Dialogue: 2,0:00:33.36,0:00:33.76,Cap,,0,0,0,,TRAE TU {\c&H00C8E04E&\fscx108\fscy108}LISTA.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:33.76,0:00:34.16,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}REVISA{\c&H00FFFFFF&\fscx100\fscy100} QUÉ TE
+Dialogue: 2,0:00:34.16,0:00:34.32,Cap,,0,0,0,,REVISA {\c&H00C8E04E&\fscx108\fscy108}QUÉ{\c&H00FFFFFF&\fscx100\fscy100} TE
+Dialogue: 2,0:00:34.32,0:00:34.48,Cap,,0,0,0,,REVISA QUÉ {\c&H00C8E04E&\fscx108\fscy108}TE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:34.48,0:00:34.68,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}FALTA{\c&H00FFFFFF&\fscx100\fscy100} EN EL
+Dialogue: 2,0:00:34.68,0:00:34.80,Cap,,0,0,0,,FALTA {\c&H00C8E04E&\fscx108\fscy108}EN{\c&H00FFFFFF&\fscx100\fscy100} EL
+Dialogue: 2,0:00:34.80,0:00:34.92,Cap,,0,0,0,,FALTA EN {\c&H00C8E04E&\fscx108\fscy108}EL{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:34.92,0:00:35.36,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TALLER{\c&H00FFFFFF&\fscx100\fscy100} ANTES DE
+Dialogue: 2,0:00:35.36,0:00:35.64,Cap,,0,0,0,,TALLER {\c&H00C8E04E&\fscx108\fscy108}ANTES{\c&H00FFFFFF&\fscx100\fscy100} DE
+Dialogue: 2,0:00:35.64,0:00:35.76,Cap,,0,0,0,,TALLER ANTES {\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:35.76,0:00:36.45,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}VENIR.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:36.45,0:00:37.12,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TRES:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:37.12,0:00:37.36,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}VEN{\c&H00FFFFFF&\fscx100\fscy100} CON BOLSA
+Dialogue: 2,0:00:37.36,0:00:37.52,Cap,,0,0,0,,VEN {\c&H00C8E04E&\fscx108\fscy108}CON{\c&H00FFFFFF&\fscx100\fscy100} BOLSA
+Dialogue: 2,0:00:37.52,0:00:37.84,Cap,,0,0,0,,VEN CON {\c&H00C8E04E&\fscx108\fscy108}BOLSA{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:37.84,0:00:38.56,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}GRANDE.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:38.56,0:00:38.84,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}EN{\c&H00FFFFFF&\fscx100\fscy100} SERIO,
+Dialogue: 2,0:00:38.84,0:00:39.20,Cap,,0,0,0,,EN {\c&H00C8E04E&\fscx108\fscy108}SERIO,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:39.20,0:00:39.36,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}LA{\c&H00FFFFFF&\fscx100\fscy100} VAS A
+Dialogue: 2,0:00:39.36,0:00:39.55,Cap,,0,0,0,,LA {\c&H00C8E04E&\fscx108\fscy108}VAS{\c&H00FFFFFF&\fscx100\fscy100} A
+Dialogue: 2,0:00:39.55,0:00:39.60,Cap,,0,0,0,,LA VAS {\c&H00C8E04E&\fscx108\fscy108}A{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:39.60,0:00:40.61,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}NECESITAR.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:40.61,0:00:41.28,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}CUATRO:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:41.28,0:00:41.56,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}PIENSA{\c&H00FFFFFF&\fscx100\fscy100} EN NAVIDAD.
+Dialogue: 2,0:00:41.56,0:00:41.68,Cap,,0,0,0,,PIENSA {\c&H00C8E04E&\fscx108\fscy108}EN{\c&H00FFFFFF&\fscx100\fscy100} NAVIDAD.
+Dialogue: 2,0:00:41.68,0:00:42.37,Cap,,0,0,0,,PIENSA EN {\c&H00C8E04E&\fscx108\fscy108}NAVIDAD.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:42.37,0:00:43.12,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}ABASTÉCETE{\c&H00FFFFFF&\fscx100\fscy100} AHORA PARA
+Dialogue: 2,0:00:43.12,0:00:43.52,Cap,,0,0,0,,ABASTÉCETE {\c&H00C8E04E&\fscx108\fscy108}AHORA{\c&H00FFFFFF&\fscx100\fscy100} PARA
+Dialogue: 2,0:00:43.52,0:00:43.72,Cap,,0,0,0,,ABASTÉCETE AHORA {\c&H00C8E04E&\fscx108\fscy108}PARA{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:43.72,0:00:43.96,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TUS{\c&H00FFFFFF&\fscx100\fscy100} VENTAS DE
+Dialogue: 2,0:00:43.96,0:00:44.16,Cap,,0,0,0,,TUS {\c&H00C8E04E&\fscx108\fscy108}VENTAS{\c&H00FFFFFF&\fscx100\fscy100} DE
+Dialogue: 2,0:00:44.16,0:00:44.32,Cap,,0,0,0,,TUS VENTAS {\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:44.32,0:00:44.44,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}FIN{\c&H00FFFFFF&\fscx100\fscy100} DE AÑO.
+Dialogue: 2,0:00:44.44,0:00:44.56,Cap,,0,0,0,,FIN {\c&H00C8E04E&\fscx108\fscy108}DE{\c&H00FFFFFF&\fscx100\fscy100} AÑO.
+Dialogue: 2,0:00:44.56,0:00:45.23,Cap,,0,0,0,,FIN DE {\c&H00C8E04E&\fscx108\fscy108}AÑO.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:45.23,0:00:45.40,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} CINCO:
+Dialogue: 2,0:00:45.40,0:00:46.00,Cap,,0,0,0,,Y {\c&H00C8E04E&\fscx108\fscy108}CINCO:{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:46.00,0:00:46.24,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}TRAE{\c&H00FFFFFF&\fscx100\fscy100} A TU
+Dialogue: 2,0:00:46.24,0:00:46.32,Cap,,0,0,0,,TRAE {\c&H00C8E04E&\fscx108\fscy108}A{\c&H00FFFFFF&\fscx100\fscy100} TU
+Dialogue: 2,0:00:46.32,0:00:46.44,Cap,,0,0,0,,TRAE A {\c&H00C8E04E&\fscx108\fscy108}TU{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:46.44,0:00:46.72,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}AMIGA{\c&H00FFFFFF&\fscx100\fscy100} RESINERA.
+Dialogue: 2,0:00:46.72,0:00:47.47,Cap,,0,0,0,,AMIGA {\c&H00C8E04E&\fscx108\fscy108}RESINERA.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:47.47,0:00:47.76,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}COMPRAR{\c&H00FFFFFF&\fscx100\fscy100} ACOMPAÑADA ES
+Dialogue: 2,0:00:47.76,0:00:48.48,Cap,,0,0,0,,COMPRAR {\c&H00C8E04E&\fscx108\fscy108}ACOMPAÑADA{\c&H00FFFFFF&\fscx100\fscy100} ES
+Dialogue: 2,0:00:48.48,0:00:48.80,Cap,,0,0,0,,COMPRAR ACOMPAÑADA {\c&H00C8E04E&\fscx108\fscy108}ES{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:48.80,0:00:49.12,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}MUCHO{\c&H00FFFFFF&\fscx100\fscy100} MEJOR.
+Dialogue: 2,0:00:49.12,0:00:49.76,Cap,,0,0,0,,MUCHO {\c&H00C8E04E&\fscx108\fscy108}MEJOR.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:49.76,0:00:51.28,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}SÁBADO 7 NOV,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:51.28,0:00:51.44,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}LA{\c&H00FFFFFF&\fscx100\fscy100} CONCEPCIÓN 165,
+Dialogue: 2,0:00:51.44,0:00:52.00,Cap,,0,0,0,,LA {\c&H00C8E04E&\fscx108\fscy108}CONCEPCIÓN{\c&H00FFFFFF&\fscx100\fscy100} 165,
+Dialogue: 2,0:00:52.00,0:00:53.12,Cap,,0,0,0,,LA CONCEPCIÓN {\c&H00C8E04E&\fscx108\fscy108}165,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:53.12,0:00:53.95,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}PROVIDENCIA,{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:53.95,0:00:54.20,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}DESDE{\c&H00FFFFFF&\fscx100\fscy100} LAS 9:00.
+Dialogue: 2,0:00:54.20,0:00:55.04,Cap,,0,0,0,,DESDE {\c&H00C8E04E&\fscx108\fscy108}LAS 9:00.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:55.04,0:00:55.28,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}GUARDA{\c&H00FFFFFF&\fscx100\fscy100} ESTE VIDEO
+Dialogue: 2,0:00:55.28,0:00:55.60,Cap,,0,0,0,,GUARDA {\c&H00C8E04E&\fscx108\fscy108}ESTE{\c&H00FFFFFF&\fscx100\fscy100} VIDEO
+Dialogue: 2,0:00:55.60,0:00:55.84,Cap,,0,0,0,,GUARDA ESTE {\c&H00C8E04E&\fscx108\fscy108}VIDEO{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:55.84,0:00:55.92,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}Y{\c&H00FFFFFF&\fscx100\fscy100} ETIQUETA A
+Dialogue: 2,0:00:55.92,0:00:56.40,Cap,,0,0,0,,Y {\c&H00C8E04E&\fscx108\fscy108}ETIQUETA{\c&H00FFFFFF&\fscx100\fscy100} A
+Dialogue: 2,0:00:56.40,0:00:56.56,Cap,,0,0,0,,Y ETIQUETA {\c&H00C8E04E&\fscx108\fscy108}A{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:56.56,0:00:56.80,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}ESA{\c&H00FFFFFF&\fscx100\fscy100} AMIGA QUE
+Dialogue: 2,0:00:56.80,0:00:57.12,Cap,,0,0,0,,ESA {\c&H00C8E04E&\fscx108\fscy108}AMIGA{\c&H00FFFFFF&\fscx100\fscy100} QUE
+Dialogue: 2,0:00:57.12,0:00:57.36,Cap,,0,0,0,,ESA AMIGA {\c&H00C8E04E&\fscx108\fscy108}QUE{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:57.36,0:00:57.52,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}NO{\c&H00FFFFFF&\fscx100\fscy100} PUEDE FALTAR.
+Dialogue: 2,0:00:57.52,0:00:57.76,Cap,,0,0,0,,NO {\c&H00C8E04E&\fscx108\fscy108}PUEDE{\c&H00FFFFFF&\fscx100\fscy100} FALTAR.
+Dialogue: 2,0:00:57.76,0:00:58.47,Cap,,0,0,0,,NO PUEDE {\c&H00C8E04E&\fscx108\fscy108}FALTAR.{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:58.47,0:00:58.60,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}¡NOS{\c&H00FFFFFF&\fscx100\fscy100} VEMOS EN
+Dialogue: 2,0:00:58.60,0:00:58.88,Cap,,0,0,0,,¡NOS {\c&H00C8E04E&\fscx108\fscy108}VEMOS{\c&H00FFFFFF&\fscx100\fscy100} EN
+Dialogue: 2,0:00:58.88,0:00:59.00,Cap,,0,0,0,,¡NOS VEMOS {\c&H00C8E04E&\fscx108\fscy108}EN{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 2,0:00:59.00,0:00:59.08,Cap,,0,0,0,,{\c&H00C8E04E&\fscx108\fscy108}EL{\c&H00FFFFFF&\fscx100\fscy100} ÚLTIMO REMATE!
+Dialogue: 2,0:00:59.08,0:00:59.48,Cap,,0,0,0,,EL {\c&H00C8E04E&\fscx108\fscy108}ÚLTIMO{\c&H00FFFFFF&\fscx100\fscy100} REMATE!
+Dialogue: 2,0:00:59.48,0:01:00.48,Cap,,0,0,0,,EL ÚLTIMO {\c&H00C8E04E&\fscx108\fscy108}REMATE!{\c&H00FFFFFF&\fscx100\fscy100}
+Dialogue: 1,0:00:00.00,0:00:04.00,Head,,0,0,0,,{\fad(150,150)}ATENCIÓN RESINERAS
+Dialogue: 1,0:00:04.00,0:00:11.40,Big,,0,0,0,,{\fad(150,150)}{\fs190}ÚLTIMO\N{\fs110}REMATE
+Dialogue: 1,0:00:04.00,0:00:11.40,Sub,,0,0,0,,{\fad(150,150)}7 DE NOVIEMBRE
+Dialogue: 1,0:00:17.30,0:00:22.30,Sub,,0,0,0,,{\fad(150,150)}SÁBADO 7 DE NOVIEMBRE
+Dialogue: 1,0:00:17.30,0:00:22.30,Big,,0,0,0,,{\fad(150,150)}{\fs100}La Concepción 165\N{\fs80}Providencia
+Dialogue: 1,0:00:17.30,0:00:22.30,Sub2,,0,0,0,,{\fad(150,150)}DESDE LAS 9:00 AM
+Dialogue: 1,0:00:49.75,0:00:55.00,Sub,,0,0,0,,{\fad(150,150)}SÁBADO 7 DE NOVIEMBRE
+Dialogue: 1,0:00:49.75,0:00:55.00,Big,,0,0,0,,{\fad(150,150)}{\fs100}La Concepción 165\N{\fs80}Providencia
+Dialogue: 1,0:00:49.75,0:00:55.00,Sub2,,0,0,0,,{\fad(150,150)}DESDE LAS 9:00 AM
+Dialogue: 1,0:00:22.30,0:00:27.20,Big,,0,0,0,,{\fad(150,150)}{\fs230}5\N{\fs96}CONSEJOS
+Dialogue: 1,0:00:22.30,0:00:27.20,Sub,,0,0,0,,{\fad(150,150)}PARA APROVECHAR EL REMATE
+Dialogue: 1,0:00:27.20,0:00:32.40,Num,,0,0,0,,{\fad(150,150)}1
+Dialogue: 1,0:00:27.20,0:00:32.40,Tip,,0,0,0,,{\fad(150,150)}LLEGA\NTEMPRANO
+Dialogue: 1,0:00:32.40,0:00:36.45,Num,,0,0,0,,{\fad(150,150)}2
+Dialogue: 1,0:00:32.40,0:00:36.45,Tip,,0,0,0,,{\fad(150,150)}TRAE\NTU LISTA
+Dialogue: 1,0:00:36.45,0:00:40.60,Num,,0,0,0,,{\fad(150,150)}3
+Dialogue: 1,0:00:36.45,0:00:40.60,Tip,,0,0,0,,{\fad(150,150)}VEN CON\NBOLSA GRANDE
+Dialogue: 1,0:00:40.60,0:00:45.20,Num,,0,0,0,,{\fad(150,150)}4
+Dialogue: 1,0:00:40.60,0:00:45.20,Tip,,0,0,0,,{\fad(150,150)}PIENSA\NEN NAVIDAD
+Dialogue: 1,0:00:45.20,0:00:49.75,Num,,0,0,0,,{\fad(150,150)}5
+Dialogue: 1,0:00:45.20,0:00:49.75,Tip,,0,0,0,,{\fad(150,150)}TRAE A TU\NAMIGA RESINERA
+Dialogue: 1,0:00:55.00,0:00:58.45,Sub,,0,0,0,,{\fad(150,150)}GUARDA ESTE VIDEO
+Dialogue: 1,0:00:55.00,0:00:58.45,Tip,,0,0,0,,{\fad(150,150)}Y ETIQUETA A TU\NAMIGA RESINERA
+Dialogue: 1,0:00:58.45,0:01:01.00,End,,0,0,0,,{\fad(150,150)}{\fs120}¡NOS VEMOS!
+Dialogue: 1,0:00:58.45,0:01:01.00,Sub,,0,0,0,,{\fad(150,150)}SÁBADO 7 NOV · 9:00 AM
+Dialogue: 0,0:00:00.00,0:01:01.00,Mark,,0,0,0,,@resin.epoxic
