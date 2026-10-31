@@ -1,5 +1,7 @@
 # Resin Epoxic — Último remate · Sábado 7 de noviembre
 
+> **Plan día a día (31 oct → 8 nov), copys y mensajes de WhatsApp:** ver `plan-de-publicacion-remate-7nov.md`.
+
 ## Versiones
 
 | Archivo | Duración | Para qué |
@@ -8,7 +10,7 @@
 | `remate-7nov-video-con-musica.mp4` | 61 s | Versión completa narrada con música de fondo. Para Facebook, WhatsApp y para quien ya está interesada. |
 | `remate-7nov-video.mp4` | 61 s | La misma versión larga sin música, por si quieren poner un audio en tendencia desde la app. |
 
-Portadas: `remate-7nov-corto-portada.jpg` y `remate-7nov-portada.jpg`.
+Portadas: en la carpeta `portadas/`.
 Música: `remate-7nov-musica.mp3` (instrumental generada con ElevenLabs Music, 65 s, libre de derechos de terceros).
 Mezcla: la música baja sola cuando habla la voz (ducking) y el total está normalizado a -14 LUFS, el estándar de Instagram y TikTok.
 Voz: ElevenLabs, "Cami" (español chileno). Guiones en `remate-7nov-corto-guion.txt` y `remate-7nov-guion.txt`.
