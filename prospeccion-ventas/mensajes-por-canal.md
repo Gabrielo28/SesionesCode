@@ -1022,6 +1022,113 @@ Influence Chile · influencechile.cl
 
 ---
 
+## NUEVAS DEL 2-NOV — 8 empresas (todas B)
+
+### WhatsApp
+
+**Desierto Propiedades** · +56 9 8988 8300 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Desierto Propiedades trabaja arriendo, venta y administración en Copiapó y La Serena.
+
+Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
+
+¿Les interesaría conversarlo 15 minutos?
+```
+
+**Copper Gestión Inmobiliaria** · WhatsApp del sitio — *identificar gerente*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Copper trabaja venta y arriendo en Copiapó, Caldera y alrededores, y atiende por WhatsApp.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les interesaría ver cómo funciona? Son 15 minutos.
+```
+
+**Desarrollo Legal** · +56 9 9684 4564 — *identificar socio*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que en Desarrollo Legal la consulta gratuita se agenda por WhatsApp y atienden 11 áreas del derecho.
+
+Implementamos un asistente que hace las preguntas iniciales de cada consulta, identifica el área y agenda la reunión con el especialista que corresponde.
+
+¿Les interesaría verlo en 15 minutos?
+```
+
+**FOCI Fonoaudiología Clínica Integral — Lesly Villagrán** · +56 9 6554 5777
+```
+Hola Lesly, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que en FOCI las horas se reservan por WhatsApp consultando disponibilidad.
+
+Implementamos un asistente de WhatsApp para centros de salud que muestra las horas disponibles, agenda según el servicio y envía el recordatorio al paciente.
+
+¿Te interesaría ver cómo funciona? Son 15 minutos.
+```
+
+**CreaPyme Consultora** · +56 9 5690 2275 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que CreaPyme publica sus planes para pymes y recibe las cotizaciones por WhatsApp.
+
+Implementamos un asistente que responde las consultas de planes a cualquier hora, hace las preguntas de cotización y les entrega la solicitud completa.
+
+¿Les interesaría ver cómo funciona? Son 15 minutos.
+```
+
+### Email
+
+**Legalistas Estudio Jurídico — María Javiera Rojas** · contacto@estudiolegalistas.cl
+Asunto:
+```
+Atención de consultas en Legalistas
+```
+Cuerpo:
+```
+Estimada María Javiera, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Le escribo porque vi que Legalistas atiende familia, laboral, civil y penal desde Talca, con WhatsApp para cada abogada.
+
+Implementamos sistemas de atención para estudios jurídicos: cada consulta llega clasificada por área, con los antecedentes básicos, y se agenda directo con la abogada que corresponde.
+
+¿Le interesaría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+**Centro Ágape — Elly Aravena** · agape.temuco@gmail.com — *tono cuidadoso: familias de niños en el espectro*
+Asunto:
+```
+Agenda de evaluaciones en Centro Ágape
+```
+Cuerpo:
+```
+Estimada Elly, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Le escribo porque vi que en Centro Ágape las familias agendan por teléfono, correo o formulario, y responden en menos de 24 horas.
+
+Implementamos un asistente de WhatsApp para centros de salud que responde las preguntas frecuentes de las familias a cualquier hora, agenda la primera conversación y envía recordatorios, sin reemplazar el contacto humano del equipo.
+
+¿Le interesaría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+**Administraciones UrbanWork** · info@administramostuedificio.cl — *confirmar tamaño*
+Asunto:
+```
+Atención de copropietarios en UrbanWork
+```
+Cuerpo:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que UrbanWork administra edificios y condominios en Viña del Mar, Reñaca y Concón.
+
+Implementamos un canal de WhatsApp para administradoras que responde las consultas frecuentes de los copropietarios y deriva al administrador solo lo que necesita su revisión.
+
+¿Con quién podría conversarlo 15 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+---
+
 ## Verificar antes de cualquier mensaje
 
 **Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
@@ -1034,12 +1141,12 @@ persona, pasa a C.
 
 | Canal | A | B | Total |
 |---|---|---|---|
-| WhatsApp | 7 | 32 | 39 |
-| Email | 8 | 14 | 22 |
+| WhatsApp | 7 | 37 | 44 |
+| Email | 8 | 17 | 25 |
 | Llamada (y luego correo) | 4 | 3 | 7 |
 | LinkedIn | 1 | 2 | 3 |
 | Verificar antes | 0 | 1 | 1 |
-| **Total** | **20** | **52** | **72** |
+| **Total** | **20** | **60** | **80** |
 
 Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
 invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y
