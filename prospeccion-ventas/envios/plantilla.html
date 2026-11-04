@@ -1,0 +1,158 @@
+<title>Cola de envío Influence</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: una columna de tarjetas de envío, barra de progreso fija arriba, filtros por bloque */
+:root{
+  --bg:#f4f8f8; --surface:#ffffff; --fg:#123638; --muted:#557273; --line:#d9e8e8;
+  --teal:#12959c; --teal-ink:#0d6f74; --coral:#ff7b7b; --coral-ink:#c84848; --ok:#1f8a57; --okbg:#e3f4ea; --warnbg:#fff1e6; --warn:#a35a12; --on:#ffffff;
+  --display:'Montserrat',system-ui,sans-serif; --body:'Source Sans 3',system-ui,sans-serif; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1c1d; --surface:#132a2c; --fg:#e4f1f1; --muted:#93b3b4; --line:#244547;
+  --teal:#2fb6bd; --teal-ink:#7fd9de; --coral:#ff8f8f; --coral-ink:#ffb3b3; --ok:#5fd39a; --okbg:#173a2a; --warnbg:#3a2a17; --warn:#f2b46b; --on:#0b1718; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1c1d; --surface:#132a2c; --fg:#e4f1f1; --muted:#93b3b4; --line:#244547;
+  --teal:#2fb6bd; --teal-ink:#7fd9de; --coral:#ff8f8f; --coral-ink:#ffb3b3; --ok:#5fd39a; --okbg:#173a2a; --warnbg:#3a2a17; --warn:#f2b46b; --on:#0b1718; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+h1{font-family:var(--display);font-size:1.15rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.prog{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal);width:0}
+.filters{display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding-bottom:2px}
+.filters button{flex:0 0 auto;font:600 .8rem var(--display);border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:6px 10px;border-radius:99px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--on)}
+details.help{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:14px}
+details.help summary{font:700 .95rem var(--display);cursor:pointer}
+.help p{margin:.5em 0}
+h2.blk{font:800 .78rem var(--display);text-transform:uppercase;letter-spacing:.12em;color:var(--teal-ink);margin:26px 0 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;display:grid;gap:10px}
+.card.done{opacity:.6}
+.card.hold{border-color:var(--warn)}
+.head{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.head h3{font:700 1.02rem var(--display);margin:0;min-width:0;overflow-wrap:anywhere}
+.num{font:800 .8rem var(--display);color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:700 .72rem var(--display);padding:3px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.chip.a{background:var(--coral);border-color:var(--coral);color:var(--on)}
+.chip.wa{color:var(--ok);border-color:var(--ok)} .chip.em{color:var(--teal-ink);border-color:var(--teal)} .chip.ll{color:var(--warn);border-color:var(--warn)}
+.chip.hold{background:var(--warnbg);color:var(--warn);border-color:var(--warn)}
+.contact{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.contact .val{font:600 1rem var(--mono);user-select:all;overflow-wrap:anywhere}
+.k{font:700 .72rem var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 2px}
+.info p{margin:0 0 6px}
+.msg{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;white-space:pre-wrap;font-size:.95rem;user-select:text;overflow-wrap:anywhere}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:700 .85rem var(--display);border-radius:10px;padding:10px 12px;border:1px solid var(--teal);background:var(--surface);color:var(--teal-ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--teal);color:var(--on)}
+.btn.wa{background:var(--ok);border-color:var(--ok);color:var(--on)}
+.btn:focus-visible,.filters button:focus-visible,summary:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+.sent{display:flex;align-items:center;gap:8px;font-weight:600;border-top:1px dashed var(--line);padding-top:10px}
+.sent input{width:22px;height:22px;accent-color:var(--teal)}
+.sent small{color:var(--muted);font-weight:400}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);font:600 .9rem var(--display);padding:10px 14px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.foot{color:var(--muted);font-size:.85rem;margin-top:20px}
+@media (prefers-reduced-motion: reduce){.toast{transition:none}}
+</style>
+<div class="wrap">
+  <header class="top">
+    <h1>Cola de envío · Influence Chile</h1>
+    <div class="prog"><span id="cnt">0 de 0 enviados</span><div class="bar"><i id="barfill"></i></div><button class="btn" id="copyHoy" type="button">Copiar enviados hoy</button></div>
+    <div class="filters" id="filters" role="toolbar" aria-label="Filtrar por bloque"></div>
+  </header>
+
+  <details class="help" id="help">
+    <summary>Cómo usar esta cola</summary>
+    <p>Ve en orden, máximo 10 por día. En cada tarjeta: copia el mensaje o toca <b>Abrir WhatsApp</b>, revisa y envía tú. Después marca <b>Enviado</b>.</p>
+    <p>Si el botón de WhatsApp no abre, copia el número y el mensaje con los botones. En correos, copia asunto y cuerpo por separado.</p>
+    <p>Al terminar el día toca <b>Copiar enviados hoy</b> y pégamelo en el chat: los marco en el pipeline. Lo que marques queda guardado solo en este teléfono.</p>
+    <p><b>Si responden:</b> contesta dentro de la hora, ofrece dos horarios para 15 minutos y mándame su respuesta.</p>
+  </details>
+
+  <details class="help" id="segs"><summary>Seguimientos día 4 y día 10, guion de llamada e invitación de LinkedIn</summary><div id="segbox"></div></details>
+
+  <main id="list"></main>
+  <p class="foot" id="foot"></p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const D=/*DATA*/null;
+const KEY='cola-envio-influence-v1';
+let state={};try{state=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){state={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+const $=s=>document.querySelector(s);
+const el=(t,a={},...c)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v)}for(const x of c.flat()){if(x==null||x===false)continue;e.append(x.nodeType?x:document.createTextNode(x))}return e};
+let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1600)};
+function copy(text,label,srcEl){
+  const done=()=>toast(label+' copiado');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>sel(srcEl))}else sel(srcEl);
+  function sel(n){if(!n){toast('Mantén presionado el texto para copiar');return}const r=document.createRange();r.selectNodeContents(n);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Texto seleccionado: usa Copiar')}
+}
+const CAN={whatsapp:['WhatsApp','wa'],email:['Correo','em'],llamada:['Llamada + correo','ll'],linkedin:['LinkedIn','em'],verificar:['Verificar sitio','hold']};
+const COMO={whatsapp:'Lunes a viernes, 10:00 a 13:00. Abre WhatsApp con el botón, revisa y envía.',email:'Entre 9:00 y 11:00. Copia el correo, el asunto y el cuerpo. Si tiene LinkedIn, manda la invitación el día anterior.',llamada:'Llama en horario de oficina con el guion (arriba) y pide el correo de quien ve el tema. Después envía el correo.',linkedin:'Envía la invitación (arriba). Cuando acepte, envía el mensaje.',verificar:'Abre su web en el navegador antes de escribir.'};
+const digits=p=>p.replace(/\D/g,'');
+let filtro=0;
+function render(){
+  const list=$('#list');list.textContent='';
+  let last=null;
+  for(const it of D.items){
+    if(filtro&&it.b!==filtro)continue;
+    if(it.b!==last){list.append(el('h2',{class:'blk'},D.tit[it.b]));last=it.b}
+    const st=state[it.n];
+    const [cn,cc]=CAN[it.canal]||[it.canal,''];
+    const hold=it.b===6;
+    const msgNodes=[];
+    for(const m of it.msgs){
+      const box=el('div',{class:'msg'},m.t);
+      const lab=m.k==='asunto'?'Asunto':m.k==='cuerpo'?'Cuerpo del correo':'Mensaje';
+      const btns=el('div',{class:'btns'},el('button',{class:'btn primary',type:'button',onclick:()=>copy(m.t,lab,box)},'Copiar '+lab.toLowerCase()));
+      if(m.k==='mensaje'&&it.canal==='whatsapp'&&it.phone){btns.append(el('a',{class:'btn wa',href:'https://wa.me/'+digits(it.phone)+'?text='+encodeURIComponent(m.t),target:'_blank',rel:'noopener'},'Abrir WhatsApp con el mensaje'))}
+      msgNodes.push(el('div',{},el('p',{class:'k'},lab),box,btns));
+    }
+    const contact=el('div',{class:'contact'});
+    const addC=(label,val)=>{const v=el('span',{class:'val'},val);contact.append(el('span',{class:'k',style:'margin:0'},label),v,el('button',{class:'btn',type:'button',onclick:()=>copy(val,label,v)},'Copiar'))};
+    if(it.phone)addC('Celular',it.phone);
+    if(it.fijo)addC('Teléfono',it.fijo);
+    if(it.mail)addC('Correo',it.mail);
+    if(!it.phone&&!it.mail&&it.alt)contact.append(el('span',{},'Contacto: '+it.alt));
+    const como=[COMO[it.canal]||''];if(it.note)como.push('Antes: '+it.note.replace(/\.$/,'')+'.');
+    if(it.canal==='whatsapp'&&!it.phone)como.push('No hay número en la ficha: abre su web y usa su botón de WhatsApp.');
+    const cb=el('input',{type:'checkbox',id:'s'+it.n,checked:st?'':false,onchange:e=>{if(e.target.checked){state[it.n]={d:new Date().toISOString().slice(0,10),name:it.name.split(' — ')[0]}}else delete state[it.n];save();render()}});
+    const card=el('article',{class:'card'+(st?' done':'')+(hold?' hold':''),id:'c'+it.n},
+      el('div',{class:'head'},el('h3',{},it.name),el('span',{class:'num'},'#'+it.n)),
+      el('div',{class:'chips'},el('span',{class:'chip'+(it.pr==='A'?' a':'')},'Prioridad '+it.pr),el('span',{class:'chip '+cc},cn),it.rubro?el('span',{class:'chip'},it.rubro):null,it.ciudad?el('span',{class:'chip'},it.ciudad):null,hold?el('span',{class:'chip hold'},'No enviar todavía'):null),
+      contact,
+      el('div',{class:'info'},
+        el('p',{},el('b',{},'Cómo abordarlo: '),como.join(' ')),
+        it.gap?el('p',{},el('b',{},'Lo que vimos: '),it.gap):null,
+        it.oferta?el('p',{},el('b',{},'Qué ofrecerle: '),it.oferta):null,
+        ...it.extra.map(x=>el('p',{},x)),
+        it.web?el('p',{},el('b',{},'Web: '),el('a',{href:it.web,target:'_blank',rel:'noopener'},it.web)):null),
+      ...msgNodes,
+      el('label',{class:'sent',for:'s'+it.n},cb,'Enviado',st?el('small',{},' el '+st.d.split('-').reverse().join('-')):null));
+    list.append(card);
+  }
+  const total=D.items.filter(i=>i.b!==6).length, env=Object.keys(state).length;
+  $('#cnt').textContent=env+' de '+total+' enviados';
+  $('#barfill').style.width=Math.min(100,env/total*100)+'%';
+}
+function filters(){
+  const f=$('#filters');f.textContent='';
+  const opts=[[0,'Todos']].concat(Object.entries(D.tit).map(([k,v])=>[+k,v]));
+  for(const[k,v]of opts){f.append(el('button',{type:'button','aria-pressed':String(filtro===k),onclick:()=>{filtro=k;filters();render();scrollTo(0,0)}},k?v+' ('+D.items.filter(i=>i.b===k).length+')':'Todos ('+D.items.length+')'))}
+}
+function segs(){
+  const box=$('#segbox');
+  for(const[t,txt]of D.seg){if(!txt)continue;const m=el('div',{class:'msg'},txt);box.append(el('p',{class:'k',style:'margin-top:10px'},t),m,el('div',{class:'btns',style:'margin-top:6px'},el('button',{class:'btn',type:'button',onclick:()=>copy(txt,t,m)},'Copiar')))}
+  if(D.guion)box.append(el('p',{class:'k',style:'margin-top:10px'},'Guion de llamada (se dice)'),el('div',{class:'msg'},D.guion));
+  if(D.inv){const m=el('div',{class:'msg'},D.inv);box.append(el('p',{class:'k',style:'margin-top:10px'},'Invitación de LinkedIn (cambia [Nombre] y [rubro])'),m,el('div',{class:'btns',style:'margin-top:6px'},el('button',{class:'btn',type:'button',onclick:()=>copy(D.inv,'Invitación',m)},'Copiar')))}
+}
+$('#copyHoy').addEventListener('click',()=>{const hoy=new Date().toISOString().slice(0,10);const n=Object.values(state).filter(s=>s.d===hoy).map(s=>s.name);if(!n.length){toast('Hoy no hay enviados marcados');return}copy('Contacté a '+n.join(', '),'Resumen',null)});
+$('#foot').textContent='Generada el '+D.fecha+' · '+D.items.length+' contactos. Lo que marcas se guarda solo en este dispositivo.';
+filters();segs();render();
+</script>
