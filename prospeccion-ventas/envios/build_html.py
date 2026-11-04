@@ -17,7 +17,7 @@ for n,it in enumerate(order,1):
         'rubro':p.get('rubro',''),'ciudad':p.get('ciudad',''),'phone':it['phone'] or '',
         'fijo':(it['fijo'] if it['fijo'] and not it['fijo'].startswith('+56 9') else ''),
         'mail':it['mail'] or '','alt':contacto_alt,'web':p.get('web',''),'note':it['note'],
-        'gap':p.get('gap_verificado',''),'oferta':p.get('solucion_sugerida',''),'extra':extra,'msgs':msgs})
+        'gap':p.get('gap_verificado',''),'video':g.VIDEOS[it['video']],'oferta':p.get('solucion_sugerida',''),'extra':extra,'msgs':msgs})
 txt='\n'.join(g.src)
 def grab(pat):
     m=re.search(pat,txt,re.S); return m.group(1).strip() if m else ''
@@ -26,7 +26,10 @@ seg=[('WhatsApp · día 4',grab(r'\*\*WhatsApp, día 4\*\*\n```\n(.+?)\n```')),(
 guion=grab(r'\*\*Guion \(se dice, no se copia\)\*\*\n(.+?)\n')
 inv=grab(r'\*\*Invitación \(máximo 300 caracteres\), para todas\.\*\*[^\n]*\n```\n(.+?)\n```')
 TIT={1:'Prioridad A · WhatsApp',2:'Prioridad A · Correo',3:'Prioridad A · Llamada o LinkedIn',4:'Prioridad B · Persona identificada',5:'Prioridad B · Ubicar a quién escribir',6:'No enviar todavía'}
-payload=json.dumps({'items':data,'seg':seg,'guion':guion,'inv':inv,'tit':TIT,'fecha':datetime.date.today().strftime('%d-%m-%Y')},ensure_ascii=False).replace('</','<\\/')
+from collections import Counter
+vc=Counter(it['video'] for it in order if it['b']!=6)
+vids=[[g.VIDEOS[k],vc.get(k,0)] for k in sorted(g.VIDEOS)]
+payload=json.dumps({'items':data,'vids':vids,'seg':seg,'guion':guion,'inv':inv,'tit':TIT,'fecha':datetime.date.today().strftime('%d-%m-%Y')},ensure_ascii=False).replace('</','<\\/')
 html=open(os.path.join(HERE,'plantilla.html'),encoding='utf-8').read().replace('/*DATA*/null',payload)
 open(os.path.join(HERE,'cola-envio.html'),'w',encoding='utf-8').write(html)
 print('ok',len(data))

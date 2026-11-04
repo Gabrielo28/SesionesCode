@@ -60,6 +60,14 @@ for e in entries:
     items.append(dict(name=name,hdr=h,note=note,canal=canal,pr=pr,phone=phone,fijo=fijo.group(0) if fijo else None,
         mail=mail.group(0) if mail else None,blocks=e['blocks'] or [],labels=e['labels'],pre=e['pre'],pipe=p))
 
+VIDEOS={1:'Video 1 · Asistente de WhatsApp que responde y agenda',2:'Video 2 · Cotización por WhatsApp',3:'Video 3 · Recordatorios y recepción de documentos',4:'Video 4 · Qué hace Influence (para alianzas)'}
+def video(it):
+    t=' '.join(it['blocks']).lower()
+    if 'complementamos' in t: return 4
+    if 'cotización' in t or 'valor del plan' in t: return 2
+    if ('recordatorio' in t and ('documentos' in t or 'novedades' in t)) or any(k in t for k in ('candidato','vencimientos','novedades','avisos de pago','deudores')): return 3
+    return 1
+for _it in items: _it['video']=video(_it)
 hold=lambda it: it['canal']=='verificar' or 'verificar antes' in it['hdr'].lower() or 'verificar el sitio' in it['hdr'].lower()
 named=lambda it: ' — ' in it['name'] or (it['pipe'] and it['pipe']['estado'] in ('por_contactar',))
 def bucket(it):
@@ -97,8 +105,9 @@ escrito), revisa y envía tú. Marca la casilla y anota la fecha. Al terminar el
 
 **Ritmo:** 10 por día como máximo, para que las respuestas te alcancen a atender el mismo día.
 
-**Si responde:** contesta dentro de la hora, ofrece dos horarios para la llamada de 15 minutos y
-mándame su respuesta ("respondió X: …") para preparar la reunión.
+**Si dice que sí:** mándale el video que indica su tarjeta (son 4 videos de 2 minutos, uno por tipo
+de solución; tienen que estar grabados antes de empezar a enviar). Si después pregunta precio o
+quiere avanzar, ahí propones una llamada corta y me mandas su respuesta ("respondió X: …").
 
 **Si no responde:** seguimiento el día 4 y el día 10 (textos abajo). Después, se deja.
 
@@ -141,6 +150,7 @@ for b in TIT:
         out.append('**Cómo abordarlo:** '+' '.join(como)+'  ')
         if p and p['gap_verificado']: out.append(f"**Lo que vimos de ellos:** {p['gap_verificado']}.  ")
         if p and p['solucion_sugerida']: out.append(f"**Qué les ofreces:** {p['solucion_sugerida']}.  ")
+        out.append(f"**Video si dice que sí:** {VIDEOS[it['video']]}.  ")
         for pre in it['pre']:
             if pre.startswith(('Servicio','Es el número','Correo después','Correo si','Mensaje al aceptar')): out.append(pre+'  ')
         out.append('')

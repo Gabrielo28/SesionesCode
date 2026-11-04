@@ -15,7 +15,7 @@ Cada mensaje tiene tres partes, en este orden:
    con IA) y por qué le escribes a esa empresa, con un dato público y neutro de ellos (qué servicios
    ofrecen, por dónde atienden, en qué ciudades están).
 2. **Qué hacemos, en una frase concreta.** El servicio tal cual, sin rodeos.
-3. **Una pregunta simple** que se responda con sí o no.
+3. **Una pregunta simple** que se responda con sí o no: si quieren verlo funcionando en un video de 2 minutos. Así no hay que coordinar una reunión para la primera respuesta.
 
 Lo que **no** llevan, porque resulta invasivo: suposiciones sobre sus problemas ("se les acumulan
 mensajes", "el teléfono no para"), cifras de su equipo o de su cartera, "probé tu WhatsApp",
@@ -73,7 +73,7 @@ Hola Daniel, soy Gabriel, de Influence Chile, una agencia de marketing y automat
 
 Implementamos un asistente de WhatsApp para corredoras: responde las preguntas frecuentes de cada propiedad (disponibilidad, precio, requisitos) a cualquier hora y deja la visita agendada en su calendario. Ustedes siguen atendiendo directo desde la visita.
 
-¿Te interesaría verlo funcionando en una llamada de 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Grupo Cueto — Sebastián Cueto** · +56 9 3676 5659
@@ -82,7 +82,7 @@ Hola Sebastián, soy Gabriel, de Influence Chile, una agencia de marketing y aut
 
 Nosotros trabajamos el paso siguiente: que el mismo WhatsApp responda las preguntas de cada propiedad y deje la visita agendada, sin esperar a un ejecutivo.
 
-¿Te interesaría verlo en una llamada de 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Gia Propiedades — Fidel Ibáñez** · +56 9 5709 2236
@@ -91,7 +91,7 @@ Hola Fidel, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y agenda la visita en su calendario.
 
-¿Te interesaría ver cómo funciona? Son 15 minutos.
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Luz Propiedades — Any Luz Hein** · +56 9 6679 3965
@@ -100,7 +100,7 @@ Hola Any, soy Gabriel, de Influence Chile, una agencia de marketing y automatiza
 
 Implementamos un asistente que responde las consultas que llegan desde los portales (disponibilidad, precio, requisitos) a cualquier hora y deja la visita agendada.
 
-¿Te interesaría verlo en una llamada de 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Mellibovsky Propiedades — Yossi Mellibovsky** · +56 9 5867 6467
@@ -109,7 +109,7 @@ Hola Yossi, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Implementamos un asistente de WhatsApp para corredores: responde las preguntas frecuentes de cada propiedad a cualquier hora y te deja la visita agendada.
 
-¿Te interesaría ver cómo funciona? Son 15 minutos.
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ### Contables y gestorías — prioridad A
@@ -120,7 +120,7 @@ Hola Julio, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Implementamos automatizaciones para estudios contables: recordatorios mensuales a cada cliente, recepción ordenada de documentos y respuesta a consultas frecuentes, sin cambiar el software contable que usan.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Emprende tu Pyme — Ricardo** · +56 9 5066 6450
@@ -129,7 +129,7 @@ Hola Ricardo, soy Gabriel, de Influence Chile, una agencia de marketing y automa
 
 Implementamos seguimiento automático de trámites: el cliente recibe avisos de avance y de lo que le falta entregar, y el asesor entra solo cuando hay que decidir algo.
 
-¿Te interesaría verlo en una llamada de 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ### Inmobiliarias y corredoras — prioridad B
@@ -140,7 +140,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad, agenda la visita y asigna la consulta al agente que corresponde.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 ```
 
 **Cima Propiedades** · +56 9 4578 6529 — *identificar gerente*
@@ -149,7 +149,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para inmobiliarias que responde las consultas de cada propiedad y las deriva a la oficina que corresponde, con la visita ya agendada.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 ```
 
 **Concreta Propiedades** · +56 9 9844 1444 — *identificar dueño*
@@ -158,7 +158,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos la parte que completa eso: que la visita quede confirmada en su calendario de forma automática y el interesado reciba el recordatorio.
 
-¿Les interesaría verlo en una llamada de 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Mundo Corretaje** · +56 9 5647 9109 — *identificar dueño*
@@ -167,7 +167,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y les entrega el resto ordenado.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **MS Propiedades SpA** · +56 9 2883 0691 — *identificar dueño*
@@ -176,7 +176,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Ascender Bienes Raíces** · +56 9 2863 5329 — *identificar dueño*
@@ -185,7 +185,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que reconoce qué servicio busca cada persona, responde lo frecuente y les deja agendada la visita o la tasación.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **RMC / Mardones Propiedades** · +56 9 8139 3239 — *confirmar nombre de pila de R. Mardones*
@@ -194,7 +194,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad y agenda la visita con la información de acceso incluida.
 
-¿Les interesaría verlo en una llamada de 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Roma Inmobiliaria — Paola González** · +56 9 7806 5144 — *confirmar si hay equipo o es unipersonal*
@@ -203,7 +203,7 @@ Hola Paola, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Nosotros implementamos esa parte en la atención: un asistente de WhatsApp que responde las preguntas de cada propiedad y deja la visita agendada.
 
-¿Te interesaría ver cómo funciona? Son 15 minutos.
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Golden Propiedades** · +56 9 8899 2595 — *buscar al dueño (Rosi Salazar es contacto comercial)*
@@ -212,7 +212,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 ```
 
 **Deluno Propiedades** · +56 9 8668 5079 — *identificar socio*
@@ -221,7 +221,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que responde las consultas de arriendo de temporada (fechas, precio, capacidad) a cualquier hora y deja la reserva encaminada.
 
-¿Les interesaría verlo antes de la temporada? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos, antes de que parta la temporada?
 ```
 
 **Urbana Propiedades** · +56 9 9017 5378 — *nueva 12-oct; identificar socio*
@@ -230,7 +230,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que responde las consultas de temporada (fechas, precio, capacidad) a cualquier hora y deja la reserva encaminada.
 
-¿Les interesaría verlo antes de la temporada? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos, antes de que parta la temporada?
 ```
 
 **Fornerod Propiedades** · +56 9 8536 2107 — *nueva 12-oct*
@@ -239,7 +239,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada, esté donde esté la propiedad.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **MATT Gestión — Matías Schenone** · +56 9 2642 6034 · mschenone@mattgestion.cl — *nueva 12-oct; candidata a A*
@@ -248,7 +248,7 @@ Hola Matías, soy Gabriel, de Influence Chile, una agencia de marketing y automa
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad o proyecto a cualquier hora y deja la visita agendada.
 
-¿Te interesaría verlo en una llamada de 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Alevarre Propiedades** · +56 9 4411 6374 — ***verificar antes:*** *el sitio no cargó; confirmar que sigan activos*
@@ -257,7 +257,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ### Contables, gestorías y consultoras — prioridad B
@@ -268,7 +268,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos lo mismo para la atención: un asistente que responde al instante las consultas de planes y precios, y les entrega al interesado ya calificado.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 ```
 
 **HB Estudio Contable** · +56 9 5371 3937 — *identificar dueño*
@@ -277,7 +277,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos automatizaciones para estudios contables: respuesta a consultas frecuentes a cualquier hora, recordatorios mensuales y recepción ordenada de documentos, sin cambiar su software.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **AyR Contax** · WhatsApp del sitio — *identificar fundador; confirmar tamaño*
@@ -286,7 +286,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un canal de atención automático para estudios contables que responde igual en todas las ciudades, envía recordatorios y recibe documentos ordenados.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 ```
 
 **BPM Contadores Auditores (Contadores Curicó)** · +56 9 6170 2215 — *nueva 12-oct; identificar socio*
@@ -295,7 +295,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que hace las preguntas iniciales de cada cotización según el tipo de cliente y les entrega la solicitud completa para responder.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **ServicioDTE** · +56 9 9178 8639 — *nueva 12-oct; confirmar tamaño*
@@ -304,7 +304,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que hace las preguntas iniciales de cada cotización según el rubro del cliente y les entrega la solicitud completa para responder.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **EFG Consulting — Francisco Carrasco** · +56 9 8765 6370 — *ángulo: alianza, no venta*
@@ -313,7 +313,7 @@ Hola Francisco, soy Gabriel, de Influence Chile, una agencia de marketing y auto
 
 Nosotros implementamos automatizaciones (WhatsApp, cotizadores, reportes) y buscamos consultoras con las que derivarnos clientes cuando el trabajo es del otro.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te mando un video de 2 minutos con lo que hacemos, para ver si nos complementamos?
 ```
 
 ---
@@ -336,7 +336,7 @@ Peter, soy Gabriel, de Influence Chile, una agencia de marketing y automatizaci�
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta llega clasificada por tema, con los documentos pedidos de antemano, y el cliente puede ver el estado de su caso sin escribir.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -354,7 +354,7 @@ Víctor, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos la conexión entre esas dos cosas: que el resultado de la calculadora inicie la conversación por WhatsApp, haga las preguntas de evaluación y agende con el abogado del área.
 
-¿Te interesaría verlo en 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -372,7 +372,7 @@ Luis, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Nosotros implementamos la parte de comunicación con cada empresa cliente: recepción de novedades, recordatorios de cierre y respuesta a consultas frecuentes.
 
-Si esa parte todavía es manual, ¿te interesaría conversarlo 15 minutos?
+Si esa parte todavía es manual, ¿te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -390,7 +390,7 @@ Paula, soy Gabriel, de Influence Chile, una agencia de marketing y automatizaci�
 
 Implementamos una atención automática para estudios contables que responde las consultas frecuentes a cualquier hora y recibe las novedades de remuneraciones ordenadas, sin cambiar su software.
 
-¿Te interesaría conversarlo 15 minutos? Si lo ve otra persona del estudio, te agradezco indicarme con quién.
+¿Te gustaría verlo funcionando en un video de 2 minutos? Si lo ve otra persona del estudio, te agradezco indicarme con quién.
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -408,7 +408,7 @@ Eugenio, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos automatizaciones para estudios contables: recordatorios y recepción de documentos para las pymes, y envío de informes y respuesta a consultas frecuentes para las comunidades.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -426,7 +426,7 @@ Rolando, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos sistemas de atención para estudios jurídicos: los clientes consultan el estado de su causa sin ocupar a un abogado, y las consultas nuevas llegan clasificadas por área.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -444,7 +444,7 @@ Marcela, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Nosotros implementamos la comunicación con cada candidato: confirmaciones, recordatorios de entrevista y aviso de estado, todo por WhatsApp y sin intervención del equipo.
 
-Si esa parte todavía es manual, ¿te interesaría conversarlo 15 minutos?
+Si esa parte todavía es manual, ¿te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -462,7 +462,7 @@ Manuel, soy Gabriel, de Influence Chile, una agencia de marketing y automatizaci
 
 Implementamos sistemas para estudios de ese tipo: aviso automático de vencimientos a cada cliente y un canal que recibe las consultas y las deriva al abogado del área.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -482,7 +482,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos el seguimiento automático de cada arriendo: avisos de pago, recordatorios, paso al área legal cuando corresponde y estado visible para el propietario.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -500,7 +500,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad y deja la visita agendada, sin sumar trabajo al equipo.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -518,7 +518,7 @@ Marcela, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos un asistente que hace las preguntas de calificación de cada consulta comercial (superficie, uso, plazo) y la entrega completa al ejecutivo antes de la visita.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -536,7 +536,7 @@ Paulina, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos sistemas para las consultas recurrentes de esos clientes: estado de asuntos, solicitud de documentos y aviso de vencimientos, sin ocupar a un abogado.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -554,7 +554,7 @@ Andrés, soy Gabriel, de Influence Chile, una agencia de marketing y automatizac
 
 Implementamos la parte previa al servicio: cotización automática según el tipo de empresa e incorporación del cliente nuevo con solicitud de documentos.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -572,7 +572,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Nosotros implementamos automatizaciones (WhatsApp, cotizadores, flujos internos) y buscamos consultoras con las que derivarnos clientes según lo que cada una hace.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les mando un video de 2 minutos con lo que hacemos, para ver si nos complementamos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -590,7 +590,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos la comunicación recurrente con cada cliente: recordatorios de documentos, avisos de estado y respuesta a consultas frecuentes por WhatsApp.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -608,7 +608,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos secuencias automáticas de seguimiento a deudores y la consolidación de reportes de cada empresa externa en un solo panel.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -626,7 +626,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos la comunicación automática con candidatos: confirmación de entrevistas, recordatorios y aviso de avance en cada proceso.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -644,7 +644,7 @@ Estimado Fernando, soy Gabriel, de Influence Chile, una agencia de marketing y a
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área y con los antecedentes básicos, lista para que el abogado la evalúe.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -660,7 +660,7 @@ La llamada no vende: pide el correo de quien ve el tema. Después se manda el co
 **Guion (se dice, no se copia)**
 "Hola, habla Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Implementamos [servicio de la empresa] para [rubro]. Me gustaría enviarle la información a la persona que ve estos temas. ¿Me podría indicar a quién y su correo?"
 
-Si contesta quien decide: se le dice lo mismo y se le pregunta si prefiere 15 minutos otro día o recibir la información por correo.
+Si contesta quien decide: se le dice lo mismo y se le ofrece enviarle por correo un video de 2 minutos donde se ve funcionando.
 
 **Seguros Gaete — María Loreto Gaete** · +56 9 2643 0165 — A
 Servicio para la llamada: cotización automática de seguros por WhatsApp, con la comparación lista para que el corredor recomiende.
@@ -675,7 +675,7 @@ María Loreto, gracias por recibirme por teléfono. Como le comenté, soy Gabrie
 
 Implementamos un asistente que toma los datos de cada cotización por WhatsApp y le entrega la comparación lista para recomendar.
 
-¿Le acomoda conversarlo 15 minutos?
+¿Le envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -695,7 +695,7 @@ Lily, gracias por la conversación. Como le comenté, soy Gabriel, de Influence 
 
 Vi que ya tienen cotizador para vehículos. Nosotros implementamos lo mismo para hogar, vida y empresas, más el aviso automático de renovaciones.
 
-¿Le acomoda conversarlo 15 minutos?
+¿Le envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -715,7 +715,7 @@ Felipe, como te comenté por teléfono, soy Gabriel, de Influence Chile, una age
 
 Implementamos recordatorios y recepción ordenada de documentos para estudios contables, sin cambiar su software.
 
-¿Te acomoda conversarlo 15 minutos esta semana?
+¿Te envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -735,7 +735,7 @@ Gracias por la información. Soy Gabriel, de Influence Chile, una agencia de mar
 
 Implementamos un canal de WhatsApp para administradoras que responde las consultas frecuentes de los copropietarios y deriva al administrador solo lo que necesita su revisión.
 
-¿Le acomoda conversarlo 15 minutos?
+¿Le envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -758,7 +758,7 @@ Sandra, gracias por atenderme. Como te comenté, soy Gabriel, de Influence Chile
 
 Implementamos un asistente de WhatsApp para corredoras que responde las consultas de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Te acomoda verlo 15 minutos?
+¿Te envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -778,7 +778,7 @@ Gracias por la información. Soy Gabriel, de Influence Chile, una agencia de mar
 
 Implementamos un asistente de WhatsApp para clínicas dentales que agenda horas a cualquier hora y envía el recordatorio al paciente.
 
-¿Le acomoda conversarlo 15 minutos?
+¿Le envío un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -803,7 +803,7 @@ Gracias por aceptar, María Paz. Soy Gabriel, de Influence Chile, una agencia de
 
 Implementamos la comunicación automática con candidatos: confirmación de entrevistas, recordatorios y aviso de avance en cada proceso.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Home Key Propiedades — Cristian Lengerich Ulloa** (B) · el sitio no carga
@@ -813,7 +813,7 @@ Gracias por aceptar, Cristian. Soy Gabriel, de Influence Chile, una agencia de m
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad y deja la visita agendada.
 
-¿Te interesaría verlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Grupo Insurex — Marcelo Rubio Barrientos** (B) · el correo general no llega a él
@@ -823,7 +823,7 @@ Gracias por aceptar, Marcelo. Soy Gabriel, de Influence Chile, una agencia de ma
 
 Implementamos cotización automática por WhatsApp y aviso de renovaciones para corredoras.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ---
@@ -838,7 +838,7 @@ Hola Alejandra, soy Gabriel, de Influence Chile, una agencia de marketing y auto
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas frecuentes de cada propiedad a cualquier hora y deja la visita o la reserva agendada.
 
-¿Te interesaría ver cómo funciona? Son 15 minutos.
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Rojo Propiedades** · WhatsApp +56 9 9538 0795 — *identificar dueño*
@@ -847,7 +847,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Leal Propiedades Quilpué** · WhatsApp +56 9 8148 0362 — *confirmar si Irene Leal es la dueña*
@@ -856,7 +856,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Servicont Asesorías & Contabilidad** · WhatsApp +56 9 7760 6322 — *identificar dueño*
@@ -865,7 +865,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos automatizaciones para estudios contables: recordatorios mensuales a cada cliente y recepción ordenada de documentos, para que la atención personal se use en lo que importa. Sin cambiar su software.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Contabilidad Astor** · WhatsApp +56 9 4812 6677 · asistente@contabilidadastor.cl — *identificar socio*
@@ -874,7 +874,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que hace las preguntas iniciales de cada cotización según el tipo de empresa y les entrega la solicitud completa para responder.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Águila & Cía. Abogados — Mario Enrique Águila** · correo general del sitio — *cautela: usan IA solo en el blog*
@@ -888,7 +888,7 @@ Estimado Mario Enrique, soy Gabriel, de Influence Chile, una agencia de marketin
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área y con los antecedentes básicos, y se agenda directo con el abogado que corresponde.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -901,7 +901,7 @@ Hola Edgar, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Implementamos un asistente de WhatsApp para estudios jurídicos que hace las preguntas iniciales de cada consulta, identifica el área y agenda la reunión con ustedes.
 
-¿Te interesaría verlo en 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Centro de Kinesiología Más Salud** · WhatsApp +56 9 4190 8181 — *confirmar cantidad de profesionales*
@@ -910,7 +910,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para centros de salud que agenda horas a cualquier hora, pide la orden y la previsión, y envía el recordatorio al paciente.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ---
@@ -925,7 +925,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Centro de Salud SEPYA** · WhatsApp +56 9 9627 1360 — *directora: Dra. Carmen Betancur*
@@ -934,7 +934,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para centros de salud que agenda la primera evaluación a cualquier hora, pide los datos básicos y envía el recordatorio al paciente, con el cuidado que requiere la salud mental.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Desicam** · WhatsApp del sitio — *identificar dueño o director*
@@ -943,7 +943,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que agenda horas a cualquier hora, identifica si la atención es infantil, adolescente o adulta, y envía el recordatorio al paciente.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Ñuble Contable** · +56 9 6159 6826 — *identificar dueño*
@@ -952,7 +952,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que responde las consultas de planes y precios a cualquier hora, hace las preguntas de cotización y les entrega la solicitud completa.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **BAF Asesorías Contables y Financieras — Cristian Ramírez** · +56 9 8739 7436
@@ -961,7 +961,7 @@ Hola Cristian, soy Gabriel, de Influence Chile, una agencia de marketing y autom
 
 Implementamos un asistente que hace las preguntas iniciales, entrega el valor del plan según la facturación del cliente y te deja la solicitud completa para responder.
 
-¿Te interesaría verlo en 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ### Email
@@ -977,7 +977,7 @@ Felipe, soy Gabriel, de Influence Chile, una agencia de marketing y automatizaci
 
 Implementamos automatizaciones para estudios contables: recordatorios mensuales, recepción ordenada de documentos y respuesta a consultas frecuentes, para que cada ejecutivo dedique su tiempo a la asesoría. Sin cambiar su software.
 
-¿Te interesaría conversarlo 15 minutos?
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -995,7 +995,7 @@ Estimado Daniel, soy Gabriel, de Influence Chile, una agencia de marketing y aut
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega clasificada por área, con los antecedentes básicos, y se agenda con el abogado que corresponde.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -1013,7 +1013,7 @@ Estimada Sandra, soy Gabriel, de Influence Chile, una agencia de marketing y aut
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta nueva llega con los antecedentes básicos pedidos de antemano y se agenda directo con el abogado que corresponde.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -1032,7 +1032,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
 
-¿Les interesaría conversarlo 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Copper Gestión Inmobiliaria** · WhatsApp del sitio — *identificar gerente*
@@ -1041,7 +1041,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **Desarrollo Legal** · +56 9 9684 4564 — *identificar socio*
@@ -1050,7 +1050,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que hace las preguntas iniciales de cada consulta, identifica el área y agenda la reunión con el especialista que corresponde.
 
-¿Les interesaría verlo en 15 minutos?
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **FOCI Fonoaudiología Clínica Integral — Lesly Villagrán** · +56 9 6554 5777
@@ -1059,7 +1059,7 @@ Hola Lesly, soy Gabriel, de Influence Chile, una agencia de marketing y automati
 
 Implementamos un asistente de WhatsApp para centros de salud que muestra las horas disponibles, agenda según el servicio y envía el recordatorio al paciente.
 
-¿Te interesaría ver cómo funciona? Son 15 minutos.
+¿Te gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 **CreaPyme Consultora** · +56 9 5690 2275 — *identificar dueño*
@@ -1068,7 +1068,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un asistente que responde las consultas de planes a cualquier hora, hace las preguntas de cotización y les entrega la solicitud completa.
 
-¿Les interesaría ver cómo funciona? Son 15 minutos.
+¿Les gustaría verlo funcionando en un video de 2 minutos?
 ```
 
 ### Email
@@ -1084,7 +1084,7 @@ Estimada María Javiera, soy Gabriel, de Influence Chile, una agencia de marketi
 
 Implementamos sistemas de atención para estudios jurídicos: cada consulta llega clasificada por área, con los antecedentes básicos, y se agenda directo con la abogada que corresponde.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -1102,7 +1102,7 @@ Estimada Elly, soy Gabriel, de Influence Chile, una agencia de marketing y autom
 
 Implementamos un asistente de WhatsApp para centros de salud que responde las preguntas frecuentes de las familias a cualquier hora, agenda la primera conversación y envía recordatorios, sin reemplazar el contacto humano del equipo.
 
-¿Le interesaría conversarlo 15 minutos?
+¿Le gustaría verlo funcionando en un video de 2 minutos?
 
 Gabriel Meza
 Influence Chile · influencechile.cl
@@ -1120,7 +1120,7 @@ Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatizació
 
 Implementamos un canal de WhatsApp para administradoras que responde las consultas frecuentes de los copropietarios y deriva al administrador solo lo que necesita su revisión.
 
-¿Con quién podría conversarlo 15 minutos?
+¿A quién le puedo enviar un video de 2 minutos donde se ve funcionando?
 
 Gabriel Meza
 Influence Chile · influencechile.cl

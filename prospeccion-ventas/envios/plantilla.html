@@ -71,7 +71,9 @@ h2.blk{font:800 .78rem var(--display);text-transform:uppercase;letter-spacing:.1
     <p>Ve en orden, máximo 10 por día. En cada tarjeta: copia el mensaje o toca <b>Abrir WhatsApp</b>, revisa y envía tú. Después marca <b>Enviado</b>.</p>
     <p>Si el botón de WhatsApp no abre, copia el número y el mensaje con los botones. En correos, copia asunto y cuerpo por separado.</p>
     <p>Al terminar el día toca <b>Copiar enviados hoy</b> y pégamelo en el chat: los marco en el pipeline. Lo que marques queda guardado solo en este teléfono.</p>
-    <p><b>Si responden:</b> contesta dentro de la hora, ofrece dos horarios para 15 minutos y mándame su respuesta.</p>
+    <p><b>Si dice que sí:</b> mándale el video que indica su tarjeta. Si después pregunta precio o quiere avanzar, ahí propones una llamada corta y me mandas su respuesta.</p>
+    <p><b>Videos que necesitas grabados antes de enviar</b> (2 minutos cada uno):</p>
+    <ul id="vids"></ul>
   </details>
 
   <details class="help" id="segs"><summary>Seguimientos día 4 y día 10, guion de llamada e invitación de LinkedIn</summary><div id="segbox"></div></details>
@@ -131,6 +133,7 @@ function render(){
         el('p',{},el('b',{},'Cómo abordarlo: '),como.join(' ')),
         it.gap?el('p',{},el('b',{},'Lo que vimos: '),it.gap):null,
         it.oferta?el('p',{},el('b',{},'Qué ofrecerle: '),it.oferta):null,
+        it.video?el('p',{},el('b',{},'Video si dice que sí: '),it.video):null,
         ...it.extra.map(x=>el('p',{},x)),
         it.web?el('p',{},el('b',{},'Web: '),el('a',{href:it.web,target:'_blank',rel:'noopener'},it.web)):null),
       ...msgNodes,
@@ -154,5 +157,6 @@ function segs(){
 }
 $('#copyHoy').addEventListener('click',()=>{const hoy=new Date().toISOString().slice(0,10);const n=Object.values(state).filter(s=>s.d===hoy).map(s=>s.name);if(!n.length){toast('Hoy no hay enviados marcados');return}copy('Contacté a '+n.join(', '),'Resumen',null)});
 $('#foot').textContent='Generada el '+D.fecha+' · '+D.items.length+' contactos. Lo que marcas se guarda solo en este dispositivo.';
+if(D.vids){const u=$('#vids');for(const[v,c]of D.vids)u.append(el('li',{},v+' · '+c+' contactos'))}
 filters();segs();render();
 </script>
