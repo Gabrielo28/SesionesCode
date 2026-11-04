@@ -17,6 +17,7 @@
 | [08-prospeccion-automatizacion.md](08-prospeccion-automatizacion.md) | Proceso de prospección frío y caliente para automatización — a quién, cómo, guiones y objeciones |
 | [mensajes-39-salud.md](mensajes-39-salud.md) | Mensaje ya personalizado para cada uno de los 39 cruces de salud, listo para copiar y pegar |
 | [pipeline-automatizacion.csv](pipeline-automatizacion.csv) | **El pipeline de trabajo** de automatización: las 98 empresas con prioridad A/B/C, decisor y cargo (con fuente), canal, hueco verificado, solución sugerida y columna de estado para ir marcando |
+| [envios/cola-de-envio.md](envios/cola-de-envio.md) | **Para enviar hoy**: las 80 empresas en orden, una tarjeta por contacto con número o correo, cómo abordarla, el mensaje y un enlace que abre WhatsApp o el correo con el texto listo. Se regenera con `envios/generar_cola.py` |
 | [mensajes-por-canal.md](mensajes-por-canal.md) | **Los mensajes vigentes (versión 3)**: las 80 empresas A+B por canal, con mensaje de tres partes (contexto, qué hacemos, una pregunta), invitaciones de LinkedIn, guion de llamada con su correo y seguimientos día 4 y día 10 |
 | [apollo-enriquecimiento-empresas.md](apollo-enriquecimiento-empresas.md) | Tamaño real de equipo (vía Apollo.io) para 26 empresas — de ahí salen varias prioridades del pipeline |
 | [leads-chile-132-empresas.csv](leads-chile-132-empresas.csv) | 132 empresas chilenas calificadas para redes (39 de salud sirven también para automatización) |
