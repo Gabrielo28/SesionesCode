@@ -1,0 +1,388 @@
+<title>Impulz Gym Propuesta de Crecimiento</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800;1,900&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one dark brand world (Impulz black + red). Long-scroll pitch: hero thesis, then numbered chapters on a narrow column, with wide bands for the timeline, the flow and the calculator. */
+:root{
+  --bg:#0b0909; --panel:#161111; --panel-2:#1f1817; --ink:#f6f1ef; --muted:#ada09c; --line:#2d2423;
+  --red:#e3171e; --red-hi:#ff4a50; --red-deep:#5c0b0e;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:var(--red-hi)}
+:focus-visible{outline:2px solid var(--red-hi);outline-offset:3px}
+.eyebrow{font:700 14px/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--red-hi)}
+h1,h2{font-family:var(--display);font-style:italic;font-weight:900;text-transform:uppercase;line-height:.92;margin:0;text-wrap:balance;letter-spacing:-.005em}
+h2{font-size:clamp(36px,6vw,60px)}
+h3{font:italic 800 24px/1.05 var(--display);text-transform:uppercase;margin:0}
+p{margin:0}
+.lead{font-size:clamp(18px,2.2vw,21px);color:var(--ink);max-width:62ch}
+.muted{color:var(--muted)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(115deg,transparent 0 46px,rgba(227,23,30,.07) 46px 50px),
+  radial-gradient(70% 90% at 85% 10%,rgba(227,23,30,.35),transparent 60%);pointer-events:none}
+.hero .wrap{position:relative;padding-block:28px 56px;display:grid;gap:28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font:italic 900 30px/1 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.logo b{color:var(--red)}
+.logo small{display:block;font:700 12px/1 var(--display);letter-spacing:.3em;color:var(--muted);font-style:normal;margin-top:4px}
+.tag{font:700 13px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:var(--muted)}
+.hero h1{font-size:clamp(46px,9.5vw,112px);max-width:12ch}
+.hero h1 .big{color:var(--red);display:block;font-size:1.25em}
+.hero .lead{max-width:54ch}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--bg);padding:16px 18px;display:grid;gap:2px}
+.stat b{font:italic 900 34px/1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--muted)}
+.cta{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;text-decoration:none;font:italic 800 20px/1 var(--display);text-transform:uppercase;letter-spacing:.04em;padding:16px 22px;border-radius:10px;justify-self:start}
+.cta:hover{background:var(--red-hi)}
+
+/* chapters */
+section.ch{padding-block:72px;border-bottom:1px solid var(--line)}
+.chhead{display:grid;gap:14px;margin-bottom:34px;max-width:760px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start;min-width:0}
+.card .k{font:700 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.card.plus .k{color:#7fd69c}
+.card.minus .k{color:var(--red-hi)}
+.card p{font-size:16px;color:#ddd3d0}
+.promos{display:flex;flex-wrap:wrap;gap:8px}
+.promo{background:var(--panel-2);border-radius:8px;padding:6px 10px;font:700 15px/1.2 var(--display);letter-spacing:.03em}
+.promo b{color:var(--red-hi)}
+
+/* season timeline */
+.season{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;position:relative}
+.season::before{content:"";position:absolute;left:0;right:0;top:15px;height:3px;background:linear-gradient(90deg,var(--red-deep),var(--red) 40%,var(--red) 75%,var(--red-deep))}
+.mo{position:relative;display:grid;gap:10px;padding-top:44px;min-width:0}
+.mo::before{content:"";position:absolute;top:6px;left:0;width:21px;height:21px;border-radius:50%;background:var(--bg);border:3px solid var(--red)}
+.mo.peak::before{background:var(--red)}
+.mo .when{font:italic 900 30px/1 var(--display);text-transform:uppercase}
+.mo .what{font:700 15px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--red-hi)}
+.mo p{font-size:15.5px;color:#ddd3d0}
+.callout{margin-top:30px;background:linear-gradient(110deg,var(--red-deep),var(--panel) 70%);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:6px}
+.callout b{font:italic 800 22px/1.1 var(--display);text-transform:uppercase}
+
+/* services */
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.svc .card h3{font-size:28px}
+.svc ul{margin:0;padding-left:18px;color:#ddd3d0;font-size:16px;display:grid;gap:4px}
+
+/* 90 days */
+.plan{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.prow{display:grid;grid-template-columns:180px 1fr;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow .m{background:var(--panel);padding:22px;display:grid;align-content:start;gap:4px}
+.prow .m b{font:italic 900 30px/1 var(--display);text-transform:uppercase;color:var(--red)}
+.prow .m span{font:700 14px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase}
+.prow ul{margin:0;padding:22px 22px 22px 40px;display:grid;gap:6px;color:#ddd3d0;font-size:16px}
+
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 14px;display:grid;gap:6px;position:relative;min-width:0}
+.step::before{counter-increment:s;content:counter(s);font:italic 900 28px/1 var(--display);color:var(--red)}
+.step b{font:700 16px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.step span{font-size:14px;color:var(--muted)}
+.step.end{background:var(--red);border-color:var(--red)}
+.step.end::before{color:#fff}
+.step.end span{color:#ffe1e2}
+.mock{margin-top:26px;display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center}
+.screen{background:#f5f2f1;color:#1a1413;border-radius:14px;padding:14px;display:grid;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);font-family:var(--body)}
+.screen .sb{display:flex;justify-content:space-between;font:italic 800 18px/1 var(--display);text-transform:uppercase}
+.screen .sb b{color:#d1151b}
+.screen .sk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.screen .sk div{background:#fff;border:1px solid #e2dbd9;border-radius:10px;padding:10px;display:grid;gap:2px}
+.screen .sk div.r{background:#d1151b;color:#fff;border-color:#d1151b}
+.screen .sk small{font:700 10px/1.1 var(--display);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.screen .sk strong{font:italic 800 24px/1 var(--display)}
+.screen .rowx{background:#fff;border:1px solid #e2dbd9;border-left:4px solid #d1151b;border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;font-size:13px;gap:8px}
+.screen .rowx.y{border-left-color:#5d5552}
+.screen .rowx i{font-style:normal;font:700 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:999px;background:#fbe3e3;color:#a80f14;white-space:nowrap;align-self:center}
+.screen .rowx.y i{background:#e9e4e2;color:#5d5552}
+.screen .ex{font-size:11px;color:#6c6260;text-align:right}
+.mock ul{margin:0;padding-left:18px;display:grid;gap:8px;color:#ddd3d0}
+
+/* investment */
+.inv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.price{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:6px;align-content:start}
+.price.zero{background:var(--red);border-color:var(--red)}
+.price .n{font:italic 900 64px/.9 var(--display);font-variant-numeric:tabular-nums}
+.price .l{font:700 15px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase}
+.price p{font-size:15px;color:#ddd3d0}
+.price.zero p{color:#ffe1e2}
+.calc{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:28px}
+.calc h3{margin-bottom:6px}
+.ctl{display:grid;gap:8px;margin-top:18px}
+.ctl label{display:flex;justify-content:space-between;font:700 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.ctl output{font:italic 900 22px/1 var(--display);color:var(--red-hi);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--red)}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;align-self:start}
+.res div{background:var(--bg);padding:16px;display:grid;gap:4px}
+.res div.hi{grid-column:1/-1;background:var(--red-deep)}
+.res small{font:700 12px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.res div.hi small{color:#ffc9cb}
+.res b{font:italic 900 32px/1 var(--display);font-variant-numeric:tabular-nums}
+.res div.hi b{font-size:46px}
+.fine{font-size:13.5px;color:var(--muted);grid-column:1/-1}
+
+.terms{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.terms div{background:var(--panel);padding:16px 18px;display:grid;gap:4px}
+.terms b{font:700 15px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.terms span{font-size:15px;color:#ddd3d0}
+.phases{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.phases .k{color:#7fd69c}
+/* guarantees */
+.guar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.g{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.g svg{width:44px;height:44px}
+.g b{font:italic 800 21px/1.1 var(--display);text-transform:uppercase;display:block;margin-bottom:4px}
+.g p{font-size:15.5px;color:#ddd3d0}
+
+/* close */
+.close{padding-block:80px 64px;text-align:left;position:relative;overflow:hidden}
+.close::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(227,23,30,.07) 46px 50px);pointer-events:none}
+.close .wrap{position:relative;display:grid;gap:24px}
+.close h2{font-size:clamp(44px,8vw,92px);max-width:13ch}
+.close h2 span{color:var(--red)}
+.next{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
+.next li{border-top:3px solid var(--red);padding-top:12px;display:grid;gap:2px;font-size:15.5px;color:#ddd3d0}
+.next li b{font:700 15px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+
+@media (max-width:860px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .season{grid-template-columns:1fr 1fr;row-gap:30px}
+  .season::before{display:none}
+  .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mock,.calc{grid-template-columns:1fr}
+  .inv,.svc,.guar,.cards,.terms,.phases{grid-template-columns:1fr}
+  .next{grid-template-columns:1fr 1fr}
+  .prow{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .season,.next{grid-template-columns:1fr}
+  .screen .sk{grid-template-columns:1fr 1fr}
+  .screen .sk div.r{grid-column:1/-1}
+  section.ch{padding-block:56px}
+}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <div class="logo"><b>//</b>Impulz<small>Gym · El Quisco</small></div>
+      <span class="tag">Propuesta de crecimiento · Noviembre 2026</span>
+    </div>
+    <h1><span class="big">6.533</span> personas ya siguen a Impulz.</h1>
+    <p class="lead">Hasta hoy han visto 2 publicaciones. Te propongo convertir esa audiencia, y el verano en el litoral, en socios que pagan mes a mes. Yo pongo la publicidad y el trabajo; el gimnasio no invierte nada y yo gano solo cuando entra un socio nuevo por mi gestión.</p>
+    <div class="stats" aria-label="Situación actual">
+      <div class="stat"><b>6.533</b><span>seguidores en Instagram</span></div>
+      <div class="stat"><b>2</b><span>publicaciones</span></div>
+      <div class="stat"><b>91 h</b><span>abierto por semana</span></div>
+      <div class="stat"><b>$0</b><span>de inversión para el gimnasio</span></div>
+    </div>
+    <a class="cta" href="#plan">Ver el plan ↓</a>
+  </div>
+</header>
+
+<section class="ch" id="diagnostico">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">01 · Diagnóstico</span>
+      <h2>Una base fuerte que todavía no se ve</h2>
+      <p class="lead muted">Revisé la cuenta @impulzgym.elquisco. El gimnasio tiene lo difícil resuelto: audiencia, horario y promociones. Falta que eso llegue a la gente correcta todos los días.</p>
+    </div>
+    <div class="cards">
+      <div class="card plus"><span class="k">A favor</span><h3>Audiencia heredada</h3><p>6.533 seguidores que ya conocen el lugar. Con contenido constante, el alcance despierta sin pagar por cada persona.</p></div>
+      <div class="card plus"><span class="k">A favor</span><h3>Ofertas claras</h3><div class="promos"><span class="promo">Primer mes <b>$25.000</b></span><span class="promo">Plan pareja <b>$50.000</b></span><span class="promo">Trae un amigo <b>25% dcto</b></span></div><p>Promociones listas para pautar desde el primer día.</p></div>
+      <div class="card plus"><span class="k">A favor</span><h3>Horario amplio</h3><p>Lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00. Sirve al que trabaja temprano y al que entrena de noche.</p></div>
+      <div class="card minus"><span class="k">Falta</span><h3>Contenido constante</h3><p>Dos publicaciones, sin videos ni Reels. Instagram muestra más las cuentas que publican seguido y en video.</p></div>
+      <div class="card minus"><span class="k">Falta</span><h3>Un camino para inscribirse</h3><p>La bio tiene dos teléfonos y ningún link directo. Quien se interesa a las 23:00 no tiene dónde reservar.</p></div>
+      <div class="card minus"><span class="k">Falta</span><h3>Saber qué funciona</h3><p>Hoy no hay forma de saber de dónde llega cada socio, ni cuánto cuesta conseguir uno.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="verano">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">02 · La oportunidad</span>
+      <h2>El verano en El Quisco multiplica a la gente</h2>
+      <p class="lead muted">Entre diciembre y febrero el litoral recibe veraneantes y segundas viviendas. La campaña se arma alrededor de esa temporada.</p>
+    </div>
+    <div class="season">
+      <div class="mo"><span class="when">Noviembre</span><span class="what">Relanzamiento</span><p>Nuevo nombre, nueva administración. Mostrar el gimnasio, el equipo y la oferta de bienvenida a la audiencia que ya existe.</p></div>
+      <div class="mo"><span class="when">Diciembre</span><span class="what">Llega en forma al verano</span><p>Reto de 6 semanas para residentes, con medición inicial y final. Es el mes en que más gente decide empezar.</p></div>
+      <div class="mo peak"><span class="when">Ene – Feb</span><span class="what">Pase verano</span><p>Pases semanales y quincenales para veraneantes de El Quisco, Algarrobo, El Tabo e Isla Negra. Ingreso extra en la temporada alta.</p></div>
+      <div class="mo"><span class="when">Marzo</span><span class="what">Retención</span><p>Convertir a los socios del verano en planes trimestrales y anuales antes de que baje la temporada.</p></div>
+    </div>
+    <div class="callout"><b>Pase verano: ingreso que hoy no existe</b><p class="muted">Un veraneante no paga matrícula ni mensualidad, pero sí paga por entrenar sus dos semanas de vacaciones. Es plata nueva para el gimnasio, sin competir con los planes de los residentes.</p></div>
+  </div>
+</section>
+
+<section class="ch" id="servicios">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">03 · Qué hago yo</span>
+      <h2>Coach en sala y agencia en las redes</h2>
+      <p class="lead muted">Tres frentes, manejados por una sola persona que además está dentro del gimnasio todas las semanas.</p>
+    </div>
+    <div class="svc">
+      <div class="card"><span class="k">Contenido</span><h3>Redes con contenido constante</h3><ul><li>3 publicaciones semanales, 2 de ellas Reels</li><li>Historias de clases y socios durante la semana</li><li>Grabación en el mismo gimnasio, con caras reales</li></ul></div>
+      <div class="card"><span class="k">Publicidad</span><h3>Anuncios locales en Meta</h3><ul><li>Pagados por mí durante el piloto</li><li>Instagram y Facebook en El Quisco y comunas vecinas</li><li>Campañas para cada promoción y para el pase verano</li><li>Ajuste semanal según el costo por socio</li></ul></div>
+      <div class="card"><span class="k">Coaching</span><h3>Clases que traen público propio</h3><ul><li>Clases grupales y personalizadas en horarios fijos</li><li>Perfil destacado en entrenachile.cl con Impulz como lugar de trabajo</li><li>Mis alumnos pagan su mensualidad al gimnasio</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="plan">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">04 · Piloto de 90 días</span>
+      <h2>Qué pasa cada mes</h2>
+    </div>
+    <div class="plan">
+      <div class="prow"><div class="m"><b>Mes 1</b><span>Lanzamiento</span></div><ul><li>Sesión de fotos y video del gimnasio, el equipo y los coaches</li><li>Oferta de fundadores: primeros 50 socios sin matrícula y con precio congelado 6 meses</li><li>Página de reservas impulz.entrenachile.cl y link en la bio</li><li>Primeras campañas en Meta con la promo de bienvenida de $25.000</li></ul></div>
+      <div class="prow"><div class="m"><b>Mes 2</b><span>Comunidad</span></div><ul><li>Reto "Llega en forma al verano" con premio para el ganador</li><li>Campaña "Trae a un amigo" y plan pareja</li><li>Testimonios y transformaciones de socios reales</li><li>Alianzas con nutricionistas, kinesiólogos y comercio del barrio</li></ul></div>
+      <div class="prow"><div class="m"><b>Mes 3</b><span>Temporada alta</span></div><ul><li>Lanzamiento del pase verano para veraneantes</li><li>Recuperar a quienes vinieron a la clase de prueba y no se inscribieron</li><li>Planes trimestrales con descuento para asegurar ingresos</li><li>Revisión de resultados y decisión sobre cómo seguir</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="sistema">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">05 · Cómo medimos</span>
+      <h2>Cada socio nuevo queda registrado con su origen</h2>
+      <p class="lead muted">Para que la comisión sea justa, todo pasa por un sistema que ambos vemos en tiempo real.</p>
+    </div>
+    <div class="flow">
+      <div class="step"><b>Anuncio o Reel</b><span>La persona ve el contenido</span></div>
+      <div class="step"><b>Página de reservas</b><span>Entra a impulz.entrenachile.cl y deja sus datos</span></div>
+      <div class="step"><b>Código único</b><span>Recibe su código y confirma su clase por WhatsApp</span></div>
+      <div class="step"><b>Clase de prueba</b><span>Conoce el gimnasio y a los coaches</span></div>
+      <div class="step"><b>Inscripción</b><span>Recepción marca su código en el panel</span></div>
+      <div class="step end"><b>Panel de comisiones</b><span>Queda medido y la comisión se calcula sola</span></div>
+    </div>
+    <div class="mock">
+      <div class="screen" aria-label="Vista de ejemplo del panel de comisiones">
+        <div class="sb"><span><b>//</b>Impulz · Panel</span><span>Diciembre</span></div>
+        <div class="sk">
+          <div><small>Contactos</small><strong>48</strong></div>
+          <div><small>Inscritos</small><strong>19</strong></div>
+          <div class="r"><small>Comisión</small><strong>$214.500</strong></div>
+        </div>
+        <div class="rowx"><span>Camila R. · Publicidad Meta</span><i>Gestión redes</i></div>
+        <div class="rowx"><span>Diego M. · Código FUNDADOR50</span><i>Gestión redes</i></div>
+        <div class="rowx y"><span>Javier P. · Llegó directo</span><i>Gimnasio</i></div>
+        <span class="ex">Datos de ejemplo</span>
+      </div>
+      <ul>
+        <li><b>Cada reserva queda registrada sola</b>, con fecha, campaña y un código único que la persona presenta al inscribirse.</li>
+        <li><b>Tú y yo entramos al panel</b> con usuario y clave, desde el celular.</li>
+        <li><b>Solo los canales de mi gestión</b> generan comisión: publicidad, redes, códigos de campaña, entrenachile.cl y mis alumnos.</li>
+        <li><b>Quien llega directo, referido por un socio o es ex socio</b> es del gimnasio y no paga comisión.</li>
+        <li><b>A fin de mes</b> revisamos juntos los inscritos y el panel entrega la liquidación, socio por socio.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="inversion">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">06 · La fórmula</span>
+      <h2>Yo pongo la publicidad. Tú recibes socios.</h2>
+      <p class="lead muted">Durante el piloto el gimnasio no pone un peso: ni fee, ni presupuesto de anuncios. Yo asumo el riesgo y cobro solo por los socios que entran y pagan.</p>
+    </div>
+    <div class="inv">
+      <div class="price zero"><span class="l">Inversión del gimnasio</span><span class="n">$0</span><p>Publicidad, contenido y gestión de redes corren por mi cuenta.</p></div>
+      <div class="price"><span class="l">Primer mes de cada socio nuevo</span><span class="n">100%</span><p>Para mí. Es lo que paga los anuncios que trajeron a ese socio.</p></div>
+      <div class="price"><span class="l">Desde el segundo mes</span><span class="n">85%</span><p>Para el gimnasio. Yo recibo 15% durante 6 meses; desde el mes 8 el socio es 100% tuyo.</p></div>
+    </div>
+    <div class="terms">
+      <div><b>Pase verano</b><span>30% para mí de cada pase semanal o quincenal vendido por mis canales.</span></div>
+      <div><b>Planes trimestrales o anuales</b><span>La fórmula se aplica sobre su valor mensual equivalente.</span></div>
+      <div><b>Mis alumnos de coaching</b><span>Pagan su mensualidad al gimnasio y entran en la misma fórmula. Mis clases las cobro yo.</span></div>
+      <div><b>Socios del gimnasio</b><span>Quien llega directo, referido por un socio o es ex socio es 100% del gimnasio.</span></div>
+    </div>
+    <div class="phases">
+      <div class="card"><span class="k">Gana el gimnasio</span><h3>Socios nuevos sin arriesgar nada</h3><p>No paga anuncios ni sueldos. Cada socio que traigo es ingreso que no tenía, y desde el segundo mes se queda con el 85%.</p></div>
+      <div class="card"><span class="k">Gano yo</span><h3>Cobro por lo que logro</h3><p>El primer mes recupera la publicidad y el 15% recurrente paga mi trabajo. Si traigo socios que se quedan, ganamos los dos.</p></div>
+    </div>
+    <div class="callout"><b>Día 91: decidimos con números</b><p class="muted">Opción A: sigo invirtiendo yo con la misma fórmula. Opción B: el gimnasio paga la publicidad, ya sabiendo cuánto cuesta cada socio, y mi comisión baja a 40% del primer mes y 10% recurrente por 6 meses.</p></div>
+
+    <div class="calc">
+      <div>
+        <h3>Calcula tu escenario</h3>
+        <p class="muted" style="font-size:15px">Proyección a 6 meses. Supone que 8 de cada 10 socios siguen activos cada mes.</p>
+        <div class="ctl"><label for="sN">Socios nuevos por mes <output id="oN">20</output></label><input id="sN" type="range" min="5" max="60" step="1" value="20"></div>
+        <div class="ctl"><label for="sM">Mensualidad promedio <output id="oM">$25.000</output></label><input id="sM" type="range" min="15000" max="50000" step="1000" value="25000"></div>
+      </div>
+      <div class="res" aria-live="polite">
+        <div><small>Ingreso de socios nuevos</small><b id="rI">—</b></div>
+        <div><small>Socios activos al mes 6</small><b id="rA">—</b></div>
+        <div><small>Mi comisión total</small><b id="rC">—</b></div>
+        <div><small>Inversión del gimnasio</small><b id="rP">$0</b></div>
+        <div class="hi"><small>Le queda al gimnasio</small><b id="rN">—</b></div>
+      </div>
+      <p class="fine">Es una estimación para conversar, no una promesa. Los números reales salen del panel de comisiones mes a mes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="reglas">
+  <div class="wrap">
+    <div class="chhead">
+      <span class="eyebrow">07 · Reglas claras</span>
+      <h2>Un acuerdo que protege a los dos</h2>
+    </div>
+    <div class="guar">
+      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M13 22l6 6 12-13" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Si hay duda, no se cobra</b><p>Un socio que no se puede atribuir con claridad queda como del gimnasio.</p></div></div>
+      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="9" y="19" width="26" height="19" rx="3" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M15 19v-5a7 7 0 0114 0v5" fill="none" stroke="var(--ink)" stroke-width="3"/></svg><div><b>Cada uno con lo suyo</b><p>Instagram, Facebook y la base de socios son del gimnasio. El contenido donde aparezco yo o mis alumnos es mío y puedo usarlo en mis redes.</p></div></div>
+      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="8" width="28" height="30" rx="3" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M15 18h14M15 25h14M15 32h8" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></svg><div><b>Reporte cada mes</b><p>Contactos, pruebas, inscritos, socios activos y comisión, con los datos a la vista.</p></div></div>
+      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M28 10l8 8-8 8" fill="none" stroke="var(--red)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 18H16a8 8 0 000 16h4" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></svg><div><b>Salida con 30 días de aviso</b><p>Cualquiera puede terminar. Las comisiones ya ganadas se respetan hasta cumplir sus 6 meses.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="wrap">
+    <span class="eyebrow">08 · Próximos pasos</span>
+    <h2>Partimos el <span>lunes 9 de noviembre</span></h2>
+    <ol class="next">
+      <li><b>Conversamos</b>30 minutos para ajustar precios y horarios de clases</li>
+      <li><b>Firmamos</b>Un acuerdo simple de una página</li>
+      <li><b>Accesos</b>Acceso de anunciante a la página, redes y panel de comisiones</li>
+      <li><b>Lanzamos</b>Sesión de fotos y primera campaña en la semana</li>
+    </ol>
+  </div>
+</section>
+
+<footer><div class="wrap">Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Noviembre 2026</div></footer>
+
+<script>
+const fmt=n=>"$"+Math.round(n).toLocaleString("es-CL");
+function calc(){
+  const N=+document.getElementById("sN").value,M=+document.getElementById("sM").value,R=.8,months=6;
+  let ingreso=0,com=0,activos=0;
+  for(let k=0;k<months;k++){for(let j=0;j<=k;j++){const s=N*Math.pow(R,k-j),pay=s*M;ingreso+=pay;const age=k-j;com+=pay*(age===0?1:age<=6?.15:0);if(k===months-1)activos+=s}}
+  const ads=0;
+  document.getElementById("oN").textContent=N;document.getElementById("oM").textContent=fmt(M);
+  document.getElementById("rI").textContent=fmt(ingreso);document.getElementById("rA").textContent=Math.round(activos);
+  document.getElementById("rC").textContent=fmt(com);document.getElementById("rP").textContent=fmt(ads);
+  document.getElementById("rN").textContent=fmt(ingreso-com-ads);
+}
+["sN","sM"].forEach(id=>document.getElementById(id).addEventListener("input",calc));calc();
+</script>
