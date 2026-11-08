@@ -468,33 +468,33 @@ mark { background: var(--rosa); color: var(--negro); padding: 0 .12em; border-ra
 .ejemplos { padding-top: 80px; }
 .ej-tit { margin: 0 0 10px; text-align: center; font-size: clamp(28px, 3.4vw, 42px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; }
 .ej-bajada { margin: 0 auto 34px; max-width: 640px; text-align: center; font-size: 18px; color: var(--texto-2); }
-.ej-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.ej-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-items: start; }
 .ej p { margin: 12px 0 0; font-size: 15px; color: var(--texto-2); text-align: center; }
 .ej p b { color: var(--texto); }
-.ej-pieza { position: relative; overflow: hidden; border-radius: 18px; background: var(--negro); box-shadow: 0 24px 50px -28px rgba(17, 16, 20, .55); }
-/* Todas del mismo alto para que la fila se vea pareja; las barras, el ▶ y
-   el 1/5 dicen qué formato es cada una. */
-.ej-pieza { aspect-ratio: 3 / 4; }
+/* Cada ejemplo se ve como una publicación en el feed: cuenta, foto con el
+   gancho, íconos y el comienzo del texto. */
+.ej-post { background: #fff; border: 1px solid var(--linea); border-radius: 18px; overflow: hidden; box-shadow: 0 24px 50px -32px rgba(17, 16, 20, .45); }
+.ej-cab { display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 13px; min-width: 0; }
+.ej-cab b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ej-cab i { margin-left: auto; font-style: normal; color: var(--texto-3); }
+.ej-ini { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--negro); color: #fff; font-size: 10px; font-weight: 800; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--rosa); }
+.ej-pieza { position: relative; overflow: hidden; aspect-ratio: 4 / 5; background: var(--negro); }
 .ej-pieza img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ej-pieza::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(17, 16, 20, .7), rgba(17, 16, 20, 0) 50%); }
+.ej-pieza::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(10, 9, 12, .6), rgba(10, 9, 12, 0) 45%); }
 .ej-pieza > :not(img) { position: absolute; z-index: 1; }
-.ej-logo { top: 12px; left: 12px; background: #fff; color: var(--negro); border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.ej-barras ~ .ej-logo { top: 22px; }
-.ej-gancho { left: 14px; right: 14px; bottom: 16px; font-size: clamp(17px, 1.7vw, 22px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; }
-.ej-gancho span { background: var(--rosa); color: var(--negro); padding: 2px 7px; border-radius: 6px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.ej-puntos ~ .ej-gancho, .ej-pieza:has(.ej-puntos) .ej-gancho { bottom: 30px; }
-.ej-puntos { left: 0; right: 0; bottom: 12px; display: flex; justify-content: center; gap: 5px; }
-.ej-puntos i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .5); }
+.ej-gancho { left: 14px; right: 14px; bottom: 22px; color: #fff; font-size: clamp(17px, 1.6vw, 21px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
+.ej-num { top: 12px; right: 12px; background: rgba(17, 16, 20, .55); color: #fff; border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; }
+.ej-puntos { left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 5px; }
+.ej-puntos i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .55); }
 .ej-puntos i.on { background: #fff; }
-.ej-num { top: 12px; right: 12px; background: rgba(17, 16, 20, .6); color: #fff; border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; }
 .ej-barras { top: 10px; left: 10px; right: 10px; display: flex; gap: 4px; }
-.ej-barras i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .45); }
+.ej-barras i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .5); }
 .ej-barras i.on { background: #fff; }
-.ej-pieza:has(.ej-sticker) .ej-gancho { bottom: 64px; }
-.ej-sticker { left: 50%; bottom: 18px; transform: translateX(-50%) rotate(-3deg); white-space: nowrap; background: #fff; color: var(--negro); border-radius: 10px; padding: 7px 12px; font-size: 13px; font-weight: 800; }
-.ej-play { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; display: grid; place-items: center; padding-left: 4px; border-radius: 50%; background: rgba(17, 16, 20, .55); color: #fff; font-size: 20px; }
-.ej-pieza:has(.ej-subt) .ej-gancho { bottom: 54px; }
-.ej-subt { left: 14px; right: 14px; bottom: 16px; color: #fff; font-size: 12.5px; font-weight: 600; text-align: center; text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
+.ej-play { top: 14px; right: 14px; color: #fff; font-size: 16px; text-shadow: 0 1px 6px rgba(0, 0, 0, .5); }
+.ej-acc { display: flex; gap: 14px; padding: 10px 12px 4px; }
+.ej-acc svg { width: 21px; height: 21px; fill: none; stroke: var(--negro); stroke-width: 1.8; stroke-linejoin: round; }
+.ej-acc svg:last-child { margin-left: auto; }
+.ej-post .ej-cap { margin: 2px 12px 14px; font-size: 12.5px; line-height: 1.45; color: var(--texto); text-align: left; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 .cta-con-foto { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 40px; padding: 48px; text-align: left; }
 .cta-con-foto .cta-foto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 22px; }
@@ -506,14 +506,10 @@ mark { background: var(--rosa); color: var(--negro); padding: 0 .12em; border-ra
 }
 @media (max-width: 600px) {
   .ejemplos { padding-top: 56px; }
-  .ej-grid { gap: 12px; }
-  .ej-gancho { left: 10px; right: 10px; font-size: 14px; }
-  .ej-gancho span { padding: 1px 5px; }
-  .ej-sticker { font-size: 11px; padding: 5px 9px; }
-  .ej-pieza:has(.ej-sticker) .ej-gancho { bottom: 52px; }
-  .ej-subt { font-size: 11px; left: 10px; right: 10px; }
-  .ej-pieza:has(.ej-subt) .ej-gancho { bottom: 50px; }
-  .ej-play { width: 44px; height: 44px; font-size: 16px; }
+  /* En el teléfono las publicaciones van en una fila que se desliza. */
+  .ej-grid { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 0 16px 8px; scrollbar-width: none; }
+  .ej-grid::-webkit-scrollbar { display: none; }
+  .ej { flex: 0 0 78%; scroll-snap-align: center; }
   .ej p { font-size: 13px; }
   .cta-con-foto { padding: 18px 18px 40px; gap: 28px; }
 }
