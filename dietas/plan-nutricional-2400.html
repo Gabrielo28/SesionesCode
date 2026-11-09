@@ -1,0 +1,1283 @@
+<title>Plan Nutricional 2400 kcal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">
+<style id="page-style">
+  /* Layout: una columna de lectura (max 920px). Cabecera oscura con datos del cliente,
+     cálculo energético, macros, tabla NEAT, 3 opciones por comida con gramaje y macros,
+     tabla de reemplazos y pautas. Todo se renderiza desde el JSON #plan-data; el modo
+     edición (solo para quien puede escribir el artefacto) recalcula y republica. */
+  :root {
+    --bg: #F2F4F7; --surface: #FFFFFF; --surface-2: #E9EDF3; --ink: #13171E; --muted: #5A6373; --line: #D5DAE2;
+    --accent: #0F7B5F; --accent-ink: #FFFFFF; --accent-soft: #DDF1EA; --danger: #B42318;
+    --p: #0F7B5F; --c: #C98A1B; --f: #4C5BD4;
+    --head-bg: #13171E; --head-ink: #F4F6FA; --head-muted: #9AA4B5;
+    --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+    --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5; --line: #2A303B;
+      --accent: #3FBF98; --accent-ink: #06130F; --accent-soft: #15302A; --danger: #F08A80; --p: #3FBF98; --c: #E2A93F; --f: #8C98F2;
+      --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1116; --surface: #161A21; --surface-2: #1E232C; --ink: #EDF0F4; --muted: #9AA4B5; --line: #2A303B;
+    --accent: #3FBF98; --accent-ink: #06130F; --accent-soft: #15302A; --danger: #F08A80; --p: #3FBF98; --c: #E2A93F; --f: #8C98F2;
+    --head-bg: #161A21; --head-ink: #F4F6FA; --head-muted: #9AA4B5; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin: 0; }
+  .wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 0 96px; }
+  h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
+  p { margin: 0; }
+  .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .head { background: var(--head-bg); color: var(--head-ink); margin-inline: -16px; padding: 36px 16px 32px; }
+  .head-in { max-width: 888px; margin: 0 auto; display: grid; gap: 22px; }
+  .head .eyebrow { color: var(--head-muted); }
+  .head h1 { font-size: clamp(40px, 8vw, 76px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; }
+  .head h1 span { color: var(--accent); }
+  .split-line { font-family: var(--font-display); font-size: clamp(17px, 3vw, 22px); font-weight: 500; color: var(--head-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .split-line b { color: var(--head-ink); font-weight: 700; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: #2A303B; border: 1px solid #2A303B; }
+  .fact { background: var(--head-bg); padding: 12px 14px; display: grid; gap: 2px; }
+  .fact .k { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--head-muted); font-weight: 600; }
+  .fact .v { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .fact .v small { font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--head-muted); margin-left: 6px; }
+
+  section { margin-top: 40px; }
+  .sec-title { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 18px; }
+  .sec-title h2 { font-size: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .sec-title .eyebrow { margin-left: auto; text-align: right; }
+  .lead { color: var(--muted); font-size: 14px; max-width: 70ch; margin-bottom: 14px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+  .tile .k { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .tile .v { font-family: var(--font-display); font-size: 34px; font-weight: 800; line-height: 1; }
+  .tile .v small { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+  .tile .d { font-size: 13px; color: var(--muted); }
+  .tile.hi { border-top: 4px solid var(--accent); }
+
+  .tbl { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 560px; }
+  th { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-weight: 600; background: var(--surface-2); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th.r, td.r { text-align: right; white-space: nowrap; }
+  td.b { font-weight: 600; }
+  td.muted, td .muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+  td.lvl { min-width: 260px; }
+  td.lvl .b { font-weight: 600; }
+  tr.total td { background: var(--surface-2); font-weight: 700; border-top: 2px solid var(--line); }
+  tr.now td { background: var(--accent-soft); }
+  .pill { display: inline-block; font-family: var(--font-display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; padding: 2px 8px; border-radius: 2px; }
+  .pill.ok { background: var(--accent-soft); color: var(--accent); }
+  .pill.warn { background: var(--surface-2); color: var(--danger); }
+
+  .macros { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .macro { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 8px; }
+  .macro .k { font-family: var(--font-display); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .macro .v { font-family: var(--font-display); font-size: 34px; font-weight: 800; line-height: 1; }
+  .macro .v small { font-size: 14px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+  .macro .d { font-size: 13px; color: var(--muted); }
+  .bar { height: 8px; background: var(--surface-2); position: relative; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; }
+  .macro.p .bar i, .macro.p .k { background-color: var(--p); color: var(--p); } .macro.p .k { background: none; }
+  .macro.c .bar i, .macro.c .k { background-color: var(--c); color: var(--c); } .macro.c .k { background: none; }
+  .macro.f .bar i, .macro.f .k { background-color: var(--f); color: var(--f); } .macro.f .k { background: none; }
+  .stack { display: flex; height: 14px; margin-top: 14px; overflow: hidden; }
+  .stack i { display: block; height: 100%; }
+  .stack i.p { background: var(--p); } .stack i.c { background: var(--c); } .stack i.f { background: var(--f); }
+
+  .card { margin-top: 18px; background: var(--surface); border: 1px solid var(--line); break-inside: avoid; }
+  .c-head { display: grid; grid-template-columns: auto 1fr; border-bottom: 1px solid var(--line); }
+  .c-let { background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; font-size: 34px; padding: 12px 16px; display: grid; place-items: center; min-width: 70px; line-height: 1; }
+  .c-let small { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .c-meta { padding: 12px 16px; display: grid; gap: 6px; min-width: 0; }
+  .c-meta h4 { font-size: clamp(20px, 4vw, 26px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; padding: 3px 8px; background: var(--surface-2); color: var(--ink); }
+  .chip.kcal { background: var(--ink); color: var(--bg); }
+  .chip.p { color: var(--p); } .chip.c { color: var(--c); } .chip.f { color: var(--f); }
+  .card .tbl { border: 0; }
+  .card table { min-width: 600px; }
+  td.food .nm { font-weight: 600; }
+  td.food .nt { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  td.qty { white-space: nowrap; font-weight: 600; }
+  td.qty span[data-f] { display: inline-block; min-width: 3ch; text-align: right; }
+  .c-foot { padding: 10px 16px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface-2); }
+  .c-foot b { color: var(--ink); }
+
+  .groups { display: grid; gap: 12px; }
+  .group { background: var(--surface); border: 1px solid var(--line); display: grid; grid-template-columns: 200px 1fr; }
+  .group .g-h { padding: 14px 16px; border-right: 1px solid var(--line); background: var(--surface-2); display: grid; gap: 4px; align-content: start; }
+  .group .g-h h4 { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .group .g-h p { font-size: 13px; color: var(--muted); }
+  .group ul.eq { margin: 0; padding: 12px 16px; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 16px; font-size: 14px; }
+  .group ul.eq li { padding-left: 14px; position: relative; }
+  .group ul.eq li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 6px; height: 6px; background: var(--accent); }
+  @media (max-width: 600px) { .group { grid-template-columns: 1fr; } .group .g-h { border-right: 0; border-bottom: 1px solid var(--line); } }
+
+  .guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .g { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .g .t { font-family: var(--font-display); font-size: 19px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+  .g p { font-size: 14px; color: var(--muted); }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .cols h3 { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; }
+  ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+  ul.plain li { max-width: 65ch; }
+  .foot { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); display: grid; gap: 6px; max-width: 80ch; }
+
+  /* Modo edición */
+  .editing [data-f] { outline: 1px dashed var(--accent); outline-offset: 1px; background: var(--accent-soft); min-height: 1.4em; cursor: text; }
+  .editing [data-f]:focus { outline: 2px solid var(--accent); }
+  .editing [data-f]:empty::before { content: attr(data-ph); color: var(--muted); opacity: .7; }
+  .rm { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--danger); width: 28px; height: 28px; cursor: pointer; }
+  .add-row { margin: 10px 16px 14px; font: 600 13px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; border: 1px dashed var(--accent); background: transparent; color: var(--accent); padding: 8px 12px; cursor: pointer; }
+  .toolbar { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--head-bg); color: var(--head-ink); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; z-index: 10; border-top: 1px solid #2A303B; }
+  .toolbar .st { font-size: 13px; color: var(--head-muted); margin-right: auto; min-width: 0; }
+  .toolbar button { font: 700 14px var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .toolbar button.ghost { background: transparent; color: var(--head-ink); border-color: #4A5260; }
+  .toolbar button:disabled { opacity: .55; cursor: default; }
+  .toolbar button:focus-visible { outline: 2px solid var(--head-ink); outline-offset: 2px; }
+
+  @media print {
+    body { background: #fff; color: #000; font-size: 12px; }
+    .head { background: #000 !important; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body section.flow { break-inside: auto; }
+    body section.pg { break-before: page; }
+    .card, .tbl, .group, .tile, .macro { break-inside: avoid; page-break-inside: avoid; }
+    table { min-width: 0; }
+    .toolbar { display: none; }
+    body section { margin-top: 22px; }
+    body .sec-title { margin-bottom: 10px; }
+    body .lead { margin-bottom: 8px; font-size: 11.5px; }
+    body .card { margin-top: 10px; }
+    body .card .c-let { font-size: 24px; padding: 6px 10px; min-width: 54px; }
+    body .card .c-meta { padding: 6px 12px; gap: 3px; }
+    body .card .c-meta h4 { font-size: 17px; }
+    body .card table { font-size: 11px; }
+    body .card table td, body .card table th { padding: 4px 8px; }
+    body td.food .nt { display: inline; margin-left: 6px; font-size: 10.5px; }
+    body td.food .nm { display: inline; }
+    body .c-foot { padding: 6px 12px; font-size: 11px; }
+    body .tiles, body .macros { gap: 8px; }
+    body .tile, body .macro { padding: 10px 12px; }
+    body .tile .v, body .macro .v { font-size: 28px; }
+    body .group ul.eq { padding: 8px 12px; gap: 3px 12px; font-size: 11.5px; }
+    body .group .g-h { padding: 10px 12px; }
+    body .tbl table td, body .tbl table th { padding: 5px 8px; }
+    body .tbl table { font-size: 11px; }
+    body th, body th.r { white-space: normal; }
+    body td.lvl { min-width: 0; width: 44%; }
+    body td.lvl .muted, body td.muted, body td .muted { font-size: 10.5px; }
+    .keep { break-inside: avoid; page-break-inside: avoid; }
+    body .card { margin-top: 8px; }
+    body .card .c-let { font-size: 20px; padding: 5px 8px; min-width: 46px; }
+    body .card .c-meta h4 { font-size: 15px; }
+    body .card table { font-size: 10.5px; }
+    body .card table td, body .card table th { padding: 3px 7px; }
+    body .c-foot { padding: 4px 10px; font-size: 10.5px; }
+    body .card .chips .chip { font-size: 10.5px; padding: 2px 6px; }
+    body section.pg .lead { font-size: 10.5px; }
+  }
+</style>
+
+<script type="application/json" id="plan-data">
+{
+ "titulo": "Plan Nutricional 2400 kcal",
+ "eyebrow": "Plan nutricional · Déficit calórico para pérdida de grasa",
+ "cliente": {
+  "nombre": "Cliente",
+  "sexo": "Hombre",
+  "edad": 40,
+  "estatura": 180,
+  "peso": 95.95,
+  "objetivo": "Bajar grasa manteniendo músculo",
+  "entrenamiento": "5–6 días por semana"
+ },
+ "parametros": {
+  "kcalObjetivo": 2400,
+  "deficit": 500,
+  "protPorKg": 1.5,
+  "carbPct": 50,
+  "neatBase": "Moderado",
+  "perdidaObjetivo": "300–500 g de grasa por semana"
+ },
+ "neat": [
+  {
+   "nivel": "Sedentario",
+   "desc": "Trabajo sentado, menos de 5.000 pasos al día. El gimnasio es casi todo el movimiento.",
+   "factor": 1.2
+  },
+  {
+   "nivel": "Ligero",
+   "desc": "Algo de movimiento diario, 5.000–8.000 pasos, trayectos a pie cortos.",
+   "factor": 1.375
+  },
+  {
+   "nivel": "Moderado",
+   "desc": "8.000–12.000 pasos, parte del día de pie, caminatas habituales.",
+   "factor": 1.55
+  },
+  {
+   "nivel": "Alto",
+   "desc": "Más de 12.000 pasos o trabajo físico, además del entrenamiento.",
+   "factor": 1.725
+  }
+ ],
+ "reparto": [
+  {
+   "comida": "Desayuno",
+   "pct": 25,
+   "nota": "Arranca el día con proteína: huevos, yogur proteico o quesillo."
+  },
+  {
+   "comida": "Almuerzo",
+   "pct": 40,
+   "nota": "La comida más grande. Carbohidrato principal y la mayor porción de proteína."
+  },
+  {
+   "comida": "Cena",
+   "pct": 35,
+   "nota": "Proteína y carbohidrato de nuevo; verduras en cantidad."
+  }
+ ],
+ "desayunos": [
+  {
+   "titulo": "Avena con yogur proteico, plátano y almendras",
+   "items": [
+    {
+     "alimento": "Avena",
+     "g": 50,
+     "nota": "en seco, cocida en agua o leche",
+     "per100": {
+      "kcal": 375,
+      "p": 13,
+      "c": 60,
+      "f": 7
+     }
+    },
+    {
+     "alimento": "Yogur alto en proteínas",
+     "g": 200,
+     "nota": "1 pote grande",
+     "per100": {
+      "kcal": 65,
+      "p": 10,
+      "c": 5,
+      "f": 0.5
+     }
+    },
+    {
+     "alimento": "Proteína whey",
+     "g": 15,
+     "nota": "½ scoop, mezclado en el yogur",
+     "per100": {
+      "kcal": 400,
+      "p": 80,
+      "c": 10,
+      "f": 6.5
+     }
+    },
+    {
+     "alimento": "Plátano",
+     "g": 120,
+     "nota": "1 unidad mediana",
+     "per100": {
+      "kcal": 89,
+      "p": 1.1,
+      "c": 23,
+      "f": 0.3
+     }
+    },
+    {
+     "alimento": "Almendras",
+     "g": 15,
+     "nota": "unas 12 unidades",
+     "per100": {
+      "kcal": 579,
+      "p": 21,
+      "c": 22,
+      "f": 50
+     }
+    },
+    {
+     "alimento": "Miel",
+     "g": 5,
+     "nota": "1 cucharadita",
+     "per100": {
+      "kcal": 304,
+      "p": 0.3,
+      "c": 82,
+      "f": 0
+     }
+    }
+   ],
+   "tip": "Café solo o té sin azúcar."
+  },
+  {
+   "titulo": "Huevos revueltos con pan integral, palta y tomate",
+   "items": [
+    {
+     "alimento": "Huevo entero",
+     "g": 110,
+     "nota": "2 unidades",
+     "per100": {
+      "kcal": 143,
+      "p": 12.5,
+      "c": 0.7,
+      "f": 10
+     }
+    },
+    {
+     "alimento": "Clara de huevo",
+     "g": 130,
+     "nota": "4 claras",
+     "per100": {
+      "kcal": 50,
+      "p": 11,
+      "c": 0.7,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Pan integral de molde",
+     "g": 90,
+     "nota": "3 rebanadas",
+     "per100": {
+      "kcal": 255,
+      "p": 10,
+      "c": 45,
+      "f": 4
+     }
+    },
+    {
+     "alimento": "Palta",
+     "g": 40,
+     "nota": "¼ de palta",
+     "per100": {
+      "kcal": 160,
+      "p": 2,
+      "c": 8.5,
+      "f": 15
+     }
+    },
+    {
+     "alimento": "Tomate",
+     "g": 100,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 18,
+      "p": 0.9,
+      "c": 3.9,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Naranja",
+     "g": 150,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 47,
+      "p": 0.9,
+      "c": 12,
+      "f": 0.1
+     }
+    }
+   ],
+   "tip": "Sal, pimienta y orégano a gusto."
+  },
+  {
+   "titulo": "Marraqueta con quesillo, huevo y kiwi",
+   "items": [
+    {
+     "alimento": "Pan marraqueta",
+     "g": 100,
+     "nota": "1 unidad (2 mitades)",
+     "per100": {
+      "kcal": 270,
+      "p": 9,
+      "c": 55,
+      "f": 1.5
+     }
+    },
+    {
+     "alimento": "Quesillo",
+     "g": 80,
+     "nota": "2 láminas gruesas",
+     "per100": {
+      "kcal": 100,
+      "p": 13,
+      "c": 3,
+      "f": 4
+     }
+    },
+    {
+     "alimento": "Huevo entero",
+     "g": 110,
+     "nota": "2 unidades a la plancha",
+     "per100": {
+      "kcal": 143,
+      "p": 12.5,
+      "c": 0.7,
+      "f": 10
+     }
+    },
+    {
+     "alimento": "Mermelada",
+     "g": 15,
+     "nota": "1 cucharada",
+     "per100": {
+      "kcal": 240,
+      "p": 0.4,
+      "c": 60,
+      "f": 0.1
+     }
+    },
+    {
+     "alimento": "Kiwi",
+     "g": 150,
+     "nota": "2 unidades",
+     "per100": {
+      "kcal": 61,
+      "p": 1.1,
+      "c": 15,
+      "f": 0.5
+     }
+    }
+   ],
+   "tip": "Café con leche sin lactosa (100 ml) si quieres, cuenta como extra de 46 kcal."
+  }
+ ],
+ "almuerzos": [
+  {
+   "titulo": "Pollo a la plancha con arroz, ensalada y palta",
+   "items": [
+    {
+     "alimento": "Pechuga de pollo (cruda)",
+     "g": 200,
+     "nota": "≈ 150 g cocida",
+     "per100": {
+      "kcal": 110,
+      "p": 22,
+      "c": 0,
+      "f": 2.5
+     }
+    },
+    {
+     "alimento": "Arroz blanco (crudo)",
+     "g": 110,
+     "nota": "≈ 300 g cocido",
+     "per100": {
+      "kcal": 350,
+      "p": 7,
+      "c": 78,
+      "f": 0.7
+     }
+    },
+    {
+     "alimento": "Ensalada de hojas (lechuga, pepino, tomate)",
+     "g": 200,
+     "nota": "a gusto, mínimo 200 g",
+     "per100": {
+      "kcal": 20,
+      "p": 1.2,
+      "c": 4,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Palta",
+     "g": 50,
+     "nota": "⅓ de palta",
+     "per100": {
+      "kcal": 160,
+      "p": 2,
+      "c": 8.5,
+      "f": 15
+     }
+    },
+    {
+     "alimento": "Aceite de oliva",
+     "g": 15,
+     "nota": "1 cucharada y media para la ensalada",
+     "per100": {
+      "kcal": 884,
+      "p": 0,
+      "c": 0,
+      "f": 100
+     }
+    },
+    {
+     "alimento": "Manzana",
+     "g": 150,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 52,
+      "p": 0.3,
+      "c": 14,
+      "f": 0.2
+     }
+    }
+   ],
+   "tip": "Limón y vinagre libres para aliñar."
+  },
+  {
+   "titulo": "Carne magra con papas cocidas, porotos verdes y zanahoria",
+   "items": [
+    {
+     "alimento": "Carne de vacuno magra, posta (cruda)",
+     "g": 200,
+     "nota": "≈ 150 g cocida",
+     "per100": {
+      "kcal": 129,
+      "p": 21,
+      "c": 0,
+      "f": 5
+     }
+    },
+    {
+     "alimento": "Papa cocida",
+     "g": 400,
+     "nota": "3 papas medianas",
+     "per100": {
+      "kcal": 77,
+      "p": 2,
+      "c": 17,
+      "f": 0.1
+     }
+    },
+    {
+     "alimento": "Porotos verdes",
+     "g": 150,
+     "nota": "cocidos",
+     "per100": {
+      "kcal": 31,
+      "p": 1.8,
+      "c": 7,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Zanahoria",
+     "g": 100,
+     "nota": "rallada o cocida",
+     "per100": {
+      "kcal": 41,
+      "p": 0.9,
+      "c": 10,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Aceite de oliva",
+     "g": 15,
+     "nota": "1 cucharada y media",
+     "per100": {
+      "kcal": 884,
+      "p": 0,
+      "c": 0,
+      "f": 100
+     }
+    },
+    {
+     "alimento": "Pan marraqueta",
+     "g": 50,
+     "nota": "½ unidad",
+     "per100": {
+      "kcal": 270,
+      "p": 9,
+      "c": 55,
+      "f": 1.5
+     }
+    }
+   ],
+   "tip": "Mostaza libre; kétchup máximo 1 cucharada."
+  },
+  {
+   "titulo": "Lentejas guisadas con pollo, arroz y ensalada de tomate",
+   "items": [
+    {
+     "alimento": "Lentejas cocidas",
+     "g": 300,
+     "nota": "≈ 120 g en seco",
+     "per100": {
+      "kcal": 116,
+      "p": 9,
+      "c": 20,
+      "f": 0.4
+     }
+    },
+    {
+     "alimento": "Pechuga de pollo (cruda)",
+     "g": 100,
+     "nota": "en cubos dentro del guiso",
+     "per100": {
+      "kcal": 110,
+      "p": 22,
+      "c": 0,
+      "f": 2.5
+     }
+    },
+    {
+     "alimento": "Sofrito de zanahoria, cebolla y pimentón",
+     "g": 150,
+     "nota": "base del guiso",
+     "per100": {
+      "kcal": 37,
+      "p": 1.1,
+      "c": 8,
+      "f": 0.3
+     }
+    },
+    {
+     "alimento": "Arroz blanco (crudo)",
+     "g": 40,
+     "nota": "≈ 110 g cocido",
+     "per100": {
+      "kcal": 350,
+      "p": 7,
+      "c": 78,
+      "f": 0.7
+     }
+    },
+    {
+     "alimento": "Huevo entero",
+     "g": 55,
+     "nota": "1 unidad duro, picado encima",
+     "per100": {
+      "kcal": 143,
+      "p": 12.5,
+      "c": 0.7,
+      "f": 10
+     }
+    },
+    {
+     "alimento": "Aceite de oliva",
+     "g": 15,
+     "nota": "para el sofrito",
+     "per100": {
+      "kcal": 884,
+      "p": 0,
+      "c": 0,
+      "f": 100
+     }
+    },
+    {
+     "alimento": "Tomate",
+     "g": 150,
+     "nota": "ensalada con cebolla",
+     "per100": {
+      "kcal": 18,
+      "p": 0.9,
+      "c": 3.9,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Naranja",
+     "g": 150,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 47,
+      "p": 0.9,
+      "c": 12,
+      "f": 0.1
+     }
+    }
+   ],
+   "tip": "Puedes cambiar lentejas por porotos negros o blancos en la misma cantidad."
+  }
+ ],
+ "cenas": [
+  {
+   "titulo": "Salmón al horno con camote, brócoli y frutillas",
+   "items": [
+    {
+     "alimento": "Salmón (crudo)",
+     "g": 150,
+     "nota": "1 trozo",
+     "per100": {
+      "kcal": 208,
+      "p": 20,
+      "c": 0,
+      "f": 13
+     }
+    },
+    {
+     "alimento": "Camote cocido",
+     "g": 300,
+     "nota": "1 camote grande",
+     "per100": {
+      "kcal": 86,
+      "p": 1.5,
+      "c": 20,
+      "f": 0.1
+     }
+    },
+    {
+     "alimento": "Brócoli",
+     "g": 200,
+     "nota": "al vapor, con limón",
+     "per100": {
+      "kcal": 34,
+      "p": 2.8,
+      "c": 7,
+      "f": 0.4
+     }
+    },
+    {
+     "alimento": "Yogur griego natural",
+     "g": 150,
+     "nota": "de postre",
+     "per100": {
+      "kcal": 92,
+      "p": 9,
+      "c": 5,
+      "f": 4
+     }
+    },
+    {
+     "alimento": "Frutillas",
+     "g": 150,
+     "nota": "sobre el yogur",
+     "per100": {
+      "kcal": 32,
+      "p": 0.7,
+      "c": 8,
+      "f": 0.3
+     }
+    }
+   ],
+   "tip": "El salmón ya aporta la grasa de la comida: no añadas aceite."
+  },
+  {
+   "titulo": "Merluza al horno con puré de papas y ensalada",
+   "items": [
+    {
+     "alimento": "Merluza (cruda)",
+     "g": 250,
+     "nota": "2 filetes",
+     "per100": {
+      "kcal": 86,
+      "p": 17,
+      "c": 0,
+      "f": 2
+     }
+    },
+    {
+     "alimento": "Papa cocida",
+     "g": 350,
+     "nota": "para el puré",
+     "per100": {
+      "kcal": 77,
+      "p": 2,
+      "c": 17,
+      "f": 0.1
+     }
+    },
+    {
+     "alimento": "Leche sin lactosa semidescremada",
+     "g": 50,
+     "nota": "para el puré",
+     "per100": {
+      "kcal": 46,
+      "p": 3.2,
+      "c": 4.8,
+      "f": 1.5
+     }
+    },
+    {
+     "alimento": "Aceite de oliva",
+     "g": 15,
+     "nota": "10 g en el puré, 5 g en la ensalada",
+     "per100": {
+      "kcal": 884,
+      "p": 0,
+      "c": 0,
+      "f": 100
+     }
+    },
+    {
+     "alimento": "Ensalada de hojas (lechuga, pepino, tomate)",
+     "g": 200,
+     "nota": "a gusto",
+     "per100": {
+      "kcal": 20,
+      "p": 1.2,
+      "c": 4,
+      "f": 0.2
+     }
+    },
+    {
+     "alimento": "Pan integral de molde",
+     "g": 30,
+     "nota": "1 rebanada",
+     "per100": {
+      "kcal": 255,
+      "p": 10,
+      "c": 45,
+      "f": 4
+     }
+    },
+    {
+     "alimento": "Pera",
+     "g": 150,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 57,
+      "p": 0.4,
+      "c": 15,
+      "f": 0.1
+     }
+    }
+   ],
+   "tip": "Reineta o atún en agua sirven igual: mira la tabla de reemplazos."
+  },
+  {
+   "titulo": "Fajitas de pollo con verduras salteadas y palta",
+   "items": [
+    {
+     "alimento": "Pechuga de pollo (cruda)",
+     "g": 200,
+     "nota": "en tiras",
+     "per100": {
+      "kcal": 110,
+      "p": 22,
+      "c": 0,
+      "f": 2.5
+     }
+    },
+    {
+     "alimento": "Tortilla de trigo",
+     "g": 135,
+     "nota": "3 tortillas",
+     "per100": {
+      "kcal": 300,
+      "p": 8,
+      "c": 50,
+      "f": 8
+     }
+    },
+    {
+     "alimento": "Verduras salteadas (pimentón, cebolla, zapallo italiano)",
+     "g": 200,
+     "nota": "con ajo",
+     "per100": {
+      "kcal": 30,
+      "p": 1.2,
+      "c": 6,
+      "f": 0.3
+     }
+    },
+    {
+     "alimento": "Palta",
+     "g": 40,
+     "nota": "¼ de palta",
+     "per100": {
+      "kcal": 160,
+      "p": 2,
+      "c": 8.5,
+      "f": 15
+     }
+    },
+    {
+     "alimento": "Yogur natural",
+     "g": 100,
+     "nota": "como salsa, con limón y cilantro",
+     "per100": {
+      "kcal": 67,
+      "p": 4,
+      "c": 6,
+      "f": 3
+     }
+    },
+    {
+     "alimento": "Mandarina",
+     "g": 100,
+     "nota": "1 unidad",
+     "per100": {
+      "kcal": 47,
+      "p": 0.8,
+      "c": 12,
+      "f": 0.1
+     }
+    }
+   ],
+   "tip": "Salsa picante libre. Si usas carne molida en vez de pollo, 160 g y sin palta."
+  }
+ ],
+ "reemplazos": [
+  {
+   "grupo": "Carbohidratos",
+   "ref": "1 ración ≈ 40 g de carbohidrato",
+   "items": [
+    "Arroz 50 g en crudo (≈ 140 g cocido)",
+    "Fideos 55 g en crudo (≈ 130 g cocidos)",
+    "Papa cocida 230 g",
+    "Camote cocido 200 g",
+    "Pan marraqueta 75 g (¾ de unidad)",
+    "Pan integral de molde 90 g (3 rebanadas)",
+    "Hallulla 70 g",
+    "Avena 65 g",
+    "Tortillas de trigo 80 g (2 unidades)",
+    "Tortillas de maíz 90 g (3 unidades)",
+    "Choclo cocido 210 g",
+    "Lentejas o porotos cocidos 200 g (suman además 18 g de proteína)"
+   ]
+  },
+  {
+   "grupo": "Proteínas",
+   "ref": "1 ración ≈ 40 g de proteína",
+   "items": [
+    "Pechuga de pollo 180 g en crudo",
+    "Carne de vacuno magra 190 g en crudo",
+    "Carne molida magra 200 g (suma 6 g de grasa extra)",
+    "Atún en agua 165 g escurrido (2 latas)",
+    "Merluza 235 g",
+    "Reineta 210 g",
+    "Salmón 200 g (suma 20 g de grasa: quita el aceite de esa comida)",
+    "2 huevos + 5 claras",
+    "Yogur alto en proteínas 400 g",
+    "Quesillo 300 g",
+    "Proteína whey 50 g (1½ scoop)",
+    "Hamburguesa de legumbres: revisa el envase, suele aportar la mitad"
+   ]
+  },
+  {
+   "grupo": "Grasas",
+   "ref": "1 ración ≈ 10 g de grasa",
+   "items": [
+    "Aceite de oliva o maravilla 10 g (1 cucharada)",
+    "Palta 65 g (½ palta pequeña)",
+    "Almendras 20 g",
+    "Nueces 15 g",
+    "Maní o pistachos 20 g",
+    "Castañas de cajú 22 g",
+    "Semillas de chía o linaza 25 g",
+    "Aceitunas 90 g",
+    "Mayonesa 13 g (1 cucharada rasa)",
+    "Chocolate amargo 25 g (suma 12 g de carbohidrato)"
+   ]
+  },
+  {
+   "grupo": "Frutas",
+   "ref": "1 ración ≈ 20 g de carbohidrato",
+   "items": [
+    "Plátano 90 g (1 pequeño)",
+    "Manzana 150 g",
+    "Pera 135 g",
+    "Naranja 170 g",
+    "Mandarinas 170 g (2 unidades)",
+    "Kiwi 135 g (2 unidades)",
+    "Frutillas 250 g",
+    "Piña 150 g",
+    "Mango 135 g",
+    "Durazno 200 g",
+    "Melón 250 g"
+   ]
+  },
+  {
+   "grupo": "Lácteos",
+   "ref": "1 ración ≈ 10 g de proteína",
+   "items": [
+    "Yogur alto en proteínas 100 g",
+    "Yogur griego natural 110 g (suma 4 g de grasa)",
+    "Quesillo 80 g",
+    "Queso fresco 60 g (suma 9 g de grasa)",
+    "Leche sin lactosa 300 ml (suma 14 g de carbohidrato)",
+    "Kéfir 300 ml (suma 13 g de carbohidrato)"
+   ]
+  },
+  {
+   "grupo": "Verduras",
+   "ref": "Libres hasta 300 g por comida",
+   "items": [
+    "Lechuga, tomate, pepino, apio, rabanitos, repollo",
+    "Brócoli, coliflor, acelga, espárragos, porotos verdes",
+    "Zapallo italiano, berenjena, pimentón, cebolla, cebollín, ajo",
+    "Zanahoria y betarraga: libres hasta 150 g; por encima, cuenta 100 g como ⅓ ración de carbohidrato"
+   ]
+  }
+ ],
+ "jugar": [
+  {
+   "t": "Cambia el carbohidrato",
+   "p": "Si el plato lleva arroz y prefieres papa, cambia la ración por la equivalente de la tabla: 110 g de arroz crudo son 2 raciones, así que serían 460 g de papa cocida o 400 g de camote."
+  },
+  {
+   "t": "Cambia la proteína",
+   "p": "Pollo, carne magra, merluza, reineta y atún se intercambian casi gramo a gramo. Con salmón o carne molida, quita el aceite o la palta de esa comida para compensar la grasa."
+  },
+  {
+   "t": "Cambia la ensalada",
+   "p": "Las verduras de la tabla son libres: hojas verdes, tomate y pepino un día, brócoli al vapor otro, verduras salteadas con ajo el siguiente. El aliño sí cuenta: 1 cucharada de aceite por comida."
+  },
+  {
+   "t": "Mueve la fruta",
+   "p": "La fruta de un plato puede ir de colación entre comidas si prefieres comer algo a media tarde. Son las mismas calorías."
+  },
+  {
+   "t": "Usa el whey cuando falte proteína",
+   "p": "Si un día el almuerzo o la cena quedan cortos de proteína, un scoop de whey con agua (30 g, 120 kcal, 24 g de proteína) completa el total sin tocar los carbohidratos."
+  },
+  {
+   "t": "Condimentos",
+   "p": "Mostaza, salsas picantes, limón, vinagre, hierbas, café, té y bebidas zero son libres. Kétchup máximo 1 cucharada al día. La mayonesa cuenta como grasa."
+  }
+ ],
+ "pautas": [
+  {
+   "h": "Seguimiento",
+   "items": [
+    "Pésate 2–3 veces por semana en ayunas y usa el promedio semanal, no el número de un día.",
+    "Objetivo: 300–500 g menos por semana. Si en 2 semanas seguidas no baja, recorta 150 kcal (una ración de carbohidrato) o suma 2.000 pasos diarios.",
+    "Si baja más de 700 g por semana de forma sostenida, sube 150 kcal: el objetivo es perder grasa, no músculo."
+   ]
+  },
+  {
+   "h": "Hábitos que sostienen el plan",
+   "items": [
+    "Agua: unos 3 litros al día (35 ml por kilo), más en días de entrenamiento.",
+    "Proteína en las tres comidas, nunca concentrada en una sola.",
+    "Creatina 5 g diarios si ya la usas; no cambia el plan.",
+    "7–8 horas de sueño. Dormir poco sube el hambre y frena la pérdida de grasa."
+   ]
+  }
+ ],
+ "disclaimer": "Orientación nutricional elaborada por tu entrenador a partir de los alimentos que declaraste consumir. No sustituye la evaluación de un médico o nutricionista, especialmente si tienes alguna condición de salud."
+}
+</script>
+
+<div id="app"></div>
+
+<script id="app-script">
+(function () {
+  'use strict';
+  var RESET = ':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  var FONT_LINKS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap">\n';
+
+  var app = document.getElementById('app');
+  var state = JSON.parse(document.getElementById('plan-data').textContent);
+  var editing = false, artifactNs = null, toolbar = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function f(path, cls, text, ph, tag, num) {
+    tag = tag || 'span';
+    return '<' + tag + ' class="' + cls + '" data-f="' + path + '"' + (num ? ' data-num="1"' : '') + ' data-ph="' + esc(ph) + '"' +
+      (editing ? ' contenteditable="true" spellcheck="false"' : '') + '>' + esc(text) + '</' + tag + '>';
+  }
+  function setPath(obj, path, value) { var p = path.split('.'), cur = obj; for (var i = 0; i < p.length - 1; i++) cur = cur[p[i]]; cur[p[p.length - 1]] = value; }
+  function n0(x) { return Math.round(x).toLocaleString('es-CL'); }
+  function n1(x) { return (Math.round(x * 10) / 10).toLocaleString('es-CL'); }
+  function r50(x) { return Math.round(x / 50) * 50; }
+
+  // Cálculos
+  function calc(s) {
+    var c = s.cliente, p = s.parametros;
+    var tmb = 10 * c.peso + 6.25 * c.estatura - 5 * c.edad + (c.sexo === 'Mujer' ? -161 : 5);
+    var base = s.neat.filter(function (n) { return n.nivel === p.neatBase; })[0] || s.neat[2];
+    var tdee = tmb * base.factor;
+    var kcal = p.kcalObjetivo;
+    var prot = p.protPorKg * c.peso, carb = kcal * p.carbPct / 100 / 4, fat = (kcal - prot * 4 - carb * 4) / 9;
+    var imc = c.peso / Math.pow(c.estatura / 100, 2);
+    return { tmb: tmb, tdee: tdee, base: base, kcal: kcal, prot: prot, carb: carb, fat: fat, imc: imc, deficit: tdee - kcal };
+  }
+  function tot(items) {
+    var t = { kcal: 0, p: 0, c: 0, f: 0 };
+    items.forEach(function (it) { var g = parseFloat(it.g) || 0; ['kcal', 'p', 'c', 'f'].forEach(function (k) { t[k] += g / 100 * (it.per100[k] || 0); }); });
+    return t;
+  }
+
+  function header(s, k) {
+    var c = s.cliente;
+    var imcTxt = k.imc < 25 ? 'normopeso' : k.imc < 30 ? 'sobrepeso' : 'obesidad';
+    return '<header class="head"><div class="head-in">' +
+      '<p class="eyebrow">' + esc(s.eyebrow) + '</p>' +
+      '<h1>' + f('cliente.nombre', '', c.nombre, 'Nombre del cliente') + '<br><span>' + n0(k.kcal) + ' kcal</span></h1>' +
+      '<p class="split-line"><b>Proteína ' + n0(k.prot) + ' g</b> · Carbohidratos ' + n0(k.carb) + ' g · Grasas ' + n0(k.fat) + ' g · <b>' + esc(s.parametros.perdidaObjetivo) + '</b></p>' +
+      '<div class="facts">' +
+      '<div class="fact"><span class="k">Edad</span><span class="v">' + f('cliente.edad', 'num', c.edad, '0', 'span', true) + '<small>años</small></span></div>' +
+      '<div class="fact"><span class="k">Estatura</span><span class="v">' + f('cliente.estatura', 'num', c.estatura, '0', 'span', true) + '<small>cm</small></span></div>' +
+      '<div class="fact"><span class="k">Peso actual</span><span class="v">' + f('cliente.peso', 'num', c.peso, '0', 'span', true) + '<small>kg</small></span></div>' +
+      '<div class="fact"><span class="k">IMC</span><span class="v">' + n1(k.imc) + '<small>' + imcTxt + '</small></span></div>' +
+      '<div class="fact"><span class="k">Objetivo</span><span class="v" style="font-size:17px">' + f('cliente.objetivo', '', c.objetivo, 'Objetivo') + '</span></div>' +
+      '<div class="fact"><span class="k">Entrenamiento</span><span class="v" style="font-size:17px">' + f('cliente.entrenamiento', '', c.entrenamiento, 'Frecuencia') + '</span></div>' +
+      '</div></div></header>';
+  }
+
+  function energia(s, k) {
+    var p = s.parametros;
+    return '<section class="flow"><div class="sec-title"><h2>Cálculo energético</h2><span class="eyebrow">Mifflin-St Jeor · NEAT ' + esc(p.neatBase).toLowerCase() + '</span></div>' +
+      '<div class="tiles">' +
+      '<div class="tile"><span class="k">Metabolismo basal</span><span class="v">' + n0(k.tmb) + '<small>kcal</small></span><span class="d">Lo que gasta tu cuerpo en reposo absoluto.</span></div>' +
+      '<div class="tile"><span class="k">Gasto diario estimado</span><span class="v">' + n0(k.tdee) + '<small>kcal</small></span><span class="d">Basal × ' + k.base.factor + ' por entrenamiento 5–6 días y actividad ' + esc(k.base.nivel).toLowerCase() + '.</span></div>' +
+      '<div class="tile"><span class="k">Déficit diario</span><span class="v">−' + n0(k.deficit) + '<small>kcal</small></span><span class="d">Unas ' + n0(k.deficit * 7) + ' kcal a la semana, el equivalente a ' + n0(k.deficit * 7 / 7.7) + ' g de grasa.</span></div>' +
+      '<div class="tile hi"><span class="k">Objetivo de ingesta</span><span class="v">' + f('parametros.kcalObjetivo', 'num', editing ? p.kcalObjetivo : n0(p.kcalObjetivo), '0', 'span', true) + '<small>kcal/día</small></span><span class="d">Redondeado. Es la cifra con la que se arman las comidas de este plan.</span></div>' +
+      '</div>' +
+      '<p class="lead" style="margin-top:14px">Un déficit de unas 500 kcal diarias produce una pérdida de 400–500 g de grasa por semana si el nivel de actividad se mantiene. La tabla de actividad diaria muestra qué pasa si tu día a día es más o menos activo de lo estimado.</p></section>';
+  }
+
+  function macros(s, k) {
+    var p = s.parametros, kp = k.prot * 4, kc = k.carb * 4, kf = k.fat * 9, tot = kp + kc + kf;
+    function m(cls, name, g, kcal, d) {
+      var pct = kcal / tot * 100;
+      return '<div class="macro ' + cls + '"><span class="k">' + name + '</span><span class="v">' + n0(g) + '<small>g · ' + n0(kcal) + ' kcal · ' + n0(pct) + '%</small></span><div class="bar"><i style="width:' + pct + '%"></i></div><span class="d">' + d + '</span></div>';
+    }
+    var rows = s.reparto.map(function (r, i) {
+      var kcal = k.kcal * r.pct / 100, pr = k.prot * r.pct / 100, ca = k.carb * r.pct / 100, fa = k.fat * r.pct / 100;
+      return '<tr><td class="b">' + esc(r.comida) + '</td><td class="r">' + f('reparto.' + i + '.pct', 'num', r.pct, '0', 'span', true) + '%</td><td class="r">' + n0(kcal) + ' kcal</td><td class="r">' + n0(pr) + ' g</td><td class="r">' + n0(ca) + ' g</td><td class="r">' + n0(fa) + ' g</td><td class="muted">' + f('reparto.' + i + '.nota', '', r.nota, 'Nota') + '</td></tr>';
+    }).join('');
+    return '<section class="flow"><div class="sec-title"><h2>Reparto de macronutrientes</h2><span class="eyebrow">' + f('parametros.protPorKg', 'num', p.protPorKg, '0', 'span', true) + ' g/kg de proteína · ' + f('parametros.carbPct', 'num', p.carbPct, '0', 'span', true) + '% carbohidratos</span></div>' +
+      '<div class="macros">' +
+      m('p', 'Proteína', k.prot, kp, p.protPorKg + ' g por kilo de peso. Mantiene el músculo mientras bajas grasa.') +
+      m('c', 'Carbohidratos', k.carb, kc, 'La mitad de las calorías. Energía para entrenar 5–6 días.') +
+      m('f', 'Grasas', k.fat, kf, 'Lo que resta. Suficiente para hormonas y saciedad.') +
+      '</div>' +
+      '<div class="stack"><i class="p" style="width:' + (kp / tot * 100) + '%"></i><i class="c" style="width:' + (kc / tot * 100) + '%"></i><i class="f" style="width:' + (kf / tot * 100) + '%"></i></div>' +
+      '<div class="keep"><h3 style="font-size:20px;text-transform:uppercase;letter-spacing:.03em;margin:22px 0 10px">Reparto por comida</h3>' +
+      '<div class="tbl"><table><thead><tr><th>Comida</th><th class="r">%</th><th class="r">Calorías</th><th class="r">Proteína</th><th class="r">Carbos</th><th class="r">Grasas</th><th>Nota</th></tr></thead><tbody>' + rows + '</tbody></table></div></div></section>';
+  }
+
+  function neat(s, k) {
+    var rows = s.neat.map(function (n, i) {
+      var tdee = k.tmb * n.factor, dif = tdee - k.kcal, gsem = dif * 7 / 7.7, rec = r50(tdee - s.parametros.deficit);
+      var cur = n.nivel === s.parametros.neatBase;
+      if (cur) rec = k.kcal;
+      var pill = dif < 150 ? '<span class="pill warn">No baja</span>' : dif < 300 ? '<span class="pill warn">Lento: ajusta</span>' : dif > 750 ? '<span class="pill warn">Demasiado rápido</span>' : '<span class="pill ok">En rango</span>';
+      return '<tr' + (cur ? ' class="now"' : '') + '><td class="lvl"><div class="b">' + esc(n.nivel) + ' <span class="muted">× ' + n.factor + '</span>' + (cur ? ' <span class="pill ok">Plan actual</span>' : '') + '</div><div class="muted">' + f('neat.' + i + '.desc', '', n.desc, 'Descripción') + '</div><div style="margin-top:4px">' + pill + '</div></td>' +
+        '<td class="r">' + n0(tdee) + ' kcal</td><td class="r">' + (dif >= 0 ? '−' : '+') + n0(Math.abs(dif)) + ' kcal</td>' +
+        '<td class="r">' + (dif > 0 ? '≈ ' + n0(gsem) + ' g' : '0 g') + '</td><td class="r b">' + n0(rec) + ' kcal</td></tr>';
+    }).join('');
+    return '<section class="flow"><div class="sec-title"><h2>Cómo afecta tu actividad diaria (NEAT)</h2><span class="eyebrow">Comiendo ' + n0(k.kcal) + ' kcal</span></div>' +
+      '<p class="lead">NEAT es todo el movimiento fuera del entrenamiento: caminar, estar de pie, tareas de casa, trabajo. Con el mismo plan de ' + n0(k.kcal) + ' kcal, el resultado cambia según cuánto te muevas el resto del día. Identifica tu fila y, si no es la del plan actual, usa la ingesta recomendada de esa fila.</p>' +
+      '<div class="tbl"><table><thead><tr><th>Nivel de actividad diaria</th><th class="r">Gasto diario</th><th class="r">Balance con ' + n0(k.kcal) + ' kcal</th><th class="r">Pérdida semanal</th><th class="r">Ingesta recomendada</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="lead" style="margin-top:12px">Regla práctica: cada 2.000 pasos diarios adicionales suman unas 80–100 kcal de gasto. Subir el NEAT es la forma más fácil de acelerar la pérdida sin recortar más comida.</p></section>';
+  }
+
+  function mealSection(key, title, letterPrefix, pct, k) {
+    var opts = state[key];
+    var target = k.kcal * pct / 100, tp = k.prot * pct / 100;
+    var cards = opts.map(function (o, i) {
+      var base = key + '.' + i + '.';
+      var t = tot(o.items);
+      var rows = o.items.map(function (it, j) {
+        var q = base + 'items.' + j + '.';
+        var g = parseFloat(it.g) || 0, m = it.per100;
+        var del = editing ? '<td class="r"><button type="button" class="rm" data-rm="' + key + '.' + i + '.' + j + '" aria-label="Quitar alimento">×</button></td>' : '';
+        return '<tr><td class="food"><div class="nm">' + f(q + 'alimento', '', it.alimento, 'Alimento') + '</div><div class="nt">' + f(q + 'nota', '', it.nota, 'Cómo se mide / cocina') + '</div></td>' +
+          '<td class="qty">' + f(q + 'g', 'num', it.g, '0', 'span', true) + ' g</td>' +
+          '<td class="r">' + n0(g / 100 * m.kcal) + '</td><td class="r">' + n1(g / 100 * m.p) + '</td><td class="r">' + n1(g / 100 * m.c) + '</td><td class="r">' + n1(g / 100 * m.f) + '</td>' + del + '</tr>';
+      }).join('');
+      var add = editing ? '<button type="button" class="add-row" data-add="' + key + '.' + i + '">+ Añadir alimento</button>' : '';
+      return '<article class="card"><div class="c-head"><div class="c-let"><small>Opción</small>' + letterPrefix + (i + 1) + '</div><div class="c-meta">' +
+        '<h4>' + f(base + 'titulo', '', o.titulo, 'Nombre del plato', 'span') + '</h4>' +
+        '<div class="chips"><span class="chip kcal">' + n0(t.kcal) + ' kcal</span><span class="chip p">P ' + n0(t.p) + ' g</span><span class="chip c">C ' + n0(t.c) + ' g</span><span class="chip f">G ' + n0(t.f) + ' g</span></div></div></div>' +
+        '<div class="tbl"><table><thead><tr><th>Alimento</th><th>Cantidad</th><th class="r">kcal</th><th class="r">Prot</th><th class="r">Carb</th><th class="r">Grasa</th>' + (editing ? '<th></th>' : '') + '</tr></thead><tbody>' + rows +
+        '<tr class="total"><td>Total</td><td></td><td class="r">' + n0(t.kcal) + '</td><td class="r">' + n0(t.p) + '</td><td class="r">' + n0(t.c) + '</td><td class="r">' + n0(t.f) + '</td>' + (editing ? '<td></td>' : '') + '</tr></tbody></table></div>' + add +
+        '<div class="c-foot">' + f(base + 'tip', '', o.tip, 'Consejo o variante') + '</div></article>';
+    }).join('');
+    return '<section class="flow pg"><div class="sec-title"><h2>' + title + '</h2><span class="eyebrow">Objetivo ≈ ' + n0(target) + ' kcal · ' + n0(tp) + ' g proteína</span></div>' +
+      '<p class="lead">Elige una opción cada día. Los pesos son en crudo salvo que la nota diga otra cosa. Las tres opciones se pueden intercambiar libremente entre sí porque aportan calorías y proteína equivalentes.</p>' + cards + '</section>';
+  }
+
+  function reemplazos(s) {
+    var groups = s.reemplazos.map(function (g, i) {
+      var lis = g.items.map(function (t, j) { return f('reemplazos.' + i + '.items.' + j, '', t, 'Equivalencia', 'li'); }).join('');
+      return '<div class="group"><div class="g-h"><h4>' + esc(g.grupo) + '</h4>' + f('reemplazos.' + i + '.ref', '', g.ref, 'Ración de referencia', 'p') + '</div><ul class="eq">' + lis + '</ul></div>';
+    }).join('');
+    return '<section class="flow pg"><div class="sec-title"><h2>Tabla de reemplazos</h2><span class="eyebrow">Mismas calorías, otro alimento</span></div>' +
+      '<p class="lead">Cada fila agrupa alimentos que se pueden intercambiar entre sí en las cantidades indicadas. Para cambiar un alimento de un plato, mira cuántas raciones son sus gramos y usa la misma cantidad de raciones del reemplazo.</p>' +
+      '<div class="groups">' + groups + '</div></section>';
+  }
+
+  function jugar(s) {
+    var items = s.jugar.map(function (g, i) { return '<div class="g">' + f('jugar.' + i + '.t', 't', g.t, 'Título') + f('jugar.' + i + '.p', '', g.p, 'Explicación', 'p') + '</div>'; }).join('');
+    return '<section class="flow"><div class="sec-title"><h2>Cómo variar los platos</h2></div><div class="guide">' + items + '</div></section>';
+  }
+
+  function pautas(s) {
+    var cols = s.pautas.map(function (c, i) {
+      var lis = c.items.map(function (t, j) { return f('pautas.' + i + '.items.' + j, '', t, 'Pauta', 'li'); }).join('');
+      return '<div><h3>' + esc(c.h) + '</h3><ul class="plain">' + lis + '</ul></div>';
+    }).join('');
+    return '<section class="flow"><div class="sec-title"><h2>Seguimiento y pautas</h2></div><div class="cols">' + cols + '</div></section>';
+  }
+
+  function render() {
+    var k = calc(state);
+    app.innerHTML = '<div class="wrap">' + header(state, k) + energia(state, k) + macros(state, k) + neat(state, k) +
+      mealSection('desayunos', 'Desayuno · 3 opciones', 'D', state.reparto[0].pct, k) +
+      mealSection('almuerzos', 'Almuerzo · 3 opciones', 'A', state.reparto[1].pct, k) +
+      mealSection('cenas', 'Cena · 3 opciones', 'C', state.reparto[2].pct, k) +
+      reemplazos(state) + jugar(state) + pautas(state) +
+      '<footer class="foot"><span>' + esc(state.titulo) + ' · ' + esc(state.cliente.nombre) + '</span>' + f('disclaimer', '', state.disclaimer, 'Aviso', 'span') + '</footer></div>';
+    document.body.classList.toggle('editing', editing);
+  }
+
+  function plainText(node) { var out = ''; for (var c = node.firstChild; c; c = c.nextSibling) { if (c.nodeType === 3) out += c.data; else if (c.nodeType === 1) out += ' ' + plainText(c) + ' '; } return out; }
+  function collect() {
+    var els = app.querySelectorAll('[data-f]');
+    for (var i = 0; i < els.length; i++) {
+      var txt = plainText(els[i]).replace(/\s+/g, ' ').trim();
+      if (els[i].hasAttribute('data-num')) { var v = parseFloat(txt.replace(',', '.')); if (!isNaN(v)) setPath(state, els[i].getAttribute('data-f'), v); }
+      else setPath(state, els[i].getAttribute('data-f'), txt);
+    }
+  }
+  function buildDoc(s) {
+    var json = JSON.stringify(s, null, 1).replace(/</g, '\\u003c');
+    var style = document.getElementById('page-style').textContent;
+    var script = document.getElementById('app-script').textContent;
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET + '</style></head><body>\n' +
+      '<title>' + esc(s.titulo) + '</title>\n' + FONT_LINKS +
+      '<style id="page-style">' + style + '</style>\n\n' +
+      '<script type="application/json" id="plan-data">\n' + json + '\n<\/script>\n\n' +
+      '<div id="app"></div>\n\n' +
+      '<script id="app-script">' + script + '<\/script>\n' +
+      '</body></html>';
+  }
+  function setStatus(msg) { if (toolbar) toolbar.querySelector('.st').textContent = msg; }
+  function showTools() {
+    toolbar = document.createElement('div'); toolbar.className = 'toolbar';
+    toolbar.innerHTML = '<span class="st">Solo tú ves esta barra. Edita nombre, datos, gramos y textos; las calorías se recalculan al guardar.</span>' +
+      '<button type="button" class="ghost" id="btn-cancel" hidden>Cancelar</button><button type="button" id="btn-edit">Editar</button><button type="button" id="btn-save" hidden>Guardar</button>';
+    document.body.appendChild(toolbar);
+    var bEdit = toolbar.querySelector('#btn-edit'), bSave = toolbar.querySelector('#btn-save'), bCancel = toolbar.querySelector('#btn-cancel');
+    bEdit.addEventListener('click', function () { editing = true; render(); bEdit.hidden = true; bSave.hidden = false; bCancel.hidden = false; setStatus('Toca cualquier texto resaltado para cambiarlo. Si cambias el nombre de un alimento, sus valores por 100 g siguen siendo los del original.'); });
+    bCancel.addEventListener('click', function () { editing = false; render(); bEdit.hidden = false; bSave.hidden = true; bCancel.hidden = true; setStatus('Cambios descartados.'); });
+    bSave.addEventListener('click', function () { save(bSave, bCancel); });
+  }
+  function hideTools() { if (toolbar) { toolbar.remove(); toolbar = null; } editing = false; render(); }
+  function save(bSave, bCancel) {
+    collect(); var html = buildDoc(state);
+    bSave.disabled = true; bCancel.disabled = true; setStatus('Guardando…');
+    artifactNs.publish(html).then(function () { setStatus('Guardado. Recargando la página…'); }).catch(function (err) {
+      var code = err && err.code;
+      if (code === 'conflict') { setStatus('Alguien guardó otra versión antes. Se recarga con la última.'); return; }
+      if (code === 'not_writer' || code === 'not_granted' || code === 'not_declared') { hideTools(); return; }
+      bSave.disabled = false; bCancel.disabled = false; setStatus('No se pudo guardar (' + (code || 'error') + '). Tus cambios siguen en pantalla, prueba de nuevo.');
+    });
+  }
+  app.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-rm],[data-add]'); if (!t || !editing) return;
+    collect();
+    if (t.hasAttribute('data-rm')) { var a = t.getAttribute('data-rm').split('.'); state[a[0]][+a[1]].items.splice(+a[2], 1); }
+    else { var b = t.getAttribute('data-add').split('.'); state[b[0]][+b[1]].items.push({ alimento: '', g: 100, nota: '', per100: { kcal: 0, p: 0, c: 0, f: 0 } }); }
+    render();
+  });
+
+  render();
+  if (window.claude && typeof window.claude.use === 'function') {
+    Promise.all([window.claude.use('artifact'), window.claude.use('user')]).then(function (r) {
+      var art = r[0], user = r[1]; if (!art || !user) return;
+      return user.canEdit().then(function (can) { if (can) { artifactNs = art; showTools(); } });
+    }).catch(function () {});
+  }
+})();
+</script>
