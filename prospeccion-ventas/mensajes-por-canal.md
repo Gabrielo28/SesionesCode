@@ -1129,6 +1129,94 @@ Influence Chile · influencechile.cl
 
 ---
 
+## NUEVAS DEL 9-NOV — 7 empresas (todas B)
+
+### WhatsApp
+
+**Ahumada Propiedades** · +56 9 4026 3734 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Ahumada Propiedades trabaja venta y arriendo en Coyhaique y la Región de Aysén, y atiende por WhatsApp.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+Un dato de paso: hoy la página "Quiénes somos" de su sitio muestra un error del servidor.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Hablamos con Propiedad — Vicente Vargas** · +56 9 8696 3141 — *confirmar que el número tenga WhatsApp; si no, usar contacto@hablamosconpropiedad.cl*
+```
+Hola Vicente, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que Hablamos con Propiedad administra arriendos en Puerto Aysén y Coyhaique, y que tienen 69 reseñas en Google.
+
+Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
+
+¿Te gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Wilmar Propiedades** · +56 9 3389 8988 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Wilmar trabaja arriendo, venta y tasaciones en Iquique y Alto Hospicio, y recibe propiedades por formulario y WhatsApp.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Bellacasa Propiedades — Elisa Pereira** · +56 9 9703 4358
+```
+Hola Elisa, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que Bellacasa trabaja venta, arriendo y administración, y que en el sitio invitan a agendar visitas por WhatsApp.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+Un dato de paso: el correo publicado en el sitio dice "bellacasapropiedadaes.cl" y ese dominio no existe, así que los correos que les escriben ahí no les llegan.
+
+¿Te gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Centro Tu Norte** · +56 9 3941 5376 — *identificar directora · tono cuidadoso: familias de niños en el espectro*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Centro Tu Norte acompaña en Iquique a niños y adolescentes en condición de autismo, y que las familias los contactan por WhatsApp y formulario.
+
+Implementamos un asistente de WhatsApp para centros de salud que responde las preguntas frecuentes de las familias a cualquier hora, agenda la primera conversación y envía recordatorios, sin reemplazar el contacto humano del equipo.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Atria Propiedades** · +56 9 7887 3272 — *verificar antes: el número viene de un directorio, no de su sitio*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Atria gestiona arriendos y ventas en Coyhaique desde 1998, con más de 100 propiedades arrendadas al año.
+
+Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (interesados, arrendatarios, propietarios), responde lo frecuente y deja la visita agendada.
+
+Un dato de paso: en su página de contacto el botón de WhatsApp no carga, así que quien entra ahí solo ve el formulario.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+### Email
+
+**GQ Auditores Consultores — Juan Pablo González / Jorge Quilobrán** · contacto@gqconsultores.cl
+Asunto:
+```
+Atención de clientes en GQ Consultores
+```
+Cuerpo:
+```
+Estimados Juan Pablo y Jorge, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que GQ atiende auditoría, contabilidad, impuestos y temas legales para medianas y grandes empresas, con un equipo de 13 personas.
+
+Implementamos sistemas para firmas contables: las consultas de clientes llegan clasificadas al área que corresponde, y los recordatorios de documentos y vencimientos salen solos.
+
+Un dato de paso: la sección de testimonios del sitio todavía muestra el texto de relleno "Lorem ipsum".
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+---
+
 ## Verificar antes de cualquier mensaje
 
 **Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
@@ -1141,13 +1229,13 @@ persona, pasa a C.
 
 | Canal | A | B | Total |
 |---|---|---|---|
-| WhatsApp | 7 | 37 | 44 |
-| Email | 8 | 17 | 25 |
+| WhatsApp | 7 | 42 | 49 |
+| Email | 8 | 18 | 26 |
 | Llamada (y luego correo) | 4 | 3 | 7 |
 | LinkedIn | 1 | 2 | 3 |
-| Verificar antes | 0 | 1 | 1 |
-| **Total** | **20** | **60** | **80** |
+| Verificar antes | 0 | 2 | 2 |
+| **Total** | **20** | **67** | **87** |
 
 Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
 invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y
-las B que ya tengan nombre.
+las B que ya tengan nombre. Atria Propiedades (9-nov) espera a que se confirme su número.
