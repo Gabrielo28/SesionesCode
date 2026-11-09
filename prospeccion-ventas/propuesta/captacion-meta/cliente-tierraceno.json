@@ -1,0 +1,24 @@
+{
+  "nombre": "Tierraceno",
+  "contacto": "Marta Ricco",
+  "instagram": "@tierraceno",
+  "archivo": "propuesta-tierraceno",
+  "implementacion": 350000,
+  "gestion": 150000,
+  "plan": 450000,
+  "pauta_min": 300000,
+  "pauta_reco": 400000,
+  "contexto": "que hoy Tierraceno se sostiene con los proyectos grandes de diseño y bioconstrucción, que no son muchos, y que necesitas un piso de ventas fijo con los otros servicios que ya tienes armados y a los que todavía no les has hecho publicidad.",
+  "vimos": [
+    "<strong>Tu escalera de servicios ya está armada y con precios publicados:</strong> el curso gratuito Habitar•se, la consulta online de $50.000 (o $150.000 con visita de obra), las asesorías de $400.000 a $900.000 y el diseño y bioconstrucción a 2,2 UF/m². Es una gran ventaja: se puede vender directo desde un anuncio.",
+    "<strong>No encontramos el píxel de Meta en tu web.</strong> Está la herramienta de Google (Site Kit), pero hoy Meta no puede saber quién se inscribe o paga, ni volver a mostrarle anuncios a quien ya te visitó.",
+    "<strong>Tu web ya tiene carrito de compras y cuentas de cliente,</strong> así que la consulta se puede vender con pago en línea, sin coordinar transferencias por WhatsApp.",
+    "<strong>La página <em>Servicios</em> todavía muestra el texto de plantilla</strong> (\"Lorem ipsum\") y un aviso de un carrusel que no se encuentra, y la página <em>Cursos</em> aparece vacía. Conviene dejarlas listas antes de mandar tráfico pagado."
+  ],
+  "campanas": [
+    {"titulo": "Curso gratuito Habitar•se", "texto": "Anuncios para personas que sueñan con construir de forma natural. Se inscriben gratis y quedan en tu base para las campañas siguientes.", "mide": "costo por inscripción"},
+    {"titulo": "Consulta y asesoría", "texto": "Anuncios para quienes ya están construyendo o por empezar: la consulta de $50.000 pagada en línea y los packs de asesoría.", "mide": "costo por consulta vendida"},
+    {"titulo": "Proyectos de diseño", "texto": "Anuncios a quienes ya te vieron, se inscribieron o pagaron una consulta, con tus proyectos (Casa Petra, Casa Esclerofila, Espacio Micelio) y la evaluación gratuita.", "mide": "reuniones de evaluación agendadas"}
+  ],
+  "nota_cliente": ""
+}

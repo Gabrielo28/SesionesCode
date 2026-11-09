@@ -1,0 +1,229 @@
+# Propuesta "Sistema de captación con Meta Ads": implementación única (landing + píxel + API de conversiones +
+# armado) y gestión mensual en una de dos opciones (Gestión Meta Ads $150.000 o Plan Crecimiento $450.000).
+# Máximo dos opciones. Sin mencionar accesos/contraseñas ("se coordina en la reunión de la semana 1").
+#   python3 prospeccion-ventas/propuesta/captacion-meta/generar.py prospeccion-ventas/propuesta/captacion-meta/cliente-tierraceno.json
+#   NODE_PATH=/opt/node22/lib/node_modules node prospeccion-ventas/propuesta/captacion-meta/render.js <archivo>
+import html, datetime, sys, json, os
+CLIENTE={"nombre":"[Nombre del cliente]","contacto":"","instagram":"","archivo":"propuesta-captacion",
+         "implementacion":350000,"gestion":150000,"plan":450000,"pauta_min":300000,"pauta_reco":400000,
+         "contexto":"","vimos":[],"campanas":[],"nota_cliente":"","fecha":datetime.date.today().strftime("%-d de %B de %Y")}
+MESES={'January':'enero','February':'febrero','March':'marzo','April':'abril','May':'mayo','June':'junio','July':'julio','August':'agosto','September':'septiembre','October':'octubre','November':'noviembre','December':'diciembre'}
+for en,es in MESES.items(): CLIENTE['fecha']=CLIENTE['fecha'].replace(en,es)
+if len(sys.argv)>1 and os.path.exists(sys.argv[1]): CLIENTE.update(json.load(open(sys.argv[1],encoding='utf-8')))
+C=CLIENTE  # los textos del JSON pueden traer <strong>; se escriben a mano, no vienen de terceros
+f=lambda n: "$"+f"{round(n):,}".replace(",",".")
+iva=lambda n: round(n*1.19)
+I,G,PL=C['implementacion'],C['gestion'],C['plan']
+ig=f' ({C["instagram"]})' if C["instagram"] else ''
+para=(f'{C["contacto"]}<br>' if C["contacto"] else '')+f'{C["nombre"]}{ig}'
+saludo=(C['contacto'].split()[0]+', n') if C['contacto'] else 'N'
+vimos=''.join(f'<li>{v}</li>' for v in C['vimos'])
+RECO=' class="reco"'
+camp=''.join(f'<div{RECO if i==1 else ""}><div class="k">Campaña {i+1}</div><h4>{c["titulo"]}</h4><p style="margin:1.5mm 0">{c["texto"]}</p><div class="s"><strong>Mide:</strong> {c["mide"]}</div></div>' for i,c in enumerate(C['campanas']))
+nota=(f'<div class="nota"><strong>En tu caso:</strong> {C["nota_cliente"]}</div>' if C["nota_cliente"] else '')
+
+HTML=f'''<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Propuesta {C["nombre"]} · Influence Chile</title>
+<style>
+  @font-face {{ font-family:'Montserrat'; font-style:normal; font-weight:400 800; src:url('../../situ/fonts/montserrat.woff2') format('woff2'); }}
+  @page {{ size:A4; margin:13mm 16mm 13mm; }} @page portada {{ margin:0; }}
+  * {{ box-sizing:border-box; margin:0; padding:0; }}
+  body {{ font-family:'Montserrat','Segoe UI',system-ui,sans-serif; color:#123638; font-size:9.8pt; line-height:1.46; -webkit-print-color-adjust:exact; print-color-adjust:exact; }}
+  a {{ color:#12959C; text-decoration:none; }}
+  .portada {{ page:portada; width:210mm; height:297mm; padding:22mm 20mm; background:linear-gradient(155deg,#123638 0%,#12959C 100%); color:#fff; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }}
+  .marca img {{ height:30mm; width:auto; display:block; filter:brightness(0) invert(1); }}
+  .portada .kicker {{ font-size:9.5pt; letter-spacing:.18em; text-transform:uppercase; opacity:.8; margin-bottom:5mm; }}
+  .portada h1 {{ font-size:30pt; line-height:1.12; font-weight:800; margin-bottom:7mm; max-width:155mm; }}
+  .portada .sub {{ font-size:12.5pt; font-weight:500; opacity:.92; max-width:145mm; line-height:1.45; }}
+  .portada .para {{ border-top:1px solid rgba(255,255,255,.35); padding-top:6mm; display:flex; justify-content:space-between; font-size:9.5pt; line-height:1.6; }}
+  .portada .para strong {{ display:block; font-size:10.5pt; }}
+  .seccion {{ page-break-before:always; }} .seccion.primera {{ page-break-before:auto; }}
+  h2 {{ font-size:19pt; color:#12959C; font-weight:800; line-height:1.2; margin-bottom:2.5mm; }}
+  .linea {{ width:18mm; height:3px; background:#FF7B7B; margin-bottom:6mm; }}
+  h3 {{ font-size:12pt; color:#12959C; font-weight:700; margin:6mm 0 2mm; }}
+  p {{ margin-bottom:3.2mm; }} ul {{ margin:0 0 3.5mm; list-style:none; }}
+  li {{ padding-left:5mm; position:relative; margin-bottom:1.8mm; }} li::before {{ content:'▪'; color:#12959C; position:absolute; left:0; }}
+  table {{ width:100%; border-collapse:collapse; margin:3mm 0 4mm; font-size:9.1pt; page-break-inside:avoid; }}
+  th {{ background:#12959C; color:#fff; padding:2.3mm 3mm; text-align:left; font-weight:600; font-size:8.9pt; }}
+  td {{ padding:2.1mm 3mm; border-bottom:1px solid #e3eeee; vertical-align:top; }} tr:nth-child(even) td {{ background:#f6fbfb; }}
+  td.n {{ white-space:nowrap; text-align:right; }} td.c {{ text-align:center; }}
+  .si {{ color:#12959C; font-weight:800; }} .no {{ color:#FF7B7B; font-weight:800; }}
+  .tag {{ display:inline-block; font-size:7.5pt; font-weight:700; padding:.6mm 2mm; border-radius:3px; background:#e6f1f1; color:#12959C; text-transform:uppercase; letter-spacing:.06em; }}
+  .tag.unico {{ background:#fff0f0; color:#e05c5c; }}
+  .nota {{ background:#f3f9f9; border-left:3px solid #12959C; padding:3.5mm 5mm; border-radius:0 4px 4px 0; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .nota.coral {{ border-left-color:#FF7B7B; background:#fff7f7; }} .nota strong {{ color:#12959C; }} .nota.coral strong {{ color:#e05c5c; }}
+  .caminos {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:4mm 0 6mm; page-break-inside:avoid; }}
+  .caminos > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; font-size:9pt; }}
+  .caminos > div.reco {{ border:2.5px solid #FF7B7B; background:#fffafa; }}
+  .caminos .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .caminos .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1mm; }}
+  .caminos h4 {{ font-size:12pt; line-height:1.2; margin-bottom:1.5mm; }}
+  .caminos .v {{ font-size:14pt; font-weight:800; margin:1.5mm 0; }} .caminos .v small {{ font-size:8.5pt; font-weight:500; color:#4a6a6a; }}
+  .total {{ background:linear-gradient(135deg,#123638,#12959C); color:#fff; border-radius:6px; padding:5.5mm 7mm; margin:4mm 0 5mm; display:flex; justify-content:space-between; align-items:center; page-break-inside:avoid; }}
+  .total .l {{ font-size:9.5pt; opacity:.9; }} .total .l strong {{ display:block; font-size:13pt; color:#fff; }}
+  .total .r {{ text-align:right; }} .total .r .neto {{ font-size:22pt; font-weight:800; line-height:1; }} .total .r .iva {{ font-size:9.5pt; opacity:.9; margin-top:1.5mm; }}
+  .combo {{ border:1.5px solid #d7eaea; border-radius:6px; padding:2.8mm 4.5mm; margin-bottom:2.8mm; page-break-inside:avoid; display:flex; gap:5mm; align-items:flex-start; }}
+  .combo .izq {{ flex:1; }} .combo h4 {{ font-size:11pt; color:#12959C; margin-bottom:1mm; }}
+  .combo .der {{ text-align:right; white-space:nowrap; }} .combo .der b {{ font-size:14pt; display:block; }} .combo .der small {{ color:#4a6a6a; font-size:8.5pt; }}
+  .cta {{ text-align:center; padding:10mm 8mm; }} .cta h2 {{ font-size:26pt; margin-bottom:4mm; }} .cta p {{ max-width:140mm; margin:0 auto 4mm; }}
+  .cta .boton {{ display:inline-block; background:#FF7B7B; color:#fff; padding:4mm 10mm; border-radius:40px; font-size:11.5pt; font-weight:700; margin:4mm 0 10mm; }}
+  .cta .marca-pie img {{ height:22mm; width:auto; display:block; margin:0 auto 6mm; }}
+  .firma {{ border-top:1px solid #d7eaea; padding-top:6mm; font-size:9.6pt; line-height:1.7; }} .firma strong {{ font-size:11pt; }}
+  .pie {{ font-size:8.2pt; color:#6b8585; margin-top:8mm; }}
+  .resumen {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:5mm 0 6mm; page-break-inside:avoid; }}
+  .resumen > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; }}
+  .resumen .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1.5mm; }}
+  .resumen .v {{ font-size:15pt; font-weight:800; line-height:1.15; }} .resumen .s {{ font-size:8.6pt; color:#4a6a6a; margin-top:1mm; }}
+</style>
+<style>
+  .resumen {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:5mm 0 6mm; page-break-inside:avoid; }}
+  .resumen > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; }}
+  .resumen .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1.5mm; }}
+  .resumen .v {{ font-size:15pt; font-weight:800; line-height:1.15; }} .resumen .s {{ font-size:8.6pt; color:#4a6a6a; margin-top:1mm; }}
+  .bonus {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .bonus > div {{ border:2px solid #FF7B7B; background:#fffafa; border-radius:6px; padding:4mm; font-size:9pt; }}
+  .bonus .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .bonus h4 {{ font-size:11.5pt; color:#123638; margin-bottom:1.5mm; line-height:1.2; }}
+  td.inc {{ color:#12959C; font-weight:800; white-space:nowrap; text-align:center; }}
+  td.bon {{ color:#e05c5c; font-weight:800; white-space:nowrap; text-align:center; }}
+</style>
+<style>
+  .caminos .s {{ font-size:8.4pt; color:#4a6a6a; }}
+  .op {{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .op > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4.5mm; font-size:9pt; }}
+  .op > div.reco {{ border:2.5px solid #FF7B7B; background:#fffafa; }}
+  .op .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .op .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; }}
+  .op h4 {{ font-size:13pt; margin:1mm 0 1.5mm; }} .op .v {{ font-size:17pt; font-weight:800; margin:1mm 0 2mm; }} .op .v small {{ font-size:8.5pt; font-weight:500; color:#4a6a6a; }}
+  .op li {{ margin-bottom:1.2mm; }}
+</style>
+</head><body>
+
+<section class="portada">
+  <div class="marca"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
+  <div>
+    <div class="kicker">Propuesta · {C["fecha"]}</div>
+    <h1>Sistema de captación con Meta Ads</h1>
+    <p class="sub">Landing, píxel con API de conversiones, creatividades y gestión de campañas, para que tus consultas, asesorías y cursos vendan todos los meses, además de los proyectos grandes.</p>
+  </div>
+  <div class="para">
+    <div><strong>Para</strong>{para}</div>
+    <div style="text-align:right"><strong>De</strong>Gabriel Meza · Influence Chile<br>influencechile.cl · @influence.chile</div>
+  </div>
+</section>
+
+<section class="seccion primera">
+  <h2>Nuestra propuesta</h2>
+  <div class="linea"></div>
+  <p>{saludo}os contaste {C["contexto"]}</p>
+  <p>Te proponemos dejar armado un sistema de captación completo y hacernos cargo de él cada mes: una landing pensada para convertir, el píxel de Meta con la API de conversiones para medir cada venta, creatividades para los anuncios y la gestión semanal de las campañas.</p>
+  <div class="resumen">
+    <div><div class="k">Implementación</div><div class="v">{f(I)}</div><div class="s">pago único · neto + IVA</div></div>
+    <div><div class="k">Gestión mensual</div><div class="v">desde {f(G)}</div><div class="s">neto + IVA · según la opción que elijas</div></div>
+    <div><div class="k">Compromiso</div><div class="v">Sin permanencia</div><div class="s">aviso de término con un mes · inicio en 10 días hábiles</div></div>
+  </div>
+  <h3>Lo que vimos en tu web</h3>
+  <ul>{vimos}</ul>
+  {nota}
+</section>
+
+<section class="seccion">
+  <h2>Cómo se arma la captación</h2>
+  <div class="linea"></div>
+  <p>Tus servicios ya forman una escalera: alguien te conoce con el curso gratuito, paga una consulta, toma una asesoría y, cuando está listo, te encarga el diseño o la construcción. Las campañas siguen ese mismo camino:</p>
+  <div class="caminos">{camp}</div>
+  <div class="nota"><strong>Por qué el píxel y la API de conversiones:</strong> el píxel registra lo que hace cada visita en tu web (si se inscribió, si pagó la consulta o si te escribió por WhatsApp). La API de conversiones envía esa misma información desde el servidor de tu web, así Meta la recibe aunque el navegador la bloquee, como pasa en muchos iPhone. Con eso Meta aprende quién compra y le muestra tus anuncios a más personas parecidas.</div>
+  <div class="nota coral"><strong>Lo que puedes esperar:</strong> recomendamos partir con {f(C["pauta_min"])} al mes en pauta, pagados directo a Meta. Con ese monto, lo realista los primeros meses es sumar inscritos al curso gratuito y empezar a vender consultas y asesorías mes a mes. Para escalar recomendamos {f(C["pauta_reco"])} al mes. Los proyectos grandes tienen un ciclo de decisión largo: las campañas los alimentan, pero no prometemos casas cerradas en el primer trimestre.</div>
+</section>
+
+<section class="seccion">
+  <h2>1. Implementación</h2>
+  <div class="linea"></div>
+  <p>Se hace una vez, en las primeras tres semanas, y queda funcionando en tu web.</p>
+  <table>
+    <tr><th>Concepto</th><th style="width:20%;text-align:center">Valor</th></tr>
+    <tr><td><strong>Landing de captación en tierraceno.cl:</strong> diseño y textos orientados a la venta, con una versión para cada campaña (curso gratuito, consulta y asesoría); inscripción conectada, pago de la consulta en línea con tu tienda actual, botón de WhatsApp con mensaje según el servicio y carga rápida en celular.</td><td class="n"><strong>{f(I)}</strong></td></tr>
+    <tr><td><strong>Píxel de Meta + API de conversiones:</strong> instalación y eventos de inscripción, contacto por WhatsApp, inicio de pago y compra, verificados en el administrador de eventos.</td><td class="inc">Incluido</td></tr>
+    <tr><td><strong>Armado de las campañas:</strong> objetivos, públicos, estructura y primeros anuncios de las tres campañas. Valor de referencia {f(150000)}.</td><td class="bon">Sin costo</td></tr>
+  </table>
+  <h3>Regalos al confirmar</h3>
+  <div class="bonus">
+    <div><span class="badge">Regalo 1</span><h4>Ordenamos tus páginas sin terminar</h4>Dejamos con contenido real las páginas <em>Servicios</em> y <em>Cursos</em>, para que nadie que llegue desde un anuncio las vea a medio hacer.</div>
+    <div><span class="badge">Regalo 2</span><h4>Perfil de Instagram listo para recibir tráfico</h4>Biografía, enlace y destacadas ordenados según tus servicios, porque mucha gente revisa tu perfil antes de escribirte.</div>
+    <div><span class="badge">Regalo 3</span><h4>Mensajes de respuesta</h4>Textos listos para responder por WhatsApp las consultas más comunes que lleguen de los anuncios.</div>
+  </div>
+  <div class="total">
+    <div class="l">Pago único<strong>Implementación del sistema de captación</strong></div>
+    <div class="r"><div class="neto">{f(I)}</div><div class="iva">netos · {f(iva(I))} con IVA</div></div>
+  </div>
+  <p style="font-size:9pt;color:#4a6a6a">La forma de pago de la implementación se acuerda al confirmar.</p>
+</section>
+
+<section class="seccion">
+  <h2>2. Gestión mensual</h2>
+  <div class="linea"></div>
+  <p>Elige cómo quieres seguir después de la implementación. La diferencia es si también nos hacemos cargo de tu contenido de Instagram.</p>
+  <div class="op">
+    <div class="reco"><span class="badge">Recomendada para partir</span><div class="k">Opción 1</div><h4>Gestión Meta Ads</h4><div class="v">{f(G)} <small>/mes neto · {f(iva(G))} con IVA</small></div>
+      <ul><li>Revisión y optimización semanal de las tres campañas</li><li>2 a 3 creatividades nuevas al mes para los anuncios, hechas con tus fotos y videos</li><li>Pruebas de públicos y mensajes</li><li>Atribución de cada conversación de WhatsApp al anuncio que la trajo</li><li>Informe mensual con costo por inscripción y por venta</li></ul></div>
+    <div><div class="k">Opción 2</div><h4>Plan Crecimiento</h4><div class="v">{f(PL)} <small>/mes neto · {f(iva(PL))} con IVA</small></div>
+      <ul><li><strong>Todo lo de la opción 1</strong></li><li>8 reels, 8 publicaciones y 12 historias al mes para Instagram, que también usamos como anuncios</li><li>Estrategia y calendario mensual de contenido</li><li>Monitoreo y respuesta de comentarios</li><li>Campaña con influencers incluida</li></ul></div>
+  </div>
+  <table>
+    <tr><th>Primer mes</th><th style="width:22%;text-align:right">Opción 1</th><th style="width:22%;text-align:right">Opción 2</th></tr>
+    <tr><td>Implementación (pago único)</td><td class="n">{f(I)}</td><td class="n">{f(I)}</td></tr>
+    <tr><td>Gestión del mes</td><td class="n">{f(G)}</td><td class="n">{f(PL)}</td></tr>
+    <tr><td><strong>Total primer mes, neto</strong></td><td class="n"><strong>{f(I+G)}</strong></td><td class="n"><strong>{f(I+PL)}</strong></td></tr>
+    <tr><td>Desde el segundo mes, neto</td><td class="n">{f(G)}</td><td class="n">{f(PL)}</td></tr>
+  </table>
+  <p style="font-size:9pt;color:#4a6a6a">Valores en pesos chilenos, netos, con el IVA aparte. La inversión en pauta no está incluida: se paga directo a Meta con tu medio de pago. La grabación no está incluida; si la necesitas, ofrecemos una jornada de 3 horas en Santiago por $90.000.</p>
+  <h3>Más adelante, cuando las campañas estén estables (desde el mes 3)</h3>
+  <ul>
+    <li><strong>Asistente de WhatsApp que responde y agenda:</strong> contesta las preguntas frecuentes de cada servicio a cualquier hora y deja agendada la consulta. {f(350000)} de implementación + {f(80000)} al mes.</li>
+    <li><strong>Google Ads:</strong> para quienes ya buscan bioconstrucción o diseño sustentable en Google. Lo cotizamos con las palabras clave reales cuando tengamos los datos de Meta.</li>
+  </ul>
+</section>
+
+<section class="seccion">
+  <h2>Cómo trabajamos</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Semana 1:</strong> reunión de 45 minutos para definir servicios, precios a destacar, zona y público. Ahí mismo coordinamos lo necesario para trabajar en tu web y tu cuenta publicitaria.</li>
+    <li><strong>Semana 2:</strong> píxel y API de conversiones funcionando, y primera versión de la landing para tu revisión.</li>
+    <li><strong>Semana 3:</strong> landing aprobada y campañas publicadas con las primeras creatividades.</li>
+    <li><strong>Cada semana:</strong> revisión de resultados y ajustes. <strong>Los primeros 5 días de cada mes:</strong> informe y plan del mes siguiente.</li>
+  </ul>
+  <h3>Qué necesitamos de ti</h3>
+  <table>
+    <tr><th style="width:50%">Al comenzar</th><th>Cada mes</th></tr>
+    <tr><td>Una reunión de 45 minutos</td><td>Fotos y videos de obras, talleres y procesos (de celular sirven)</td></tr>
+    <tr><td>Tu cuenta publicitaria con un medio de pago a tu nombre</td><td>Aprobar creatividades y contenidos en 48 horas</td></tr>
+    <tr><td>Los servicios y precios que quieres empujar primero</td><td>Responder tú las consultas que lleguen de los anuncios</td></tr>
+  </table>
+  <h2 style="margin-top:7mm">Condiciones</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Sin permanencia mínima</strong> en la gestión mensual. Solo pedimos aviso de término con un mes de anticipación. Recomendamos evaluar a los 90 días, porque las campañas necesitan algunas semanas de datos para optimizarse.</li>
+    <li><strong>Inicio:</strong> 10 días hábiles después de la confirmación.</li>
+    <li><strong>La landing, el píxel y las campañas quedan en tu web y tu cuenta</strong>, también si algún día dejas de trabajar con nosotros.</li>
+    <li><strong>No incluido:</strong> inversión en pauta, grabación, respuesta de mensajes y lo indicado como "más adelante".</li>
+  </ul>
+</section>
+
+<section class="seccion">
+  <div class="cta">
+    <div class="marca-pie"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
+    <h2>¿Partimos?</h2>
+    <p>Si te hace sentido, dime qué opción prefieres por WhatsApp o correo y agendamos la reunión de arranque. <strong>Dime el día y la hora que te acomoden y me ajusto.</strong></p>
+    <div class="boton">Confirmar por WhatsApp o correo</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong><br>
+      Influence Chile · Agencia de marketing y automatización con IA<br>
+      +56 9 6545 0723 · <a href="https://influencechile.cl">influencechile.cl</a> · Instagram <a href="https://www.instagram.com/influence.chile">@influence.chile</a>
+    </div>
+    <p class="pie">Propuesta válida por 30 días desde el {C["fecha"]}. Valores en pesos chilenos, netos, IVA indicado aparte.</p>
+  </div>
+</section>
+</body></html>'''
+out=os.path.join(os.path.dirname(os.path.abspath(__file__)),C['archivo']+'.html')
+open(out,'w',encoding='utf-8').write(HTML); print('ok ->',out)
