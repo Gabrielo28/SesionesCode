@@ -10,15 +10,52 @@
   "pauta_reco": 400000,
   "contexto": "que hoy Tierraceno se sostiene con los proyectos grandes de diseño y bioconstrucción, que no son muchos, y que necesitas un piso de ventas fijo con los otros servicios que ya tienes armados y a los que todavía no les has hecho publicidad.",
   "vimos": [
-    "<strong>Tu escalera de servicios ya está armada y con precios publicados:</strong> el curso gratuito Habitar•se, la consulta online de $50.000 (o $150.000 con visita de obra), las asesorías de $400.000 a $900.000 y el diseño y bioconstrucción a 2,2 UF/m². Es una gran ventaja: se puede vender directo desde un anuncio.",
-    "<strong>No encontramos el píxel de Meta en tu web.</strong> Está la herramienta de Google (Site Kit), pero hoy Meta no puede saber quién se inscribe o paga, ni volver a mostrarle anuncios a quien ya te visitó.",
-    "<strong>Tu web ya tiene carrito de compras y cuentas de cliente,</strong> así que la consulta se puede vender con pago en línea, sin coordinar transferencias por WhatsApp.",
-    "<strong>La página <em>Servicios</em> todavía muestra el texto de plantilla</strong> (\"Lorem ipsum\") y un aviso de un carrusel que no se encuentra, y la página <em>Cursos</em> aparece vacía. Conviene dejarlas listas antes de mandar tráfico pagado."
+    "<strong>Tus servicios ya tienen precio publicado,</strong> y eso es una gran ventaja para vender desde un anuncio: el curso gratuito Habitar•se, la consulta online de $50.000 (o $150.000 con visita de obra), las asesorías de $400.000 a $900.000 y el diseño y bioconstrucción a 2,2 UF por m².",
+    "<strong>Tu web todavía no está conectada con Meta (no tiene el píxel).</strong> Tiene la herramienta de Google para medir visitas, pero Meta hoy no puede saber quién se inscribe o paga, ni volver a mostrarle anuncios a quien ya te visitó.",
+    "<strong>Tu web ya tiene carrito de compras y cuentas de cliente.</strong> Eso permite cobrar la consulta en línea en el mismo momento, sin coordinar transferencias por WhatsApp.",
+    "<strong>Hay dos páginas sin terminar:</strong> <em>Servicios</em> todavía muestra el texto de relleno de la plantilla (\"Lorem ipsum\") y <em>Cursos</em> aparece vacía. Conviene arreglarlas antes de pagar por llevar gente a tu web."
   ],
   "campanas": [
-    {"titulo": "Curso gratuito Habitar•se", "texto": "Anuncios para personas que sueñan con construir de forma natural. Se inscriben gratis y quedan en tu base para las campañas siguientes.", "mide": "costo por inscripción"},
-    {"titulo": "Consulta y asesoría", "texto": "Anuncios para quienes ya están construyendo o por empezar: la consulta de $50.000 pagada en línea y los packs de asesoría.", "mide": "costo por consulta vendida"},
-    {"titulo": "Proyectos de diseño", "texto": "Anuncios a quienes ya te vieron, se inscribieron o pagaron una consulta, con tus proyectos (Casa Petra, Casa Esclerofila, Espacio Micelio) y la evaluación gratuita.", "mide": "reuniones de evaluación agendadas"}
+    {
+      "titulo": "Curso gratuito Habitar•se",
+      "texto": "Anuncios para personas que sueñan con construir de forma natural. Se inscriben gratis y quedan en tu base, para mostrarles después la consulta y las asesorías.",
+      "mide": "cuántas personas se inscriben y cuánto costó cada inscripción."
+    },
+    {
+      "titulo": "Consulta y asesoría",
+      "texto": "Anuncios para quienes ya están construyendo o por empezar: la consulta de $50.000 pagada en línea y los packs de asesoría.",
+      "mide": "cuántas consultas se venden y cuánto costó cada venta."
+    },
+    {
+      "titulo": "Proyectos de diseño",
+      "texto": "Anuncios solo para quienes ya te conocen (te visitaron, se inscribieron o pagaron una consulta), con tus proyectos (Casa Petra, Casa Esclerofila, Espacio Micelio) y la evaluación gratuita.",
+      "mide": "cuántas reuniones de evaluación se agendan."
+    }
   ],
-  "nota_cliente": ""
+  "nota_cliente": "",
+  "recorrido": [
+    {
+      "titulo": "Camila ve tu anuncio en Instagram.",
+      "texto": "Ella quiere construir algún día en su terreno. El anuncio la invita al curso gratuito Habitar•se."
+    },
+    {
+      "titulo": "Toca el anuncio y llega a tu landing.",
+      "texto": "Ve de qué se trata el curso y se inscribe gratis en un minuto.",
+      "medicion": "En ese momento el píxel le avisa a Meta: \"esta persona se inscribió\"."
+    },
+    {
+      "titulo": "Hace el curso y te conoce.",
+      "texto": "Ya sabe quién eres, cómo trabajas y qué piensas sobre construir con materiales naturales."
+    },
+    {
+      "titulo": "Días después ve otro anuncio: la consulta de 1 hora por $50.000.",
+      "texto": "Como ya te conoce, la paga en tu web sin tener que coordinar nada por WhatsApp.",
+      "medicion": "Meta registra una venta y busca más personas parecidas a Camila para mostrarles tus anuncios."
+    },
+    {
+      "titulo": "En la consulta conoces su proyecto.",
+      "texto": "Ahí le ofreces la asesoría o la evaluación gratuita de diseño. Si todavía no está lista, la campaña 3 te mantiene presente hasta que lo esté."
+    }
+  ],
+  "equilibrio": "desde el segundo mes, la opción 1 con $300.000 de pauta suma $478.500 al mes en total. Eso se cubre con una sola asesoría de $500.000, o con unas 10 consultas de $50.000. Y cada persona que pasa por una consulta puede llegar después a una asesoría o a un proyecto de diseño."
 }
