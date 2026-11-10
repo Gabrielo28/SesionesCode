@@ -1,0 +1,11 @@
+{
+  "name": "impulz-reservas",
+  "version": "1.0.0",
+  "description": "Impulz Gym El Quisco: página de reservas (impulz.entrenachile.cl) y panel de comisiones",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node pruebas.js"
+  },
+  "engines": { "node": ">=18" }
+}

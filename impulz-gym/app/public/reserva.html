@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reserva tu clase de prueba · Impulz Gym El Quisco</title>
+<meta name="description" content="Reserva tu clase de prueba en Impulz Gym El Quisco. Lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00. Reservas en entrenachile.cl.">
+<meta property="og:title" content="Reserva tu clase de prueba en Impulz Gym El Quisco">
+<meta property="og:description" content="Deja tus datos, recibe tu código y confirma por WhatsApp.">
+<meta name="theme-color" content="#0b0909">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;1,800;1,900&family=Barlow:wght@400;500;600&display=swap">
+{{PIXEL}}
+<style>
+/* Una sola pantalla oscura con la marca Impulz: promesa arriba, formulario al centro, tres pasos y horario abajo. */
+:root{
+  --bg:#0b0909; --panel:#161111; --panel-2:#1f1817; --ink:#f6f1ef; --muted:#ada09c; --line:#2d2423;
+  --red:#e3171e; --red-hi:#ff4a50; --ok:#7fd69c;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--body);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:var(--red-hi)}
+:focus-visible{outline:2px solid var(--red-hi);outline-offset:3px}
+[hidden]{display:none!important}
+header{border-bottom:1px solid var(--line)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:16px;flex-wrap:wrap}
+.logo{font:italic 900 26px/1 var(--display);text-transform:uppercase}
+.logo b{color:var(--red)}
+.logo small{display:block;font:700 11px/1 var(--display);letter-spacing:.3em;color:var(--muted);font-style:normal;margin-top:4px}
+.by{font:700 12px/1.2 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.by b{color:var(--ink)}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(227,23,30,.07) 46px 50px),radial-gradient(70% 80% at 90% 0%,rgba(227,23,30,.3),transparent 60%);pointer-events:none}
+.grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;padding-block:44px 56px;align-items:start}
+h1{font:italic 900 clamp(46px,8vw,86px)/.92 var(--display);text-transform:uppercase;margin:0 0 18px;text-wrap:balance}
+h1 span{color:var(--red)}
+.lead{font-size:clamp(18px,2.2vw,20px);max-width:44ch;margin:0 0 20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:700 14px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.promo{background:var(--red);color:#fff;border-radius:12px;padding:14px 16px;font:italic 800 22px/1.1 var(--display);text-transform:uppercase;max-width:44ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.card h2{font:italic 800 28px/1 var(--display);text-transform:uppercase;margin:0}
+.card .sub{color:var(--muted);font-size:15px;margin:-6px 0 0}
+label{display:grid;gap:6px;font:700 13px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+input,select{font:17px/1.3 var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;width:100%;letter-spacing:0;text-transform:none}
+input:focus,select:focus{border-color:var(--red)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{display:flex;gap:10px;align-items:flex-start;font:14px/1.4 var(--body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.check input{width:20px;height:20px;margin-top:1px;accent-color:var(--red);flex:none}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:10px;border:0;background:var(--red);color:#fff;font:italic 800 21px/1 var(--display);text-transform:uppercase;letter-spacing:.04em;padding:17px 20px;border-radius:12px;cursor:pointer;text-decoration:none;width:100%}
+.btn:hover{background:var(--red-hi)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.wa{background:#1fa855}
+.btn.wa:hover{background:#25c162}
+.err{background:rgba(227,23,30,.15);border:1px solid var(--red);color:#ffc9cb;border-radius:10px;padding:10px 12px;font-size:15px}
+.code{display:grid;gap:6px;justify-items:center;text-align:center;background:var(--bg);border:2px dashed var(--red);border-radius:14px;padding:20px}
+.code small{font:700 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.code b{font:italic 900 52px/1 var(--display);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.code span{font-size:15px;color:var(--ok)}
+.fine{font-size:13px;color:var(--muted);margin:0}
+section.steps{border-top:1px solid var(--line);padding-block:44px}
+section.steps h3{font:700 15px/1 var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--red-hi);margin:0 0 18px}
+.st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;counter-reset:s}
+.st div{border-top:3px solid var(--red);padding-top:12px;display:grid;gap:4px}
+.st div::before{counter-increment:s;content:counter(s);font:italic 900 30px/1 var(--display);color:var(--red)}
+.st b{font:700 18px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.st span{font-size:15px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:24px;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr;gap:28px;padding-block:28px 40px}
+  .st{grid-template-columns:1fr}
+}
+@media (max-width:420px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <div class="logo"><b>//</b>Impulz<small>Gym · El Quisco</small></div>
+  <div class="by">Reservas en <b>entrenachile.cl</b></div>
+</div></header>
+
+<main class="hero"><div class="wrap grid">
+  <div>
+    <h1>Reserva tu <span>clase de prueba</span> en Impulz</h1>
+    <p class="lead">Deja tus datos, recibe tu código y confirma tu clase por WhatsApp. Te recibimos con un plan según tu objetivo.</p>
+    <div class="chips"><span class="chip">Lun a vie 5:00 – 22:00</span><span class="chip">Sábado 8:00 – 14:00</span><span class="chip">El Quisco</span></div>
+    <div class="promo" {{PROMO_OCULTA}}>{{PROMO}}</div>
+  </div>
+
+  <div class="card" id="caja">
+    <form id="f" novalidate>
+      <div style="display:grid;gap:14px">
+        <h2>Reserva en 30 segundos</h2>
+        <p class="sub">{{BENEFICIO}}</p>
+        <label>Nombre<input id="nombre" name="nombre" autocomplete="name" maxlength="80" required></label>
+        <label>WhatsApp<input id="telefono" name="telefono" inputmode="tel" autocomplete="tel" placeholder="9 1234 5678" maxlength="20" required></label>
+        <div class="two">
+          <label>Tu objetivo<select id="objetivo" name="objetivo">
+            <option value="">Elige uno</option><option>Bajar de peso</option><option>Ganar fuerza y músculo</option><option>Salud y energía</option><option>Volver a entrenar</option><option>Preparar el verano</option>
+          </select></label>
+          <label>Horario<select id="horario" name="horario">
+            <option value="">Elige uno</option><option>Mañana (5:00 – 12:00)</option><option>Tarde (12:00 – 18:00)</option><option>Noche (18:00 – 22:00)</option><option>Sábado</option>
+          </select></label>
+        </div>
+        <div class="trap" aria-hidden="true"><label>Web<input id="web" name="web" tabindex="-1" autocomplete="off"></label></div>
+        <label class="check"><input type="checkbox" id="acepta" name="acepta"> Acepto que Impulz Gym me contacte por WhatsApp para coordinar mi clase. Mis datos no se comparten con terceros.</label>
+        <div class="err" id="err" role="alert" hidden></div>
+        <button class="btn" id="enviar" type="submit">Reservar mi clase</button>
+      </div>
+    </form>
+
+    <div id="ok" hidden style="display:grid;gap:14px">
+      <h2>¡Listo, <span id="okNombre"></span>!</h2>
+      <div class="code"><small>Tu código</small><b id="okCodigo">IMP-0000</b><span id="okBeneficio"></span></div>
+      <a class="btn wa" id="okWa" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+      <p class="fine" id="okSinWa" hidden>Te escribiremos por WhatsApp para coordinar tu clase.</p>
+      <p class="fine">Guarda tu código o sácale una captura. Muéstralo en recepción cuando vayas a tu clase.</p>
+    </div>
+  </div>
+</div></main>
+
+<section class="steps"><div class="wrap">
+  <h3>Cómo funciona</h3>
+  <div class="st">
+    <div><b>Reservas aquí</b><span>Recibes un código personal al instante.</span></div>
+    <div><b>Confirmas por WhatsApp</b><span>Coordinamos el día y la hora de tu clase de prueba.</span></div>
+    <div><b>Vas a Impulz</b><span>Muestras tu código en recepción y entrenas con nosotros.</span></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap"><span>Impulz Gym · El Quisco</span><span>Reservas gestionadas por entrenachile.cl</span></div></footer>
+
+<script>
+const q = new URLSearchParams(location.search);
+const PIXEL = '{{PIXEL_ACTIVO}}' === '1';
+const $ = id => document.getElementById(id);
+$('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = $('err'); err.hidden = true;
+  const datos = {
+    nombre: $('nombre').value, telefono: $('telefono').value, objetivo: $('objetivo').value, horario: $('horario').value,
+    acepta: $('acepta').checked, web: $('web').value,
+    c: q.get('c') || '', utm_campaign: q.get('utm_campaign') || '', utm_content: q.get('utm_content') || '', utm_source: q.get('utm_source') || ''
+  };
+  if (datos.nombre.trim().length < 2) { err.textContent = 'Escribe tu nombre.'; err.hidden = false; $('nombre').focus(); return; }
+  if (datos.telefono.replace(/\D/g, '').length < 8) { err.textContent = 'Revisa tu número de WhatsApp (ej: 9 1234 5678).'; err.hidden = false; $('telefono').focus(); return; }
+  if (!datos.acepta) { err.textContent = 'Marca la casilla para que podamos contactarte.'; err.hidden = false; return; }
+  const b = $('enviar'); b.disabled = true; b.textContent = 'Reservando…';
+  try {
+    const r = await fetch('/api/reservas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'No se pudo reservar.');
+    $('okNombre').textContent = datos.nombre.trim().split(' ')[0];
+    $('okCodigo').textContent = j.codigo;
+    $('okBeneficio').textContent = j.beneficio || '';
+    if (j.whatsapp) $('okWa').href = j.whatsapp; else { $('okWa').hidden = true; $('okSinWa').hidden = false; }
+    $('f').hidden = true; $('ok').hidden = false;
+    if (PIXEL && window.fbq) fbq('track', 'Lead', { content_name: 'Clase de prueba Impulz' });
+  } catch (x) {
+    err.textContent = x.message || 'No se pudo reservar. Intenta de nuevo.'; err.hidden = false;
+    b.disabled = false; b.textContent = 'Reservar mi clase';
+  }
+});
+</script>
+</body>
+</html>

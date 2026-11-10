@@ -135,6 +135,15 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
 
 ---
 
+### Avance del 10 de noviembre de 2026 (antes del sí del dueño)
+- **App para Railway construida** en `impulz-gym/app/` (Node sin dependencias): página de reservas con código único
+  y Píxel de Meta opcional, panel con usuario y clave (roles coach / dueño / recepción), "Inscribir con código",
+  historial de cambios, exportar CSV, inversión privada del coach. `npm test` corre 19 pruebas de punta a punta (todas OK).
+  Cómo publicarla: `impulz-gym/app/README.md`. Aún no está publicada.
+- **Documentos borrador** en `impulz-gym/docs/`: acuerdo de piloto, autorización de imagen, objeciones,
+  plan de contenido del mes 1 y campañas de Meta.
+- **Lista de revisión, decisiones pendientes y problemas detectados:** `impulz-gym/LISTA-PARA-OK.md`.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

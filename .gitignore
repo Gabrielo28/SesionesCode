@@ -25,3 +25,6 @@ detector-dolores/centro/cola-csv/
 
 # Centro de escaneo: datos locales (prospectos y seguimiento)
 detector-dolores/datos/
+
+# Impulz: datos de reservas y socios (nombres y teléfonos)
+impulz-gym/app/datos/
