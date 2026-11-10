@@ -200,7 +200,7 @@ HTML=f'''<!DOCTYPE html>
     <tr><td><strong>Armado de las tres campañas.</strong> Objetivos, públicos, estructura y primeros anuncios. Precio de lista {f(150000)}; no se cobra porque luego administramos las campañas cada mes.</td><td class="bon">Sin costo</td></tr>
   </table>
   <h3>Por qué cuesta {f(I)}</h3>
-  <p>En nuestra web las landings van de {f(250000)} a {f(450000)}, según su complejidad. La tuya queda al medio: lleva tres versiones, pago en línea y la conexión con el píxel. El armado de campañas ({f(150000)}) no se cobra.</p>
+  <p>En nuestra web las landings van de {f(250000)} a {f(450000)}, según su complejidad. La tuya queda en el tope del rango porque no es una página simple: lleva tres versiones (una por campaña), el pago de la consulta en línea y la conexión con Meta mediante el píxel y la API de conversiones. El armado de campañas ({f(150000)}) y los tres regalos no se cobran.</p>
   <h3>Regalos al confirmar</h3>
   <div class="bonus">
     <div><span class="badge">Regalo 1</span><h4>Arreglamos tus páginas sin terminar</h4>Dejamos con contenido real las páginas <em>Servicios</em> y <em>Cursos</em>, para que nadie que llegue desde un anuncio las vea a medio hacer.</div>
