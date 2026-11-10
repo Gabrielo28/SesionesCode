@@ -142,6 +142,15 @@ input[type=range]{width:100%;accent-color:var(--red)}
 .terms span{font-size:15px;color:#ddd3d0}
 .phases{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .phases .k{color:#7fd69c}
+.clock{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:12px}
+.clock .k{font:700 13px/1 var(--display);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.clock-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.clock-row div{border-top:3px solid var(--red);padding-top:10px;display:grid;gap:3px}
+.clock-row div.own{border-color:#7fd69c}
+.clock-row b{font:italic 900 24px/1 var(--display);text-transform:uppercase}
+.clock-row span{font-size:14px;color:var(--muted)}
+.clock-row em{font:normal 700 15px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.clock p{font-size:15px}
 /* guarantees */
 .guar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .g{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
@@ -166,7 +175,7 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
   .season::before{display:none}
   .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mock,.calc{grid-template-columns:1fr}
-  .inv,.svc,.guar,.cards,.terms,.phases{grid-template-columns:1fr}
+  .inv,.svc,.guar,.cards,.terms,.phases,.clock-row{grid-template-columns:1fr}
   .next{grid-template-columns:1fr 1fr}
   .prow{grid-template-columns:1fr}
 }
@@ -241,7 +250,7 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
     <div class="svc">
       <div class="card"><span class="k">Contenido</span><h3>Redes con contenido constante</h3><ul><li>3 publicaciones semanales, 2 de ellas Reels</li><li>Historias de clases y socios durante la semana</li><li>Grabación en el mismo gimnasio, con caras reales</li></ul></div>
       <div class="card"><span class="k">Publicidad</span><h3>Anuncios locales en Meta</h3><ul><li>Pagados por mí durante el piloto</li><li>Instagram y Facebook en El Quisco y comunas vecinas</li><li>Campañas para cada promoción y para el pase verano</li><li>Ajuste semanal según el costo por socio</li></ul></div>
-      <div class="card"><span class="k">Coaching</span><h3>Clases que traen público propio</h3><ul><li>Clases grupales y personalizadas en horarios fijos</li><li>Perfil destacado en entrenachile.cl con Impulz como lugar de trabajo</li><li>Mis alumnos pagan su mensualidad al gimnasio</li></ul></div>
+      <div class="card"><span class="k">Coaching</span><h3>Clases que traen público propio</h3><ul><li>Clases grupales y personalizadas en horarios fijos</li><li>Perfil destacado en entrenachile.cl con Impulz como lugar de trabajo</li><li>Mis alumnos pagan su mensualidad al gimnasio</li><li>Impulz como locación del canal de YouTube de entrenachile.cl: visibilidad gratis fuera de El Quisco</li></ul></div>
     </div>
   </div>
 </section>
@@ -311,6 +320,15 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
       <div class="price"><span class="l">Primer mes de cada socio nuevo</span><span class="n">100%</span><p>Para mí. Es lo que paga los anuncios que trajeron a ese socio.</p></div>
       <div class="price"><span class="l">Desde el segundo mes</span><span class="n">85%</span><p>Para el gimnasio. Yo recibo 15% durante 6 meses; desde el mes 8 el socio es 100% tuyo.</p></div>
     </div>
+    <div class="clock">
+      <span class="k">Ejemplo: así funciona con cada socio</span>
+      <div class="clock-row">
+        <div><b>Mes 1</b><span>Camila se inscribe en diciembre</span><em>100% para mí</em></div>
+        <div><b>Meses 2 al 7</b><span>De enero a junio</span><em>85% gimnasio · 15% para mí</em></div>
+        <div class="own"><b>Mes 8 en adelante</b><span>Desde julio</span><em>100% del gimnasio</em></div>
+      </div>
+      <p class="muted">Cada socio nuevo tiene su propio reloj. Si Diego se inscribe en marzo, su mes 1 es marzo y desde octubre es 100% del gimnasio.</p>
+    </div>
     <div class="terms">
       <div><b>Pase verano</b><span>30% para mí de cada pase semanal o quincenal vendido por mis canales.</span></div>
       <div><b>Planes trimestrales o anuales</b><span>La fórmula se aplica sobre su valor mensual equivalente.</span></div>
@@ -326,13 +344,13 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
     <div class="calc">
       <div>
         <h3>Calcula tu escenario</h3>
-        <p class="muted" style="font-size:15px">Proyección a 6 meses. Supone que 8 de cada 10 socios siguen activos cada mes.</p>
+        <p class="muted" style="font-size:15px">Proyección a 12 meses. Supone que 8 de cada 10 socios siguen activos cada mes.</p>
         <div class="ctl"><label for="sN">Socios nuevos por mes <output id="oN">20</output></label><input id="sN" type="range" min="5" max="60" step="1" value="20"></div>
         <div class="ctl"><label for="sM">Mensualidad promedio <output id="oM">$25.000</output></label><input id="sM" type="range" min="15000" max="50000" step="1000" value="25000"></div>
       </div>
       <div class="res" aria-live="polite">
         <div><small>Ingreso de socios nuevos</small><b id="rI">—</b></div>
-        <div><small>Socios activos al mes 6</small><b id="rA">—</b></div>
+        <div><small>Socios activos al mes 12</small><b id="rA">—</b></div>
         <div><small>Mi comisión total</small><b id="rC">—</b></div>
         <div><small>Inversión del gimnasio</small><b id="rP">$0</b></div>
         <div class="hi"><small>Le queda al gimnasio</small><b id="rN">—</b></div>
@@ -350,7 +368,7 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
     </div>
     <div class="guar">
       <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M13 22l6 6 12-13" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Si hay duda, no se cobra</b><p>Un socio que no se puede atribuir con claridad queda como del gimnasio.</p></div></div>
-      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="9" y="19" width="26" height="19" rx="3" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M15 19v-5a7 7 0 0114 0v5" fill="none" stroke="var(--ink)" stroke-width="3"/></svg><div><b>Cada uno con lo suyo</b><p>Instagram, Facebook y la base de socios son del gimnasio. El contenido donde aparezco yo o mis alumnos es mío y puedo usarlo en mis redes.</p></div></div>
+      <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="9" y="19" width="26" height="19" rx="3" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M15 19v-5a7 7 0 0114 0v5" fill="none" stroke="var(--ink)" stroke-width="3"/></svg><div><b>Cada uno con lo suyo</b><p>Instagram, Facebook y la base de socios son del gimnasio. El contenido donde aparezco yo o mis alumnos es mío y puedo usarlo en mis redes. Grabo en horarios acordados y con autorización de quienes aparecen.</p></div></div>
       <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="8" width="28" height="30" rx="3" fill="none" stroke="var(--red)" stroke-width="3"/><path d="M15 18h14M15 25h14M15 32h8" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></svg><div><b>Reporte cada mes</b><p>Contactos, pruebas, inscritos, socios activos y comisión, con los datos a la vista.</p></div></div>
       <div class="g"><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M28 10l8 8-8 8" fill="none" stroke="var(--red)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 18H16a8 8 0 000 16h4" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></svg><div><b>Salida con 30 días de aviso</b><p>Cualquiera puede terminar. Las comisiones ya ganadas se respetan hasta cumplir sus 6 meses.</p></div></div>
     </div>
@@ -360,13 +378,14 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
 <section class="close">
   <div class="wrap">
     <span class="eyebrow">08 · Próximos pasos</span>
-    <h2>Partimos el <span>lunes 9 de noviembre</span></h2>
+    <h2>Podemos partir <span>la semana siguiente</span></h2>
     <ol class="next">
       <li><b>Conversamos</b>30 minutos para ajustar precios y horarios de clases</li>
       <li><b>Firmamos</b>Un acuerdo simple de una página</li>
       <li><b>Accesos</b>Acceso de anunciante a la página, redes y panel de comisiones</li>
       <li><b>Lanzamos</b>Sesión de fotos y primera campaña en la semana</li>
     </ol>
+    <p class="lead muted">Después del piloto, si los resultados acompañan, conversamos cómo seguir creciendo juntos: retención de socios, programas premium y nuevas sedes.</p>
   </div>
 </section>
 
@@ -375,7 +394,7 @@ footer{padding-block:24px;color:var(--muted);font-size:13px;border-top:1px solid
 <script>
 const fmt=n=>"$"+Math.round(n).toLocaleString("es-CL");
 function calc(){
-  const N=+document.getElementById("sN").value,M=+document.getElementById("sM").value,R=.8,months=6;
+  const N=+document.getElementById("sN").value,M=+document.getElementById("sM").value,R=.8,months=12;
   let ingreso=0,com=0,activos=0;
   for(let k=0;k<months;k++){for(let j=0;j<=k;j++){const s=N*Math.pow(R,k-j),pay=s*M;ingreso+=pay;const age=k-j;com+=pay*(age===0?1:age<=6?.15:0);if(k===months-1)activos+=s}}
   const ads=0;
