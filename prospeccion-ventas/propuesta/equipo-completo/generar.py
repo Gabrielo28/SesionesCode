@@ -1,0 +1,413 @@
+# Propuesta "Equipo de marketing completo": redes + community manager, Google Ads, relaciones públicas,
+# actualización de web, y CRM + seguimiento de ventas + panel de resultados. Dos opciones como máximo.
+# Versión explicada para no técnicos. Sin mencionar accesos/contraseñas ("se coordina en la reunión de la semana 1").
+#   python3 prospeccion-ventas/propuesta/equipo-completo/generar.py prospeccion-ventas/propuesta/equipo-completo/cliente-vitamodell.json
+#   NODE_PATH=/opt/node22/lib/node_modules node prospeccion-ventas/propuesta/equipo-completo/render.js <archivo>
+import datetime, sys, json, os
+C={"nombre":"[Cliente]","contacto":"","instagram":"","archivo":"propuesta-equipo","usd":980,
+   "autoridad":749990,"crecimiento":450000,"google":250000,"google_armado":150000,"rrpp":350000,
+   "crm_impl":500000,"crm_mes":200000,"web":750000,"pauta_meta":400000,"pauta_google":300000,
+   "contexto":"","vimos_bien":[],"vimos_mejorar":[],"web_incluye":[],"canje":"",
+   "fecha":datetime.date.today().strftime("%-d de %B de %Y")}
+MESES={'January':'enero','February':'febrero','March':'marzo','April':'abril','May':'mayo','June':'junio','July':'julio','August':'agosto','September':'septiembre','October':'octubre','November':'noviembre','December':'diciembre'}
+for en,es in MESES.items(): C['fecha']=C['fecha'].replace(en,es)
+if len(sys.argv)>1 and os.path.exists(sys.argv[1]): C.update(json.load(open(sys.argv[1],encoding='utf-8')))
+f=lambda n: "$"+f"{round(n):,}".replace(",",".")
+iva=lambda n: round(n*1.19)
+u=lambda n: "US$"+f"{round(n/C['usd']/10)*10:,}".replace(",",".")
+AU,CR,GO,GA,RP,CI,CM,WE=C['autoridad'],C['crecimiento'],C['google'],C['google_armado'],C['rrpp'],C['crm_impl'],C['crm_mes'],C['web']
+PM,PG=C['pauta_meta'],C['pauta_google']; PAUTA=PM+PG
+M1=AU+GO+RP+CM; M2=CR+GO+CM; UNI=WE+CI
+ig=f' ({C["instagram"]})' if C["instagram"] else ''
+para=(f'{C["contacto"]}<br>' if C["contacto"] else '')+f'{C["nombre"]}{ig}'
+li=lambda xs: ''.join(f'<li>{x}</li>' for x in xs)
+bien,mejorar,webinc=li(C['vimos_bien']),li(C['vimos_mejorar']),li(C['web_incluye'])
+
+HTML=f'''<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Propuesta {C["nombre"]} · Influence Chile</title>
+<style>
+  @font-face {{ font-family:'Montserrat'; font-style:normal; font-weight:400 800; src:url('../../situ/fonts/montserrat.woff2') format('woff2'); }}
+  @page {{ size:A4; margin:13mm 16mm 13mm; }} @page portada {{ margin:0; }}
+  * {{ box-sizing:border-box; margin:0; padding:0; }}
+  body {{ font-family:'Montserrat','Segoe UI',system-ui,sans-serif; color:#123638; font-size:9.8pt; line-height:1.46; -webkit-print-color-adjust:exact; print-color-adjust:exact; }}
+  a {{ color:#12959C; text-decoration:none; }}
+  .portada {{ page:portada; width:210mm; height:297mm; padding:22mm 20mm; background:linear-gradient(155deg,#123638 0%,#12959C 100%); color:#fff; display:flex; flex-direction:column; justify-content:space-between; page-break-after:always; }}
+  .marca img {{ height:30mm; width:auto; display:block; filter:brightness(0) invert(1); }}
+  .portada .kicker {{ font-size:9.5pt; letter-spacing:.18em; text-transform:uppercase; opacity:.8; margin-bottom:5mm; }}
+  .portada h1 {{ font-size:30pt; line-height:1.12; font-weight:800; margin-bottom:7mm; max-width:155mm; }}
+  .portada .sub {{ font-size:12.5pt; font-weight:500; opacity:.92; max-width:145mm; line-height:1.45; }}
+  .portada .para {{ border-top:1px solid rgba(255,255,255,.35); padding-top:6mm; display:flex; justify-content:space-between; font-size:9.5pt; line-height:1.6; }}
+  .portada .para strong {{ display:block; font-size:10.5pt; }}
+  .seccion {{ page-break-before:always; }} .seccion.primera {{ page-break-before:auto; }}
+  h2 {{ font-size:19pt; color:#12959C; font-weight:800; line-height:1.2; margin-bottom:2.5mm; }}
+  .linea {{ width:18mm; height:3px; background:#FF7B7B; margin-bottom:6mm; }}
+  h3 {{ font-size:12pt; color:#12959C; font-weight:700; margin:6mm 0 2mm; }}
+  p {{ margin-bottom:3.2mm; }} ul {{ margin:0 0 3.5mm; list-style:none; }}
+  li {{ padding-left:5mm; position:relative; margin-bottom:1.8mm; }} li::before {{ content:'▪'; color:#12959C; position:absolute; left:0; }}
+  table {{ width:100%; border-collapse:collapse; margin:3mm 0 4mm; font-size:9.1pt; page-break-inside:avoid; }}
+  th {{ background:#12959C; color:#fff; padding:2.3mm 3mm; text-align:left; font-weight:600; font-size:8.9pt; }}
+  td {{ padding:2.1mm 3mm; border-bottom:1px solid #e3eeee; vertical-align:top; }} tr:nth-child(even) td {{ background:#f6fbfb; }}
+  td.n {{ white-space:nowrap; text-align:right; }} td.c {{ text-align:center; }}
+  .si {{ color:#12959C; font-weight:800; }} .no {{ color:#FF7B7B; font-weight:800; }}
+  .tag {{ display:inline-block; font-size:7.5pt; font-weight:700; padding:.6mm 2mm; border-radius:3px; background:#e6f1f1; color:#12959C; text-transform:uppercase; letter-spacing:.06em; }}
+  .tag.unico {{ background:#fff0f0; color:#e05c5c; }}
+  .nota {{ background:#f3f9f9; border-left:3px solid #12959C; padding:3.5mm 5mm; border-radius:0 4px 4px 0; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .nota.coral {{ border-left-color:#FF7B7B; background:#fff7f7; }} .nota strong {{ color:#12959C; }} .nota.coral strong {{ color:#e05c5c; }}
+  .caminos {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:4mm 0 6mm; page-break-inside:avoid; }}
+  .caminos > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; font-size:9pt; }}
+  .caminos > div.reco {{ border:2.5px solid #FF7B7B; background:#fffafa; }}
+  .caminos .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .caminos .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1mm; }}
+  .caminos h4 {{ font-size:12pt; line-height:1.2; margin-bottom:1.5mm; }}
+  .caminos .v {{ font-size:14pt; font-weight:800; margin:1.5mm 0; }} .caminos .v small {{ font-size:8.5pt; font-weight:500; color:#4a6a6a; }}
+  .total {{ background:linear-gradient(135deg,#123638,#12959C); color:#fff; border-radius:6px; padding:5.5mm 7mm; margin:4mm 0 5mm; display:flex; justify-content:space-between; align-items:center; page-break-inside:avoid; }}
+  .total .l {{ font-size:9.5pt; opacity:.9; }} .total .l strong {{ display:block; font-size:13pt; color:#fff; }}
+  .total .r {{ text-align:right; }} .total .r .neto {{ font-size:22pt; font-weight:800; line-height:1; }} .total .r .iva {{ font-size:9.5pt; opacity:.9; margin-top:1.5mm; }}
+  .combo {{ border:1.5px solid #d7eaea; border-radius:6px; padding:2.8mm 4.5mm; margin-bottom:2.8mm; page-break-inside:avoid; display:flex; gap:5mm; align-items:flex-start; }}
+  .combo .izq {{ flex:1; }} .combo h4 {{ font-size:11pt; color:#12959C; margin-bottom:1mm; }}
+  .combo .der {{ text-align:right; white-space:nowrap; }} .combo .der b {{ font-size:14pt; display:block; }} .combo .der small {{ color:#4a6a6a; font-size:8.5pt; }}
+  .cta {{ text-align:center; padding:10mm 8mm; }} .cta h2 {{ font-size:26pt; margin-bottom:4mm; }} .cta p {{ max-width:140mm; margin:0 auto 4mm; }}
+  .cta .boton {{ display:inline-block; background:#FF7B7B; color:#fff; padding:4mm 10mm; border-radius:40px; font-size:11.5pt; font-weight:700; margin:4mm 0 10mm; }}
+  .cta .marca-pie img {{ height:22mm; width:auto; display:block; margin:0 auto 6mm; }}
+  .firma {{ border-top:1px solid #d7eaea; padding-top:6mm; font-size:9.6pt; line-height:1.7; }} .firma strong {{ font-size:11pt; }}
+  .pie {{ font-size:8.2pt; color:#6b8585; margin-top:8mm; }}
+  .resumen {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:5mm 0 6mm; page-break-inside:avoid; }}
+  .resumen > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; }}
+  .resumen .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1.5mm; }}
+  .resumen .v {{ font-size:15pt; font-weight:800; line-height:1.15; }} .resumen .s {{ font-size:8.6pt; color:#4a6a6a; margin-top:1mm; }}
+</style>
+<style>
+  .resumen {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:5mm 0 6mm; page-break-inside:avoid; }}
+  .resumen > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; }}
+  .resumen .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; margin-bottom:1.5mm; }}
+  .resumen .v {{ font-size:15pt; font-weight:800; line-height:1.15; }} .resumen .s {{ font-size:8.6pt; color:#4a6a6a; margin-top:1mm; }}
+  .bonus {{ display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .bonus > div {{ border:2px solid #FF7B7B; background:#fffafa; border-radius:6px; padding:4mm; font-size:9pt; }}
+  .bonus .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .bonus h4 {{ font-size:11.5pt; color:#123638; margin-bottom:1.5mm; line-height:1.2; }}
+  td.inc {{ color:#12959C; font-weight:800; white-space:nowrap; text-align:center; }}
+  td.bon {{ color:#e05c5c; font-weight:800; white-space:nowrap; text-align:center; }}
+</style>
+<style>
+  .caminos .s {{ font-size:8.4pt; color:#4a6a6a; }}
+  .op {{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .op > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4.5mm; font-size:9pt; }}
+  .op > div.reco {{ border:2.5px solid #FF7B7B; background:#fffafa; }}
+  .op .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .op .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; }}
+  .op h4 {{ font-size:13pt; margin:1mm 0 1.5mm; }} .op .v {{ font-size:17pt; font-weight:800; margin:1mm 0 2mm; }} .op .v small {{ font-size:8.5pt; font-weight:500; color:#4a6a6a; }}
+  .op li {{ margin-bottom:1.2mm; }}
+</style>
+<style>
+  .paso {{ display:flex; gap:4mm; align-items:flex-start; border:1.5px solid #d7eaea; border-radius:6px; padding:3mm 4mm; margin-bottom:2.6mm; page-break-inside:avoid; }}
+  .paso .num {{ flex:0 0 8mm; height:8mm; border-radius:50%; background:#12959C; color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:10.5pt; }}
+  .paso .px {{ margin-top:1.4mm; font-size:8.6pt; color:#e05c5c; font-weight:600; }}
+  .glos {{ display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; margin:4mm 0; }}
+  .glos > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:3.2mm 4mm; font-size:9pt; page-break-inside:avoid; }}
+  .glos h4 {{ font-size:11pt; color:#12959C; margin-bottom:1mm; }}
+  .glos .ej {{ color:#4a6a6a; font-size:8.5pt; margin-top:1mm; }}
+  .op {{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin:4mm 0 5mm; page-break-inside:avoid; }}
+  .op > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4.5mm; font-size:9pt; }}
+  .op > div.reco {{ border:2.5px solid #FF7B7B; background:#fffafa; }}
+  .op .badge {{ display:inline-block; background:#FF7B7B; color:#fff; font-size:7.5pt; padding:.8mm 2.5mm; border-radius:3px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2mm; font-weight:700; }}
+  .op .k {{ font-size:8pt; text-transform:uppercase; letter-spacing:.12em; color:#12959C; font-weight:700; }}
+  .op h4 {{ font-size:13pt; margin:1mm 0 1.5mm; }} .op .v {{ font-size:17pt; font-weight:800; margin:1mm 0 2mm; }} .op .v small {{ font-size:8.5pt; font-weight:500; color:#4a6a6a; }}
+  .op li {{ margin-bottom:1.2mm; }} .op .para-quien {{ margin-top:2.5mm; font-size:8.6pt; color:#4a6a6a; border-top:1px dashed #d7eaea; padding-top:2mm; }}
+  .caminos .s {{ font-size:8.4pt; color:#4a6a6a; }}
+  .breve {{ border:2px solid #12959C; border-radius:8px; padding:5mm 6mm; margin:3mm 0 5mm; }}
+  .breve li {{ margin-bottom:2.4mm; }}
+  .faq h4 {{ font-size:10.5pt; color:#123638; margin:3.6mm 0 1mm; }} .faq p {{ margin-bottom:1mm; }}
+  .dos {{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; }}
+  .dos .bueno h4 {{ color:#12959C; }} .dos .malo h4 {{ color:#e05c5c; }}
+  .dos > div {{ border:1.5px solid #d7eaea; border-radius:6px; padding:4mm; font-size:9pt; page-break-inside:avoid; }}
+  .dos h4 {{ font-size:11pt; margin-bottom:2mm; }}
+  td.total-fila {{ font-weight:800; background:#e6f1f1 !important; }}
+</style>
+<style>
+  .pide {{ width:100%; border-collapse:collapse; margin:3mm 0 4mm; font-size:9.2pt; }}
+  .serv-cab {{ display:flex; justify-content:space-between; align-items:baseline; gap:6mm; margin-bottom:1mm; }}
+  .serv-cab .precio {{ text-align:right; white-space:nowrap; font-size:15pt; font-weight:800; color:#123638; }}
+  .serv-cab .precio small {{ display:block; font-size:8.4pt; font-weight:500; color:#4a6a6a; }}
+  .k2 {{ font-size:8pt; text-transform:uppercase; letter-spacing:.14em; color:#FF7B7B; font-weight:700; margin-bottom:1mm; }}
+  td.sub {{ background:#e6f1f1 !important; font-weight:700; }}
+</style>
+</head><body>
+
+<section class="portada">
+  <div class="marca"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
+  <div>
+    <div class="kicker">Propuesta · {C["fecha"]}</div>
+    <h1>Equipo de marketing completo</h1>
+    <p class="sub">Redes sociales y community manager, Google Ads, relaciones públicas, página web nueva, CRM y panel de resultados. Qué haríamos, cómo funciona cada servicio, cuánto cuesta y cuánto invertirían en total.</p>
+  </div>
+  <div class="para">
+    <div><strong>Para</strong>{para}</div>
+    <div style="text-align:right"><strong>De</strong>Gabriel Meza · Influence Chile<br>influencechile.cl · @influence.chile</div>
+  </div>
+</section>
+
+<section class="seccion primera">
+  <h2>Qué les proponemos</h2>
+  <div class="linea"></div>
+  <p>{C["contexto"]}</p>
+  <p>Les proponemos ser su equipo de marketing completo: un solo equipo que hace el contenido, atiende la comunidad, maneja los anuncios en Instagram, Facebook y Google, consigue prensa, deja la web al día y les entrega un sistema para seguir cada interesado hasta que se matricula. Cada servicio está explicado en su propia página, con lo que incluye, lo que no incluye y por qué cuesta lo que cuesta.</p>
+  <h3>Lo que nos pidieron y dónde está en esta propuesta</h3>
+  <table>
+    <tr><th>Lo que nos pidieron</th><th style="width:40%">Dónde está</th></tr>
+    <tr><td>Gestión de redes sociales y community manager</td><td>Servicio 1 (página 4)</td></tr>
+    <tr><td>Cómo funcionan los influencers y cuántos serían al mes</td><td>Servicio 1 y preguntas frecuentes</td></tr>
+    <tr><td>Google Ads y dónde ver sus métricas</td><td>Servicio 2 y servicio 5</td></tr>
+    <tr><td>Relaciones públicas (PR)</td><td>Servicio 3</td></tr>
+    <tr><td>Actualización de la página web</td><td>Servicio 4</td></tr>
+    <tr><td>CRM, panel de resultados y seguimiento de ventas</td><td>Servicio 5</td></tr>
+    <tr><td>Precios y qué incluye cada servicio, en detalle</td><td>Cada servicio, y "Valores" y "Cuánto invertirían en total"</td></tr>
+  </table>
+  <div class="nota"><strong>Cómo leer los valores:</strong> todos los montos están en pesos chilenos y son netos. Si la factura se emite a su empresa en Chile, se suma IVA (19%). Si se emite a una empresa en Estados Unidos, lo confirmamos antes de la primera factura. Al lado de cada total les dejamos una referencia en dólares, con el dólar a {f(C["usd"])}.</div>
+</section>
+
+<section class="seccion">
+  <h2>Lo que vimos en su web</h2>
+  <div class="linea"></div>
+  <p>Revisamos vitamodell.com página por página antes de escribir esta propuesta. Instagram y TikTok no se pueden revisar desde fuera (bloquean la lectura automática); los vemos juntos en la primera reunión.</p>
+  <h3>Lo que ya tienen a favor</h3>
+  <ul>{bien}</ul>
+  <h3>Lo que conviene corregir antes de invertir en anuncios</h3>
+  <ul>{mejorar}</ul>
+  <div class="nota coral"><strong>Por qué importa:</strong> cada anuncio, nota de prensa o publicación de influencer termina mandando gente a la web o al WhatsApp. Si la web tiene páginas de prueba o la versión en inglés está en español, parte de esa inversión se pierde. Por eso la web va en el primer mes.</div>
+</section>
+
+<section class="seccion">
+  <div class="k2">Servicio 1 · mensual</div>
+  <div class="serv-cab"><h2>Redes sociales y community manager</h2><div class="precio">{f(AU)}<small>al mes, neto · Plan Autoridad</small></div></div>
+  <div class="linea"></div>
+  <p>Nos hacemos cargo de su Instagram de punta a punta: planificamos qué publicar, lo diseñamos y editamos, lo publicamos, respondemos a su comunidad y usamos ese mismo contenido como anuncios.</p>
+  <table>
+    <tr><th>Qué incluye cada mes</th><th style="width:22%;text-align:center">Cantidad</th></tr>
+    <tr><td><strong>Reels</strong> (videos cortos): desfiles, clases, detrás de cámara, testimonios de alumnas y alumnos. Los publicamos también en TikTok y Facebook.</td><td class="c">12</td></tr>
+    <tr><td><strong>Publicaciones</strong> (foto o carrusel): cursos, sedes, logros, convocatorias y eventos.</td><td class="c">12</td></tr>
+    <tr><td><strong>Historias:</strong> el día a día de las sedes, cuentas regresivas, inscripciones abiertas.</td><td class="c">20</td></tr>
+    <tr><td><strong>Estrategia y calendario del mes,</strong> con conceptos creativos, aprobado por ustedes antes de publicar.</td><td class="inc">Incluido</td></tr>
+    <tr><td><strong>Community manager:</strong> respondemos comentarios y mensajes directos con las respuestas que acordemos con ustedes; lo que necesite una decisión suya (cupos, precios especiales, casos puntuales) se los derivamos.</td><td class="inc">Incluido</td></tr>
+    <tr><td><strong>Anuncios en Instagram y Facebook (Meta Ads):</strong> armado, optimización semanal y creatividades. La pauta se paga aparte, directo a Meta.</td><td class="inc">Incluido</td></tr>
+    <tr><td><strong>Una campaña con influencers al mes</strong> (detalle abajo).</td><td class="inc">Incluida</td></tr>
+    <tr><td><strong>Informe mensual</strong> de alcance, interacción, mensajes recibidos y resultados de los anuncios.</td><td class="inc">Incluido</td></tr>
+  </table>
+  <h3>Cómo funcionan los influencers</h3>
+  <ul>
+    <li><strong>Cuántos:</strong> una campaña al mes con 2 creadoras de contenido de más de 10.000 seguidores cada una, evaluadas por nosotros.</li>
+    <li><strong>Qué publican:</strong> como referencia, 1 reel y 4 historias cada una. El contenido final se define con cada creadora según el canje.</li>
+    <li><strong>El canje lo aportan ustedes:</strong> {C["canje"]} Nosotros buscamos, negociamos, preparamos la pauta y supervisamos que publiquen.</li>
+    <li><strong>Garantía:</strong> trabajamos con acuerdos formales. Si una creadora no cumple, respondemos nosotros y la reemplazamos.</li>
+    <li><strong>Dónde:</strong> nuestra red de creadoras es de Chile, así que las campañas apoyan sus sedes chilenas. Para Dallas podemos buscar y contactar creadoras locales, pero ahí no tenemos red propia todavía; lo planificamos con ustedes cuando definan la fecha de apertura.</li>
+  </ul>
+  <p style="font-size:9pt;color:#4a6a6a"><strong>No incluye:</strong> grabación en terreno (el material lo graban ustedes en clases y eventos con una pauta nuestra; si prefieren que vayamos, una jornada de 3 horas en Santiago cuesta {f(90000)}) ni la pauta de anuncios.</p>
+</section>
+
+<section class="seccion">
+  <div class="k2">Servicio 2 · mensual</div>
+  <div class="serv-cab"><h2>Google Ads</h2><div class="precio">{f(GO)}<small>al mes, neto · armado sin costo</small></div></div>
+  <div class="linea"></div>
+  <p>En Instagram le mostramos su academia a gente que no la estaba buscando. En Google es al revés: aparecemos cuando alguien escribe "academia de modelaje en Antofagasta" o "curso de modelaje online". Es gente que ya está buscando, por eso suele estar más cerca de inscribirse.</p>
+  <table>
+    <tr><th>Qué incluye</th><th style="width:22%;text-align:center">Valor</th></tr>
+    <tr><td><strong>Armado de la campaña (una vez):</strong> investigación de palabras clave por sede y para cursos online, estructura de campañas, redacción de anuncios y medición de inscripciones y contactos desde la web.</td><td class="bon">Sin costo<br><small style="color:#4a6a6a;font-weight:500">(precio de lista {f(GA)})</small></td></tr>
+    <tr><td><strong>Gestión mensual:</strong> ajuste de palabras clave y pujas, exclusión de búsquedas que no sirven (por ejemplo, "trabajo de modelo gratis"), anuncios nuevos a prueba cada mes.</td><td class="n"><strong>{f(GO)}</strong></td></tr>
+    <tr><td><strong>Métricas:</strong> las ven en el panel de resultados (servicio 5) y en su propia cuenta de Google Ads, que queda a nombre de ustedes.</td><td class="inc">Incluido</td></tr>
+  </table>
+  <h3>Por qué cuesta {f(GO)}</h3>
+  <p>Es el valor publicado en nuestra web para la gestión de Google Ads. El armado ({f(GA)}) no se cobra porque contratan la gestión mensual.</p>
+  <div class="nota"><strong>La pauta de Google:</strong> recomendamos partir con {f(PG)} al mes, pagados directo a Google con su tarjeta. Es el mínimo para juntar datos y optimizar en serio. Si quieren anunciar también en Dallas, esa pauta debe ser aparte y mayor: en Estados Unidos cada clic cuesta bastante más que en Chile.</div>
+</section>
+
+<section class="seccion">
+  <div class="k2">Servicio 3 · mensual</div>
+  <div class="serv-cab"><h2>Relaciones públicas y prensa</h2><div class="precio">{f(RP)}<small>al mes, neto</small></div></div>
+  <div class="linea"></div>
+  <p>Relaciones públicas (PR) es conseguir que los medios hablen de ustedes sin pagar por el espacio: notas, entrevistas y menciones. Ustedes ya generan historias que los medios publican (sus alumnas en Miss Antofagasta y Miss Valdivia, los desfiles, la expansión a Dallas). Nuestro trabajo es convertirlas en noticias y llevarlas a los periodistas correctos.</p>
+  <table>
+    <tr><th>Qué incluye</th><th style="width:22%;text-align:center">Cuándo</th></tr>
+    <tr><td><strong>Carpeta de prensa:</strong> historia de la academia, datos clave, fotos, voceras y contacto, en español y en inglés.</td><td class="c">Mes 1</td></tr>
+    <tr><td><strong>Lista de medios:</strong> diarios y radios de las ciudades con sede, medios de moda y estilo, y medios hispanos de Dallas.</td><td class="c">Mes 1, y se actualiza</td></tr>
+    <tr><td><strong>2 comunicados de prensa al mes:</strong> redacción, envío y seguimiento con cada periodista.</td><td class="c">Cada mes</td></tr>
+    <tr><td><strong>Coordinación de entrevistas</strong> y preparación de la vocera antes de cada una.</td><td class="c">Cuando resulten</td></tr>
+    <tr><td><strong>Informe de apariciones:</strong> dónde salieron, enlace y alcance aproximado.</td><td class="c">Cada mes</td></tr>
+  </table>
+  <h3>Lo que hay que saber</h3>
+  <ul>
+    <li><strong>No garantizamos publicaciones.</strong> En PR el medio decide qué publica. Lo que sí garantizamos es el trabajo: los comunicados, los envíos y el seguimiento, todo informado.</li>
+    <li><strong>No incluye avisos ni notas pagadas</strong> (publirreportajes). Si alguna vez conviene pagar una, se los cotizamos antes.</li>
+    <li><strong>En Dallas partimos de cero:</strong> no tenemos contactos propios en medios de Estados Unidos. Armamos la lista y el contacto desde aquí, en español y en inglés.</li>
+  </ul>
+  <h3>Por qué cuesta {f(RP)}</h3>
+  <p>Relaciones públicas no está en nuestra lista de precios publicada; este valor lo fijamos para su caso, por el trabajo del mes: dos comunicados, la gestión con medios en dos países y el informe. La carpeta de prensa del primer mes no se cobra aparte.</p>
+</section>
+
+<section class="seccion">
+  <div class="k2">Servicio 4 · pago único</div>
+  <div class="serv-cab"><h2>Página web actualizada</h2><div class="precio">{f(WE)}<small>pago único, neto</small></div></div>
+  <div class="linea"></div>
+  <p>Su web está hecha en Wix y tiene mucho a favor: tienda, intranet de alumnos, reservas y blog. No proponemos empezar de cero, sino actualizarla y corregirla en la misma plataforma, para no perder nada de lo que ya funciona.</p>
+  <h3>Qué incluye</h3>
+  <ul>{webinc}</ul>
+  <h3>Por qué cuesta {f(WE)}</h3>
+  <p>En nuestra web, un sitio con módulos (reservas, catálogo o formularios conectados) va de {f(500000)} a {f(900000)}. La suya queda en la parte alta del rango porque son más de diez páginas, hay que dejarla en dos idiomas y conectarla con el CRM y con la medición de anuncios. Plazo: 3 a 4 semanas desde que recibimos sus textos y fotos.</p>
+  <p style="font-size:9pt;color:#4a6a6a"><strong>No incluye:</strong> el plan de Wix ni el dominio (los siguen pagando ustedes, como hoy), ni sesiones de fotos nuevas. Los cambios posteriores a la entrega se hacen dentro del plan mensual cuando son menores; los rediseños grandes se cotizan aparte.</p>
+</section>
+
+<section class="seccion">
+  <div class="k2">Servicio 5 · implementación + mensual</div>
+  <div class="serv-cab"><h2>CRM, seguimiento de ventas y panel de resultados</h2><div class="precio">{f(CI)}<small>implementación + {f(CM)} al mes, neto</small></div></div>
+  <div class="linea"></div>
+  <p>Hoy los interesados llegan por WhatsApp, Instagram, formularios, la web y el correo. Este servicio los junta en un solo lugar y les muestra en un enlace cuánto rinde cada peso invertido.</p>
+  <table>
+    <tr><th>Qué recibe</th><th style="width:30%">Para qué sirve</th></tr>
+    <tr><td><strong>CRM:</strong> una lista única de todos los interesados, con su sede, curso de interés y de dónde llegó (anuncio de Instagram, Google, influencer, prensa, web).</td><td>Que nadie se pierda en un chat</td></tr>
+    <tr><td><strong>Etapas de venta:</strong> interesado → recibió información → clase o entrevista → matriculado (las ajustamos a su proceso real).</td><td>Saber en qué paso está cada persona</td></tr>
+    <tr><td><strong>Seguimiento automático:</strong> recordatorios a su equipo y mensajes a quien no ha respondido, para que nadie quede sin respuesta.</td><td>Vender más con los mismos interesados</td></tr>
+    <tr><td><strong>Panel de resultados en un enlace:</strong> Instagram, Meta Ads, Google Ads e inscripciones del CRM, actualizado solo. Pueden abrirlo desde el celular cuando quieran.</td><td>Ver métricas sin pedirlas</td></tr>
+    <tr><td><strong>Operación mensual:</strong> mantenemos las conexiones funcionando, ajustamos etapas y mensajes, y agregamos lo que vaya haciendo falta.</td><td>Que el sistema no se desordene</td></tr>
+  </table>
+  <h3>Por qué cuesta eso</h3>
+  <p>Es el valor publicado en nuestra web para automatización de procesos: desde {f(CI)} de implementación y desde {f(CM)} al mes de operación. Usamos herramientas con plan gratuito (por ejemplo, el CRM gratuito de HubSpot y el panel de Looker Studio de Google), así que hoy no hay licencias que pagar. Si más adelante necesitan funciones pagadas, se los cotizamos antes de activarlas.</p>
+  <div class="nota"><strong>Su equipo sigue siendo clave:</strong> el CRM ordena y recuerda, pero la matrícula la cierra una persona. Les entregamos una capacitación de 1 hora para su equipo de ventas.</div>
+</section>
+
+<section class="seccion">
+  <h2>Valores: elijan una opción</h2>
+  <div class="linea"></div>
+  <p>Las dos opciones incluyen la web nueva, Google Ads y el CRM con panel. La diferencia está en el contenido y en las relaciones públicas. Pueden pasar de una a otra avisando antes de que empiece el mes siguiente. La referencia en dólares usa el dólar a {f(C["usd"])}; se factura el valor en pesos.</p>
+  <div class="op">
+    <div class="reco"><span class="badge">Lo que nos pidieron</span><div class="k">Opción 1</div><h4>Equipo completo</h4><div class="v">{f(M1)} <small>/mes neto · aprox. {u(M1)}</small></div>
+      <ul><li>Plan Autoridad: 12 reels, 12 publicaciones, 20 historias</li><li>Community manager: comentarios y mensajes</li><li>Meta Ads e influencers incluidos</li><li>Google Ads</li><li>Relaciones públicas</li><li>CRM y panel de resultados</li></ul>
+      <div class="para-quien"><strong>Para ustedes si:</strong> quieren delegar todo el marketing y empujar la apertura en Dallas con prensa.</div></div>
+    <div><div class="k">Opción 2</div><h4>Equipo esencial</h4><div class="v">{f(M2)} <small>/mes neto · aprox. {u(M2)}</small></div>
+      <ul><li>Plan Crecimiento: 8 reels, 8 publicaciones, 12 historias</li><li>Respuesta de comentarios (los mensajes directos los responden ustedes)</li><li>Meta Ads e influencers incluidos</li><li>Google Ads</li><li>Sin relaciones públicas</li><li>CRM y panel de resultados</li></ul>
+      <div class="para-quien"><strong>Para ustedes si:</strong> prefieren partir con menos costo fijo y sumar prensa más adelante.</div></div>
+  </div>
+  <table>
+    <tr><th>Servicio</th><th style="width:20%;text-align:right">Opción 1</th><th style="width:20%;text-align:right">Opción 2</th></tr>
+    <tr><td colspan="3" class="sub">Mensual</td></tr>
+    <tr><td>Redes sociales y community manager</td><td class="n">{f(AU)}</td><td class="n">{f(CR)}</td></tr>
+    <tr><td>Google Ads (gestión)</td><td class="n">{f(GO)}</td><td class="n">{f(GO)}</td></tr>
+    <tr><td>Relaciones públicas</td><td class="n">{f(RP)}</td><td class="n">—</td></tr>
+    <tr><td>CRM y panel (operación)</td><td class="n">{f(CM)}</td><td class="n">{f(CM)}</td></tr>
+    <tr><td><strong>Total mensual, neto</strong></td><td class="n"><strong>{f(M1)}</strong></td><td class="n"><strong>{f(M2)}</strong></td></tr>
+    <tr><td colspan="3" class="sub">Pago único (primer mes)</td></tr>
+    <tr><td>Página web actualizada</td><td class="n">{f(WE)}</td><td class="n">{f(WE)}</td></tr>
+    <tr><td>Implementación del CRM y panel</td><td class="n">{f(CI)}</td><td class="n">{f(CI)}</td></tr>
+    <tr><td>Armado de Google Ads</td><td class="n bon">Sin costo</td><td class="n bon">Sin costo</td></tr>
+    <tr><td>Carpeta de prensa</td><td class="n bon">Sin costo</td><td class="n">—</td></tr>
+    <tr><td><strong>Total pago único, neto</strong></td><td class="n"><strong>{f(UNI)}</strong></td><td class="n"><strong>{f(UNI)}</strong></td></tr>
+  </table>
+</section>
+
+<section class="seccion">
+  <h2>Cuánto invertirían en total</h2>
+  <div class="linea"></div>
+  <p>Todo lo que saldría de su bolsillo, separado por quién lo recibe. La pauta es la que recomendamos para partir: {f(PM)} en Meta y {f(PG)} en Google. La deciden ustedes y la pueden cambiar cuando quieran; nosotros no recibimos nada de ese dinero.</p>
+  <table>
+    <tr><th>Concepto</th><th>Quién lo recibe</th><th style="width:16%;text-align:right">Opción 1</th><th style="width:16%;text-align:right">Opción 2</th></tr>
+    <tr><td colspan="4" class="sub">Primer mes</td></tr>
+    <tr><td>Pagos únicos (web y CRM)</td><td>Influence</td><td class="n">{f(UNI)}</td><td class="n">{f(UNI)}</td></tr>
+    <tr><td>Servicios del mes</td><td>Influence</td><td class="n">{f(M1)}</td><td class="n">{f(M2)}</td></tr>
+    <tr><td>Pauta en Instagram y Facebook</td><td>Meta, directo</td><td class="n">{f(PM)}</td><td class="n">{f(PM)}</td></tr>
+    <tr><td>Pauta en Google</td><td>Google, directo</td><td class="n">{f(PG)}</td><td class="n">{f(PG)}</td></tr>
+    <tr><td class="total-fila">Total primer mes, neto</td><td class="total-fila"></td><td class="n total-fila">{f(UNI+M1+PAUTA)}</td><td class="n total-fila">{f(UNI+M2+PAUTA)}</td></tr>
+    <tr><td>Referencia en dólares</td><td></td><td class="n">{u(UNI+M1+PAUTA)}</td><td class="n">{u(UNI+M2+PAUTA)}</td></tr>
+    <tr><td colspan="4" class="sub">Desde el segundo mes</td></tr>
+    <tr><td>Servicios del mes</td><td>Influence</td><td class="n">{f(M1)}</td><td class="n">{f(M2)}</td></tr>
+    <tr><td>Pauta en Meta y Google</td><td>Meta y Google</td><td class="n">{f(PAUTA)}</td><td class="n">{f(PAUTA)}</td></tr>
+    <tr><td class="total-fila">Total mensual, neto</td><td class="total-fila"></td><td class="n total-fila">{f(M1+PAUTA)}</td><td class="n total-fila">{f(M2+PAUTA)}</td></tr>
+    <tr><td>Referencia en dólares</td><td></td><td class="n">{u(M1+PAUTA)}</td><td class="n">{u(M2+PAUTA)}</td></tr>
+  </table>
+  <p style="font-size:9pt;color:#4a6a6a">Si se factura en Chile, a los servicios de Influence se suma IVA: la opción 1 queda en {f(iva(M1))} al mes y la opción 2 en {f(iva(M2))}. Meta y Google pueden sumar impuestos a la pauta según cómo esté configurada cada cuenta; lo revisamos en la semana 1. No hay costos escondidos: lo que no está en estas tablas (grabación en terreno, notas pagadas, licencias pagadas, pauta en Dallas) se cotiza antes y solo si ustedes lo piden.</p>
+</section>
+
+<section class="seccion">
+  <h2>Cómo trabajamos</h2>
+  <div class="linea"></div>
+  <table>
+    <tr><th style="width:18%">Cuándo</th><th>Qué pasa</th></tr>
+    <tr><td><strong>Semana 1</strong></td><td>Reunión de arranque de 1 hora: objetivos por sede, cursos a empujar, tono de marca, respuestas del community manager y plan para Dallas. Ahí coordinamos lo necesario para trabajar en sus cuentas y en la web.</td></tr>
+    <tr><td><strong>Semana 2</strong></td><td>Calendario de contenido aprobado, CRM y panel funcionando, carpeta de prensa en preparación. Empiezan las publicaciones.</td></tr>
+    <tr><td><strong>Semana 3</strong></td><td>Anuncios de Meta y Google publicados. Primera campaña con influencers en marcha.</td></tr>
+    <tr><td><strong>Semanas 4 a 5</strong></td><td>Web actualizada publicada, primer comunicado de prensa enviado y capacitación del CRM a su equipo.</td></tr>
+    <tr><td><strong>Cada mes</strong></td><td>Revisión semanal de anuncios; informe y reunión de 30 minutos en los primeros 5 días hábiles del mes.</td></tr>
+  </table>
+  <h3>Qué necesitamos de ustedes</h3>
+  <table>
+    <tr><th style="width:50%">Al comenzar</th><th>Cada mes</th></tr>
+    <tr><td>Una persona de contacto que apruebe y responda</td><td>Fotos y videos de clases, desfiles y eventos (de celular sirven)</td></tr>
+    <tr><td>Cuentas publicitarias de Meta y Google con un medio de pago a su nombre</td><td>Aprobar el calendario y las piezas en 48 horas</td></tr>
+    <tr><td>Textos, precios y fotos actualizados de cada sede y curso</td><td>Avisarnos de eventos, logros de alumnos y novedades (son la materia prima de la prensa)</td></tr>
+    <tr><td>Respuestas a las preguntas frecuentes para el community manager</td><td>Atender rápido a los interesados que llegan: ahí se cierra la matrícula</td></tr>
+  </table>
+  <h2 style="margin-top:6mm">Condiciones</h2>
+  <div class="linea"></div>
+  <ul>
+    <li><strong>Sin permanencia mínima</strong> en los servicios mensuales: solo aviso de término con un mes de anticipación. Recomendamos evaluar a los 90 días.</li>
+    <li><strong>Todo queda a su nombre:</strong> cuentas, web, CRM, panel, contenido y lista de medios. Si algún día dejan de trabajar con nosotros, se quedan con todo.</li>
+    <li><strong>Inicio:</strong> 10 días hábiles después de la confirmación. La forma de pago de los pagos únicos se acuerda al confirmar.</li>
+    <li><strong>Horario del community manager:</strong> lunes a viernes, en horario hábil de Chile. Lo que llegue fuera de ese horario se responde el siguiente día hábil.</li>
+  </ul>
+</section>
+
+<section class="seccion">
+  <h2>Qué pueden esperar (y qué no)</h2>
+  <div class="linea"></div>
+  <div class="dos">
+    <div class="bueno"><h4>Lo que sí pueden esperar</h4><ul>
+      <li>Contenido publicado todas las semanas desde la semana 2.</li>
+      <li>Anuncios funcionando desde la semana 3 y cada interesado registrado en el CRM con su origen.</li>
+      <li>Ver en el panel, cuando quieran, cuánto costó cada interesado y cada matrícula.</li>
+      <li>Una web que ya no muestra páginas de prueba, con una versión real en inglés y una página para Dallas.</li>
+      <li>Que les digamos claro qué funcionó, qué no y qué vamos a cambiar.</li></ul></div>
+    <div class="malo"><h4>Lo que no les vamos a prometer</h4><ul>
+      <li>Una cantidad fija de matrículas: depende de la pauta, del precio de los cursos y de cómo se atienden los interesados.</li>
+      <li>Notas de prensa aseguradas: el medio decide qué publica.</li>
+      <li>Resultados en Dallas desde el primer mes: es un mercado nuevo, partimos construyendo presencia.</li>
+      <li>Resultados de anuncios en la primera semana: las plataformas necesitan algunas semanas de datos para aprender.</li></ul></div>
+  </div>
+  <h2 style="margin-top:6mm">Palabras que van a escuchar</h2>
+  <div class="linea"></div>
+  <div class="glos">
+    <div><h4>Community manager</h4>La persona que responde comentarios y mensajes en nombre de la marca, con el tono y las respuestas acordadas.</div>
+    <div><h4>Pauta</h4>El dinero que se le paga a Meta o a Google para mostrar los anuncios. Lo pagan ustedes directo, con su tarjeta.</div>
+    <div><h4>CRM</h4>Una lista ordenada de todos los interesados y en qué etapa está cada uno, desde que pregunta hasta que se matricula.</div>
+    <div><h4>Panel de resultados</h4>Una página con gráficos que se actualiza sola con los números de redes, anuncios y matrículas.</div>
+    <div><h4>Comunicado de prensa</h4>Una noticia escrita como la escribiría un periodista, que se envía a los medios para que la publiquen.</div>
+    <div><h4>Píxel y medición</h4>Un código en la web que avisa a Meta y a Google cuando alguien que vio un anuncio se inscribe o escribe.</div>
+  </div>
+</section>
+
+<section class="seccion">
+  <h2>Sus preguntas</h2>
+  <div class="linea"></div>
+  <div class="faq">
+    <h4>¿Cómo funcionan los influencers y cuántos serían al mes?</h4><p>Una campaña al mes con 2 creadoras de más de 10.000 seguidores, incluida en los dos planes. Nosotros las buscamos, negociamos y supervisamos; el canje lo aportan ustedes. El detalle está en el servicio 1.</p>
+    <h4>¿Ustedes hacen el CRM?</h4><p>Sí: lo configuramos, conectamos la web, los formularios y los anuncios, y capacitamos a su equipo. Ver servicio 5.</p>
+    <h4>¿Tienen un dashboard o software de resultados?</h4><p>Sí: un panel en un enlace con Instagram, Meta Ads, Google Ads e inscripciones del CRM, que se actualiza solo y se abre desde el celular.</p>
+    <h4>¿Dónde veo las métricas de Google Ads?</h4><p>En ese mismo panel, y además en su propia cuenta de Google Ads, que queda a nombre de ustedes. Cada mes también lo explicamos en el informe.</p>
+    <h4>¿Hacen todo lo relacionado al seguimiento de ventas?</h4><p>Dejamos el sistema: cada interesado queda registrado, con etapas, recordatorios automáticos y mensajes de seguimiento. La conversación final y la matrícula las cierra su equipo.</p>
+    <h4>¿Qué pasa si a los tres meses no funciona?</h4><p>Lo vemos con los números del panel. Si no los convence, terminan con un mes de aviso, sin multas, y todo lo que construimos queda a su nombre.</p>
+    <h4>¿Pueden trabajar desde Chile para Estados Unidos?</h4><p>Sí: todo nuestro trabajo es remoto y las reuniones son por videollamada. Dallas está entre 1 y 3 horas atrás de Chile, según la época del año, así que coincidimos en casi toda la jornada laboral.</p>
+  </div>
+</section>
+
+<section class="seccion">
+  <div class="cta">
+    <div class="marca-pie"><img src="../assets/logo-influence.png" alt="Influence · Agencia de Marketing"></div>
+    <h2>¿Partimos?</h2>
+    <p>Díganme qué opción prefieren por WhatsApp o correo y agendamos la reunión de arranque. Si tienen cualquier duda sobre un número o un servicio, pregúntenme: prefiero que lo tengan todo claro antes de partir. <strong>Díganme el día y la hora que les acomoden y me ajusto.</strong></p>
+    <div class="boton">Confirmar por WhatsApp o correo</div>
+    <div class="firma">
+      <strong>Gabriel Meza</strong><br>
+      Influence Chile · Agencia de marketing y automatización con IA<br>
+      +56 9 6545 0723 · <a href="https://influencechile.cl">influencechile.cl</a> · Instagram <a href="https://www.instagram.com/influence.chile">@influence.chile</a>
+    </div>
+    <p class="pie">Propuesta válida por 30 días desde el {C["fecha"]}. Valores en pesos chilenos, netos; referencia en dólares con el dólar a {f(C["usd"])}.</p>
+  </div>
+</section>
+</body></html>'''
+out=os.path.join(os.path.dirname(os.path.abspath(__file__)),C['archivo']+'.html')
+open(out,'w',encoding='utf-8').write(HTML); print('ok ->',out)

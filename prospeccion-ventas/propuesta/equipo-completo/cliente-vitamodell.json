@@ -1,0 +1,33 @@
+{
+  "nombre": "Vita Modell International",
+  "contacto": "",
+  "instagram": "@vitamodellinternational",
+  "archivo": "propuesta-vita-modell",
+  "usd": 980,
+  "contexto": "Vita Modell es academia y agencia de modelaje desde 2018, con sedes en Santiago, Viña del Mar, Antofagasta, Puerto Montt, La Serena y Valdivia, clases online para varios países y una apertura anunciada en Dallas, Texas. Nos pidieron un equipo completo: gestión de redes sociales, community manager, relaciones públicas, actualización de la página web y Google Ads, y nos preguntaron por influencers, CRM, panel de resultados y seguimiento de ventas.",
+  "vimos_bien": [
+    "<strong>Una historia que los medios ya publican:</strong> su blog cuenta los pasos de sus alumnas en Miss Antofagasta 2025 y Miss Valdivia 2025. Es material listo para prensa.",
+    "<strong>Seis sedes en Chile, clases online y certificación INAPI,</strong> con una malla de 17 asignaturas. Pocas academias pueden mostrar eso.",
+    "<strong>Una web con muchas funciones:</strong> tienda, intranet de alumnos, reservas, blog, transmisiones en vivo y formulario para empresas.",
+    "<strong>Google Tag Manager ya instalado,</strong> lo que facilita conectar la medición de anuncios sin rehacer la web."
+  ],
+  "vimos_mejorar": [
+    "<strong>Dallas no tiene página propia.</strong> El inicio anuncia \"Vita Modell Dallas / Texas, Join soon\", pero no hay información, formulario ni contacto en Estados Unidos: el WhatsApp publicado es chileno (+56) y el correo es de Gmail.",
+    "<strong>La versión en inglés (/en) muestra el mismo texto en español;</strong> solo cambian algunos botones, y el blog dice \"No posts published in this language yet\".",
+    "<strong>La reserva online muestra un servicio de prueba</strong> llamado \"Nombra tu servicio\", marcado como finalizado y con un precio de US$20.000.",
+    "<strong>En el inicio aparecen videos titulados \"Prueba\" y \"Mi transmisión\",</strong> y el próximo evento tiene fecha y hora \"A determinar\".",
+    "<strong>Uno de los enlaces al formulario de Google lleva a la versión de edición,</strong> que pide permiso para abrirse, en lugar del formulario para responder.",
+    "<strong>La tienda cobra en dólares pero despacha solo dentro de Chile,</strong> y la dirección de la página de contacto tiene un error de tipeo (/contcato).",
+    "<strong>No encontramos el píxel de Meta en la web,</strong> así que hoy los anuncios de Instagram no pueden medir quién se inscribe desde el sitio."
+  ],
+  "web_incluye": [
+    "<strong>Actualización de diseño y textos</strong> de inicio, nosotros, cursos y sedes, agencia, empresas, eventos y contacto, con fotos actuales.",
+    "<strong>Página de Vita Modell Dallas</strong> con información de la apertura y un formulario para inscribir interesados, conectado al CRM.",
+    "<strong>Versión real en inglés</strong> de las páginas principales y de la página de Dallas.",
+    "<strong>Corrección de todo lo que vimos:</strong> servicio de prueba en reservas, videos de prueba, eventos sin fecha, enlace al formulario, moneda y despachos de la tienda, y dirección de contacto.",
+    "<strong>Contacto por sede:</strong> WhatsApp y formulario de cada ciudad, y un contacto para Estados Unidos.",
+    "<strong>Medición:</strong> píxel de Meta, conversiones de Google Ads y Google Analytics conectados, para saber qué anuncio trajo cada inscripción.",
+    "<strong>SEO base:</strong> títulos y descripciones de cada página pensados para aparecer en Google cuando buscan academias de modelaje en cada ciudad."
+  ],
+  "canje": "por ejemplo, un curso o un módulo de clases, o una sesión de book con la academia."
+}
