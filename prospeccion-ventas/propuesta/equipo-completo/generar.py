@@ -198,9 +198,9 @@ HTML=f'''<!DOCTYPE html>
     <li><strong>Qué publican:</strong> como referencia, 1 reel y 4 historias cada una. El contenido final se define con cada creadora según el canje.</li>
     <li><strong>El canje lo aportan ustedes:</strong> {C["canje"]} Nosotros buscamos, negociamos, preparamos la pauta y supervisamos que publiquen.</li>
     <li><strong>Garantía:</strong> trabajamos con acuerdos formales. Si una creadora no cumple, respondemos nosotros y la reemplazamos.</li>
-    <li><strong>Dónde:</strong> nuestra red de creadoras es de Chile, así que las campañas apoyan sus sedes chilenas. Para Dallas podemos buscar y contactar creadoras locales, pero ahí no tenemos red propia todavía; lo planificamos con ustedes cuando definan la fecha de apertura.</li>
+    <li><strong>Dónde:</strong> nuestra red de creadoras es de Chile, así que las campañas apoyan sus sedes chilenas. En Dallas no tenemos red propia aún: buscaríamos creadoras locales cuando definan la apertura.</li>
   </ul>
-  <p style="font-size:9pt;color:#4a6a6a"><strong>No incluye:</strong> grabación en terreno (el material lo graban ustedes en clases y eventos con una pauta nuestra; si prefieren que vayamos, una jornada de 3 horas en Santiago cuesta {f(90000)}) ni la pauta de anuncios.</p>
+  <div class="nota coral"><strong>Importante: no hacemos el servicio de grabación.</strong> Los videos y fotos los graban ustedes (con celular basta) siguiendo nuestra pauta mensual; nosotros hacemos el guion, la edición, el diseño y la publicación. La pauta de anuncios va aparte.</div>
 </section>
 
 <section class="seccion">
@@ -251,7 +251,7 @@ HTML=f'''<!DOCTYPE html>
   <ul>{webinc}</ul>
   <h3>Por qué cuesta {f(WE)}</h3>
   <p>En nuestra web, un sitio con módulos (reservas, catálogo o formularios conectados) va de {f(500000)} a {f(900000)}. La suya queda en la parte alta del rango porque son más de diez páginas, hay que dejarla en dos idiomas y conectarla con el CRM y con la medición de anuncios. Plazo: 3 a 4 semanas desde que recibimos sus textos y fotos.</p>
-  <p style="font-size:9pt;color:#4a6a6a"><strong>No incluye:</strong> el plan de Wix ni el dominio (los siguen pagando ustedes, como hoy), ni sesiones de fotos nuevas. Los cambios posteriores a la entrega se hacen dentro del plan mensual cuando son menores; los rediseños grandes se cotizan aparte.</p>
+  <p style="font-size:9pt;color:#4a6a6a"><strong>No incluye:</strong> el plan de Wix ni el dominio (los siguen pagando ustedes, como hoy), ni grabación o sesiones de fotos nuevas (no hacemos ese servicio). Los cambios posteriores a la entrega se hacen dentro del plan mensual cuando son menores; los rediseños grandes se cotizan aparte.</p>
 </section>
 
 <section class="seccion">
@@ -320,7 +320,7 @@ HTML=f'''<!DOCTYPE html>
     <tr><td class="total-fila">Total mensual, neto</td><td class="total-fila"></td><td class="n total-fila">{f(M1+PAUTA)}</td><td class="n total-fila">{f(M2+PAUTA)}</td></tr>
     <tr><td>Referencia en dólares</td><td></td><td class="n">{u(M1+PAUTA)}</td><td class="n">{u(M2+PAUTA)}</td></tr>
   </table>
-  <p style="font-size:9pt;color:#4a6a6a">Si se factura en Chile, a los servicios de Influence se suma IVA: la opción 1 queda en {f(iva(M1))} al mes y la opción 2 en {f(iva(M2))}. Meta y Google pueden sumar impuestos a la pauta según cómo esté configurada cada cuenta; lo revisamos en la semana 1. No hay costos escondidos: lo que no está en estas tablas (grabación en terreno, notas pagadas, licencias pagadas, pauta en Dallas) se cotiza antes y solo si ustedes lo piden.</p>
+  <p style="font-size:9pt;color:#4a6a6a">Si se factura en Chile, a los servicios de Influence se suma IVA: la opción 1 queda en {f(iva(M1))} al mes y la opción 2 en {f(iva(M2))}. Meta y Google pueden sumar impuestos a la pauta según cómo esté configurada cada cuenta; lo revisamos en la semana 1. No hay costos escondidos: lo que no está en estas tablas (notas pagadas, licencias pagadas, pauta en Dallas) se cotiza antes y solo si ustedes lo piden. La grabación no la ofrecemos.</p>
 </section>
 
 <section class="seccion">
@@ -389,6 +389,7 @@ HTML=f'''<!DOCTYPE html>
     <h4>¿Tienen un dashboard o software de resultados?</h4><p>Sí: un panel en un enlace con Instagram, Meta Ads, Google Ads e inscripciones del CRM, que se actualiza solo y se abre desde el celular.</p>
     <h4>¿Dónde veo las métricas de Google Ads?</h4><p>En ese mismo panel, y además en su propia cuenta de Google Ads, que queda a nombre de ustedes. Cada mes también lo explicamos en el informe.</p>
     <h4>¿Hacen todo lo relacionado al seguimiento de ventas?</h4><p>Dejamos el sistema: cada interesado queda registrado, con etapas, recordatorios automáticos y mensajes de seguimiento. La conversación final y la matrícula las cierra su equipo.</p>
+    <h4>¿Ustedes graban los videos y fotos?</h4><p>No, no hacemos el servicio de grabación. Ustedes graban en sus clases y eventos con una pauta nuestra que dice qué y cómo grabar; nosotros editamos, diseñamos y publicamos.</p>
     <h4>¿Qué pasa si a los tres meses no funciona?</h4><p>Lo vemos con los números del panel. Si no los convence, terminan con un mes de aviso, sin multas, y todo lo que construimos queda a su nombre.</p>
     <h4>¿Pueden trabajar desde Chile para Estados Unidos?</h4><p>Sí: todo nuestro trabajo es remoto y las reuniones son por videollamada. Dallas está entre 1 y 3 horas atrás de Chile, según la época del año, así que coincidimos en casi toda la jornada laboral.</p>
   </div>
