@@ -178,6 +178,16 @@ Un entrante vale cinco contactos en frío. Reglas:
   puntos, son 9, no 10.
 - **Una opción por propuesta; dos como máximo, con una marcada como recomendada.** Con más, el
   cliente se enreda y no decide. Nada de catálogos ni menús de combinaciones.
+- **Primero nuestros planes, después lo personalizado.** Toda propuesta compara lo que pidió el
+  cliente con los planes publicados (Presencia, Crecimiento, Autoridad y servicios sueltos), recomienda
+  el que mejor calza y explica por qué. Solo si ninguno le sirve se ofrece algo a medida, como
+  alternativa y con el precio desglosado desde nuestros valores base. Lo que ofrecemos es lo que
+  dominamos: un servicio de confianza, de una empresa seria que da resultados, no lo más barato.
+- **Cada propuesta busca que el cliente diga que sí.** Muestra por qué confiar con datos reales y
+  verificables (el ejemplo de Domos El Tabo, los años de experiencia; nunca cifras de cartera que no
+  existen), quita riesgo (sin permanencia, todo a su nombre, informe mensual con costo por
+  resultado), suma un regalo de arranque que ya hacemos (optimización del perfil) y deja un
+  primer paso simple y concreto.
 - **En propuestas no se promete nada sobre accesos o contraseñas.** Cómo se comparten las cuentas
   se coordina en la reunión de la semana 1, según lo que use cada cliente.
 - **No se toca una automatización de cliente ni se gastan créditos de Apollo sin preguntar.**

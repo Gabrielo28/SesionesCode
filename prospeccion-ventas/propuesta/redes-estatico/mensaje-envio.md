@@ -11,7 +11,7 @@ Trae las 8 publicaciones que pediste y la gestión de tus anuncios en Meta, y ad
 
 Si prefieres solo diseño estático, en el documento te dejé un plan a tu medida: 8 publicaciones + Meta Ads por $270.000 al mes, o 12 publicaciones + Meta Ads por $330.000 al mes, con el precio desglosado.
 
-La pauta se paga aparte, directo a Meta. Valores netos en pesos chilenos, sin permanencia.
+Elijas el plan que elijas, al confirmar te optimizamos el perfil sin costo (biografía, enlace y destacadas), para que quien llegue desde un anuncio encuentre todo listo. La pauta se paga aparte, directo a Meta. Valores netos en pesos chilenos, sin permanencia.
 
 Cuéntame cuál es tu marca o tu Instagram y te dejo observaciones concretas de tu cuenta. Cualquier duda me escribes.
 ```
