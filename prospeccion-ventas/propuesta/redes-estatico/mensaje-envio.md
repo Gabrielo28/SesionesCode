@@ -5,13 +5,13 @@ Adjuntar `propuesta-camila-pino.pdf`.
 ```
 Hola Camila, te comparto la propuesta formal 🙌
 
-Va con las dos opciones que me pediste, para Instagram y Facebook:
-1. 8 publicaciones de diseño estático al mes + gestión de Meta Ads: $270.000 al mes (unos US$280).
-2. 12 publicaciones de diseño estático al mes + gestión de Meta Ads: $330.000 al mes (unos US$340).
+Comparamos lo que me pediste (8 o 12 publicaciones de diseño estático + publicidad en Meta, en Instagram y Facebook) con nuestros planes, y el que mejor te calza es el Plan Crecimiento: $450.000 al mes (unos US$460).
 
-Las dos incluyen diseño, textos, calendario, programación y publicación, el armado de las campañas sin costo, revisión semanal de los anuncios, creatividades para anuncios e informe mensual. La pauta se paga aparte, directo a Meta. En el documento está explicado cómo se calcula cada precio y cuánto recomendamos invertir en pauta.
+Trae las 8 publicaciones que pediste y la gestión de tus anuncios en Meta, y además suma 8 reels, 12 historias y respuesta de comentarios. Los reels son el formato que más alcance trae y también los anuncios que mejor rinden. Tú grabas con el celular siguiendo nuestra pauta y nosotros hacemos todo lo demás.
 
-Valores netos en pesos chilenos, sin permanencia.
+Si prefieres solo diseño estático, en el documento te dejé un plan a tu medida: 8 publicaciones + Meta Ads por $270.000 al mes, o 12 publicaciones + Meta Ads por $330.000 al mes, con el precio desglosado.
+
+La pauta se paga aparte, directo a Meta. Valores netos en pesos chilenos, sin permanencia.
 
 Cuéntame cuál es tu marca o tu Instagram y te dejo observaciones concretas de tu cuenta. Cualquier duda me escribes.
 ```
