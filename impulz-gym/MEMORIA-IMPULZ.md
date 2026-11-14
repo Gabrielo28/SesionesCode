@@ -160,6 +160,12 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   (se quitó del sitio; la propuesta y el video que vio el dueño todavía lo mencionan).
 - **Acuerdo formal para firmar:** `Acuerdo-Impulz-Gym.pdf` (fuente en `docs/acuerdo/acuerdo.html`; decisiones por defecto en `docs/01-acuerdo-piloto.md`).
 
+- **Propiedad y salida (decidido 14 nov):** el sitio se publica en `impulz.entrenachile.cl`. Sitio, reservas, panel, cuenta
+  publicitaria y Píxel son del coach; correo, Instagram, página de Facebook, ficha de Google y lista de socios son del gimnasio.
+  El acuerdo tiene licencia de uso sin costo y opción de compra o mantención mensual del sitio, con **valores en blanco**
+  (sugeridos: $450.000 y $45.000 al mes). Pendientes al día: `LISTA-PARA-OK.md`.
+- La propuesta ya no menciona el programa de bienvenida; **el video sí** (en la locución).
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

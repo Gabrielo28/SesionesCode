@@ -22,7 +22,7 @@ El orden importa: cada cuenta necesita la anterior.
 | # | Qué | Para qué | A nombre de quién | Tiempo |
 |---|---|---|---|---|
 | 1 | **Correo del gimnasio** (Gmail, por ejemplo `impulzgym.elquisco@gmail.com`) | Es la llave de todas las demás cuentas | Del dueño. Tú con acceso | 10 min |
-| 2 | **Dominio `impulzgym.cl`** en NIC Chile (verificar que esté libre) | Dirección del sitio web | Del dueño, con su RUT | 15 min, unos $10.000 al año |
+| 2 | **Subdominio `impulz.entrenachile.cl`** (registro CNAME en el DNS de entrenachile.cl) | Dirección del sitio web | Del coach | 10 min, sin costo |
 | 3 | **Página de Facebook** de Impulz Gym | Sin página no se pueden hacer anuncios en Meta | Creada con el perfil del dueño. Tú como administrador | 15 min |
 | 4 | **Instagram a cuenta profesional** y conectada a la página de Facebook | Estadísticas, botón de contacto y anuncios | Cuenta actual del gimnasio | 10 min |
 | 5 | **Portafolio comercial de Meta** (Business) del gimnasio, y acceso de socio para Influence Chile | Así los anuncios salen de tu cuenta publicitaria y la página sigue siendo del dueño | Dueño comparte, tú administras | 20 min |
@@ -32,18 +32,17 @@ El orden importa: cada cuenta necesita la anterior.
 | 9 | **Publicar la aplicación en Railway** y apuntar el dominio | Sitio, reservas y panel en línea | Tu cuenta de Railway | 30 min (ver `app/README.md`) |
 | 10 | **Link en la bio de Instagram** con `?c=ig` | Que las reservas desde Instagram queden medidas | Tú | 2 min |
 
-**Regla de propiedad:** todo lo que es del gimnasio (correo, dominio, página, Instagram, ficha de Google) queda a nombre
-del dueño, contigo como administrador. Lo tuyo (cuenta publicitaria, Píxel, Railway, panel) queda a tu nombre.
+**Regla de propiedad:** todo lo que es del gimnasio (correo, página, Instagram, ficha de Google) queda a nombre
+del dueño, contigo como administrador. Lo tuyo (sitio web, dominio, cuenta publicitaria, Píxel, Railway, panel) queda a tu nombre.
 Así, si el acuerdo termina, nadie pierde lo suyo.
 
-## 3. Dominio: recomendación
+## 3. Dominio y propiedad (decidido el 14 de noviembre)
 
-- **`impulzgym.cl`** como dirección principal del sitio. Es lo que la gente espera y ayuda en Google.
-- **`impulz.entrenachile.cl`** apuntando a la misma aplicación, para tus anuncios y tu perfil de coach.
-- Las dos direcciones muestran lo mismo y registran las reservas en el mismo panel.
-
-Atención con la atribución: como el sitio web lo construyes y lo administras tú, las reservas que entran por el sitio
-cuentan como gestión tuya. Conviene dejarlo escrito en el acuerdo (ver punto 6).
+- El sitio se publica en **`impulz.entrenachile.cl`**, dominio del coach. No se compra `impulzgym.cl` por ahora.
+- El sitio, la página de reservas, el panel, la cuenta publicitaria y el Píxel son **del coach / la Agencia**. El gimnasio los usa sin costo mientras dure el acuerdo.
+- El correo, Instagram, la página de Facebook y la ficha de Google son **del gimnasio**, con el coach como administrador.
+- Un dominio propio (`impulzgym.cl`) con el sitio traspasado es parte de la **opción de compra** del acuerdo (cláusula décimo primera). Los valores están pendientes.
+- Las reservas que entran por el sitio cuentan como gestión del coach (cláusula sexta).
 
 ## 4. Datos que faltan del dueño para publicar
 
@@ -67,12 +66,7 @@ Se completan en el panel → Ajustes. Mientras falten, el sitio muestra "Consult
 | **3** | Primera campaña en Meta con presupuesto bajo ($60.000 a $80.000 en 3 semanas). Pedir las primeras reseñas en Google a socios actuales |
 | **4** | Revisar el costo por reserva y por socio en el panel. Anunciar el reto de verano. Primera liquidación mensual con el dueño |
 
-## 6. Cambios al acuerdo después de la reunión
+## 6. Acuerdo
 
-Pendientes de confirmar contigo antes de tocar el borrador (`01-acuerdo-piloto.md`):
-
-1. **Tu rol en sala:** solo entrenamiento personalizado, sin horario fijo. El borrador hablaba de clases grupales en horarios fijos.
-2. **Lo que aceptó el dueño sobre el 100%:** confirmar el texto exacto (ver la pregunta en el chat).
-3. **Activos digitales:** agregar que el correo, el dominio, la página y la ficha de Google son del gimnasio, y que tú los administras durante el acuerdo.
-4. **Reservas del sitio web:** dejar escrito que cuentan como gestión tuya.
-5. **Programa de bienvenida:** si eres coach solo de personalizados, definir quién hace la evaluación inicial de cada socio nuevo y cuánto tiempo te toma.
+El acuerdo formal ya incluye lo conversado en la reunión: `../Acuerdo-Impulz-Gym.pdf`. Las decisiones por defecto y lo que
+se completa a mano están en `01-acuerdo-piloto.md`.

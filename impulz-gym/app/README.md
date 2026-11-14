@@ -4,7 +4,7 @@ Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el 
 
 | Dirección | Qué es | Quién la ve |
 |---|---|---|
-| `https://impulzgym.cl/` (y `impulz.entrenachile.cl`) | Sitio web del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
+| `https://impulz.entrenachile.cl/` | Sitio web del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
 | `/reserva` | Página corta de reservas, para anuncios | Cualquiera |
 | `https://impulz.entrenachile.cl/panel` | Panel de comisiones con usuario y clave | Coach, dueño y (opcional) recepción |
 
@@ -54,7 +54,7 @@ Todo cambio queda en **Historial** con quién y cuándo. El historial no se pued
 5. **Dominio:** Settings → Networking → Custom Domain → `impulz.entrenachile.cl`. Railway entrega un registro **CNAME**:
    créalo en el DNS de entrenachile.cl (nombre `impulz`, valor el que indique Railway). El certificado HTTPS es automático.
 6. Entra a `/panel` con tu usuario → **Ajustes**: WhatsApp, beneficio del código, promoción, precios, dirección, link de Google Maps y datos del coach. El sitio se actualiza al guardar.
-7. Un servicio de Railway acepta varios dominios: agrega también `impulzgym.cl` cuando esté comprado.
+7. Un servicio de Railway acepta varios dominios: si el gimnasio compra el sitio, se agrega su dominio propio (por ejemplo `impulzgym.cl`).
 
 ## Probar en tu computador
 
