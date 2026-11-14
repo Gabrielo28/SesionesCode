@@ -67,7 +67,7 @@ function pixelHead() {
 
 /* ---------- sitio público ---------- */
 const origen = req => ((req.headers['x-forwarded-proto'] || 'http').split(',')[0]) + '://' + (req.headers['x-forwarded-host'] || req.headers.host || 'localhost');
-const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMensual', 'precioPareja', 'precioMatricula', 'coachNombre', 'coachPerfil'];
+const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMensual', 'precioPareja', 'precioMatricula', 'coachNombre', 'coachPerfil', 'resenasUrl', 'pruebaGratis'];
 // Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo.
 const sitioPublico = cfg => JSON.stringify(Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? '']))).replace(/</g, '\\u003c');
 function jsonLd(cfg, req) {
@@ -253,7 +253,8 @@ async function api(req, res, ruta, metodo) {
     if ('direccion' in b) c.direccion = texto(b.direccion, 120);
     if ('coachNombre' in b) c.coachNombre = texto(b.coachNombre, 60);
     if ('instagram' in b) c.instagram = texto(b.instagram, 40).replace(/[^\w.]/g, '');
-    for (const k of ['mapsUrl', 'coachPerfil']) if (k in b) { const u = texto(b[k], 300); c[k] = /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ''; }
+    if ('pruebaGratis' in b) c.pruebaGratis = +b.pruebaGratis ? 1 : 0;
+    for (const k of ['mapsUrl', 'coachPerfil', 'resenasUrl']) if (k in b) { const u = texto(b[k], 300); c[k] = /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ''; }
     const antes = datos.config(), nuevo = datos.guardarConfig(c);
     const det = Object.keys(c).filter(k => String(antes[k]) !== String(nuevo[k])).map(k => `${k}: ${antes[k] || '—'} → ${nuevo[k] || '—'}`).join(' · ');
     if (det) datos.registrar({ ...quien, accion: 'cambió el acuerdo', detalle: det });

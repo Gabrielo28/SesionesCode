@@ -1,5 +1,32 @@
 # 08 · Benchmark web: cadenas, competencia local y referentes
 
+> **Actualización del 14 de noviembre de 2026: sitios abiertos y revisados.**
+> La primera versión de este documento se hizo solo con resultados del buscador. Después se abrieron en formato celular
+> los sitios de la tabla siguiente. Lo que dice esta sección está verificado; el resto del documento sigue marcado como estaba.
+
+## Revisión directa de los sitios
+
+| Sitio | Qué es | Lo que hace bien | Lo que se tomó para Impulz |
+|---|---|---|---|
+| **sporttrainingbeach.cl** (El Quisco) | Competidor directo. Negro y rojo, tono de "guerrero" ("El templo más grande del litoral") | Precios publicados, WhatsApp en todo el sitio, galería, "generador de rutina" y ranking de socios | Publicar precios. Diferenciarse en el tono: Impulz habla a gente real, no a guerreros |
+| **vitalgym.cl** | Entrenamiento personalizado, grupos chicos | Sección "¿Para quién es?" que responde miedos reales; "Cómo funciona" en pasos; "Sin costo y sin compromiso" bajo el botón | Sección "¿Para quién es Impulz?" y los pasos del entrenamiento personalizado |
+| **campfitgirls.cl** | Boutique | Dirección en una barra arriba; sellos "sin compromiso · sin experiencia previa"; link a reseñas de Google; preguntas frecuentes | Barra superior con ubicación y horario, sellos bajo el botón, botón de reseñas |
+| **evogym.cl** | Boutique | Horario y dirección arriba; "Ver en mapa" y "Ver reseñas en Google"; precios por frecuencia | Mapa y reseñas en la sección de ubicación |
+| **b-klan.com** | Funcional | "El gimnasio para gente real"; "¿Cómo empezar?" en 3 pasos; un solo botón: clase gratis | Titular "Un gimnasio para gente real" y un solo objetivo por página |
+| **zoob.cl** | Multidisciplina | "Tu primer entrenamiento es gratis" destacado; planes con precio | Opción de marcar la clase de prueba como gratis |
+| **forcesgym.com/clasedeprueba** | Privado | Página dedicada solo a reservar la clase de prueba | Ya existe: `/reserva`, para los anuncios |
+| **smartfit.cl / sportlife.cl** | Cadenas | Promoción del primer mes en la portada; compra en línea | Promoción destacada en la portada (editable). No se copia la compra en línea |
+
+**Precios vistos en sporttrainingbeach.cl:** ticket diario $5.000; 8 tickets $24.000; 12 tickets $27.000; estudiantes $25.000;
+plan full $30.000; 3 meses $84.000. Sirven de referencia para fijar los precios de Impulz y del pase verano.
+
+**Riesgo detectado:** el competidor directo usa los mismos colores que Impulz (negro y rojo). El sitio de Impulz mantiene
+sus colores de marca y se diferencia con un tono cercano, la barra de horario, el aviso "abierto ahora" y la reserva con código.
+
+**Ideas para más adelante:** generador de rutina como gancho para captar contactos (el competidor ya lo tiene), galería de
+fotos reales, testimonios con nombre, y página de equipo.
+
+
 Fecha: 14-11-2026. Investigación solo por búsqueda web.
 
 **Límite importante del método.** El proxy de red de la sesión bloqueó la apertura directa de todos los sitios probados (smartfit.cl, sportlife.cl, pacificfitness.cl, energy.cl, youtopia.cl, sporttrainingbeach.cl, agendapro.com). Todo lo que sigue proviene de resultados y extractos del buscador, no de navegar las páginas. Lo que no se pudo confirmar va marcado "no verificado". Antes de usar un precio en una reunión o en el sitio, revisarlo a mano en la URL indicada.

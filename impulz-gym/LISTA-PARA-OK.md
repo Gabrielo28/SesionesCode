@@ -41,7 +41,8 @@ El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan des
 - [ ] Dirección del gimnasio y link de Google Maps
 - [ ] Precios: plan mensual, plan pareja, matrícula y pase verano
 - [ ] Promociones vigentes
-- [ ] Si la clase de prueba es gratis
+- [ ] Si la clase de prueba es gratis (se activa en Ajustes)
+- [ ] Link a las reseñas de Google, cuando exista la ficha
 - [ ] Número de WhatsApp que recibe las reservas
 - [ ] Tu nombre de coach y el link de tu perfil en entrenachile.cl
 - [ ] Fotos reales del gimnasio (después de la primera grabación)

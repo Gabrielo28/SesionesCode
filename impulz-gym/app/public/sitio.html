@@ -50,7 +50,9 @@ p{margin:0}
 .btn.sm{font-size:16px;padding:11px 16px;border-radius:10px}
 .btn:disabled{opacity:.6;cursor:wait}
 
-header.nav{position:sticky;top:0;z-index:20;background:rgba(11,9,9,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.topbar{background:var(--red);color:#fff;font:700 13px/1.3 var(--display);letter-spacing:.1em;text-transform:uppercase;padding-top:env(safe-area-inset-top,0px)}
+.topbar .wrap{display:flex;justify-content:space-between;gap:6px 18px;flex-wrap:wrap;padding-block:7px}
+header.nav{position:sticky;top:0;z-index:20;background:rgba(11,9,9,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .navin{display:flex;align-items:center;gap:20px;padding-block:12px}
 .logo{font:italic 900 28px/1 var(--display);text-transform:uppercase;text-decoration:none;color:var(--ink)}
 .logo b{color:var(--red)}
@@ -68,6 +70,8 @@ nav.links a:hover{color:var(--red-hi)}
 .hero h1{font-size:clamp(60px,13vw,150px);max-width:9ch}
 .hero .lead{font-size:clamp(19px,2.4vw,23px);max-width:46ch;color:var(--soft)}
 .cta{display:flex;gap:12px;flex-wrap:wrap}
+.trust{display:flex;flex-wrap:wrap;gap:6px 18px;font:700 14px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.trust span::before{content:"✓ ";color:var(--ok)}
 .promo{justify-self:start;background:var(--red);color:#fff;border-radius:12px;padding:12px 16px;font:italic 800 22px/1.1 var(--display);text-transform:uppercase}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .stat{background:var(--bg);padding:16px 18px;display:grid;gap:2px}
@@ -158,10 +162,11 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
+<div class="topbar"><div class="wrap"><span id="topDir">El Quisco, litoral central</span><span>Lun a vie 5:00 – 22:00 · Sáb 8:00 – 14:00</span></div></div>
 <header class="nav"><div class="wrap navin">
   <a class="logo" href="#inicio"><b>//</b>Impulz<small>Gym · El Quisco</small></a>
   <nav class="links" aria-label="Secciones">
-    <a href="#planes">Planes</a><a href="#personalizado">Personalizado</a><a href="#horarios">Horarios</a><a href="#ubicacion">Ubicación</a><a href="#preguntas">Preguntas</a>
+    <a href="#para-quien">Para quién</a><a href="#planes">Planes</a><a href="#personalizado">Personalizado</a><a href="#horarios">Horarios</a><a href="#ubicacion">Ubicación</a><a href="#preguntas">Preguntas</a>
   </nav>
   <a class="btn sm" href="#reserva">Clase de prueba</a>
 </div></header>
@@ -173,6 +178,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
   <p class="lead">Gimnasio en El Quisco, abierto desde las 5 de la mañana. Entrena a tu ritmo o con un plan personalizado, y parte con una clase de prueba.</p>
   <div class="promo" id="promo" hidden></div>
   <div class="cta"><a class="btn" href="#reserva">Reservar clase de prueba</a><a class="btn ghost" href="#planes">Ver planes</a></div>
+  <div class="trust"><span id="tGratis" hidden>Sin costo</span><span>Sin compromiso</span><span>Sin experiencia previa</span><span>Respuesta por WhatsApp</span></div>
   <div class="stats">
     <div class="stat"><b>5:00</b><span>abrimos de lunes a viernes</span></div>
     <div class="stat"><b>22:00</b><span>cerramos en la semana</span></div>
@@ -181,13 +187,13 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
   </div>
 </div></section>
 
-<section class="blk" id="por-que"><div class="wrap">
-  <div class="head"><span class="eyebrow">Por qué Impulz</span><h2>Un gimnasio hecho para que vuelvas</h2></div>
+<section class="blk" id="para-quien"><div class="wrap">
+  <div class="head"><span class="eyebrow">¿Para quién es Impulz?</span><h2>Un gimnasio para gente real</h2><p>No necesitas estar en forma para partir. Necesitas un lugar que te quede cómodo.</p></div>
   <div class="cards">
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 11v12l8 5" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Horario que se adapta</h3><p>Desde las 5:00 hasta las 22:00. Entrena antes del trabajo, a la hora de almuerzo o de noche.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M6 22h32M10 15v14M34 15v14M15 11v22M29 11v22" fill="none" stroke="#e3171e" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Centro de entrenamiento</h3><p>Un espacio para entrenar en serio, con acompañamiento para quienes parten y para quienes ya tienen experiencia.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="14" r="7" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M8 38c2-9 8-13 14-13s12 4 14 13" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Plan personalizado</h3><p>Trabaja con un coach que arma tu plan según tu objetivo y te sigue en el proceso.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 24l9 9 19-21" fill="none" stroke="#e3171e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Prueba antes de decidir</h3><p>Reserva una clase de prueba en línea, coordina por WhatsApp y conoce el gimnasio por dentro.</p></div>
+    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 24l9 9 19-21" fill="none" stroke="#e3171e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Si partes de cero</h3><p>Nadie nace sabiendo. Ven a una clase de prueba, conoce el lugar y parte a tu ritmo.</p></div>
+    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 11v12l8 5" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Si tu horario es difícil</h3><p>Abrimos a las 5:00 y cerramos a las 22:00. Entrena antes del trabajo, a mediodía o de noche.</p></div>
+    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="14" r="7" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M8 38c2-9 8-13 14-13s12 4 14 13" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Si quieres un plan a tu medida</h3><p>Entrena con un coach personalizado que arma tu plan según tu objetivo y sigue tu avance.</p></div>
+    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="8" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 4v6M22 34v6M4 22h6M34 22h6M9 9l4 4M31 31l4 4M35 9l-4 4M13 31l-4 4" stroke="#f6f1ef" stroke-width="3" stroke-linecap="round"/></svg><h3>Si veraneas en el litoral</h3><p>No pierdas el ritmo en vacaciones. En enero y febrero hay pases por semana o quincena.</p></div>
   </div>
 </div></section>
 
@@ -267,7 +273,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 <section class="blk" id="ubicacion"><div class="wrap">
   <div class="head"><span class="eyebrow">Ubicación</span><h2>En El Quisco, cerca de todo el litoral</h2></div>
   <div class="loc">
-    <div class="card"><b>Dónde estamos</b><span class="big" id="dir">El Quisco, Región de Valparaíso</span><a class="btn ghost sm" id="mapa" href="#" target="_blank" rel="noopener" hidden style="justify-self:start">Cómo llegar</a></div>
+    <div class="card"><b>Dónde estamos</b><span class="big" id="dir">El Quisco, Región de Valparaíso</span><div class="cta"><a class="btn ghost sm" id="mapa" href="#" target="_blank" rel="noopener" hidden>Cómo llegar</a><a class="btn ghost sm" id="resenas" href="#" target="_blank" rel="noopener" hidden>Ver reseñas en Google</a></div></div>
     <div class="card"><b>También venimos desde</b><div class="towns"><span class="town">Algarrobo</span><span class="town">El Tabo</span><span class="town">Isla Negra</span><span class="town">Punta de Tralca</span><span class="town">Las Cruces</span></div><p>Si veraneas en la zona, pregunta por el pase verano.</p></div>
   </div>
 </div></section>
@@ -303,7 +309,13 @@ $('beneficio').textContent = SITIO.beneficio || '';
 if (SITIO.precioMensual) $('pMensual').innerHTML = clp(SITIO.precioMensual) + '<small> / mes</small>';
 if (SITIO.precioPareja) $('pPareja').innerHTML = clp(SITIO.precioPareja) + '<small> / mes</small>';
 if (SITIO.precioMatricula) $('notaPlanes').textContent = 'Matrícula: ' + clp(SITIO.precioMatricula) + '. ' + $('notaPlanes').textContent;
-if (SITIO.direccion) $('dir').textContent = SITIO.direccion;
+if (SITIO.direccion) { $('dir').textContent = SITIO.direccion; $('topDir').textContent = SITIO.direccion; }
+if (SITIO.resenasUrl) { $('resenas').href = SITIO.resenasUrl; $('resenas').hidden = false; }
+if (+SITIO.pruebaGratis) {
+  $('tGratis').hidden = false;
+  document.querySelectorAll('a[href="#reserva"]').forEach(a => { if (/clase de prueba$/i.test(a.textContent.trim())) a.textContent = a.textContent.trim() + ' gratis'; });
+  document.querySelector('#reserva .eyebrow').textContent = 'Clase de prueba gratis';
+}
 if (SITIO.mapsUrl) { $('mapa').href = SITIO.mapsUrl; $('mapa').hidden = false; }
 if (SITIO.instagram) { $('ig').href = 'https://www.instagram.com/' + SITIO.instagram; $('ig').textContent = 'Instagram @' + SITIO.instagram; }
 if (SITIO.coachNombre) {
