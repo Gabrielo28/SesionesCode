@@ -166,6 +166,11 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   (sugeridos: $450.000 y $45.000 al mes). Pendientes al día: `LISTA-PARA-OK.md`.
 - La propuesta ya no menciona el programa de bienvenida; **el video sí** (en la locución).
 
+- **Fotos (14 nov):** de 12 grabaciones del usuario se sacaron 10 fotos reales del interior, sin personas, con luz y color
+  corregidos (`fotos/mejoradas/`); 8 están en la galería del sitio. Plano esquemático no a escala (`fotos/plano-esquematico.png`).
+  Pruebas con IA en `fotos/ia/`: la fachada con letrero Impulz es una **maqueta** (el letrero real aún dice "World Fit");
+  el interior retocado con IA **cambió el piso y las máquinas**, no usar como foto real. Reglas en `fotos/README.md`.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta
