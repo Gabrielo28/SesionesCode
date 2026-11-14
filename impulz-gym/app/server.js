@@ -64,6 +64,29 @@ function pixelHead() {
   return `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${PIXEL}');fbq('track','PageView');</script>`;
 }
 
+
+/* ---------- sitio público ---------- */
+const origen = req => ((req.headers['x-forwarded-proto'] || 'http').split(',')[0]) + '://' + (req.headers['x-forwarded-host'] || req.headers.host || 'localhost');
+const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMensual', 'precioPareja', 'precioMatricula', 'coachNombre', 'coachPerfil'];
+// Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo.
+const sitioPublico = cfg => JSON.stringify(Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? '']))).replace(/</g, '\\u003c');
+function jsonLd(cfg, req) {
+  const d = {
+    '@context': 'https://schema.org', '@type': 'ExerciseGym', name: 'Impulz Gym El Quisco', url: origen(req) + '/',
+    description: 'Gimnasio y entrenamiento personalizado en El Quisco, litoral central.',
+    address: { '@type': 'PostalAddress', ...(cfg.direccion ? { streetAddress: cfg.direccion } : {}), addressLocality: 'El Quisco', addressRegion: 'Valparaíso', addressCountry: 'CL' },
+    areaServed: ['El Quisco', 'Algarrobo', 'El Tabo', 'Isla Negra'],
+    openingHoursSpecification: [
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '05:00', closes: '22:00' },
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '08:00', closes: '14:00' }
+    ],
+    ...(cfg.whatsapp ? { telephone: '+' + cfg.whatsapp } : {}),
+    ...(cfg.instagram ? { sameAs: ['https://www.instagram.com/' + cfg.instagram] } : {}),
+    ...(cfg.mapsUrl ? { hasMap: cfg.mapsUrl } : {})
+  };
+  return '<script type="application/ld+json">' + JSON.stringify(d).replace(/</g, '\\u003c') + '</script>';
+}
+
 /* ---------- API pública: reservas ---------- */
 async function reservar(req, res) {
   if (!permitido('r:' + ipDe(req), 8, 3600e3)) return error(res, 429, 'Demasiadas reservas desde esta conexión. Intenta más tarde o escríbenos por WhatsApp.');
@@ -226,6 +249,11 @@ async function api(req, res, ruta, metodo) {
     if ('whatsapp' in b) c.whatsapp = soloDigitos(b.whatsapp).slice(0, 15);
     if ('beneficio' in b) c.beneficio = texto(b.beneficio, 120);
     if ('promo' in b) c.promo = texto(b.promo, 160);
+    for (const k of ['precioMensual', 'precioPareja', 'precioMatricula']) if (k in b) c[k] = Math.max(0, Math.min(10e6, Math.round(+b[k] || 0)));
+    if ('direccion' in b) c.direccion = texto(b.direccion, 120);
+    if ('coachNombre' in b) c.coachNombre = texto(b.coachNombre, 60);
+    if ('instagram' in b) c.instagram = texto(b.instagram, 40).replace(/[^\w.]/g, '');
+    for (const k of ['mapsUrl', 'coachPerfil']) if (k in b) { const u = texto(b[k], 300); c[k] = /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ''; }
     const antes = datos.config(), nuevo = datos.guardarConfig(c);
     const det = Object.keys(c).filter(k => String(antes[k]) !== String(nuevo[k])).map(k => `${k}: ${antes[k] || '—'} → ${nuevo[k] || '—'}`).join(' · ');
     if (det) datos.registrar({ ...quien, accion: 'cambió el acuerdo', detalle: det });
@@ -258,16 +286,21 @@ http.createServer(async (req, res) => {
     if (ruta.startsWith('/api/')) return await api(req, res, ruta, metodo);
     if (ruta === '/' || ruta === '/reserva') {
       const cfg = datos.config();
-      return pagina(res, 'reserva.html', {
-        PIXEL: pixelHead(), PIXEL_ACTIVO: PIXEL ? '1' : '',
-        BENEFICIO: esc(cfg.beneficio || ''), PROMO: esc(cfg.promo || ''), PROMO_OCULTA: cfg.promo ? '' : 'hidden'
-      });
+      const base = { PIXEL: pixelHead(), PIXEL_ACTIVO: PIXEL ? '1' : '' };
+      // "/" es el sitio completo del gimnasio; "/reserva" es la página corta para anuncios.
+      if (ruta === '/') return pagina(res, 'sitio.html', { ...base, JSONLD: jsonLd(cfg, req), SITIO_JSON: sitioPublico(cfg) });
+      return pagina(res, 'reserva.html', { ...base, BENEFICIO: esc(cfg.beneficio || ''), PROMO: esc(cfg.promo || ''), PROMO_OCULTA: cfg.promo ? '' : 'hidden' });
+    }
+    if (ruta === '/sitemap.xml') {
+      const o = origen(req);
+      res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+      return res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${o}/</loc></url><url><loc>${o}/reserva</loc></url></urlset>`);
     }
     if (ruta === '/panel' || ruta === '/panel/') {
       res.setHeader('X-Robots-Tag', 'noindex');
       return pagina(res, 'panel.html');
     }
-    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /panel\nDisallow: /api/\n'); }
+    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /panel\nDisallow: /api/\nSitemap: ' + origen(req) + '/sitemap.xml\n'); }
     if (ruta === '/salud') return json(res, 200, { ok: true });
     if (ESTATICOS[ruta]) {
       res.writeHead(200, { 'Content-Type': ESTATICOS[ruta], 'Cache-Control': 'public, max-age=600' });

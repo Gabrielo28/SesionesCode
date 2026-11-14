@@ -10,7 +10,7 @@
     { id: 'coach', c: 'coach', nombre: 'Redes del coach', g: true },
     { id: 'youtube', c: 'yt', nombre: 'YouTube y Shorts', g: true },
     { id: 'entrenachile', c: 'entrenachile', nombre: 'Perfil en entrenachile.cl', g: true },
-    { id: 'reserva_web', c: '', nombre: 'Página de reservas (sin campaña)', g: true },
+    { id: 'reserva_web', c: '', nombre: 'Sitio web y reservas (sin campaña)', g: true },
     { id: 'codigo', c: '', nombre: 'Código promocional de campaña', g: true },
     { id: 'coaching', c: '', nombre: 'Alumno de coaching', g: true },
     { id: 'meson', c: '', nombre: 'Llegó directo al gimnasio', g: false },

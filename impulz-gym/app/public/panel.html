@@ -244,6 +244,18 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
         <label class="f">Beneficio del código<input id="c-beneficio" maxlength="120"></label>
         <label class="f full">Promoción destacada (opcional)<input id="c-promo" maxlength="160" placeholder="Ej: Primer mes $25.000"></label>
       </div>
+      <h3 style="margin-top:18px">Sitio web</h3>
+      <div class="fields">
+        <label class="f">Precio plan mensual ($)<input id="c-precioMensual" type="number" min="0" step="500"></label>
+        <label class="f">Precio plan pareja ($)<input id="c-precioPareja" type="number" min="0" step="500"></label>
+        <label class="f">Matrícula ($)<input id="c-precioMatricula" type="number" min="0" step="500"></label>
+        <label class="f">Instagram (sin @)<input id="c-instagram" maxlength="40"></label>
+        <label class="f full">Dirección del gimnasio<input id="c-direccion" maxlength="120" placeholder="Calle y número, El Quisco"></label>
+        <label class="f full">Link de Google Maps<input id="c-mapsUrl" maxlength="300" placeholder="https://maps.app.goo.gl/..."></label>
+        <label class="f">Nombre del coach<input id="c-coachNombre" maxlength="60"></label>
+        <label class="f">Perfil en entrenachile.cl<input id="c-coachPerfil" maxlength="300" placeholder="https://entrenachile.cl/..."></label>
+      </div>
+      <p class="note">Un precio en 0 se muestra como "Consulta". Los campos vacíos no aparecen en el sitio.</p>
       <div class="toolbar" style="margin-top:14px"><button class="btn" type="submit" id="guardarCfg">Guardar</button><span class="note" id="cfgNote"></span></div>
     </form>
     <div class="panel">
@@ -436,7 +448,7 @@ function rHist(){
     const d=new Date(h.t);return `<tr><td style="white-space:nowrap">${d.toLocaleDateString("es-CL")} ${d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"})}</td><td>${esc(h.usuario)}</td><td>${esc(h.accion)}${h.codigo?` <span class="mono">${esc(h.codigo)}</span>`:""}</td><td>${esc(h.detalle||"")}</td></tr>`}).join("")}</tbody></table>`;
 }
 
-const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad"], CFG_TXT=["inicio","whatsapp","beneficio","promo"];
+const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad","precioMensual","precioPareja","precioMatricula"], CFG_TXT=["inicio","whatsapp","beneficio","promo","direccion","mapsUrl","instagram","coachNombre","coachPerfil"];
 function rCfg(){
   [...CFG_NUM,...CFG_TXT].forEach(k=>{const e=$("#c-"+k); if(document.activeElement!==e) e.value=S.config[k]??""});
   const dis=!admin(); $("#cfg").querySelectorAll("input,button").forEach(e=>e.disabled=dis);

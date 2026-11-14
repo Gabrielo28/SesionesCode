@@ -1,10 +1,11 @@
-# Impulz: página de reservas y panel de comisiones
+# Impulz: sitio web, página de reservas y panel de comisiones
 
 Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el Escáner y Colchones Yolé).
 
 | Dirección | Qué es | Quién la ve |
 |---|---|---|
-| `https://impulz.entrenachile.cl/` | Página pública de reservas. Destino de todos los anuncios y links | Cualquiera |
+| `https://impulzgym.cl/` (y `impulz.entrenachile.cl`) | Sitio web del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
+| `/reserva` | Página corta de reservas, para anuncios | Cualquiera |
 | `https://impulz.entrenachile.cl/panel` | Panel de comisiones con usuario y clave | Coach, dueño y (opcional) recepción |
 
 ## Cómo funciona
@@ -52,7 +53,8 @@ Todo cambio queda en **Historial** con quién y cuándo. El historial no se pued
 
 5. **Dominio:** Settings → Networking → Custom Domain → `impulz.entrenachile.cl`. Railway entrega un registro **CNAME**:
    créalo en el DNS de entrenachile.cl (nombre `impulz`, valor el que indique Railway). El certificado HTTPS es automático.
-6. Entra a `/panel` con tu usuario → **Ajustes**: número de WhatsApp que recibe las reservas, beneficio del código, promoción y fecha de inicio.
+6. Entra a `/panel` con tu usuario → **Ajustes**: WhatsApp, beneficio del código, promoción, precios, dirección, link de Google Maps y datos del coach. El sitio se actualiza al guardar.
+7. Un servicio de Railway acepta varios dominios: agrega también `impulzgym.cl` cuando esté comprado.
 
 ## Probar en tu computador
 
@@ -72,7 +74,8 @@ server.js          Servidor: páginas, API, permisos, límites de intentos
 lib/datos.js       Guardado en archivos JSON + historial
 lib/sesiones.js    Usuarios (variables de entorno) y sesiones firmadas
 public/reglas.js   Canales, etapas y cálculo de comisión (lo usan servidor y panel)
-public/reserva.html  Página de reservas
+public/sitio.html    Sitio web del gimnasio (se sirve en /)
+public/reserva.html  Página corta de reservas para anuncios (/reserva)
 public/panel.html    Panel de comisiones
 pruebas.js         Prueba de punta a punta (npm test)
 ```

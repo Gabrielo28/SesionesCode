@@ -144,6 +144,17 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   plan de contenido del mes 1 y campañas de Meta.
 - **Lista de revisión, decisiones pendientes y problemas detectados:** `impulz-gym/LISTA-PARA-OK.md`.
 
+### Reunión con el dueño (14 de noviembre de 2026)
+- **El dueño aceptó el piloto** y está abierto a todo. Falta confirmar el texto exacto de lo que aceptó sobre el 100%
+  (el usuario dijo "que yo me llevara el 100% de los clientes el segundo mes").
+- El gimnasio **no tiene correo, página de Facebook, sitio web ni ficha de Google**. Solo Instagram.
+- El usuario será coach de sala **solo para personalizados, sin horario fijo** (no clases grupales).
+- Hecho después de la reunión: **sitio web del gimnasio** (`app/public/sitio.html`, se sirve en `/`; la página corta de
+  reservas pasó a `/reserva`), con contenido editable desde el panel; **video de la propuesta** (`video/`);
+  **plan digital** con las cuentas a crear (`docs/07-plan-digital.md`); **benchmark de competencia** (`docs/08-benchmark-web.md`,
+  hecho solo con resultados de buscador: la red bloqueó los sitios, verificar a mano).
+- Competidor directo con sitio y precios: Sport Training Beach (El Quisco). Precios vistos en buscador, sin verificar.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta
