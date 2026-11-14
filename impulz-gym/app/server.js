@@ -303,6 +303,12 @@ http.createServer(async (req, res) => {
     }
     if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /panel\nDisallow: /api/\nSitemap: ' + origen(req) + '/sitemap.xml\n'); }
     if (ruta === '/salud') return json(res, 200, { ok: true });
+    if (/^\/fotos\/[a-z0-9-]+\.jpg$/.test(ruta)) {
+      const f = path.join(PUBLICO, ruta);
+      if (!fs.existsSync(f)) { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' });
+      return fs.createReadStream(f).pipe(res);
+    }
     if (ESTATICOS[ruta]) {
       res.writeHead(200, { 'Content-Type': ESTATICOS[ruta], 'Cache-Control': 'public, max-age=600' });
       return fs.createReadStream(path.join(PUBLICO, ruta)).pipe(res);
