@@ -155,6 +155,11 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   hecho solo con resultados de buscador: la red bloqueó los sitios, verificar a mano).
 - Competidor directo con sitio y precios: Sport Training Beach (El Quisco). Precios vistos en buscador, sin verificar.
 
+- **Confirmado por el usuario (14 nov):** el dueño aceptó la fórmula de la propuesta tal cual. El coach atiende **solo a los
+  alumnos que lo contactan directamente**; no hace evaluación ni programa de bienvenida a todos los socios nuevos
+  (se quitó del sitio; la propuesta y el video que vio el dueño todavía lo mencionan).
+- **Acuerdo formal para firmar:** `Acuerdo-Impulz-Gym.pdf` (fuente en `docs/acuerdo/acuerdo.html`; decisiones por defecto en `docs/01-acuerdo-piloto.md`).
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

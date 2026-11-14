@@ -20,7 +20,7 @@
 {{PIXEL}}
 <style>
 /* Sitio de una página, oscuro con la marca Impulz. Orden: portada con estado "abierto ahora" → por qué → planes →
-   entrenamiento personalizado → bienvenida → horarios → reserva → ubicación → preguntas. El botón de reserva acompaña todo el recorrido. */
+   entrenamiento personalizado → horarios → reserva → ubicación → preguntas. El botón de reserva acompaña todo el recorrido. */
 :root{
   --bg:#0b0909; --panel:#161111; --panel-2:#1f1817; --ink:#f6f1ef; --muted:#ada09c; --soft:#ddd3d0; --line:#2d2423;
   --red:#e3171e; --red-hi:#ff4a50; --red-deep:#5c0b0e; --ok:#6fdc97;
@@ -187,14 +187,14 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
     <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 11v12l8 5" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Horario que se adapta</h3><p>Desde las 5:00 hasta las 22:00. Entrena antes del trabajo, a la hora de almuerzo o de noche.</p></div>
     <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M6 22h32M10 15v14M34 15v14M15 11v22M29 11v22" fill="none" stroke="#e3171e" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Centro de entrenamiento</h3><p>Un espacio para entrenar en serio, con acompañamiento para quienes parten y para quienes ya tienen experiencia.</p></div>
     <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="14" r="7" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M8 38c2-9 8-13 14-13s12 4 14 13" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Plan personalizado</h3><p>Trabaja con un coach que arma tu plan según tu objetivo y te sigue en el proceso.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 24l9 9 19-21" fill="none" stroke="#e3171e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Partes acompañado</h3><p>Tu primer mes incluye una evaluación inicial y seguimiento, para que entrenar se vuelva costumbre.</p></div>
+    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 24l9 9 19-21" fill="none" stroke="#e3171e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Prueba antes de decidir</h3><p>Reserva una clase de prueba en línea, coordina por WhatsApp y conoce el gimnasio por dentro.</p></div>
   </div>
 </div></section>
 
 <section class="blk" id="planes"><div class="wrap">
   <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes incluyen acceso al gimnasio en horario completo.</p></div>
   <div class="plans">
-    <div class="plan top"><span class="tag">Más elegido</span><h3>Plan mensual</h3><div class="price" id="pMensual">Consulta<small></small></div><ul><li>Acceso de lunes a sábado</li><li>Evaluación inicial y programa de bienvenida</li><li>Sin contrato de permanencia</li></ul><a class="btn" href="#reserva" data-plan="Plan mensual">Partir con clase de prueba</a></div>
+    <div class="plan top"><span class="tag">Más elegido</span><h3>Plan mensual</h3><div class="price" id="pMensual">Consulta<small></small></div><ul><li>Acceso de lunes a sábado</li><li>Entrena a tu ritmo, en el horario que quieras</li><li>Sin contrato de permanencia</li></ul><a class="btn" href="#reserva" data-plan="Plan mensual">Partir con clase de prueba</a></div>
     <div class="plan"><h3>Plan pareja</h3><div class="price" id="pPareja">Consulta<small></small></div><ul><li>Dos personas, un solo plan</li><li>Entrenen juntos o en horarios distintos</li><li>Tu mejor compañía también entrena aquí</li></ul><a class="btn ghost" href="#reserva" data-plan="Plan pareja">Reservar en pareja</a></div>
     <div class="plan"><h3>Pase verano</h3><div class="price">Enero y febrero</div><ul><li>Para quienes veranean en el litoral</li><li>Pases por semana o por quincena</li><li>Sin matrícula</li></ul><a class="btn ghost" href="#reserva" data-plan="Pase verano">Quiero mi pase</a></div>
   </div>
@@ -215,12 +215,12 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
     <p class="coach" id="coach" hidden></p>
   </div>
   <div>
-    <span class="eyebrow">Programa de bienvenida</span>
-    <h3 style="margin:12px 0 16px;font-size:34px">Tus primeros 30 días</h3>
+    <span class="eyebrow">Cómo funciona</span>
+    <h3 style="margin:12px 0 16px;font-size:34px">Parte en 3 pasos</h3>
     <div class="steps">
-      <div class="step"><div><b>Evaluación inicial</b><span>Conversamos tu objetivo y revisamos cómo te mueves.</span></div></div>
-      <div class="step"><div><b>Tu plan</b><span>Sales con una rutina clara para tus primeras semanas.</span></div></div>
-      <div class="step"><div><b>Seguimiento</b><span>Revisamos cómo vas durante el mes y ajustamos lo necesario.</span></div></div>
+      <div class="step"><div><b>Agenda tu evaluación</b><span>Reserva aquí o escríbele directo al coach.</span></div></div>
+      <div class="step"><div><b>Evaluación inicial</b><span>Conversan tu objetivo y revisan cómo te mueves.</span></div></div>
+      <div class="step"><div><b>Tu plan y seguimiento</b><span>Entrenas con un plan a tu medida, que se ajusta a medida que avanzas.</span></div></div>
     </div>
   </div>
 </div></section>
@@ -274,7 +274,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 
 <section class="blk" id="preguntas"><div class="wrap">
   <div class="head"><span class="eyebrow">Preguntas frecuentes</span><h2>Antes de venir</h2></div>
-  <details><summary>¿Necesito experiencia para partir?</summary><p>No. La evaluación inicial sirve justamente para armar un plan según tu nivel, aunque nunca hayas entrenado.</p></details>
+  <details><summary>¿Necesito experiencia para partir?</summary><p>No. Puedes partir a tu ritmo. Y si quieres un plan a tu medida, puedes entrenar con un coach personalizado.</p></details>
   <details><summary>¿Cómo funciona la clase de prueba?</summary><p>Reservas en esta página, recibes un código y coordinamos el día por WhatsApp. Vienes, conoces el gimnasio y entrenas.</p></details>
   <details><summary>¿Tienen entrenamiento personalizado?</summary><p>Sí. Las sesiones personalizadas se agendan directamente con el coach, en el horario que acuerden.</p></details>
   <details><summary>Voy solo por el verano, ¿puedo entrenar?</summary><p>Sí. En enero y febrero hay pases por semana o por quincena para quienes veranean en el litoral.</p></details>
