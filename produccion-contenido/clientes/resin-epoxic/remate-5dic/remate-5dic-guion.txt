@@ -15,3 +15,21 @@ A la una...                    24.5     A la una...
 A las dos...                   25.4     a las dos...
 ¡Vendido!                      26.3     ¡Vendido!
 Logo                           27.2     Etiqueta a tu amiga resinera.
+
+------------------------------------------------------------
+VERSIÓN CON VOZ Y EFECTOS: remate-5dic-voz-y-efectos.mp4 (30 s)
+------------------------------------------------------------
+Voz: "Cami" en tono de locutor de estadio (remate-5dic-voz-locutor.mp3).
+Locución: ¡REMATE! ¡REMATE! ¡REMATEEE! · ¡Todo a luca! · ¡Todo, todo, todo! · ¡Glitters a luca! · ¡Pigmentos a luca! ·
+¡Moldes... también a luca! · ¡Y muchísimo más! · ¡Stock limitado! · ¡No se reserva! · ¡Y lo más buscado vuela! ·
+Sábado cinco de diciembre, de diez a seis, en Providencia · ¡Solo para el grupo de WhatsApp! ·
+A la una... a las dos... · ¡VENDIDO! · Etiqueta a tu amiga resinera.
+
+Efectos de sonido (carpeta efectos-sonido/): golpe grave en cada "¡REMATE!", caja registradora + confeti en "$1.000",
+whoosh en cada cambio de escena, brillo mágico en Glitters, pops en cada dato, reloj en "Stock limitado",
+"oooh" en "lo más buscado vuela", notificación en el botón de WhatsApp, redoble de tambor en "a la una / a las dos"
+(sin música, para crear tensión), martillo + golpe + confeti + aplausos en "¡VENDIDO!".
+
+Efectos visuales: zoom de impacto y destello en cada golpe, sacudida de cámara en los "¡REMATE!", "$1.000" y "¡VENDIDO!",
+glitch RGB en los cambios de escena, latido en la escena de suspenso (estirada en cámara lenta para que entre el remate
+hablado), colores más vivos y viñeta suave. Último cuadro sostenido medio segundo para que termine la frase final.
