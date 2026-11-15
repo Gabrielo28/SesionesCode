@@ -176,6 +176,10 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   historial de git del repositorio público. La segunda prueba de IA para el interior también falló (inventó un letrero).
   **Regla:** revisar toda foto o video ampliado antes de publicarlo.
 
+- **Video cinemático (15 nov):** `video/Recorrido-Impulz-Gym-cine.mp4` (20 s). Seis tomas generadas con IA (Kling 2.5 Turbo,
+  ~2.100 créditos cada una) a partir de las fotos reales sin personas y de la maqueta de fachada, con color de cine, grano,
+  transiciones, música y textos. El usuario aceptó que no sea 100% fiel. La primera toma muestra el letrero de Impulz, que aún no existe.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta
