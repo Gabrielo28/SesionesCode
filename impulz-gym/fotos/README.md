@@ -5,7 +5,8 @@ Material sacado de las 12 grabaciones y la foto de fachada del 14 de noviembre d
 | Carpeta o archivo | Qué es |
 |---|---|
 | `mejoradas/` | 7 fotos reales del interior, sin personas, recortadas a 4:5 y con luz y color corregidos. Sirven de respaldo sin retoque |
-| `cine/` | 7 imágenes con acabado de cine (color contrastado, viñeta, grano), sin personas. Son las que usa el sitio web |
+| `ia/` (sala, máquinas, peso libre, poleas, mancuernas, cardio, fachada) | Imágenes retocadas con IA, sin personas. **Son las que usa el sitio web** por decisión del usuario (15 nov). Idealizan el local: piso, luz y vista exterior no son exactos, y el letrero de la fachada aún no existe |
+| `cine/` | 7 imágenes con acabado de cine, más fieles al local. Respaldo |
 | `ia/` | Pruebas retocadas con inteligencia artificial (ver reglas abajo) |
 | `originales/fachada-recorte.jpg` | Fachada actual, con el letrero antiguo "World Fit" |
 | `plano-esquematico.png` | Distribución aproximada de la sala, no a escala (fuente: `plano.html`) |
