@@ -180,6 +180,11 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   ~2.100 créditos cada una) a partir de las fotos reales sin personas y de la maqueta de fachada, con color de cine, grano,
   transiciones, música y textos. El usuario aceptó que no sea 100% fiel. La primera toma muestra el letrero de Impulz, que aún no existe.
 
+- **15 nov, indicación del usuario: no hacer más videos; el contenido visual es solo con imágenes.**
+  Imágenes con acabado de cine en `fotos/cine/` (7, sin personas; 5 salen de cuadros de las tomas generadas con IA y 2 de fotos
+  reales con el mismo color). El sitio usa 6 en la galería y una de fondo en la portada.
+  Vista previa del sitio para el usuario: https://claude.ai/artifact (título "Impulz Gym Web"); las reservas ahí son simuladas.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

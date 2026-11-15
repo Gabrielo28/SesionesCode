@@ -4,7 +4,8 @@ Material sacado de las 12 grabaciones y la foto de fachada del 14 de noviembre d
 
 | Carpeta o archivo | Qué es |
 |---|---|
-| `mejoradas/` | 7 fotos reales del interior, sin personas, recortadas a 4:5 y con luz y color corregidos. El sitio web usa 6 |
+| `mejoradas/` | 7 fotos reales del interior, sin personas, recortadas a 4:5 y con luz y color corregidos. Sirven de respaldo sin retoque |
+| `cine/` | 7 imágenes con acabado de cine (color contrastado, viñeta, grano), sin personas. Son las que usa el sitio web |
 | `ia/` | Pruebas retocadas con inteligencia artificial (ver reglas abajo) |
 | `originales/fachada-recorte.jpg` | Fachada actual, con el letrero antiguo "World Fit" |
 | `plano-esquematico.png` | Distribución aproximada de la sala, no a escala (fuente: `plano.html`) |
