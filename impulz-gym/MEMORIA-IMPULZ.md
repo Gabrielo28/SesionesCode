@@ -188,6 +188,10 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
 - **15 nov:** el usuario pidió usar en la web las fotos retocadas con IA. Se generaron 6 (gpt-image, ~430 créditos c/u), horizontales
   16:9, sin personas; están en la galería, y la fachada con letrero Impulz va de fondo en la portada. Idealizan el local.
 
+- **15 nov:** se sumaron 6 imágenes de personas entrenando generadas con IA (`fotos/ia-personas/`), al estilo de entrenachile.cl,
+  ambientadas en el gimnasio: van en "¿Para quién es?", en las tarjetas de planes y en entrenamiento personalizado.
+  Las personas no son reales. El entrenador que aparece no es el usuario: reemplazar por su foto real cuando la tenga.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

@@ -90,6 +90,9 @@ section.blk{padding-block:76px;border-bottom:1px solid var(--line)}
 .gal figure{margin:0;position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
 .gal img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
 .gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;background:linear-gradient(transparent,rgba(11,9,9,.9));font:700 14px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.card .ph{display:block;width:calc(100% + 44px);max-width:none;margin:-22px -22px 6px;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:13px 13px 0 0}
+.plan .ph{display:block;width:calc(100% + 48px);max-width:none;margin:-24px -24px 6px;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:15px 15px 0 0}
+img.wide{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line);margin-bottom:22px}
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .plan{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:12px;align-content:start}
 .plan.top{border-color:var(--red);background:linear-gradient(160deg,var(--red-deep),var(--panel) 60%)}
@@ -196,10 +199,10 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 <section class="blk" id="para-quien"><div class="wrap">
   <div class="head"><span class="eyebrow">¿Para quién es Impulz?</span><h2>Un gimnasio para gente real</h2><p>No necesitas estar en forma para partir. Necesitas un lugar que te quede cómodo.</p></div>
   <div class="cards">
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 24l9 9 19-21" fill="none" stroke="#e3171e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Si partes de cero</h3><p>Nadie nace sabiendo. Ven a una clase de prueba, conoce el lugar y parte a tu ritmo.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 11v12l8 5" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Si tu horario es difícil</h3><p>Abrimos a las 5:00 y cerramos a las 22:00. Entrena antes del trabajo, a mediodía o de noche.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="14" r="7" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M8 38c2-9 8-13 14-13s12 4 14 13" fill="none" stroke="#f6f1ef" stroke-width="3.5" stroke-linecap="round"/></svg><h3>Si quieres un plan a tu medida</h3><p>Entrena con un coach personalizado que arma tu plan según tu objetivo y sigue tu avance.</p></div>
-    <div class="card"><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="8" fill="none" stroke="#e3171e" stroke-width="3"/><path d="M22 4v6M22 34v6M4 22h6M34 22h6M9 9l4 4M31 31l4 4M35 9l-4 4M13 31l-4 4" stroke="#f6f1ef" stroke-width="3" stroke-linecap="round"/></svg><h3>Si veraneas en el litoral</h3><p>No pierdas el ritmo en vacaciones. En enero y febrero hay pases por semana o quincena.</p></div>
+    <div class="card"><img class="ph" src="/fotos/p-principiante.jpg" alt="Mujer entrenando en una máquina de remo" loading="lazy" width="960" height="540"><h3>Si partes de cero</h3><p>Nadie nace sabiendo. Ven a una clase de prueba, conoce el lugar y parte a tu ritmo.</p></div>
+    <div class="card"><img class="ph" src="/fotos/p-madrugador.jpg" alt="Hombre en bicicleta de spinning al amanecer" loading="lazy" width="960" height="540"><h3>Si tu horario es difícil</h3><p>Abrimos a las 5:00 y cerramos a las 22:00. Entrena antes del trabajo, a mediodía o de noche.</p></div>
+    <div class="card"><img class="ph" src="/fotos/p-coach-sesion.jpg" alt="Entrenador guiando a una alumna con mancuernas" loading="lazy" width="960" height="540"><h3>Si quieres un plan a tu medida</h3><p>Entrena con un coach personalizado que arma tu plan según tu objetivo y sigue tu avance.</p></div>
+    <div class="card"><img class="ph" src="/fotos/ia-cardio.jpg" alt="Zona de cardio con vista al exterior" loading="lazy" width="960" height="540"><h3>Si veraneas en el litoral</h3><p>No pierdas el ritmo en vacaciones. En enero y febrero hay pases por semana o quincena.</p></div>
   </div>
 </div></section>
 
@@ -211,9 +214,9 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 <section class="blk" id="planes"><div class="wrap">
   <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes incluyen acceso al gimnasio en horario completo.</p></div>
   <div class="plans">
-    <div class="plan top"><span class="tag">Más elegido</span><h3>Plan mensual</h3><div class="price" id="pMensual">Consulta<small></small></div><ul><li>Acceso de lunes a sábado</li><li>Entrena a tu ritmo, en el horario que quieras</li><li>Sin contrato de permanencia</li></ul><a class="btn" href="#reserva" data-plan="Plan mensual">Partir con clase de prueba</a></div>
-    <div class="plan"><h3>Plan pareja</h3><div class="price" id="pPareja">Consulta<small></small></div><ul><li>Dos personas, un solo plan</li><li>Entrenen juntos o en horarios distintos</li><li>Tu mejor compañía también entrena aquí</li></ul><a class="btn ghost" href="#reserva" data-plan="Plan pareja">Reservar en pareja</a></div>
-    <div class="plan"><h3>Pase verano</h3><div class="price">Enero y febrero</div><ul><li>Para quienes veranean en el litoral</li><li>Pases por semana o por quincena</li><li>Sin matrícula</li></ul><a class="btn ghost" href="#reserva" data-plan="Pase verano">Quiero mi pase</a></div>
+    <div class="plan top"><img class="ph" src="/fotos/ia-sala.jpg" alt="Sala de Impulz Gym" loading="lazy" width="960" height="540"><span class="tag">Más elegido</span><h3>Plan mensual</h3><div class="price" id="pMensual">Consulta<small></small></div><ul><li>Acceso de lunes a sábado</li><li>Entrena a tu ritmo, en el horario que quieras</li><li>Sin contrato de permanencia</li></ul><a class="btn" href="#reserva" data-plan="Plan mensual">Partir con clase de prueba</a></div>
+    <div class="plan"><img class="ph" src="/fotos/p-pareja.jpg" alt="Pareja entrenando junta" loading="lazy" width="960" height="540"><h3>Plan pareja</h3><div class="price" id="pPareja">Consulta<small></small></div><ul><li>Dos personas, un solo plan</li><li>Entrenen juntos o en horarios distintos</li><li>Tu mejor compañía también entrena aquí</li></ul><a class="btn ghost" href="#reserva" data-plan="Plan pareja">Reservar en pareja</a></div>
+    <div class="plan"><img class="ph" src="/fotos/p-verano.jpg" alt="Joven tomando mancuernas en verano" loading="lazy" width="960" height="540"><h3>Pase verano</h3><div class="price">Enero y febrero</div><ul><li>Para quienes veranean en el litoral</li><li>Pases por semana o por quincena</li><li>Sin matrícula</li></ul><a class="btn ghost" href="#reserva" data-plan="Pase verano">Quiero mi pase</a></div>
   </div>
   <p class="note" id="notaPlanes">Trae a un amigo y obtén un descuento en tu plan. Pregunta por las promociones vigentes al reservar.</p>
 </div></section>
@@ -232,6 +235,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
     <p class="coach" id="coach" hidden></p>
   </div>
   <div>
+    <img class="wide" src="/fotos/p-coach-plan.jpg" alt="Entrenador revisando un plan con un alumno" loading="lazy" width="960" height="540">
     <span class="eyebrow">Cómo funciona</span>
     <h3 style="margin:12px 0 16px;font-size:34px">Parte en 3 pasos</h3>
     <div class="steps">
