@@ -171,6 +171,11 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   Pruebas con IA en `fotos/ia/`: la fachada con letrero Impulz es una **maqueta** (el letrero real aún dice "World Fit");
   el interior retocado con IA **cambió el piso y las máquinas**, no usar como foto real. Reglas en `fotos/README.md`.
 
+- **15 nov:** video de recorrido del gimnasio (`video/Recorrido-Impulz-Gym.mp4`, 23 s, vertical, con música y textos, sin personas).
+  Se eliminaron 3 fotos de `fotos/mejoradas/` porque tenían una persona al fondo (quedan 7; el sitio usa 6). Siguen en el
+  historial de git del repositorio público. La segunda prueba de IA para el interior también falló (inventó un letrero).
+  **Regla:** revisar toda foto o video ampliado antes de publicarlo.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

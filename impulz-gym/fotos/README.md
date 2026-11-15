@@ -4,7 +4,7 @@ Material sacado de las 12 grabaciones y la foto de fachada del 14 de noviembre d
 
 | Carpeta o archivo | Qué es |
 |---|---|
-| `mejoradas/` | 10 fotos reales del interior, sin personas, recortadas a 4:5 y con luz y color corregidos. Son las que usa el sitio web |
+| `mejoradas/` | 7 fotos reales del interior, sin personas, recortadas a 4:5 y con luz y color corregidos. El sitio web usa 6 |
 | `ia/` | Pruebas retocadas con inteligencia artificial (ver reglas abajo) |
 | `originales/fachada-recorte.jpg` | Fachada actual, con el letrero antiguo "World Fit" |
 | `plano-esquematico.png` | Distribución aproximada de la sala, no a escala (fuente: `plano.html`) |
@@ -28,6 +28,13 @@ Material sacado de las 12 grabaciones y la foto de fachada del 14 de noviembre d
 4. **Personas:** solo aparecen quienes firmaron la autorización de imagen. En las grabaciones hay socios y una niña;
    esas tomas no se usan.
 5. **Marca antigua:** evitar tomas donde se vea el logo "WF" (pantalla de recepción, letrero).
+
+## Revisión de personas (15 de noviembre de 2026)
+
+Tres fotos de la primera selección se eliminaron porque, al revisarlas en grande, aparecía una persona al fondo
+(zona central, máquinas y vista desde recepción). Antes de publicar cualquier foto o video hay que revisarlo ampliado,
+no en miniatura. Las pruebas de retoque del interior con IA tampoco sirven como foto real: una cambió el piso y las
+máquinas, y la otra inventó un letrero y dejó a la persona más visible.
 
 ## Para la próxima grabación
 
