@@ -263,7 +263,7 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
     <div class="panel">
       <h3>Cómo se usa</h3>
       <div class="howto">
-        <div><b>1. Las reservas entran solas</b>Quien reserva en impulz.entrenachile.cl aparece aquí con su código, la fecha y la campaña de la que vino.</div>
+        <div><b>1. Las reservas entran solas</b>Quien reserva en el sitio web de Impulz aparece aquí con su código, la fecha y la campaña de la que vino.</div>
         <div><b>2. Inscribir con código</b>Cuando alguien se inscribe, recepción toca "Inscribir con código", escribe el código y confirma. Se registra el primer pago.</div>
         <div><b>3. Pagos de cada mes</b>Cada mes, toca "Registrar pago" en los socios activos. La liquidación se calcula sola.</div>
         <div><b>4. Gente sin código</b>Quien llega directo o referido por un socio se registra con un canal del gimnasio y no genera comisión.</div>
@@ -418,7 +418,7 @@ function rLista(){
   const q=S.q.trim().toLowerCase();
   const L=S.leads.filter(l=>(S.f==="todos"||(S.f==="g")===isG(l))&&(!S.etapaF||l.etapa===S.etapaF)&&(!q||[l.nombre,l.telefono,l.codigo].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>(b.fechaContacto||"").localeCompare(a.fechaContacto||"")||(b.creadoEn||"").localeCompare(a.creadoEn||""));
-  if(!S.leads.length){$("#lista").innerHTML=`<div class="empty"><strong>Sin contactos todavía</strong><span>Las reservas de impulz.entrenachile.cl aparecerán aquí solas. También puedes registrar a alguien a mano.</span></div>`;return}
+  if(!S.leads.length){$("#lista").innerHTML=`<div class="empty"><strong>Sin contactos todavía</strong><span>Las reservas del sitio web de Impulz aparecerán aquí solas. También puedes registrar a alguien a mano.</span></div>`;return}
   if(!L.length){$("#lista").innerHTML=`<div class="empty">Ningún contacto coincide con el filtro.</div>`;return}
   $("#lista").innerHTML=L.map(l=>{const g=isG(l), pagoMes=(l.pagos||[]).some(p=>p.mes===S.month);
     return `<div class="lead ${g?"g":""}">

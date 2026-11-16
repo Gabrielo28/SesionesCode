@@ -2,7 +2,8 @@
  * Impulz Gym El Quisco — página de reservas y panel de comisiones.
  * Railway lo levanta con `node server.js` (ver railway.json). En tu PC: `npm start`.
  *
- *   /              página pública de reservas (impulz.entrenachile.cl)
+ *   /              sitio oficial del gimnasio (dominio propio, ej. impulzgym.cl)
+ *   /reserva       página corta de reservas para anuncios (mismo dominio del gimnasio)
  *   /panel         panel de comisiones (usuario y clave: ver lib/sesiones.js)
  *   /api/...       API del panel y de las reservas
  *
@@ -18,6 +19,10 @@ const R = require('./public/reglas.js');
 const PUERTO = process.env.PORT || 5190;
 const PUBLICO = path.join(__dirname, 'public');
 const PIXEL = (process.env.META_PIXEL_ID || '').replace(/\D/g, '');
+// Si se define PANEL_HOST (ej. impulz.entrenachile.cl), el panel y su API solo responden en ese dominio,
+// y el sitio del gimnasio solo en los demás. Sin PANEL_HOST todo responde en cualquier dominio (uso local).
+const PANEL_HOST = (process.env.PANEL_HOST || '').trim().toLowerCase();
+const hostDe = req => String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
 
 /* ---------- utilidades ---------- */
 const hoy = () => { const d = new Date(Date.now() - 3 * 3600 * 1000); return d.toISOString().slice(0, 10); }; // hora de Chile aprox. (UTC-3)
@@ -284,6 +289,12 @@ http.createServer(async (req, res) => {
   try { ruta = decodeURIComponent((req.url || '/').split('?')[0]); } catch (e) { res.writeHead(400); return res.end(); }
   const metodo = req.method || 'GET';
   try {
+    if (PANEL_HOST) {
+      const enPanel = hostDe(req) === PANEL_HOST;
+      const esPublico = ruta === '/api/reservas' || ruta === '/salud' || ESTATICOS[ruta] || ruta === '/robots.txt';
+      if (enPanel && !ruta.startsWith('/api/') && !ruta.startsWith('/panel') && !esPublico) { res.writeHead(302, { Location: '/panel' }); return res.end(); }
+      if (!enPanel && (ruta.startsWith('/panel') || (ruta.startsWith('/api/') && ruta !== '/api/reservas'))) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('No encontrado'); }
+    }
     if (ruta.startsWith('/api/')) return await api(req, res, ruta, metodo);
     if (ruta === '/' || ruta === '/reserva') {
       const cfg = datos.config();

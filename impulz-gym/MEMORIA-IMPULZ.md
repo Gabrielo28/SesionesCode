@@ -192,6 +192,11 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   ambientadas en el gimnasio: van en "¿Para quién es?", en las tarjetas de planes y en entrenamiento personalizado.
   Las personas no son reales. El entrenador que aparece no es el usuario: reemplazar por su foto real cuando la tenga.
 
+- **16 nov, decisión del usuario:** la web NO va en un subdominio de entrenachile.cl. Es la **web oficial del gimnasio, con dominio propio**
+  (ej. `impulzgym.cl`, por confirmar y registrar). Lo que se adhiere a entrenachile.cl es el **panel de comisiones**
+  (`impulz.entrenachile.cl/panel`). Misma aplicación, dos dominios; la variable `PANEL_HOST` hace que el panel solo abra en el suyo.
+  Acuerdo, propuesta y documentos actualizados. Reemplaza lo dicho antes sobre publicar el sitio en `impulz.entrenachile.cl`.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

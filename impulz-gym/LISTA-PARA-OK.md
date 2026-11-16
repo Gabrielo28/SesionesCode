@@ -48,7 +48,8 @@ El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan des
 - [ ] Fotos reales del gimnasio (después de la primera grabación)
 
 **Para publicar:**
-- [ ] Dónde manejas el DNS de entrenachile.cl (para crear `impulz.entrenachile.cl`)
+- [ ] **Dominio propio del gimnasio:** elegirlo (por ejemplo `impulzgym.cl`), verificar en NIC Chile que esté libre y registrarlo
+- [ ] Dónde manejas el DNS de entrenachile.cl (para crear `impulz.entrenachile.cl`, dirección del panel de comisiones)
 - [ ] Claves que quieres para tu usuario y el del dueño en el panel
 
 ## 4. Pendiente: decisiones tuyas
@@ -62,7 +63,7 @@ El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan des
 
 1. Completar y firmar el acuerdo.
 2. Crear las cuentas del gimnasio (correo, página de Facebook, Instagram profesional, ficha de Google): `docs/07-plan-digital.md`.
-3. Publicar la aplicación en Railway y apuntar `impulz.entrenachile.cl`: `app/README.md`.
+3. Publicar la aplicación en Railway y apuntar los dos dominios (el del gimnasio para el sitio, `impulz.entrenachile.cl` para el panel): `app/README.md`.
 4. Cargar los datos del sitio en el panel → Ajustes.
 5. Primera grabación en el gimnasio y agregar fotos al sitio.
 6. Link en la bio de Instagram y primera campaña.

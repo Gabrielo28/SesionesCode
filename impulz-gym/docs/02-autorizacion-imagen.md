@@ -25,7 +25,7 @@ El material se puede publicar, sin pago, en:
 
 - Instagram, Facebook y TikTok de Impulz Gym El Quisco.
 - Instagram, Facebook, TikTok y YouTube de [NOMBRE DEL COACH] y de entrenachile.cl.
-- El sitio entrenachile.cl y la página de reservas impulz.entrenachile.cl.
+- El sitio entrenachile.cl y el sitio web oficial de Impulz Gym.
 - Anuncios pagados en Instagram y Facebook de Impulz Gym El Quisco.
 
 Marca lo que aceptas:

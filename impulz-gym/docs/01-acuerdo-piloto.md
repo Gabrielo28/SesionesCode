@@ -17,6 +17,7 @@ No hay programa de bienvenida a cargo del coach para todos los socios nuevos.
 - Nombre o razón social, RUT, representante, cédula y domicilio de cada parte
 - Fecha de firma y fecha de inicio del piloto
 - Beneficio del código de reserva (cláusula cuarta)
+- Dominio propio del sitio web (cláusula tercera)
 - Cuenta bancaria para el pago de la comisión (cláusula séptima)
 - **Valores de compra y de mantención mensual del sitio web** (cláusula décimo primera). Pueden quedar en blanco y fijarse después en un anexo
 
@@ -29,7 +30,8 @@ No hay programa de bienvenida a cargo del coach para todos los socios nuevos.
 5. Montos **más IVA** si la Agencia emite documento afecto. Confirmar con el contador si corresponde boleta de honorarios o factura.
 6. Si nadie avisa al día 91, el acuerdo sigue con la opción A por períodos de 90 días.
 7. Las reservas que entran por el sitio web cuentan como gestión de la Agencia.
-8. El sitio web (en `impulz.entrenachile.cl`), la página de reservas, el panel, la cuenta publicitaria y el Píxel son de la Agencia. El correo, Instagram, la página de Facebook, la ficha de Google y la lista de socios son del gimnasio.
+8. El sitio web oficial va en **dominio propio** (por ejemplo `impulzgym.cl`; se escribe a mano en la cláusula tercera). El panel de comisiones va en entrenachile.cl. El sitio, la página de reservas, el panel, la cuenta publicitaria y el Píxel son de la Agencia.
+12. **Dominio:** lo registra y paga la Agencia, con autorización del gimnasio para usar su nombre. Se traspasa con la compra del sitio; si el acuerdo termina sin compra, se le traspasa al gimnasio contra el reembolso del registro. Alternativa: que lo registre el dueño a su nombre desde el inicio. El correo, Instagram, la página de Facebook, la ficha de Google y la lista de socios son del gimnasio.
 10. **Licencia y opción de compra:** el gimnasio usa el sitio sin costo mientras dure el acuerdo. Puede comprarlo (pago único) o pagar mantención mensual. Si termina el acuerdo y no elige ninguna, el sitio se apaga a los 30 días.
 11. **Al término:** primero se pagan las comisiones pendientes; la Agencia entrega en 5 días el control de las cuentas del gimnasio y la lista de socios.
 9. El fee de gestión de la opción B no tiene monto: queda como "condiciones que las partes acuerden por escrito".

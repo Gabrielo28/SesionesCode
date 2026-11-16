@@ -16,12 +16,12 @@
    Pedir solo permiso para crear y administrar anuncios (no control total). El dueño aprueba desde su página.
 5. **Acceso a Instagram (@impulzgym.elquisco):** la cuenta debe estar conectada a la página de Facebook del gimnasio.
    Pedir acceso a la cuenta de Instagram desde el mismo portafolio para que los anuncios salgan con el nombre de Impulz.
-6. **Píxel (conjunto de datos):** crear el píxel en el portafolio de Influence Chile e instalarlo en `impulz.entrenachile.cl`.
+6. **Píxel (conjunto de datos):** crear el píxel en el portafolio de Influence Chile e instalarlo en el sitio oficial del gimnasio (`impulzgym.cl`, dominio por confirmar).
    - `PageView` en todas las páginas.
    - `Lead` cuando la persona completa la reserva (no al abrir el formulario).
    - Probar con "Probar eventos" en el Administrador de eventos: hacer una reserva de prueba y ver que llegue el `Lead`.
    - No enviar al píxel nombre, teléfono ni datos de salud en la URL o en parámetros del evento.
-7. **Verificar el dominio** `entrenachile.cl` en el portafolio (Seguridad de la marca, Dominios). Sirve para todo el subdominio.
+7. **Verificar el dominio** del sitio del gimnasio (`impulzgym.cl`) en el portafolio (Seguridad de la marca, Dominios).
 8. **Reserva de prueba completa** antes de lanzar: anuncio de prueba, página, código, WhatsApp y registro en el panel con `c=meta`.
 
 ---
@@ -103,7 +103,7 @@ Todos usan `c=meta`. El link va en el campo "URL del sitio web" del anuncio, com
 - **Título:** Primer mes a $25.000 en El Quisco
 - **Descripción:** Clase de prueba sin costo [confirmar]
 - **Botón:** Reservar
-- **URL:** `https://impulz.entrenachile.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a1-bienvenida-reel`
+- **URL:** `https://impulzgym.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a1-bienvenida-reel`
 
 ### A2 · Coach a cámara: volver a entrenar
 - **Formato:** Reel vertical de 15 a 20 s, el coach hablando a cámara y tomas de clase.
@@ -113,7 +113,7 @@ Todos usan `c=meta`. El link va en el campo "URL del sitio web" del anuncio, com
 - **Título:** Tu clase de prueba en Impulz
 - **Descripción:** Reserva en 1 minuto
 - **Botón:** Reservar
-- **URL:** `https://impulz.entrenachile.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a2-coach-volver-reel`
+- **URL:** `https://impulzgym.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a2-coach-volver-reel`
 
 ### A3 · Horario: antes o después del trabajo
 - **Formato:** imagen o carrusel de 3 láminas (sala a las 5:00, sala de noche, horario).
@@ -123,7 +123,7 @@ Todos usan `c=meta`. El link va en el campo "URL del sitio web" del anuncio, com
 - **Título:** Abierto de 5:00 a 22:00
 - **Descripción:** Impulz Gym El Quisco
 - **Botón:** Reservar
-- **URL:** `https://impulz.entrenachile.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a3-horario-carrusel`
+- **URL:** `https://impulzgym.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a3-horario-carrusel`
 
 ### A4 · Plan pareja y trae un amigo (sumar en la semana 2)
 - **Formato:** Reel corto con dos personas entrenando juntas (con autorización firmada de ambas).
@@ -133,7 +133,7 @@ Todos usan `c=meta`. El link va en el campo "URL del sitio web" del anuncio, com
 - **Título:** Plan pareja a $50.000
 - **Descripción:** Reserva para los dos
 - **Botón:** Reservar
-- **URL:** `https://impulz.entrenachile.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a4-pareja-amigo-reel`
+- **URL:** `https://impulzgym.cl/?c=meta&utm_campaign=relanzamiento-nov&utm_content=a4-pareja-amigo-reel`
 
 > Nota: `utm_content` se escribe a mano en cada anuncio para que coincida con su nombre.
 > No usar parámetros dinámicos de Meta en estos campos para no salirse de la convención del panel.
@@ -173,11 +173,11 @@ Revisar todos los lunes, con el Administrador de anuncios y el panel lado a lado
   - R1 · Anuncio del reto (Reel del Post 10).
     Texto: "Reto Llega en forma al verano en Impulz Gym. 6 semanas, medición al inicio y al final, premio para quien más avance. Parte el [FECHA]. Cupos limitados."
     Título: "Reto de 6 semanas en El Quisco". Botón: Registrarte.
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r1-anuncio-reel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r1-anuncio-reel`
   - R2 · Cómo funciona (carrusel del Post 11).
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r2-como-funciona-carrusel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r2-como-funciona-carrusel`
   - R3 · Coach: "Parte en diciembre" (Reel del Post 12).
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r3-parte-diciembre-reel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=reto-verano-dic&utm_content=r3-parte-diciembre-reel`
 - **Mensaje:** constancia, energía, fuerza, llegar al verano con el hábito armado. Sin promesas de kilos ni antes y después.
 
 ---
@@ -192,11 +192,11 @@ Revisar todos los lunes, con el Administrador de anuncios y el panel lado a lado
   el pase tiene otra comisión (30%) y otro valor.
 - **Anuncios:**
   - V1 · "¿De vacaciones en el litoral? Sigue entrenando." Pase semanal [PRECIO PASE SEMANAL] y quincenal [PRECIO PASE QUINCENAL] (confirmar con el dueño). Sin matrícula.
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v1-vacaciones-reel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v1-vacaciones-reel`
   - V2 · Horario de verano y ubicación, con tomas de la sala y del camino desde la playa.
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v2-horario-ubicacion-carrusel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v2-horario-ubicacion-carrusel`
   - V3 · Clase grupal de verano con veraneantes reales (con autorización).
-    URL: `https://impulz.entrenachile.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v3-clase-grupal-reel`
+    URL: `https://impulzgym.cl/?c=meta&utm_campaign=pase-verano-ene&utm_content=v3-clase-grupal-reel`
   - En febrero, copiar los anuncios que mejor funcionaron cambiando `pase-verano-ene` por `pase-verano-feb`.
 - **Opcional (prueba chica, fin de diciembre):** anuncio para personas de la Región Metropolitana que ya interactuaron con Impulz
   o visitaron la página, avisando que pueden entrenar en sus vacaciones. Solo si hay presupuesto y público suficiente.

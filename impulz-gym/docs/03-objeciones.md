@@ -70,12 +70,12 @@ Cada semana mido cuánto cuesta cada socio y ajusto los anuncios. El día 91 vem
 
 ---
 
-## 7. "¿Por qué en entrenachile.cl y no en mi Instagram?"
+## 7. "¿Para qué un sitio web si ya tengo Instagram?"
 
 **Respuesta:**
 Tu Instagram sigue siendo la vitrina y el link de la bio apunta a la página de reservas.
 La página es la que entrega el código y deja registrado de dónde llegó cada persona, algo que Instagram no hace.
-Está en entrenachile.cl porque es mi plataforma de entrenamiento y la puedo mantener sin costo para ti. La página lleva la marca Impulz.
+El sitio es la web oficial de Impulz, con su propio dominio y su marca. Yo lo construyo y lo mantengo sin costo mientras trabajemos juntos.
 
 **Concesión:** si en el futuro quieres tu propio dominio, se puede apuntar a la misma página.
 

@@ -4,9 +4,9 @@ Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el 
 
 | Dirección | Qué es | Quién la ve |
 |---|---|---|
-| `https://impulz.entrenachile.cl/` | Sitio web del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
+| `https://impulzgym.cl/` (dominio propio, por confirmar) | Sitio oficial del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
 | `/reserva` | Página corta de reservas, para anuncios | Cualquiera |
-| `https://impulz.entrenachile.cl/panel` | Panel de comisiones con usuario y clave | Coach, dueño y (opcional) recepción |
+| `https://impulz.entrenachile.cl/panel` | Panel de comisiones con usuario y clave (plataforma del coach, en entrenachile.cl) | Coach, dueño y (opcional) recepción |
 
 ## Cómo funciona
 
@@ -51,10 +51,11 @@ Todo cambio queda en **Historial** con quién y cuándo. El historial no se pued
    | `SESION_SECRETO` | 40+ caracteres al azar | Firma las sesiones |
    | `META_PIXEL_ID` | `1234567890` | Activa el Píxel de Meta (PageView y Lead al reservar) |
 
-5. **Dominio:** Settings → Networking → Custom Domain → `impulz.entrenachile.cl`. Railway entrega un registro **CNAME**:
-   créalo en el DNS de entrenachile.cl (nombre `impulz`, valor el que indique Railway). El certificado HTTPS es automático.
+5. **Dos dominios en el mismo servicio** (Settings → Networking → Custom Domain). Railway entrega un registro CNAME para cada uno:
+   - `impulzgym.cl` (o el dominio propio que se registre): sitio oficial del gimnasio y página `/reserva`.
+   - `impulz.entrenachile.cl`: panel de comisiones. Se crea en el DNS de entrenachile.cl.
+   Agrega la variable `PANEL_HOST=impulz.entrenachile.cl`: con ella el panel solo abre en ese dominio y el sitio del gimnasio no lo muestra.
 6. Entra a `/panel` con tu usuario → **Ajustes**: WhatsApp, beneficio del código, promoción, precios, dirección, link de Google Maps y datos del coach. El sitio se actualiza al guardar.
-7. Un servicio de Railway acepta varios dominios: si el gimnasio compra el sitio, se agrega su dominio propio (por ejemplo `impulzgym.cl`).
 
 ## Probar en tu computador
 

@@ -22,7 +22,8 @@ El orden importa: cada cuenta necesita la anterior.
 | # | Qué | Para qué | A nombre de quién | Tiempo |
 |---|---|---|---|---|
 | 1 | **Correo del gimnasio** (Gmail, por ejemplo `impulzgym.elquisco@gmail.com`) | Es la llave de todas las demás cuentas | Del dueño. Tú con acceso | 10 min |
-| 2 | **Subdominio `impulz.entrenachile.cl`** (registro CNAME en el DNS de entrenachile.cl) | Dirección del sitio web | Del coach | 10 min, sin costo |
+| 2 | **Dominio propio del gimnasio** (por ejemplo `impulzgym.cl`, en NIC Chile; verificar que esté libre) | Dirección del sitio web oficial | Lo registra el coach con autorización escrita, o el dueño | 15 min, unos $10.000 al año |
+| 2b | **Subdominio `impulz.entrenachile.cl`** (registro CNAME en el DNS de entrenachile.cl) | Dirección del panel de comisiones | Del coach | 10 min, sin costo |
 | 3 | **Página de Facebook** de Impulz Gym | Sin página no se pueden hacer anuncios en Meta | Creada con el perfil del dueño. Tú como administrador | 15 min |
 | 4 | **Instagram a cuenta profesional** y conectada a la página de Facebook | Estadísticas, botón de contacto y anuncios | Cuenta actual del gimnasio | 10 min |
 | 5 | **Portafolio comercial de Meta** (Business) del gimnasio, y acceso de socio para Influence Chile | Así los anuncios salen de tu cuenta publicitaria y la página sigue siendo del dueño | Dueño comparte, tú administras | 20 min |
@@ -36,12 +37,13 @@ El orden importa: cada cuenta necesita la anterior.
 del dueño, contigo como administrador. Lo tuyo (sitio web, dominio, cuenta publicitaria, Píxel, Railway, panel) queda a tu nombre.
 Así, si el acuerdo termina, nadie pierde lo suyo.
 
-## 3. Dominio y propiedad (decidido el 14 de noviembre)
+## 3. Dominios y propiedad (decidido el 16 de noviembre)
 
-- El sitio se publica en **`impulz.entrenachile.cl`**, dominio del coach. No se compra `impulzgym.cl` por ahora.
-- El sitio, la página de reservas, el panel, la cuenta publicitaria y el Píxel son **del coach / la Agencia**. El gimnasio los usa sin costo mientras dure el acuerdo.
-- El correo, Instagram, la página de Facebook y la ficha de Google son **del gimnasio**, con el coach como administrador.
-- Un dominio propio (`impulzgym.cl`) con el sitio traspasado es parte de la **opción de compra** del acuerdo (cláusula décimo primera). Los valores están pendientes.
+- **Sitio web oficial del gimnasio: dominio propio** (por ejemplo `impulzgym.cl`). No es un subdominio de entrenachile.cl.
+- **Panel de comisiones: `impulz.entrenachile.cl`**, dentro de la plataforma del coach.
+- Los dos apuntan a la misma aplicación. Las reservas del sitio quedan registradas en el panel.
+- El sitio, la página de reservas, el panel, la cuenta publicitaria y el Píxel son del coach / la Agencia. El gimnasio usa el sitio sin costo mientras dure el acuerdo.
+- El dominio lo registra la Agencia con autorización escrita del gimnasio (está en el acuerdo) y se traspasa con la compra del sitio o al terminar.
 - Las reservas que entran por el sitio cuentan como gestión del coach (cláusula sexta).
 
 ## 4. Datos que faltan del dueño para publicar
