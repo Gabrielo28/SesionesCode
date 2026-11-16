@@ -29,7 +29,13 @@ const hoy = () => { const d = new Date(Date.now() - 3 * 3600 * 1000); return d.t
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const texto = (v, max) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);
 const soloDigitos = v => String(v || '').replace(/\D/g, '');
-const ipDe = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+// Si la reserva viene reenviada por un sitio de confianza (entrenachile.cl) con la clave ORIGEN_CLAVE,
+// se usa la IP del visitante que ese sitio informa; si no, la de la conexión.
+const ORIGEN_CLAVE = process.env.ORIGEN_CLAVE || '';
+const ipDe = req => {
+  if (ORIGEN_CLAVE && req.headers['x-origen-clave'] === ORIGEN_CLAVE && req.headers['x-cliente-ip']) return String(req.headers['x-cliente-ip']).slice(0, 60);
+  return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+};
 
 function json(res, estado, cuerpo, extra = {}) {
   res.writeHead(estado, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...extra });

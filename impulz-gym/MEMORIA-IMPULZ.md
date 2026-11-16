@@ -197,6 +197,12 @@ Pie: "Propuesta preparada por Influence Chile para Impulz Gym El Quisco · Novie
   (`impulz.entrenachile.cl/panel`). Misma aplicación, dos dominios; la variable `PANEL_HOST` hace que el panel solo abra en el suyo.
   Acuerdo, propuesta y documentos actualizados. Reemplaza lo dicho antes sobre publicar el sitio en `impulz.entrenachile.cl`.
 
+- **16 nov, alianza con entrenachile.cl:** Impulz es el primer "gimnasio aliado" de EntrenaCL. Página `entrenachile.cl/gimnasios/impulz`
+  construida en el repo `Gabrielo28/entrenacl`, rama `claude/gimnasio-aliado-impulz` (sin unir a `main`, que se publica solo).
+  Los anuncios apuntan a esa página; su formulario reenvía la reserva a `/api/reservas` de `impulz-gym/app` y entrega el código.
+  Probado de punta a punta en local. La web oficial del gimnasio sigue aparte, en dominio propio.
+  Cuidado: EntrenaCL promete "0% de comisión"; el acuerdo de comisiones con Impulz es de Influence Chile y no se menciona ahí.
+
 ## 6. Pendiente
 
 ### Antes de enviar la propuesta

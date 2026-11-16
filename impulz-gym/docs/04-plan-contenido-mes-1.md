@@ -16,15 +16,15 @@
 
 ## Links (convención de seguimiento, no cambiar)
 
-Todo apunta al sitio oficial del gimnasio, `https://impulzgym.cl/` (dominio por confirmar), con `?c=<canal>&utm_campaign=<campaña>&utm_content=<pieza>`.
+Todo apunta a la página de Impulz en EntrenaCL, `https://entrenachile.cl/gimnasios/impulz`, que es el filtro que registra quién llega por la gestión del coach, con `?c=<canal>&utm_campaign=<campaña>&utm_content=<pieza>`.
 
 | Uso | Link |
 |---|---|
-| Bio de Instagram de Impulz | `https://impulzgym.cl/?c=ig&utm_campaign=bio&utm_content=bio` |
-| Sticker de link en historias de Impulz | `https://impulzgym.cl/?c=ig&utm_campaign=<campaña>&utm_content=<pieza>-historia` |
-| Bio y posts del coach (Instagram, TikTok) | `https://impulzgym.cl/?c=coach&utm_campaign=<campaña>&utm_content=<pieza>` |
-| Descripción de YouTube y Shorts | `https://impulzgym.cl/?c=yt&utm_campaign=<campaña>&utm_content=<video>` |
-| Perfil del coach en entrenachile.cl | `https://impulzgym.cl/?c=entrenachile&utm_campaign=perfil&utm_content=boton-reservar` |
+| Bio de Instagram de Impulz | `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=bio&utm_content=bio` |
+| Sticker de link en historias de Impulz | `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=<campaña>&utm_content=<pieza>-historia` |
+| Bio y posts del coach (Instagram, TikTok) | `https://entrenachile.cl/gimnasios/impulz?c=coach&utm_campaign=<campaña>&utm_content=<pieza>` |
+| Descripción de YouTube y Shorts | `https://entrenachile.cl/gimnasios/impulz?c=yt&utm_campaign=<campaña>&utm_content=<video>` |
+| Perfil del coach en entrenachile.cl | `https://entrenachile.cl/gimnasios/impulz?c=entrenachile&utm_campaign=perfil&utm_content=boton-reservar` |
 
 Campañas del mes: `relanzamiento-nov` (semana 1), `prueba-nov` (semana 2), `tecnica-nov` (semana 3), `reto-verano-dic` (semana 4).
 
@@ -49,7 +49,7 @@ No mencionar ni comparar con la administración anterior.
   > Nuevo nombre, nueva administración, el mismo lugar de siempre en El Quisco.
   > Somos Impulz Gym. Abrimos de lunes a viernes de 5:00 a 22:00 y los sábados de 8:00 a 14:00.
   > Reserva tu clase de prueba en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-reel-bienvenida-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-reel-bienvenida-historia`
 - **Hashtags:** `#ElQuisco #LitoralCentral #GimnasioElQuisco #ImpulzGym #Algarrobo #ElTabo`
 
 ### Post 2 · Miércoles · Carrusel
@@ -60,7 +60,7 @@ No mencionar ni comparar con la administración anterior.
   > Esto es lo que encuentras en Impulz desde esta semana.
   > Horario amplio, promociones de bienvenida y una clase de prueba para conocer el gimnasio.
   > Reserva en el link de la bio. Al reservar recibes un código con [BENEFICIO DEL CÓDIGO].
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-carrusel-promos-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-carrusel-promos-historia`
 - **Hashtags:** `#ElQuisco #IslaNegra #GimnasioElQuisco #ImpulzGym #EntrenaEnElQuisco`
 
 ### Post 3 · Viernes · Reel
@@ -72,7 +72,7 @@ No mencionar ni comparar con la administración anterior.
   > Volver a entrenar es más fácil si alguien te muestra por dónde partir.
   > Reserva tu clase de prueba en Impulz. Dejas tu nombre y teléfono, recibes tu código y confirmas por WhatsApp.
   > Link en la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-reel-volver-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=relanzamiento-nov&utm_content=s1-reel-volver-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #ElTabo #LitoralCentral #ImpulzGym #GimnasioElQuisco`
 
 ### Historias semana 1
@@ -98,7 +98,7 @@ Objetivo: poner caras y sacar el miedo a la primera visita.
   > Este es el equipo de Impulz.
   > Cuando vengas a tu clase de prueba, te va a recibir alguno de nosotros.
   > Reserva en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=prueba-nov&utm_content=s2-reel-equipo-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=prueba-nov&utm_content=s2-reel-equipo-historia`
 - **Hashtags:** `#ElQuisco #GimnasioElQuisco #ImpulzGym #LitoralCentral #IslaNegra`
 
 ### Post 5 · Miércoles · Carrusel
@@ -110,7 +110,7 @@ Objetivo: poner caras y sacar el miedo a la primera visita.
   > Si nunca has entrado a un gimnasio, o hace tiempo que no vas, esto es lo que pasa en tu clase de prueba.
   > No necesitas experiencia. Te adaptamos la rutina a tu nivel.
   > Reserva en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=prueba-nov&utm_content=s2-carrusel-pasos-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=prueba-nov&utm_content=s2-carrusel-pasos-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #ElTabo #GimnasioElQuisco #ImpulzGym #EntrenaEnElQuisco`
 
 ### Post 6 · Viernes · Reel
@@ -121,7 +121,7 @@ Objetivo: poner caras y sacar el miedo a la primera visita.
   > Así fue la clase de prueba de [NOMBRE DE PILA].
   > Llegó sin saber por dónde partir y salió con su rutina.
   > La tuya se reserva en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=prueba-nov&utm_content=s2-reel-primera-vez-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=prueba-nov&utm_content=s2-reel-primera-vez-historia`
 - **Hashtags:** `#ElQuisco #LitoralCentral #GimnasioElQuisco #ImpulzGym #ElTabo`
 
 ### Historias semana 2
@@ -146,7 +146,7 @@ Objetivo: mostrar que en Impulz enseñan a entrenar bien. Primeros testimonios d
   > El error más común en la sentadilla, y cómo corregirlo en dos pasos.
   > Guárdalo para tu próximo entrenamiento.
   > Si quieres que te revisemos la técnica en persona, reserva tu clase de prueba en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=tecnica-nov&utm_content=s3-reel-sentadilla-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=tecnica-nov&utm_content=s3-reel-sentadilla-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #GimnasioElQuisco #ImpulzGym #LitoralCentral #EntrenaEnElQuisco`
 
 ### Post 8 · Miércoles · Carrusel
@@ -157,7 +157,7 @@ Objetivo: mostrar que en Impulz enseñan a entrenar bien. Primeros testimonios d
   > Cinco cosas que nos habría gustado saber cuando empezamos.
   > Guárdalo y compártelo con quien está pensando en volver a entrenar.
   > Reserva tu clase de prueba en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=tecnica-nov&utm_content=s3-carrusel-5cosas-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=tecnica-nov&utm_content=s3-carrusel-5cosas-historia`
 - **Hashtags:** `#ElQuisco #IslaNegra #ElTabo #GimnasioElQuisco #ImpulzGym`
 
 ### Post 9 · Viernes · Reel (testimonio)
@@ -168,7 +168,7 @@ Objetivo: mostrar que en Impulz enseñan a entrenar bien. Primeros testimonios d
   > Le preguntamos a nuestros socios por qué entrenan en Impulz.
   > Gracias [NOMBRES DE PILA] por contarlo.
   > Si quieres probar, reserva tu clase en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=tecnica-nov&utm_content=s3-reel-testimonios-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=tecnica-nov&utm_content=s3-reel-testimonios-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #LitoralCentral #GimnasioElQuisco #ImpulzGym`
 
 ### Historias semana 3
@@ -200,7 +200,7 @@ no apuntar a características de la persona ("¿Tienes sobrepeso?"). La medició
   > 6 semanas de entrenamiento en Impulz, con una medición al inicio y otra al final.
   > Parte el [FECHA DE INICIO DEL RETO]. [CUPOS] cupos. Premio para quien más avance: [PREMIO].
   > Inscríbete en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-reel-anuncio-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-reel-anuncio-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #ElTabo #IslaNegra #LitoralCentral #ImpulzGym #RetoVerano`
 
 ### Post 11 · Miércoles · Carrusel
@@ -211,7 +211,7 @@ no apuntar a características de la persona ("¿Tienes sobrepeso?"). La medició
   > Todo lo que necesitas saber del reto Llega en forma al verano.
   > Cualquier nivel. Te medimos al inicio y al final para que veas tu propio avance.
   > Inscripciones en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-carrusel-como-funciona-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-carrusel-como-funciona-historia`
 - **Hashtags:** `#ElQuisco #ElTabo #LitoralCentral #GimnasioElQuisco #ImpulzGym #RetoVerano`
 
 ### Post 12 · Viernes · Reel
@@ -222,7 +222,7 @@ no apuntar a características de la persona ("¿Tienes sobrepeso?"). La medició
   > El verano parte antes de enero.
   > Si empiezas el reto en diciembre, llegas a febrero con 6 semanas de entrenamiento encima.
   > Quedan cupos. Inscríbete en el link de la bio.
-- **CTA / link historia:** `https://impulzgym.cl/?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-reel-diciembre-historia`
+- **CTA / link historia:** `https://entrenachile.cl/gimnasios/impulz?c=ig&utm_campaign=reto-verano-dic&utm_content=s4-reel-diciembre-historia`
 - **Hashtags:** `#ElQuisco #Algarrobo #IslaNegra #LitoralCentral #ImpulzGym #RetoVerano`
 
 ### Historias semana 4
@@ -245,7 +245,7 @@ Mencionar en el video: "Grabado en Impulz Gym, El Quisco". Los Shorts se suben t
 - **Duración:** 10 a 14 min.
 - **Esquema:** 1) quién soy y para quién es esta rutina; 2) calentamiento de 5 min; 3) 5 ejercicios básicos con series y repeticiones;
   4) cómo elegir el peso; 5) cuántas veces a la semana; 6) cierre y link para reservar clase de prueba en Impulz.
-- **Link:** `https://impulzgym.cl/?c=yt&utm_campaign=relanzamiento-nov&utm_content=yt-01-cuerpo-completo`
+- **Link:** `https://entrenachile.cl/gimnasios/impulz?c=yt&utm_campaign=relanzamiento-nov&utm_content=yt-01-cuerpo-completo`
 - **Shorts:** calentamiento en 60 s; cómo elegir el peso; "3 ejercicios si tienes 30 minutos"; el ejercicio más subestimado;
   cuántos días entrenar; error de principiante en la máquina de remo; presentación del coach en Impulz.
 
@@ -253,7 +253,7 @@ Mencionar en el video: "Grabado en Impulz Gym, El Quisco". Los Shorts se suben t
 - **Duración:** 8 a 12 min.
 - **Esquema:** 1) los miedos más comunes al empezar; 2) qué llevar; 3) cómo es una clase de prueba (con una real, autorizada);
   4) plan simple de 3 días; 5) cómo saber si vas bien; 6) cierre con link.
-- **Link:** `https://impulzgym.cl/?c=yt&utm_campaign=prueba-nov&utm_content=yt-02-primera-semana`
+- **Link:** `https://entrenachile.cl/gimnasios/impulz?c=yt&utm_campaign=prueba-nov&utm_content=yt-02-primera-semana`
 - **Shorts:** qué llevar a tu primera clase; "nadie te está mirando"; la primera clase de prueba en 45 s; plan de 3 días en una lámina;
   cómo pedir ayuda en la sala; el dolor muscular del día después.
 
@@ -261,7 +261,7 @@ Mencionar en el video: "Grabado en Impulz Gym, El Quisco". Los Shorts se suben t
 - **Duración:** 12 a 15 min.
 - **Esquema:** 1) por qué estos 3 ejercicios; 2) sentadilla: error, causa y corrección; 3) peso muerto: lo mismo; 4) press de banca o press militar: lo mismo;
   5) cómo grabarte para revisar tu técnica; 6) cierre con link.
-- **Link:** `https://impulzgym.cl/?c=yt&utm_campaign=tecnica-nov&utm_content=yt-03-errores-tecnica`
+- **Link:** `https://entrenachile.cl/gimnasios/impulz?c=yt&utm_campaign=tecnica-nov&utm_content=yt-03-errores-tecnica`
 - **Shorts:** rodillas hacia adentro en la sentadilla; espalda redonda en el peso muerto; codos en el press; cómo grabarte con el celular;
   "¿cuánto peso debería levantar?"; una señal simple para cada ejercicio; testimonio corto de un socio (si autorizó).
 
@@ -269,7 +269,7 @@ Mencionar en el video: "Grabado en Impulz Gym, El Quisco". Los Shorts se suben t
 - **Duración:** 10 a 14 min.
 - **Esquema:** 1) por qué 6 semanas; 2) cómo medir tu avance sin balanza (repeticiones, tiempo, fuerza); 3) estructura semanal;
   4) ejemplo de una sesión completa; 5) cómo no abandonar en la semana 3; 6) cierre: reto presencial en Impulz y link.
-- **Link:** `https://impulzgym.cl/?c=yt&utm_campaign=reto-verano-dic&utm_content=yt-04-plan-6-semanas`
+- **Link:** `https://entrenachile.cl/gimnasios/impulz?c=yt&utm_campaign=reto-verano-dic&utm_content=yt-04-plan-6-semanas`
 - **Shorts:** 3 pruebas para medir tu punto de partida; la semana tipo del plan; una sesión de 30 min; "la semana 3 es la más difícil";
   anuncio del reto en Impulz; cómo anotar tu avance.
 

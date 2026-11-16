@@ -17,6 +17,13 @@
 | 8 | **Autorización de uso de imagen** | `docs/02-autorizacion-imagen.md` |
 | 9 | **Cómo publicar en Railway** | `app/README.md` |
 
+## 1b. Página de Impulz en entrenachile.cl (16 de noviembre)
+
+- Construida en el repositorio `entrenacl`, rama `claude/gimnasio-aliado-impulz`. **No está publicada**: falta unirla a `main`.
+- Dirección: `entrenachile.cl/gimnasios/impulz`. Es el destino de los anuncios y el filtro de atribución.
+- Para que funcione publicada: desplegar esta aplicación en Railway y cargar en entrenachile.cl las variables
+  `GIMNASIO_IMPULZ_RESERVAS_URL` y `GIMNASIO_IMPULZ_CLAVE` (ver `docs/gimnasios-aliados.md` en ese repositorio).
+
 ## 2. Pendiente: valores
 
 - [ ] **Precio de compra del sitio web** (pago único) → cláusula décimo primera del acuerdo. Sugerido: $450.000 más IVA

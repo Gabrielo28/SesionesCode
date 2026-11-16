@@ -12,6 +12,11 @@ con publicidad pagada por la Agencia. Día 91: opción A (sigue igual) u opción
 El coach hace solo entrenamiento personalizado, sin horario fijo, con los alumnos que lo contactan directamente.
 No hay programa de bienvenida a cargo del coach para todos los socios nuevos.
 
+## Página en entrenachile.cl (16 de noviembre)
+
+El acuerdo incluye un **espacio de gimnasio aliado en entrenachile.cl**, sin costo mientras dure, con reserva de clase de prueba.
+La publicidad se dirige a esa página (`entrenachile.cl/gimnasios/impulz`) y quien reserva ahí queda atribuido a la Agencia.
+
 ## Lo que se completa a mano antes de firmar
 
 - Nombre o razón social, RUT, representante, cédula y domicilio de cada parte

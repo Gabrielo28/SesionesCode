@@ -57,6 +57,12 @@ Todo cambio queda en **Historial** con quién y cuándo. El historial no se pued
    Agrega la variable `PANEL_HOST=impulz.entrenachile.cl`: con ella el panel solo abre en ese dominio y el sitio del gimnasio no lo muestra.
 6. Entra a `/panel` con tu usuario → **Ajustes**: WhatsApp, beneficio del código, promoción, precios, dirección, link de Google Maps y datos del coach. El sitio se actualiza al guardar.
 
+## Reservas que llegan desde entrenachile.cl
+
+La página `entrenachile.cl/gimnasios/impulz` (repo `entrenacl`) reenvía sus reservas a `/api/reservas` de esta aplicación.
+Define aquí `ORIGEN_CLAVE` con el mismo valor que `GIMNASIO_IMPULZ_CLAVE` en entrenachile.cl, para que el límite de
+intentos use la IP del visitante y no la del servidor de entrenachile.cl.
+
 ## Probar en tu computador
 
 ```bash
