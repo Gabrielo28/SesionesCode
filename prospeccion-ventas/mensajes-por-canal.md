@@ -1217,6 +1217,77 @@ Influence Chile · influencechile.cl
 
 ---
 
+## NUEVAS DEL 16-NOV — 5 empresas (todas B)
+
+### WhatsApp
+
+**Häuser & Co Gestión Inmobiliaria** · +56 9 6576 5311 — *identificar dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Häuser & Co trabaja arriendo, arriendo de temporada y venta en Villarrica, Pucón y Panguipulli, y atiende por WhatsApp desde su web.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Bailey Propiedades — Karime Bailey** · +56 9 6659 5269 — *confirmar que sea la dueña*
+```
+Hola Karime, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que Bailey Propiedades trabaja venta y arriendo en Viña del Mar, Concón y Limache, y también propiedades en Orlando y Miami.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Te gustaría verlo funcionando en un video de 2 minutos?
+```
+
+**Bela Asesoría** · +56 9 6354 8889 — *identificar socio o dueño*
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Bela Asesoría acompaña a pymes de Rancagua en contabilidad, remuneraciones y oficina virtual desde hace 35 años.
+
+Implementamos sistemas para firmas contables: las consultas de clientes llegan clasificadas al área que corresponde, y los recordatorios de documentos y vencimientos salen solos.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+
+### Email
+
+**Unda Propiedades** · propiedadesunda@gmail.com — *identificar a las socias*
+Asunto:
+```
+Atención de arrendatarios y propietarios en Unda Propiedades
+```
+Cuerpo:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Unda Propiedades administra, arrienda y vende propiedades en Santiago desde 1982.
+
+Implementamos un canal de WhatsApp para corredoras que administran: responde las consultas frecuentes de arrendatarios y propietarios, y deriva al equipo solo lo que necesita su revisión.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+**Chiloé Propiedades** · contacto@chiloepropiedades.cl — *identificar dueño*
+Asunto:
+```
+Consultas de propiedades en Chiloé Propiedades
+```
+Cuerpo:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Chiloé Propiedades vende parcelas, campos y casas en toda la isla, y también ayuda con los trámites legales y notariales.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+
+---
+
 ## Verificar antes de cualquier mensaje
 
 **Legacy Propiedades** · legacypropiedades.cl — el sitio cargó solo el título. Abrirlo en el
@@ -1229,12 +1300,12 @@ persona, pasa a C.
 
 | Canal | A | B | Total |
 |---|---|---|---|
-| WhatsApp | 7 | 42 | 49 |
-| Email | 8 | 18 | 26 |
+| WhatsApp | 7 | 45 | 52 |
+| Email | 8 | 20 | 28 |
 | Llamada (y luego correo) | 4 | 3 | 7 |
 | LinkedIn | 1 | 2 | 3 |
 | Verificar antes | 0 | 2 | 2 |
-| **Total** | **20** | **67** | **87** |
+| **Total** | **20** | **72** | **92** |
 
 Orden sugerido: martes los WhatsApp A y MATT Gestión; martes o miércoles los correos A, con la
 invitación de LinkedIn el día anterior; miércoles las llamadas A. Jueves y viernes, respuestas y

@@ -1,6 +1,6 @@
 # Cola de envío — uno por uno
 
-Generada el 09-11-2026 desde `mensajes-por-canal.md` y `pipeline-automatizacion.csv`. Para regenerarla:
+Generada el 16-11-2026 desde `mensajes-por-canal.md` y `pipeline-automatizacion.csv`. Para regenerarla:
 `python3 prospeccion-ventas/envios/generar_cola.py`
 
 **Cómo usarla:** ve en orden. En cada tarjeta toca el enlace (abre WhatsApp o tu correo con el mensaje
@@ -20,10 +20,10 @@ quiere avanzar, ahí propones una llamada corta y me mandas su respuesta ("respo
 | Bloque 1 · Prioridad A por WhatsApp | 8 |
 | Bloque 2 · Prioridad A por correo | 8 |
 | Bloque 3 · Prioridad A por llamada o LinkedIn | 5 |
-| Bloque 4 · Prioridad B con persona identificada | 20 |
-| Bloque 5 · Prioridad B (hay que ubicar a quién escribirle) | 41 |
+| Bloque 4 · Prioridad B con persona identificada | 21 |
+| Bloque 5 · Prioridad B (hay que ubicar a quién escribirle) | 45 |
 | No enviar todavía · verificar primero | 5 |
-| **Total** | **87** |
+| **Total** | **92** |
 
 ## Seguimientos (día 4 y día 10)
 
@@ -1117,12 +1117,33 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
+### 42. Bailey Propiedades — Karime Bailey
+**Prioridad B** · **WhatsApp** · Inmobiliaria y corretaje · Viña del Mar  
+WhatsApp/celular: **+56 9 6659 5269** · Web: https://baileypropiedades.cl/
+
+**Cómo abordarlo:** Envíalo de lunes a viernes entre 10:00 y 13:00. Toca el enlace: abre WhatsApp con el mensaje ya escrito. Revisa que esté completo y envía. Antes: confirmar que sea la dueña.  
+**Lo que vimos de ellos:** Consultas por WhatsApp, sin agenda.  
+**Qué les ofreces:** WhatsApp que responde y agenda.  
+**Video si dice que sí:** Video 1 · Asistente de WhatsApp que responde y agenda.  
+
+Mensaje:
+```
+Hola Karime, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Te escribo porque vi que Bailey Propiedades trabaja venta y arriendo en Viña del Mar, Concón y Limache, y también propiedades en Orlando y Miami.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Te gustaría verlo funcionando en un video de 2 minutos?
+```
+[💬 Abrir WhatsApp con el mensaje listo](https://wa.me/56966595269?text=Hola%20Karime%2C%20soy%20Gabriel%2C%20de%20Influence%20Chile%2C%20una%20agencia%20de%20marketing%20y%20automatizaci%C3%B3n%20con%20IA.%20Te%20escribo%20porque%20vi%20que%20Bailey%20Propiedades%20trabaja%20venta%20y%20arriendo%20en%20Vi%C3%B1a%20del%20Mar%2C%20Conc%C3%B3n%20y%20Limache%2C%20y%20tambi%C3%A9n%20propiedades%20en%20Orlando%20y%20Miami.%0A%0AImplementamos%20un%20asistente%20de%20WhatsApp%20para%20corredoras%20que%20responde%20las%20preguntas%20de%20cada%20propiedad%20a%20cualquier%20hora%20y%20deja%20la%20visita%20agendada.%0A%0A%C2%BFTe%20gustar%C3%ADa%20verlo%20funcionando%20en%20un%20video%20de%202%20minutos%3F)
+
+☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
+
 
 ---
 
 ## Bloque 5 · Prioridad B (hay que ubicar a quién escribirle)
 
-### 42. Vercetti Propiedades
+### 43. Vercetti Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Santiago  
 WhatsApp/celular: **+56 9 3510 3597** · Web: https://www.vercettipropiedades.cl
 
@@ -1143,7 +1164,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 43. Cima Propiedades
+### 44. Cima Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Concepción / Viña del Mar / Santiago  
 WhatsApp/celular: **+56 9 4578 6529** · Web: https://inmocimapropiedades.cl/
 
@@ -1164,7 +1185,7 @@ Implementamos un asistente de WhatsApp para inmobiliarias que responde las consu
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 44. Concreta Propiedades
+### 45. Concreta Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Puerto Montt  
 WhatsApp/celular: **+56 9 9844 1444** · Web: https://www.concretapropiedades.cl/
 
@@ -1185,7 +1206,7 @@ Implementamos la parte que completa eso: que la visita quede confirmada en su ca
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 45. Mundo Corretaje
+### 46. Mundo Corretaje
 **Prioridad B** · **WhatsApp** · Inmobiliaria · La Serena  
 WhatsApp/celular: **+56 9 5647 9109** · Web: https://www.mundo-corretaje.cl/
 
@@ -1206,7 +1227,7 @@ Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (inte
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 46. MS Propiedades SpA
+### 47. MS Propiedades SpA
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Chillán  
 WhatsApp/celular: **+56 9 2883 0691** · Web: https://mspropiedadesspa.cl/
 
@@ -1227,7 +1248,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 47. Ascender Bienes Raíces
+### 48. Ascender Bienes Raíces
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Valdivia  
 WhatsApp/celular: **+56 9 2863 5329** · Web: https://www.ascenderpropiedades.cl/
 
@@ -1248,7 +1269,7 @@ Implementamos un asistente de WhatsApp que reconoce qué servicio busca cada per
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 48. RMC / Mardones Propiedades
+### 49. RMC / Mardones Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Valdivia  
 WhatsApp/celular: **+56 9 8139 3239** · Web: https://www.rmcpropiedades.cl/
 
@@ -1269,7 +1290,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 49. Golden Propiedades
+### 50. Golden Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Lo Barnechea / Viña del Mar  
 WhatsApp/celular: **+56 9 8899 2595** · Web: https://www.goldenpropiedades.cl/
 
@@ -1290,7 +1311,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 50. Deluno Propiedades
+### 51. Deluno Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Santiago Oriente / litoral central  
 WhatsApp/celular: **+56 9 8668 5079** · Web: https://www.delunopropiedades.com/
 
@@ -1311,7 +1332,7 @@ Implementamos un asistente de WhatsApp que responde las consultas de arriendo de
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 51. Urbana Propiedades
+### 52. Urbana Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · La Serena  
 WhatsApp/celular: **+56 9 9017 5378** · Web: https://www.urbanapropiedades.cl/
 
@@ -1332,7 +1353,7 @@ Implementamos un asistente de WhatsApp que responde las consultas de temporada (
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 52. Fornerod Propiedades
+### 53. Fornerod Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · La Serena  
 WhatsApp/celular: **+56 9 8536 2107** · Web: https://fornerodpropiedades.cl/
 
@@ -1353,7 +1374,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 53. Consultoría SAV
+### 54. Consultoría SAV
 **Prioridad B** · **WhatsApp** · Contable / outsourcing · Santiago  
 WhatsApp/celular: **+56 9 7926 3760** · Web: https://consultorasav.cl
 
@@ -1374,7 +1395,7 @@ Implementamos lo mismo para la atención: un asistente que responde al instante 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 54. HB Estudio Contable
+### 55. HB Estudio Contable
 **Prioridad B** · **WhatsApp** · Contable / tributario · Viña del Mar  
 WhatsApp/celular: **+56 9 5371 3937** · Web: https://hbestudiocontable.cl
 
@@ -1395,7 +1416,7 @@ Implementamos automatizaciones para estudios contables: respuesta a consultas fr
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 55. AyR Contax
+### 56. AyR Contax
 **Prioridad B** · **WhatsApp** · Contable / tributario · Iquique (también Pucón y Viña)  
 Contacto: WhatsApp del sitio · Web: https://ayr-contax.cl/
 
@@ -1415,7 +1436,7 @@ Implementamos un canal de atención automático para estudios contables que resp
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 56. BPM Contadores Auditores (Contadores Curicó)
+### 57. BPM Contadores Auditores (Contadores Curicó)
 **Prioridad B** · **WhatsApp** · Contable · Curicó  
 WhatsApp/celular: **+56 9 6170 2215** · Web: https://contadorescurico.cl/
 
@@ -1436,7 +1457,7 @@ Implementamos un asistente que hace las preguntas iniciales de cada cotización 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 57. ServicioDTE
+### 58. ServicioDTE
 **Prioridad B** · **WhatsApp** · Contable · Curicó (100% online)  
 WhatsApp/celular: **+56 9 9178 8639** · Web: https://serviciodte.cl/
 
@@ -1457,7 +1478,7 @@ Implementamos un asistente que hace las preguntas iniciales de cada cotización 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 58. Arriendos Chile
+### 59. Arriendos Chile
 **Prioridad B** · **Correo** · Inmobiliaria (administración + legal) · Providencia  
 Correo: **administracion@arriendoschile.cl** · Web: https://arriendoschile.cl
 
@@ -1486,7 +1507,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 59. Montt Corretajes
+### 60. Montt Corretajes
 **Prioridad B** · **Correo** · Inmobiliaria · Puerto Montt  
 Correo: **info@monttcorretajes.cl** · Web: https://monttcorretajes.cl/
 
@@ -1515,7 +1536,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 60. OPTIMA PYME
+### 61. OPTIMA PYME
 **Prioridad B** · **Correo** · Consultoría de gestión · Concepción  
 Correo: **contacto@optimapymechile.cl** · Web: https://optimapymechile.cl/
 
@@ -1544,7 +1565,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 61. Home Pymes
+### 62. Home Pymes
 **Prioridad B** · **Correo** · Gestoría / administración · Chile (100% online)  
 Contacto: Email (sitio) + LinkedIn empresa · Web: https://homepymes.cl/
 
@@ -1572,7 +1593,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 62. Gestión 360 Consultores
+### 63. Gestión 360 Consultores
 **Prioridad B** · **Correo** · Consultoría de cobranza · Santiago  
 Correo: **contacto@gestion360chile.cl** · Web: https://www.gestion360chile.cl
 
@@ -1601,7 +1622,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 63. RYS Consultores (Rabanal & Stenger)
+### 64. RYS Consultores (Rabanal & Stenger)
 **Prioridad B** · **Correo** · RR.HH. · Concepción / Santiago / Antofagasta  
 Contacto: Email (sitio) + LinkedIn empresa · Web: https://rysconsultores.cl/
 
@@ -1629,7 +1650,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 64. Administración de Edificios Santiago
+### 65. Administración de Edificios Santiago
 **Prioridad B** · **Llamada y luego correo** · Administración de condominios · Santiago  
 Teléfono: **+56 2 2405 3539** · Web: https://administraciondeedificiossantiago.cl
 
@@ -1643,7 +1664,7 @@ _Usa el mismo correo de la empresa anterior del bloque (Admincondominios)._
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 65. Clínica Dental Dentistatemuco
+### 66. Clínica Dental Dentistatemuco
 **Prioridad B** · **Llamada y luego correo** · Salud (odontología) · Temuco  
 Teléfono: **+56 45 273 1700** · Web: https://www.dentistatemuco.com/
 
@@ -1673,7 +1694,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 66. Rojo Propiedades
+### 67. Rojo Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Región de Valparaíso  
 WhatsApp/celular: **+56 9 9538 0795** · Web: https://www.rojopropiedades.cl/
 
@@ -1694,7 +1715,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 67. Leal Propiedades Quilpué
+### 68. Leal Propiedades Quilpué
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Quilpué  
 WhatsApp/celular: **+56 9 8148 0362** · Web: https://www.lealpropiedadesquilpue.cl/
 
@@ -1715,7 +1736,7 @@ Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (inte
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 68. Servicont Asesorías & Contabilidad
+### 69. Servicont Asesorías & Contabilidad
 **Prioridad B** · **WhatsApp** · Contable · Osorno  
 WhatsApp/celular: **+56 9 7760 6322** · Web: https://servicont-osorno.cl/
 
@@ -1736,7 +1757,7 @@ Implementamos automatizaciones para estudios contables: recordatorios mensuales 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 69. Contabilidad Astor
+### 70. Contabilidad Astor
 **Prioridad B** · **WhatsApp** · Contable · Osorno  
 WhatsApp/celular: **+56 9 4812 6677** · Correo: **asistente@contabilidadastor.cl** · Web: https://www.contabilidadastor.cl/
 
@@ -1757,7 +1778,7 @@ Implementamos un asistente que hace las preguntas iniciales de cada cotización 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 70. Centro de Kinesiología Más Salud
+### 71. Centro de Kinesiología Más Salud
 **Prioridad B** · **WhatsApp** · Salud (kinesiología) · Viña del Mar  
 WhatsApp/celular: **+56 9 4190 8181** · Web: https://www.centromassalud.cl/
 
@@ -1778,7 +1799,7 @@ Implementamos un asistente de WhatsApp para centros de salud que agenda horas a 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 71. Nelly Bravo Propiedades
+### 72. Nelly Bravo Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Rancagua / Machalí  
 WhatsApp/celular: **+56 9 8937 1708** · Web: https://www.nellypropiedades.cl/
 
@@ -1799,7 +1820,7 @@ Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (inte
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 72. Desicam
+### 73. Desicam
 **Prioridad B** · **WhatsApp** · Salud (salud mental) · Concepción  
 Contacto: WhatsApp del sitio · Web: https://www.desicam.cl/
 
@@ -1819,7 +1840,7 @@ Implementamos un asistente que agenda horas a cualquier hora, identifica si la a
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 73. Ñuble Contable
+### 74. Ñuble Contable
 **Prioridad B** · **WhatsApp** · Contable · Chillán  
 WhatsApp/celular: **+56 9 6159 6826** · Web: https://www.nublecontable.cl/
 
@@ -1840,7 +1861,7 @@ Implementamos un asistente que responde las consultas de planes y precios a cual
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 74. BS & Asociados Abogados
+### 75. BS & Asociados Abogados
 **Prioridad B** · **Correo** · Legal · La Serena  
 Correo: **contacto@bsyasociados.cl** · Web: https://www.bsyasociados.cl/
 
@@ -1869,7 +1890,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 75. Desierto Propiedades
+### 76. Desierto Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Copiapó / La Serena  
 WhatsApp/celular: **+56 9 8988 8300** · Web: https://desiertopropiedades.cl/
 
@@ -1890,7 +1911,7 @@ Implementamos un asistente de WhatsApp que distingue cada tipo de consulta (inte
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 76. Copper Gestión Inmobiliaria
+### 77. Copper Gestión Inmobiliaria
 **Prioridad B** · **WhatsApp** · Inmobiliaria · Copiapó  
 Contacto: WhatsApp del sitio · Web: https://coppergi.cl/
 
@@ -1910,7 +1931,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 77. Desarrollo Legal
+### 78. Desarrollo Legal
 **Prioridad B** · **WhatsApp** · Legal · Talca / Santiago  
 WhatsApp/celular: **+56 9 9684 4564** · Web: https://desarrollolegal.cl/
 
@@ -1931,7 +1952,7 @@ Implementamos un asistente que hace las preguntas iniciales de cada consulta, id
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 78. CreaPyme Consultora
+### 79. CreaPyme Consultora
 **Prioridad B** · **WhatsApp** · Contable · Valdivia  
 WhatsApp/celular: **+56 9 5690 2275** · Web: https://www.creapymeconsultora.cl/
 
@@ -1952,7 +1973,7 @@ Implementamos un asistente que responde las consultas de planes a cualquier hora
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 79. Administraciones UrbanWork
+### 80. Administraciones UrbanWork
 **Prioridad B** · **Correo** · Administración de condominios · Viña del Mar  
 Correo: **info@administramostuedificio.cl** · Web: https://www.administramostuedificio.cl/
 
@@ -1981,7 +2002,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 80. Ahumada Propiedades
+### 81. Ahumada Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria y corretaje · Coyhaique  
 WhatsApp/celular: **+56 9 4026 3734** · Web: https://ahumadapropiedades.cl/
 
@@ -2004,7 +2025,7 @@ Un dato de paso: hoy la página "Quiénes somos" de su sitio muestra un error de
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 81. Wilmar Propiedades
+### 82. Wilmar Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria y corretaje · Iquique  
 WhatsApp/celular: **+56 9 3389 8988** · Web: https://wilmarpropiedades.cl/
 
@@ -2025,7 +2046,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 82. Centro Tu Norte
+### 83. Centro Tu Norte
 **Prioridad B** · **WhatsApp** · Salud (terapia infantil) · Iquique  
 WhatsApp/celular: **+56 9 3941 5376** · Web: https://centrotunorte.cl/
 
@@ -2046,12 +2067,112 @@ Implementamos un asistente de WhatsApp para centros de salud que responde las pr
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
+### 84. Häuser & Co Gestión Inmobiliaria
+**Prioridad B** · **WhatsApp** · Inmobiliaria y corretaje · Villarrica  
+WhatsApp/celular: **+56 9 6576 5311** · Web: https://hauserco.cl/
+
+**Cómo abordarlo:** Envíalo de lunes a viernes entre 10:00 y 13:00. Toca el enlace: abre WhatsApp con el mensaje ya escrito. Revisa que esté completo y envía. Antes: identificar dueño.  
+**Lo que vimos de ellos:** Consultas por WhatsApp sin asistente; 'Agendar visita' sin calendario.  
+**Qué les ofreces:** WhatsApp que responde y agenda.  
+**Video si dice que sí:** Video 1 · Asistente de WhatsApp que responde y agenda.  
+
+Mensaje:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Häuser & Co trabaja arriendo, arriendo de temporada y venta en Villarrica, Pucón y Panguipulli, y atiende por WhatsApp desde su web.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+[💬 Abrir WhatsApp con el mensaje listo](https://wa.me/56965765311?text=Hola%2C%20soy%20Gabriel%2C%20de%20Influence%20Chile%2C%20una%20agencia%20de%20marketing%20y%20automatizaci%C3%B3n%20con%20IA.%20Les%20escribo%20porque%20vi%20que%20H%C3%A4user%20%26%20Co%20trabaja%20arriendo%2C%20arriendo%20de%20temporada%20y%20venta%20en%20Villarrica%2C%20Puc%C3%B3n%20y%20Panguipulli%2C%20y%20atiende%20por%20WhatsApp%20desde%20su%20web.%0A%0AImplementamos%20un%20asistente%20de%20WhatsApp%20para%20corredoras%20que%20responde%20las%20preguntas%20de%20cada%20propiedad%20a%20cualquier%20hora%20y%20deja%20la%20visita%20agendada.%0A%0A%C2%BFLes%20gustar%C3%ADa%20verlo%20funcionando%20en%20un%20video%20de%202%20minutos%3F)
+
+☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
+
+### 85. Bela Asesoría
+**Prioridad B** · **WhatsApp** · Contable · Rancagua  
+WhatsApp/celular: **+56 9 6354 8889** · Web: https://belaasesoria.cl/
+
+**Cómo abordarlo:** Envíalo de lunes a viernes entre 10:00 y 13:00. Toca el enlace: abre WhatsApp con el mensaje ya escrito. Revisa que esté completo y envía. Antes: identificar socio o dueño.  
+**Lo que vimos de ellos:** Sin portal de clientes ni cotizador.  
+**Qué les ofreces:** Atención y recordatorios automáticos a clientes.  
+**Video si dice que sí:** Video 3 · Recordatorios y recepción de documentos.  
+
+Mensaje:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Bela Asesoría acompaña a pymes de Rancagua en contabilidad, remuneraciones y oficina virtual desde hace 35 años.
+
+Implementamos sistemas para firmas contables: las consultas de clientes llegan clasificadas al área que corresponde, y los recordatorios de documentos y vencimientos salen solos.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+```
+[💬 Abrir WhatsApp con el mensaje listo](https://wa.me/56963548889?text=Hola%2C%20soy%20Gabriel%2C%20de%20Influence%20Chile%2C%20una%20agencia%20de%20marketing%20y%20automatizaci%C3%B3n%20con%20IA.%20Les%20escribo%20porque%20vi%20que%20Bela%20Asesor%C3%ADa%20acompa%C3%B1a%20a%20pymes%20de%20Rancagua%20en%20contabilidad%2C%20remuneraciones%20y%20oficina%20virtual%20desde%20hace%2035%20a%C3%B1os.%0A%0AImplementamos%20sistemas%20para%20firmas%20contables%3A%20las%20consultas%20de%20clientes%20llegan%20clasificadas%20al%20%C3%A1rea%20que%20corresponde%2C%20y%20los%20recordatorios%20de%20documentos%20y%20vencimientos%20salen%20solos.%0A%0A%C2%BFLes%20gustar%C3%ADa%20verlo%20funcionando%20en%20un%20video%20de%202%20minutos%3F)
+
+☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
+
+### 86. Unda Propiedades
+**Prioridad B** · **Correo** · Inmobiliaria y corretaje · Santiago  
+Correo: **propiedadesunda@gmail.com** · Web: https://undapropiedades.cl/
+
+**Cómo abordarlo:** Envíalo entre 9:00 y 11:00. El enlace abre tu correo con el asunto y el cuerpo listos. Si la persona tiene LinkedIn, manda la invitación el día anterior. Antes: identificar a las socias.  
+**Lo que vimos de ellos:** Administra arriendos sin portal ni WhatsApp.  
+**Qué les ofreces:** Atención automática a arrendatarios y propietarios.  
+**Video si dice que sí:** Video 1 · Asistente de WhatsApp que responde y agenda.  
+
+Asunto:
+```
+Atención de arrendatarios y propietarios en Unda Propiedades
+```
+Cuerpo:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Unda Propiedades administra, arrienda y vende propiedades en Santiago desde 1982.
+
+Implementamos un canal de WhatsApp para corredoras que administran: responde las consultas frecuentes de arrendatarios y propietarios, y deriva al equipo solo lo que necesita su revisión.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+[✉️ Abrir correo con el mensaje listo](mailto:propiedadesunda@gmail.com?subject=Atenci%C3%B3n%20de%20arrendatarios%20y%20propietarios%20en%20Unda%20Propiedades&body=Hola%2C%20soy%20Gabriel%2C%20de%20Influence%20Chile%2C%20una%20agencia%20de%20marketing%20y%20automatizaci%C3%B3n%20con%20IA.%20Les%20escribo%20porque%20vi%20que%20Unda%20Propiedades%20administra%2C%20arrienda%20y%20vende%20propiedades%20en%20Santiago%20desde%201982.%0A%0AImplementamos%20un%20canal%20de%20WhatsApp%20para%20corredoras%20que%20administran%3A%20responde%20las%20consultas%20frecuentes%20de%20arrendatarios%20y%20propietarios%2C%20y%20deriva%20al%20equipo%20solo%20lo%20que%20necesita%20su%20revisi%C3%B3n.%0A%0A%C2%BFLes%20gustar%C3%ADa%20verlo%20funcionando%20en%20un%20video%20de%202%20minutos%3F%0A%0AGabriel%20Meza%0AInfluence%20Chile%20%C2%B7%20influencechile.cl%0A%2B56%209%206545%200723)
+
+☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
+
+### 87. Chiloé Propiedades
+**Prioridad B** · **Correo** · Inmobiliaria y corretaje · Castro  
+Correo: **contacto@chiloepropiedades.cl** · Web: https://www.chiloepropiedades.cl/
+
+**Cómo abordarlo:** Envíalo entre 9:00 y 11:00. El enlace abre tu correo con el asunto y el cuerpo listos. Si la persona tiene LinkedIn, manda la invitación el día anterior. Antes: identificar dueño.  
+**Lo que vimos de ellos:** Sin WhatsApp ni agenda en la web.  
+**Qué les ofreces:** WhatsApp que responde y agenda.  
+**Video si dice que sí:** Video 1 · Asistente de WhatsApp que responde y agenda.  
+
+Asunto:
+```
+Consultas de propiedades en Chiloé Propiedades
+```
+Cuerpo:
+```
+Hola, soy Gabriel, de Influence Chile, una agencia de marketing y automatización con IA. Les escribo porque vi que Chiloé Propiedades vende parcelas, campos y casas en toda la isla, y también ayuda con los trámites legales y notariales.
+
+Implementamos un asistente de WhatsApp para corredoras que responde las preguntas de cada propiedad a cualquier hora y deja la visita agendada.
+
+¿Les gustaría verlo funcionando en un video de 2 minutos?
+
+Gabriel Meza
+Influence Chile · influencechile.cl
++56 9 6545 0723
+```
+[✉️ Abrir correo con el mensaje listo](mailto:contacto@chiloepropiedades.cl?subject=Consultas%20de%20propiedades%20en%20Chilo%C3%A9%20Propiedades&body=Hola%2C%20soy%20Gabriel%2C%20de%20Influence%20Chile%2C%20una%20agencia%20de%20marketing%20y%20automatizaci%C3%B3n%20con%20IA.%20Les%20escribo%20porque%20vi%20que%20Chilo%C3%A9%20Propiedades%20vende%20parcelas%2C%20campos%20y%20casas%20en%20toda%20la%20isla%2C%20y%20tambi%C3%A9n%20ayuda%20con%20los%20tr%C3%A1mites%20legales%20y%20notariales.%0A%0AImplementamos%20un%20asistente%20de%20WhatsApp%20para%20corredoras%20que%20responde%20las%20preguntas%20de%20cada%20propiedad%20a%20cualquier%20hora%20y%20deja%20la%20visita%20agendada.%0A%0A%C2%BFLes%20gustar%C3%ADa%20verlo%20funcionando%20en%20un%20video%20de%202%20minutos%3F%0A%0AGabriel%20Meza%0AInfluence%20Chile%20%C2%B7%20influencechile.cl%0A%2B56%209%206545%200723)
+
+☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
+
 
 ---
 
 ## No enviar todavía · verificar primero
 
-### 83. Alevarre Propiedades
+### 88. Alevarre Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria · La Serena  
 WhatsApp/celular: **+56 9 4411 6374** · Web: https://www.alevarrepropiedades.cl/
 
@@ -2072,7 +2193,7 @@ Implementamos un asistente de WhatsApp para corredoras que responde las pregunta
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 84. MBM Propiedades — Marcela Martínez Barriga
+### 89. MBM Propiedades — Marcela Martínez Barriga
 **Prioridad B** · **Correo** · Inmobiliaria · Vitacura  
 Contacto: Email (sitio) + LinkedIn · Web: https://mbm.cl
 
@@ -2100,7 +2221,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 85. Yung y Asociados
+### 90. Yung y Asociados
 **Prioridad B** · **Correo** · Legal · Antofagasta  
 Correo: **yungyasoc@yungyasoc.cl** · Web: http://yungyasoc.cl/
 
@@ -2129,7 +2250,7 @@ Influence Chile · influencechile.cl
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 86. Atria Propiedades
+### 91. Atria Propiedades
 **Prioridad B** · **WhatsApp** · Inmobiliaria y corretaje · Coyhaique  
 WhatsApp/celular: **+56 9 7887 3272** · Web: https://atriapropiedades.com/
 
@@ -2152,7 +2273,7 @@ Un dato de paso: en su página de contacto el botón de WhatsApp no carga, así 
 
 ☐ Enviado el ____ · ☐ Seguimiento día 4 · ☐ Seguimiento día 10
 
-### 87. Legacy Propiedades
+### 92. Legacy Propiedades
 **Prioridad B** · **Verificar sitio** · Inmobiliaria · La Serena / Coquimbo  
 Contacto: Por confirmar (sitio sin contenido al revisar) · Web: https://legacypropiedades.cl/
 
