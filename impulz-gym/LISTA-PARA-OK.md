@@ -46,7 +46,8 @@ El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan des
 
 **Para el sitio web (se cargan en el panel → Ajustes):**
 - [ ] Dirección del gimnasio y link de Google Maps
-- [ ] Precios: plan mensual, plan pareja, matrícula y pase verano
+- [x] Precios de los planes: cargados desde los flyers del gimnasio (16 de noviembre)
+- [ ] Confirmar con el dueño: si hay matrícula, si existen plan pareja y pases de verano, y si el Plan Clase sigue con "15 clases diarias" (el flyer todavía dice Worldfit)
 - [ ] Promociones vigentes
 - [ ] Si la clase de prueba es gratis (se activa en Ajustes)
 - [ ] Link a las reseñas de Google, cuando exista la ficha

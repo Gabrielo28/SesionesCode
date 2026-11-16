@@ -83,7 +83,7 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
       const cfg = (await pedir('GET', '/api/config', null, dueno)).j;
       const leads = (await pedir('GET', '/api/leads', null, dueno)).j;
       const total = leads.flatMap(l => R.detallePagos(l, cfg)).filter(p => p.mes === mes).reduce((s, p) => s + p.valor, 0);
-      assert.equal(total, 25000);
+      assert.equal(total, cfg.mensualidad);
     });
     await paso('el reloj por socio: mes 2 al 7 con 15% y mes 8 sin comisión', async () => {
       const R = require('./public/reglas.js');

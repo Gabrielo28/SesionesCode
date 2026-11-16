@@ -271,3 +271,22 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
 - **No modificar la propuesta ni el panel sin que el usuario lo confirme.** Proponer los cambios y esperar.
 - No evaluar ni especular sobre cosas que no se pueden saber (por ejemplo, cómo trabaja hoy el gimnasio). Ir paso a paso.
 - El usuario quiere ver las cosas antes de que se cambien.
+
+## Planes y precios reales (flyers del gimnasio, 16 de noviembre de 2026)
+
+| Plan | Valor | Detalle |
+|---|---|---|
+| Básico | $30.000 al mes | Full acceso, sin restricciones. Para gente con experiencia |
+| Plan Clase | $42.000 al mes | Un profesional acompaña el entrenamiento (máquinas, técnica, posturas, cargas) |
+| Estudiante | $25.000 al mes | Con credencial o comprobante de estudios vigente |
+| Full trimestral | $84.000 | 3 meses continuos, congela 7 días |
+| Full semestral | $170.000 | 6 meses continuos, congela 14 días |
+| Full anual | $300.000 | 12 meses continuos, congela 30 días |
+
+- Cargados en el sitio (`app/public/sitio.html`), en el panel (lista de planes y monto sugerido) y en la página de entrenachile.cl.
+- Se quitaron del sitio el "plan pareja" y el "pase verano": no aparecen en los flyers. Falta confirmar con el dueño si existen.
+- La mensualidad base del panel pasó de $25.000 a $30.000 (plan Básico).
+- El flyer del Plan Clase todavía dice "Worldfit imparte 15 clases diarias": hay que pedirle al dueño que lo corrija y confirmar si esas clases siguen.
+- Impacto en la comisión: primer mes de un Básico = $30.000; meses 2 a 7 = $4.500 al mes. Plan Clase = $42.000 y $6.300 al mes.
+- Los planes Full se pagan por adelantado. El acuerdo dice que la comisión se paga cuando el gimnasio cobra; falta definir cómo se reparte un pago de varios meses (ver pendiente).
+

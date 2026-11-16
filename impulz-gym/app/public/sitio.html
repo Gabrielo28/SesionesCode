@@ -93,6 +93,19 @@ section.blk{padding-block:76px;border-bottom:1px solid var(--line)}
 .card .ph{display:block;width:calc(100% + 44px);max-width:none;margin:-22px -22px 6px;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:13px 13px 0 0}
 .plan .ph{display:block;width:calc(100% + 48px);max-width:none;margin:-24px -24px 6px;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:15px 15px 0 0}
 img.wide{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line);margin-bottom:22px}
+table.full{width:100%;border-collapse:collapse;font-size:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table.full th{font:700 13px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.full td{padding:14px 16px;border-bottom:1px solid var(--line);color:var(--soft);white-space:nowrap}
+table.full tr:last-child td{border-bottom:0}
+table.full b{color:var(--ink);font:italic 800 22px/1 var(--display);text-transform:uppercase}
+table.full .num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.plan{display:flex;flex-direction:column}.plan .btn{margin-top:auto}
+@media(max-width:640px){table.full thead{display:none}table.full,table.full tbody{display:block}
+table.full tr{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 16px;border-bottom:1px solid var(--line)}table.full tr:last-child{border-bottom:0}
+table.full td{padding:0;border:0;white-space:normal;font-size:14px}
+table.full td:nth-child(1){grid-area:1/1}table.full td:nth-child(4){grid-area:1/2}table.full td:nth-child(2){grid-area:2/1}table.full td:nth-child(5){grid-area:2/2}table.full td:nth-child(3){grid-area:3/1/4/3}
+table.full td:nth-child(3)::before{content:"Puedes congelar "}table.full td:nth-child(5)::after{content:" al mes"}}
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .plan{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:12px;align-content:start}
 .plan.top{border-color:var(--red);background:linear-gradient(160deg,var(--red-deep),var(--panel) 60%)}
@@ -202,7 +215,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
     <div class="card"><img class="ph" src="/fotos/p-principiante.jpg" alt="Mujer entrenando en una máquina de remo" loading="lazy" width="960" height="540"><h3>Si partes de cero</h3><p>Nadie nace sabiendo. Ven a una clase de prueba, conoce el lugar y parte a tu ritmo.</p></div>
     <div class="card"><img class="ph" src="/fotos/p-madrugador.jpg" alt="Hombre en bicicleta de spinning al amanecer" loading="lazy" width="960" height="540"><h3>Si tu horario es difícil</h3><p>Abrimos a las 5:00 y cerramos a las 22:00. Entrena antes del trabajo, a mediodía o de noche.</p></div>
     <div class="card"><img class="ph" src="/fotos/p-coach-sesion.jpg" alt="Entrenador guiando a una alumna con mancuernas" loading="lazy" width="960" height="540"><h3>Si quieres un plan a tu medida</h3><p>Entrena con un coach personalizado que arma tu plan según tu objetivo y sigue tu avance.</p></div>
-    <div class="card"><img class="ph" src="/fotos/ia-cardio.jpg" alt="Zona de cardio con vista al exterior" loading="lazy" width="960" height="540"><h3>Si veraneas en el litoral</h3><p>No pierdas el ritmo en vacaciones. En enero y febrero hay pases por semana o quincena.</p></div>
+    <div class="card"><img class="ph" src="/fotos/ia-cardio.jpg" alt="Zona de cardio con vista al exterior" loading="lazy" width="960" height="540"><h3>Si veraneas en el litoral</h3><p>No pierdas el ritmo en vacaciones. Reserva tu clase de prueba y pregunta por las opciones para tu estadía.</p></div>
   </div>
 </div></section>
 
@@ -212,13 +225,22 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 </div></section>
 
 <section class="blk" id="planes"><div class="wrap">
-  <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes incluyen acceso al gimnasio en horario completo.</p></div>
+  <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes son full acceso, sin restricciones de horario.</p></div>
   <div class="plans">
-    <div class="plan top"><img class="ph" src="/fotos/ia-sala.jpg" alt="Sala de Impulz Gym" loading="lazy" width="960" height="540"><span class="tag">Más elegido</span><h3>Plan mensual</h3><div class="price" id="pMensual">Consulta<small></small></div><ul><li>Acceso de lunes a sábado</li><li>Entrena a tu ritmo, en el horario que quieras</li><li>Sin contrato de permanencia</li></ul><a class="btn" href="#reserva" data-plan="Plan mensual">Partir con clase de prueba</a></div>
-    <div class="plan"><img class="ph" src="/fotos/p-pareja.jpg" alt="Pareja entrenando junta" loading="lazy" width="960" height="540"><h3>Plan pareja</h3><div class="price" id="pPareja">Consulta<small></small></div><ul><li>Dos personas, un solo plan</li><li>Entrenen juntos o en horarios distintos</li><li>Tu mejor compañía también entrena aquí</li></ul><a class="btn ghost" href="#reserva" data-plan="Plan pareja">Reservar en pareja</a></div>
-    <div class="plan"><img class="ph" src="/fotos/p-verano.jpg" alt="Joven tomando mancuernas en verano" loading="lazy" width="960" height="540"><h3>Pase verano</h3><div class="price">Enero y febrero</div><ul><li>Para quienes veranean en el litoral</li><li>Pases por semana o por quincena</li><li>Sin matrícula</li></ul><a class="btn ghost" href="#reserva" data-plan="Pase verano">Quiero mi pase</a></div>
+    <div class="plan"><img class="ph" src="/fotos/ia-sala.jpg" alt="Sala de Impulz Gym" loading="lazy" width="960" height="540"><h3>Básico</h3><div class="price">$30.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Para quienes ya tienen experiencia y saben usar las máquinas</li><li>Entrenas a tu ritmo</li></ul><a class="btn ghost" href="#reserva" data-plan="Básico">Partir con clase de prueba</a></div>
+    <div class="plan top"><img class="ph" src="/fotos/p-coach-sesion.jpg" alt="Profesional guiando a una alumna" loading="lazy" width="960" height="540"><span class="tag">Con acompañamiento</span><h3>Plan Clase</h3><div class="price">$42.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Un profesional acompaña tus entrenamientos</li><li>Aprendes máquinas, técnica, posturas y cargas</li></ul><a class="btn" href="#reserva" data-plan="Plan Clase">Partir con clase de prueba</a></div>
+    <div class="plan"><img class="ph" src="/fotos/p-principiante.jpg" alt="Alumna entrenando en una máquina" loading="lazy" width="960" height="540"><h3>Estudiante</h3><div class="price">$25.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Precio especial para estudiantes</li><li>Presenta tu credencial o comprobante de estudios vigente</li></ul><a class="btn ghost" href="#reserva" data-plan="Estudiante">Partir con clase de prueba</a></div>
   </div>
-  <p class="note" id="notaPlanes">Trae a un amigo y obtén un descuento en tu plan. Pregunta por las promociones vigentes al reservar.</p>
+  <div class="head" style="margin:44px 0 20px"><span class="eyebrow">Plan Full</span><h3 style="font-size:34px">Paga por adelantado y ahorra</h3><p>Ingresos y tiempo de entrenamiento ilimitados.</p></div>
+  <div class="tablewrap"><table class="full">
+    <thead><tr><th>Plan</th><th>Duración</th><th>Congelamiento</th><th class="num">Valor</th><th class="num">Equivale al mes</th></tr></thead>
+    <tbody>
+      <tr><td><b>Trimestral</b></td><td>3 meses continuos</td><td>7 días</td><td class="num"><b>$84.000</b></td><td class="num">$28.000</td></tr>
+      <tr><td><b>Semestral</b></td><td>6 meses continuos</td><td>14 días</td><td class="num"><b>$170.000</b></td><td class="num">$28.333</td></tr>
+      <tr><td><b>Anual</b></td><td>12 meses continuos</td><td>30 días</td><td class="num"><b>$300.000</b></td><td class="num">$25.000</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" id="notaPlanes">Pregunta por las promociones vigentes al reservar.</p>
 </div></section>
 
 <section class="blk" id="personalizado"><div class="wrap split">
@@ -298,7 +320,8 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
   <details><summary>¿Necesito experiencia para partir?</summary><p>No. Puedes partir a tu ritmo. Y si quieres un plan a tu medida, puedes entrenar con un coach personalizado.</p></details>
   <details><summary>¿Cómo funciona la clase de prueba?</summary><p>Reservas en esta página, recibes un código y coordinamos el día por WhatsApp. Vienes, conoces el gimnasio y entrenas.</p></details>
   <details><summary>¿Tienen entrenamiento personalizado?</summary><p>Sí. Las sesiones personalizadas se agendan directamente con el coach, en el horario que acuerden.</p></details>
-  <details><summary>Voy solo por el verano, ¿puedo entrenar?</summary><p>Sí. En enero y febrero hay pases por semana o por quincena para quienes veranean en el litoral.</p></details>
+  <details><summary>Voy solo por el verano, ¿puedo entrenar?</summary><p>Sí. Reserva tu clase de prueba y pregunta en recepción por la opción que mejor calce con tu estadía.</p></details>
+  <details><summary>¿Puedo congelar mi plan?</summary><p>Sí, en el Plan Full: 7 días en el trimestral, 14 en el semestral y 30 en el anual.</p></details>
   <details><summary>¿Qué horario tienen?</summary><p>Lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00. Domingo cerrado.</p></details>
 </div></section>
 </main>
@@ -321,8 +344,6 @@ const clp = n => '$' + Math.round(n).toLocaleString('es-CL');
 /* Contenido que se edita desde el panel (Ajustes) */
 if (SITIO.promo) { $('promo').textContent = SITIO.promo; $('promo').hidden = false; }
 $('beneficio').textContent = SITIO.beneficio || '';
-if (SITIO.precioMensual) $('pMensual').innerHTML = clp(SITIO.precioMensual) + '<small> / mes</small>';
-if (SITIO.precioPareja) $('pPareja').innerHTML = clp(SITIO.precioPareja) + '<small> / mes</small>';
 if (SITIO.precioMatricula) $('notaPlanes').textContent = 'Matrícula: ' + clp(SITIO.precioMatricula) + '. ' + $('notaPlanes').textContent;
 if (SITIO.direccion) { $('dir').textContent = SITIO.direccion; $('topDir').textContent = SITIO.direccion; }
 if (SITIO.resenasUrl) { $('resenas').href = SITIO.resenasUrl; $('resenas').hidden = false; }
