@@ -312,3 +312,6 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
   responde objetivo, experiencia y días, y recibe su código junto a una rutina de 4 semanas (reglas fijas, editable en
   `entrenacl/src/lib/rutina-gimnasio.ts`). Con lesión o condición de salud no hay rutina: evaluación con el coach.
   Embudo: rutina → Plan Clase (profesor de sala) → personalizado con el coach. Las respuestas llegan a las notas del contacto en el panel.
+- **Rutinas v2 (17 de noviembre):** 5 tipos (glúteos y piernas, clásica de musculación por grupo muscular, bajar de peso,
+  cuerpo completo, volver a entrenar) × nivel × 2-4 días. 32 ejercicios con foto IA (gpt-image-2.5-sunburst, ~USD 0,035 c/u,
+  revisadas; se regeneró el peso muerto rumano con barra) y tutorial de 3 pasos + error común. Nombres por enfoque, no por género.
