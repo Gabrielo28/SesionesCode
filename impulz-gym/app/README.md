@@ -4,9 +4,9 @@ Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el 
 
 | Dirección | Qué es | Quién la ve |
 |---|---|---|
-| `https://impulzgym.cl/` (dominio propio, por confirmar) | Sitio oficial del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
+| `https://impulzgym.cl/` | Sitio oficial del gimnasio: planes, horarios, entrenamiento personalizado, ubicación y reserva | Cualquiera |
 | `/reserva` | Página corta de reservas, para anuncios | Cualquiera |
-| `https://impulz.entrenachile.cl/panel` | Panel de comisiones con usuario y clave (plataforma del coach, en entrenachile.cl) | Coach, dueño y (opcional) recepción |
+| `https://impulzgym.cl/panel` (más adelante `impulz.entrenachile.cl`) | Panel de comisiones con usuario y clave (plataforma del coach, en entrenachile.cl) | Coach, dueño y (opcional) recepción |
 
 ## Cómo funciona
 
@@ -37,30 +37,38 @@ Todo cambio queda en **Historial** con quién y cuándo. El historial no se pued
 
 ## Publicar en Railway
 
-1. En Railway: **New Project → Deploy from GitHub repo** → este repositorio.
-2. En el servicio: **Settings → Root Directory** = `impulz-gym/app`. Railway lee `railway.json` y arranca con `node server.js`.
-3. **Volumen para los datos** (obligatorio, si no se borran con cada deploy): Settings → Volumes → montar en `/data`.
-4. **Variables** (Settings → Variables):
+1. Railway → **New Project → Deploy from GitHub repo** → `SesionesCode`. Si no aparece, **Configure GitHub App** y dale acceso.
+2. En el servicio, **Settings**:
+   - **Source → Branch**: `claude/sweet-ptolemy-3u66w7` (la aplicación todavía no está en `main`).
+   - **Source → Root Directory**: `impulz-gym/app`. Railway lee `railway.json` y arranca con `node server.js`.
+3. **Volumen** (obligatorio: sin él se borran las reservas en cada deploy): clic derecho en el servicio → **Attach Volume** → Mount path `/data`.
+4. **Variables**:
 
-   | Variable | Ejemplo | Para qué |
+   | Variable | Valor | Para qué |
    |---|---|---|
    | `DATA_DIR` | `/data` | Dónde se guardan reservas, socios e historial |
-   | `ADMIN_USUARIO` / `ADMIN_CLAVE` | `coach` / (clave larga) | Tu usuario |
-   | `DUENO_USUARIO` / `DUENO_CLAVE` | `impulz` / (clave larga) | Usuario del dueño |
-   | `RECEPCION_USUARIO` / `RECEPCION_CLAVE` | opcional | Usuario de recepción |
+   | `ADMIN_USUARIO` / `ADMIN_CLAVE` | `coach` / clave larga | Tu usuario |
+   | `DUENO_USUARIO` / `DUENO_CLAVE` | `impulz` / clave larga | Usuario del dueño |
    | `SESION_SECRETO` | 40+ caracteres al azar | Firma las sesiones |
-   | `META_PIXEL_ID` | `1234567890` | Activa el Píxel de Meta (PageView y Lead al reservar) |
+   | `ORIGEN_CLAVE` | 32+ caracteres al azar | Clave compartida con entrenachile.cl |
+   | `RECEPCION_USUARIO` / `RECEPCION_CLAVE` | opcional | Usuario de recepción |
+   | `META_PIXEL_ID` | opcional | Píxel de Meta |
+   | `GOOGLE_VERIFICACION`, `BING_VERIFICACION`, `INDEXNOW_KEY` | después | SEO (`docs/09-seo-geo-indexacion.md`) |
+   | `PANEL_HOST` | después | Solo si el panel pasa a `impulz.entrenachile.cl` |
 
-5. **Dos dominios en el mismo servicio** (Settings → Networking → Custom Domain). Railway entrega un registro CNAME para cada uno:
-   - `impulzgym.cl` (o el dominio propio que se registre): sitio oficial del gimnasio y página `/reserva`.
-   - `impulz.entrenachile.cl`: panel de comisiones. Se crea en el DNS de entrenachile.cl.
-   Agrega la variable `PANEL_HOST=impulz.entrenachile.cl`: con ella el panel solo abre en ese dominio y el sitio del gimnasio no lo muestra.
-6. Entra a `/panel` con tu usuario → **Ajustes**: WhatsApp, beneficio del código, promoción, precios, dirección, link de Google Maps y datos del coach. El sitio se actualiza al guardar.
+5. **Dominio** (Settings → Networking → Custom Domain): `impulzgym.cl` y `www.impulzgym.cl` (si pregunta el puerto, deja el que sugiere Railway).
+   Railway muestra un registro CNAME y uno TXT para cada uno: se crean en el DNS del dominio. NIC Chile no permite CNAME
+   en la raíz, así que el DNS conviene manejarlo en Cloudflare (gratis), con la nube en gris ("DNS only").
+   `www` redirige solo a la dirección sin `www`.
+6. Comprobar: `https://impulzgym.cl/salud` responde `{"ok":true}`. Entrar a `https://impulzgym.cl/panel` → **Ajustes**.
+
+Mientras no se defina `PANEL_HOST`, el panel abre en `impulzgym.cl/panel` (con usuario y clave, y fuera de los buscadores).
 
 ## Reservas que llegan desde entrenachile.cl
 
 La página `entrenachile.cl/gimnasios/impulz` (repo `entrenacl`) reenvía sus reservas a `/api/reservas` de esta aplicación.
-Define aquí `ORIGEN_CLAVE` con el mismo valor que `GIMNASIO_IMPULZ_CLAVE` en entrenachile.cl, para que el límite de
+En el servicio de entrenachile.cl se definen `GIMNASIO_IMPULZ_RESERVAS_URL=https://impulzgym.cl/api/reservas` y
+`GIMNASIO_IMPULZ_CLAVE` con el mismo valor que `ORIGEN_CLAVE` de aquí, para que el límite de
 intentos use la IP del visitante y no la del servidor de entrenachile.cl.
 
 ## Probar en tu computador
