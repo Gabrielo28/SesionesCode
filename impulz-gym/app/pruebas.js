@@ -33,7 +33,7 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
     await paso('el sitio y la página de reservas cargan, sin exponer el acuerdo', async () => {
       const r = await fetch(URL + '/'); const h = await r.text();
       assert.equal(r.status, 200); assert.match(h, /Tu mejor/); assert.match(h, /ExerciseGym/); assert.ok(!/pctPrimer/.test(h));
-      const r2 = await fetch(URL + '/reserva'); const h2 = await r2.text(); assert.match(h2, /Reserva tu/); assert.match(h2, /Matrícula gratis/);
+      const r2 = await fetch(URL + '/reserva'); const h2 = await r2.text(); assert.match(h2, /Reserva tu/); assert.match(h2, /Sin compromiso/);
     });
     await paso('una reserva desde un anuncio de Meta genera código y queda atribuida', async () => {
       const r = await pedir('POST', '/api/reservas', { nombre: 'Camila Rojas', telefono: '9 1234 5678', acepta: true, c: 'meta', utm_campaign: 'relanzamiento' });

@@ -357,7 +357,7 @@ http.createServer(async (req, res) => {
       const base = { PIXEL: pixelHead(), PIXEL_ACTIVO: PIXEL ? '1' : '', ORIGEN: origen(req), VERIFICACION: verificacionHead() };
       // "/" es el sitio completo del gimnasio; "/reserva" es la página corta para anuncios.
       if (ruta === '/') return pagina(res, 'sitio.html', { ...base, JSONLD: jsonLd(cfg, req), SITIO_JSON: sitioPublico(cfg) });
-      return pagina(res, 'reserva.html', { ...base, BENEFICIO: esc(cfg.beneficio || ''), PROMO: esc(cfg.promo || ''), PROMO_OCULTA: cfg.promo ? '' : 'hidden' });
+      return pagina(res, 'reserva.html', { ...base, BENEFICIO: esc(cfg.beneficio || 'Sin compromiso y sin experiencia previa.'), PROMO: esc(cfg.promo || ''), PROMO_OCULTA: cfg.promo ? '' : 'hidden' });
     }
     if (ruta === '/sitemap.xml') {
       const o = origen(req);

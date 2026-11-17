@@ -16,7 +16,7 @@ fs.mkdirSync(DIR, { recursive: true });
 
 const CONFIG_INICIAL = {
   pctPrimer: 100, pctRecurrente: 15, mesesRecurrente: 6, pctPase: 30, mensualidad: 30000,
-  inicio: '', whatsapp: '', beneficio: 'Matrícula gratis al inscribirte con tu código', promo: '',
+  inicio: '', whatsapp: '', beneficio: '', promo: '',
   direccion: '', mapsUrl: '', instagram: 'impulzgym.elquisco', precioMensual: 0, precioPareja: 0, precioMatricula: 0, coachNombre: '', coachPerfil: '', resenasUrl: '', pruebaGratis: 0
 };
 
