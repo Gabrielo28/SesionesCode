@@ -167,7 +167,7 @@ async function reservar(req, res) {
       nombre, telefono: '+' + (telefono.length === 9 ? '56' + telefono : telefono),
       canal: R.canalDesdeParametro(b.c), campana: texto(b.utm_campaign, 80), anuncio: texto(b.utm_content, 80),
       fuente: texto(b.utm_source, 40), objetivo: texto(b.objetivo, 60), horario: texto(b.horario, 40),
-      etapa: 'Contacto', plan: '', monto: +cfg.mensualidad, fechaContacto: hoy(), fechaInscripcion: '', pagos: [], notas: '',
+      etapa: 'Contacto', plan: '', monto: +cfg.mensualidad, fechaContacto: hoy(), fechaInscripcion: '', pagos: [], notas: texto(b.detalle, 200),
       creadoEn: new Date().toISOString(), creadoPor: 'web'
     });
     datos.registrar({ usuario: 'web', rol: 'publico', accion: 'reserva', leadId: l.id, codigo: l.codigo, detalle: R.canal(l.canal).nombre + (l.campana ? ' · ' + l.campana : '') });

@@ -308,3 +308,7 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
   sería ofrecer gratis algo que ya es gratis para todos (publicidad engañosa según la Ley 19.496) y no motiva a mostrar el código.
   Propuesta: evaluación inicial y plan de entrenamiento gratis con el coach, solo con código. Pendiente de decidir con el dueño.
 
+- **Beneficio del código = rutina inicial** (idea del usuario, 17 de noviembre): en entrenachile.cl/gimnasios/impulz la persona
+  responde objetivo, experiencia y días, y recibe su código junto a una rutina de 4 semanas (reglas fijas, editable en
+  `entrenacl/src/lib/rutina-gimnasio.ts`). Con lesión o condición de salud no hay rutina: evaluación con el coach.
+  Embudo: rutina → Plan Clase (profesor de sala) → personalizado con el coach. Las respuestas llegan a las notas del contacto en el panel.
