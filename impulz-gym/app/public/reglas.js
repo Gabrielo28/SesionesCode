@@ -10,9 +10,10 @@
     { id: 'coach', c: 'coach', nombre: 'Redes del coach', g: true },
     { id: 'youtube', c: 'yt', nombre: 'YouTube y Shorts', g: true },
     { id: 'entrenachile', c: 'entrenachile', nombre: 'Perfil en entrenachile.cl', g: true },
-    { id: 'reserva_web', c: '', nombre: 'Sitio web y reservas (sin campaña)', g: true },
+    { id: 'campana', c: '', nombre: 'Otro link de campaña del coach', g: true },
     { id: 'codigo', c: '', nombre: 'Código promocional de campaña', g: true },
     { id: 'coaching', c: '', nombre: 'Alumno de coaching', g: true },
+    { id: 'reserva_web', c: '', nombre: 'Web del gimnasio, sin link de campaña', g: false },
     { id: 'meson', c: '', nombre: 'Llegó directo al gimnasio', g: false },
     { id: 'referido_socio', c: '', nombre: 'Referido de un socio', g: false },
     { id: 'ex_socio', c: '', nombre: 'Ex socio del gimnasio', g: false },
@@ -21,7 +22,13 @@
   const ETAPAS = ['Contacto', 'Prueba agendada', 'Prueba asistida', 'Inscrito', 'No se inscribió'];
 
   const canal = id => CANALES.find(x => x.id === id) || CANALES[CANALES.length - 1];
-  const canalDesdeParametro = c => (CANALES.find(x => x.c && x.c === String(c || '').toLowerCase()) || canal('reserva_web')).id;
+  // Sin ?c= la reserva es de la web del gimnasio (sin comisión). Con un ?c= que no está en la lista, igual es un link
+  // de campaña del coach (ej. ?c=tiktok): cuenta como gestión.
+  const canalDesdeParametro = c => {
+    const v = String(c || '').toLowerCase().trim();
+    if (!v) return 'reserva_web';
+    return (CANALES.find(x => x.c && x.c === v) || canal('campana')).id;
+  };
   const esGestion = l => canal(l.canal).g;
   const mesDe = fecha => String(fecha || '').slice(0, 7);
 

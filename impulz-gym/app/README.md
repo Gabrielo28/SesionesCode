@@ -12,7 +12,8 @@ Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el 
 
 1. La persona entra desde un anuncio o link con `?c=<canal>&utm_campaign=<campaña>&utm_content=<anuncio>`.
    Canales: `meta` (publicidad), `ig` (Instagram de Impulz), `coach` (redes del coach), `yt` (YouTube), `entrenachile` (perfil en la plataforma).
-   Sin `c` queda como "Página de reservas (sin campaña)", que igual cuenta como gestión del coach.
+   Sin `c` queda como "Web del gimnasio, sin link de campaña": es del gimnasio y no genera comisión. Un `c` que no está
+   en la lista (ej. `?c=tiktok`) queda como "Otro link de campaña del coach" y sí cuenta. La web recuerda el `c` 30 días.
 2. Deja nombre y WhatsApp y recibe un código único (`IMP-6RHW`). Queda registrada sola, con fecha y campaña.
    El mismo teléfono en 60 días recibe el mismo código (no se duplica).
 3. Se le abre WhatsApp con el mensaje listo (si está configurado el número en Ajustes).

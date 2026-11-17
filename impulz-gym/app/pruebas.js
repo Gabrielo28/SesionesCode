@@ -125,6 +125,15 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
       const llms = (await pedir('GET', '/llms.txt')).j;
       assert.match(llms, /^# Impulz Gym El Quisco/); assert.match(llms, /\$42\.000/); assert.match(r, /User-agent: GPTBot/);
     });
+    await paso('atribución: sin link de campaña es del gimnasio; cualquier ?c= es del coach', async () => {
+      const R = require('./public/reglas.js');
+      const a = await pedir('POST', '/api/reservas', { nombre: 'Llegó Sola', telefono: '977771111', acepta: true });
+      const b = await pedir('POST', '/api/reservas', { nombre: 'Vino de TikTok', telefono: '977772222', acepta: true, c: 'tiktok' });
+      const leads = (await pedir('GET', '/api/leads', null, coach)).j;
+      const la = leads.find(l => l.codigo === a.j.codigo), lb = leads.find(l => l.codigo === b.j.codigo);
+      assert.equal(la.canal, 'reserva_web'); assert.equal(R.esGestion(la), false);
+      assert.equal(lb.canal, 'campana'); assert.equal(R.esGestion(lb), true);
+    });
     await paso('web: el dueño cambia planes, horario y días especiales, y la web lo muestra', async () => {
       const cfg = (await pedir('GET', '/api/config', null, dueno)).j;
       const planes = cfg.planes.map(p => p.nombre === 'Básico' ? { ...p, precio: 32000 } : p);

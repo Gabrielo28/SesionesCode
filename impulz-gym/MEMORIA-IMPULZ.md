@@ -315,3 +315,10 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
 - **Rutinas v2 (17 de noviembre):** 5 tipos (glúteos y piernas, clásica de musculación por grupo muscular, bajar de peso,
   cuerpo completo, volver a entrenar) × nivel × 2-4 días. 32 ejercicios con foto IA (gpt-image-2.5-sunburst, ~USD 0,035 c/u,
   revisadas; se regeneró el peso muerto rumano con barra) y tutorial de 3 pasos + error común. Nombres por enfoque, no por género.
+- **Regla de atribución definitiva (17 de noviembre, decisión del usuario):** es del coach lo que entra por
+  entrenachile.cl/gimnasios/impulz o por un link con `?c=` (anuncios, bio, redes, YouTube; la web recuerda el `c` 30 días).
+  Lo que llega solo a impulzgym.cl (dominio escrito o Google) y reserva o escribe al WhatsApp del dueño es del gimnasio.
+  Motivo: el WhatsApp de impulzgym.cl es el del dueño; el del coach solo va en entrenachile.cl (tiene muchos negocios en su
+  número y el gimnasio no es suyo). Canal `reserva_web` pasó a sin comisión; `?c=` desconocido → canal `campana` (con comisión).
+  Cláusula sexta del acuerdo actualizada.
+

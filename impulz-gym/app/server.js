@@ -256,7 +256,7 @@ async function api(req, res, ruta, metodo) {
     let b; try { b = await leerCuerpo(req); } catch (e) { return error(res, 400, 'Datos inválidos'); }
     const c = limpiarCampos(b);
     if (!c.nombre) return error(res, 400, 'Falta el nombre.');
-    c.canal = c.canal || (admin ? 'reserva_web' : 'meson');
+    c.canal = c.canal || (admin ? 'otro' : 'meson');
     if (!admin && R.canal(c.canal).g) return error(res, 403, 'Los canales de gestión de redes los registra el coach. Elige un canal del gimnasio.');
     const cfg = datos.config();
     const l = datos.guardarLead(R.conInscripcion({
