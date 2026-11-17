@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;1,800;1,900&family=Barlow:wght@500;600&display=swap">
+<style>
+/* Plantillas de las imágenes de redes. Se renderizan a PNG con render.js (perfil 720×720, portada 1640×624). */
+*{box-sizing:border-box;margin:0}
+body{background:#333}
+.perfil{width:720px;height:720px;background:#0b0909;display:grid;place-items:center;position:relative;overflow:hidden}
+.perfil .marca{text-align:center;transform:translateY(-6px)}
+.perfil .nombre{font:italic 900 150px/0.9 "Barlow Condensed";color:#f6f1ef;text-transform:uppercase;letter-spacing:-1px}
+.perfil .nombre b{color:#e3171e;font-weight:900;margin-right:6px}
+.perfil .sub{font:700 30px/1 "Barlow Condensed";letter-spacing:.32em;color:#ada09c;text-transform:uppercase;margin-top:16px;padding-left:.32em}
+
+.portada{width:1640px;height:624px;position:relative;overflow:hidden;background:#0b0909}
+.portada .foto{position:absolute;inset:0;background:url(ia-fachada.jpg) center 35%/cover}
+.portada .velo{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,9,9,.92) 0%,rgba(11,9,9,.78) 38%,rgba(11,9,9,.25) 70%,rgba(11,9,9,.1) 100%)}
+.portada .texto{position:absolute;left:300px;top:96px;width:760px}
+.portada .eyebrow{font:700 28px/1 "Barlow Condensed";letter-spacing:.28em;color:#ff4a50;text-transform:uppercase}
+.portada h1{font:italic 900 132px/.9 "Barlow Condensed";color:#f6f1ef;text-transform:uppercase;margin-top:16px}
+.portada h1 b{color:#e3171e;font-weight:900}
+.portada .datos{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap}
+.portada .chip{font:600 26px/1 "Barlow";color:#f6f1ef;background:rgba(246,241,239,.12);border:1px solid rgba(246,241,239,.25);border-radius:999px;padding:12px 20px}
+.portada .web{position:absolute;right:300px;bottom:150px;font:800 italic 40px/1 "Barlow Condensed";color:#f6f1ef;text-transform:uppercase;background:#e3171e;padding:14px 24px;border-radius:999px;letter-spacing:.02em}
+</style></head><body>
+
+<div class="perfil" id="perfil">
+  <div class="marca">
+    <div class="nombre"><b>//</b>Impulz</div>
+    <div class="sub">Gym · El Quisco</div>
+  </div>
+  </div>
+
+<div class="portada" id="portada">
+  <div class="foto"></div><div class="velo"></div>
+  <div class="texto">
+    <div class="eyebrow">Gimnasio en El Quisco</div>
+    <h1>Tu mejor<br><b>versión</b></h1>
+    <div class="datos"><span class="chip">Lun a vie 5:00 – 22:00</span><span class="chip">Sáb 8:00 – 14:00</span><span class="chip">Desde $25.000 al mes</span></div>
+  </div>
+  <div class="web">impulzgym.cl</div>
+</div>
+
+</body></html>
