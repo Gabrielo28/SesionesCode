@@ -3,7 +3,22 @@
 > Última actualización: 14 de noviembre de 2026, después de la reunión con el dueño.
 > El dueño aceptó el piloto y la fórmula. Todo lo que no depende de datos pendientes está terminado.
 
-## 1. Listo: solo falta tu OK
+## 0. Ruta de lanzamiento (17 de noviembre)
+
+Hecho: Instagram vinculado, página de Facebook, portafolio comercial de Meta, cuenta publicitaria, dominio `impulzgym.cl`.
+
+1. [ ] Píxel de Meta (Administrador de eventos) y verificar `impulzgym.cl` en el portafolio
+2. [ ] Proyecto en Railway, volumen `/data` y variables (`app/README.md`)
+3. [ ] Dominio `impulzgym.cl` + `www` en Railway y registros DNS (Cloudflare si el dominio es de NIC Chile)
+4. [ ] Panel → Ajustes: WhatsApp, dirección, Google Maps, Instagram, nombre del coach
+5. [ ] Variables `GIMNASIO_IMPULZ_*` en el servicio de entrenachile.cl y unir `claude/gimnasio-aliado-impulz` a `main`
+6. [ ] Reserva de prueba de punta a punta y entregar usuario al dueño
+7. [ ] Search Console, Bing, IndexNow (`docs/09-seo-geo-indexacion.md`)
+8. [ ] Perfil de empresa en Google (revisar si existe la ficha de World Fit), Bing Places, Apple, Waze
+9. [ ] Links: Facebook → `impulzgym.cl`; bio de Instagram → `entrenachile.cl/gimnasios/impulz?c=ig`
+10. [ ] Primera campaña en Meta y QR de reseñas en recepción
+
+
 
 | # | Qué | Dónde |
 |---|---|---|
