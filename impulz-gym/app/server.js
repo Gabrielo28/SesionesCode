@@ -78,12 +78,36 @@ function pixelHead() {
 
 /* ---------- sitio público ---------- */
 const origen = req => ((req.headers['x-forwarded-proto'] || 'http').split(',')[0]) + '://' + (req.headers['x-forwarded-host'] || req.headers.host || 'localhost');
+// SEO: códigos de verificación de buscadores (Search Console y Bing) y una sola dirección oficial (sin www).
+const GOOGLE_VERIFICACION = (process.env.GOOGLE_VERIFICACION || '').trim();
+const BING_VERIFICACION = (process.env.BING_VERIFICACION || '').trim();
+const verificacionHead = () =>
+  (GOOGLE_VERIFICACION ? '<meta name="google-site-verification" content="' + esc(GOOGLE_VERIFICACION) + '">' : '') +
+  (BING_VERIFICACION ? '<meta name="msvalidate.01" content="' + esc(BING_VERIFICACION) + '">' : '');
+const PLANES = [
+  ['Plan Básico', 30000, 'Mensual. Full acceso, sin restricciones.'],
+  ['Plan Clase', 42000, 'Mensual. Un profesional acompaña los entrenamientos.'],
+  ['Plan Estudiante', 25000, 'Mensual. Con credencial o comprobante de estudios vigente.'],
+  ['Plan Full trimestral', 84000, '3 meses continuos. Congelamiento de 7 días.'],
+  ['Plan Full semestral', 170000, '6 meses continuos. Congelamiento de 14 días.'],
+  ['Plan Full anual', 300000, '12 meses continuos. Congelamiento de 30 días.']
+];
+const sinEtiquetas = t => t.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+// Las preguntas frecuentes se leen del propio sitio para que los datos estructurados nunca digan otra cosa.
+function preguntas() {
+  const html = fs.readFileSync(path.join(PUBLICO, 'sitio.html'), 'utf8');
+  return [...html.matchAll(/<details><summary>(.*?)<\/summary><p>(.*?)<\/p><\/details>/g)].map(m => ({ '@type': 'Question', name: sinEtiquetas(m[1]), acceptedAnswer: { '@type': 'Answer', text: sinEtiquetas(m[2]) } }));
+}
 const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMensual', 'precioPareja', 'precioMatricula', 'coachNombre', 'coachPerfil', 'resenasUrl', 'pruebaGratis'];
 // Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo.
 const sitioPublico = cfg => JSON.stringify(Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? '']))).replace(/</g, '\\u003c');
 function jsonLd(cfg, req) {
+  const o = origen(req);
   const d = {
-    '@context': 'https://schema.org', '@type': 'ExerciseGym', name: 'Impulz Gym El Quisco', url: origen(req) + '/',
+    '@context': 'https://schema.org', '@type': 'ExerciseGym', '@id': o + '/#gimnasio', name: 'Impulz Gym El Quisco', url: o + '/',
+    image: [o + '/fotos/ia-fachada.jpg', o + '/fotos/ia-sala.jpg', o + '/fotos/ia-peso-libre.jpg'], logo: o + '/favicon.svg',
+    priceRange: '$25.000 - $42.000 al mes', currenciesAccepted: 'CLP',
+    makesOffer: PLANES.map(([name, price, description]) => ({ '@type': 'Offer', name, description, price, priceCurrency: 'CLP' })),
     description: 'Gimnasio y entrenamiento personalizado en El Quisco, litoral central.',
     address: { '@type': 'PostalAddress', ...(cfg.direccion ? { streetAddress: cfg.direccion } : {}), addressLocality: 'El Quisco', addressRegion: 'Valparaíso', addressCountry: 'CL' },
     areaServed: ['El Quisco', 'Algarrobo', 'El Tabo', 'Isla Negra'],
@@ -95,7 +119,9 @@ function jsonLd(cfg, req) {
     ...(cfg.instagram ? { sameAs: ['https://www.instagram.com/' + cfg.instagram] } : {}),
     ...(cfg.mapsUrl ? { hasMap: cfg.mapsUrl } : {})
   };
-  return '<script type="application/ld+json">' + JSON.stringify(d).replace(/</g, '\\u003c') + '</script>';
+  const sitio = { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Impulz Gym El Quisco', url: o + '/', inLanguage: 'es-CL' };
+  const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: preguntas() };
+  return [d, sitio, faq].map(x => '<script type="application/ld+json">' + JSON.stringify(x).replace(/</g, '\\u003c') + '</script>').join('\n');
 }
 
 /* ---------- API pública: reservas ---------- */
@@ -298,13 +324,17 @@ http.createServer(async (req, res) => {
     if (PANEL_HOST) {
       const enPanel = hostDe(req) === PANEL_HOST;
       const esPublico = ruta === '/api/reservas' || ruta === '/salud' || ESTATICOS[ruta] || ruta === '/robots.txt';
+      // La dirección del panel no debe aparecer en buscadores.
+      if (enPanel) { res.setHeader('X-Robots-Tag', 'noindex, nofollow'); if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /\n'); } }
       if (enPanel && !ruta.startsWith('/api/') && !ruta.startsWith('/panel') && !esPublico) { res.writeHead(302, { Location: '/panel' }); return res.end(); }
       if (!enPanel && (ruta.startsWith('/panel') || (ruta.startsWith('/api/') && ruta !== '/api/reservas'))) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('No encontrado'); }
     }
+    // Una sola dirección oficial: www.dominio → dominio (evita contenido duplicado en buscadores).
+    if (hostDe(req).startsWith('www.') && metodo === 'GET') { res.writeHead(301, { Location: 'https://' + hostDe(req).slice(4) + (req.url || '/') }); return res.end(); }
     if (ruta.startsWith('/api/')) return await api(req, res, ruta, metodo);
     if (ruta === '/' || ruta === '/reserva') {
       const cfg = datos.config();
-      const base = { PIXEL: pixelHead(), PIXEL_ACTIVO: PIXEL ? '1' : '' };
+      const base = { PIXEL: pixelHead(), PIXEL_ACTIVO: PIXEL ? '1' : '', ORIGEN: origen(req), VERIFICACION: verificacionHead() };
       // "/" es el sitio completo del gimnasio; "/reserva" es la página corta para anuncios.
       if (ruta === '/') return pagina(res, 'sitio.html', { ...base, JSONLD: jsonLd(cfg, req), SITIO_JSON: sitioPublico(cfg) });
       return pagina(res, 'reserva.html', { ...base, BENEFICIO: esc(cfg.beneficio || ''), PROMO: esc(cfg.promo || ''), PROMO_OCULTA: cfg.promo ? '' : 'hidden' });
@@ -312,18 +342,18 @@ http.createServer(async (req, res) => {
     if (ruta === '/sitemap.xml') {
       const o = origen(req);
       res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
-      return res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${o}/</loc></url><url><loc>${o}/reserva</loc></url></urlset>`);
+      return res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${o}/</loc><lastmod>${fs.statSync(path.join(PUBLICO, 'sitio.html')).mtime.toISOString().slice(0, 10)}</lastmod></url></urlset>`);
     }
     if (ruta === '/panel' || ruta === '/panel/') {
       res.setHeader('X-Robots-Tag', 'noindex');
       return pagina(res, 'panel.html');
     }
-    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /panel\nDisallow: /api/\nSitemap: ' + origen(req) + '/sitemap.xml\n'); }
+    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nAllow: /\nDisallow: /panel\nDisallow: /api/\nSitemap: ' + origen(req) + '/sitemap.xml\n'); }
     if (ruta === '/salud') return json(res, 200, { ok: true });
     if (/^\/fotos\/[a-z0-9-]+\.jpg$/.test(ruta)) {
       const f = path.join(PUBLICO, ruta);
       if (!fs.existsSync(f)) { res.writeHead(404); return res.end(); }
-      res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=86400' });
+      res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=604800' });
       return fs.createReadStream(f).pipe(res);
     }
     if (ESTATICOS[ruta]) {

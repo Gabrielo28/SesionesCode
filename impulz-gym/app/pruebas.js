@@ -112,6 +112,17 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
       const r = await pedir('GET', '/api/exportar.csv', null, dueno);
       assert.equal(r.estado, 200); assert.match(String(r.j), /Camila Rojas/);
     });
+    await paso('SEO: el sitio trae canonical, datos estructurados con planes y preguntas, y el panel no se indexa', async () => {
+      const h = (await pedir('GET', '/')).j;
+      assert.match(h, /<link rel="canonical" href="http:\/\/[^"]+\/">/);
+      assert.ok(!h.includes('{{'), 'quedó un marcador sin reemplazar');
+      const ld = [...h.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(m => JSON.parse(m[1]));
+      assert.equal(ld.find(x => x['@type'] === 'ExerciseGym').makesOffer.length, 6);
+      assert.ok(ld.find(x => x['@type'] === 'FAQPage').mainEntity.length >= 5);
+      const r = (await pedir('GET', '/robots.txt')).j;
+      assert.match(r, /Disallow: \/panel/); assert.match(r, /Sitemap: /);
+      assert.ok(!(await pedir('GET', '/sitemap.xml')).j.includes('/panel'));
+    });
     await paso('los datos quedan en DATA_DIR, fuera del código', async () => {
       assert.ok(fs.existsSync(path.join(DIR, 'leads.json'))); assert.ok(fs.existsSync(path.join(DIR, 'historial.log')));
     });
