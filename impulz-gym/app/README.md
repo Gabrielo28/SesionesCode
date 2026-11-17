@@ -68,7 +68,8 @@ Mientras no se defina `PANEL_HOST`, el panel abre en `impulzgym.cl/panel` (con u
 
 La página `entrenachile.cl/gimnasios/impulz` (repo `entrenacl`) reenvía sus reservas a `/api/reservas` de esta aplicación.
 En el servicio de entrenachile.cl se definen `GIMNASIO_IMPULZ_RESERVAS_URL=https://impulzgym.cl/api/reservas` y
-`GIMNASIO_IMPULZ_CLAVE` con el mismo valor que `ORIGEN_CLAVE` de aquí, para que el límite de
+`GIMNASIO_IMPULZ_CLAVE` con el mismo valor que `ORIGEN_CLAVE` de aquí, más `GIMNASIO_IMPULZ_WHATSAPP` con el número
+del coach (en esa página el WhatsApp es del coach, no del gimnasio), para que el límite de
 intentos use la IP del visitante y no la del servidor de entrenachile.cl.
 
 ## Probar en tu computador
