@@ -16,6 +16,8 @@
 | 7 | **Plan de contenido del mes 1** y **campañas de Meta** | `docs/04-...`, `docs/05-...` |
 | 8 | **Autorización de uso de imagen** | `docs/02-autorizacion-imagen.md` |
 | 9 | **Cómo publicar en Railway** | `app/README.md` |
+| 10 | **Anexo N° 1: activos a tu nombre y opción de compra** (para firmar junto al acuerdo) | `Anexo-1-Activos-Impulz-Gym.pdf` |
+| 11 | **SEO, GEO e indexación**: lo hecho en el sitio y los pasos al publicar | `docs/09-seo-geo-indexacion.md` |
 
 ## 1b. Página de Impulz en entrenachile.cl (16 de noviembre)
 
@@ -26,8 +28,7 @@
 
 ## 2. Pendiente: valores
 
-- [ ] **Precio de compra del sitio web** (pago único) → cláusula décimo primera del acuerdo. Sugerido: $450.000 más IVA
-- [ ] **Mantención mensual del sitio** → misma cláusula. Sugerido: $45.000 más IVA al mes
+- [ ] **Precios del Anexo N° 1**: paquete completo, solo sitio, solo cuentas y mantención mensual (referencia anterior: sitio $450.000 y mantención $45.000, más IVA)
 - [ ] **Fee de gestión de la opción B** (si el gimnasio pasa a pagar la publicidad). Se conversa el día 91
 
 El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan después en un anexo firmado.

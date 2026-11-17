@@ -290,3 +290,18 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
 - Impacto en la comisión: primer mes de un Básico = $30.000; meses 2 a 7 = $4.500 al mes. Plan Clase = $42.000 y $6.300 al mes.
 - Los planes Full se pagan por adelantado. El acuerdo dice que la comisión se paga cuando el gimnasio cobra; falta definir cómo se reparte un pago de varios meses (ver pendiente).
 
+## 17 de noviembre: activos a nombre de la Agencia, SEO/GEO y vínculo con entrenachile.cl
+
+- **Cambio de regla de propiedad (pedido del usuario):** sitio, dominio, página de Facebook, perfil de Google, fichas en
+  directorios, correo del dominio, cuenta publicitaria, píxel, página en entrenachile.cl, panel y contenido quedan a nombre
+  de la Agencia. El gimnasio los usa gratis mientras trabajen juntos; si quiere quedárselos, los compra. Del gimnasio: marca,
+  Instagram @impulzgym.elquisco (preexistente) y lista de socios. Documento: `Anexo-1-Activos-Impulz-Gym.pdf`
+  (`docs/acuerdo/anexo-1-activos.html`); el acuerdo (cláusulas primera, tercera, décima, décimo primera y décimo cuarta) se ajustó.
+  El anexo incluye que el gimnasio no reclame los activos ante Meta, Google o NIC Chile sin pagar (riesgo real: NIC Chile y Google
+  permiten al dueño de una marca reclamar). Precios en blanco.
+- **SEO/GEO hecho en el sitio:** canonical, Open Graph, verificación Google/Bing por variables, JSON-LD (ExerciseGym con planes,
+  WebSite, FAQPage), sitemap con fecha, robots con rastreadores de IA, `/llms.txt`, IndexNow (`scripts/indexnow.js`), redirección www,
+  panel con noindex. Pasos externos en `docs/09-seo-geo-indexacion.md`.
+- **Vínculo con entrenachile.cl probado de punta a punta en local:** reserva en `entrenachile.cl/gimnasios/impulz?c=meta&utm_campaign=...`
+  → código IMP-XXXX → aparece en el panel con canal meta_ads, campaña y anuncio. El sitio oficial enlaza a la página de entrenachile.
+

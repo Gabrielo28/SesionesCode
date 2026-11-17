@@ -122,6 +122,8 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
       const r = (await pedir('GET', '/robots.txt')).j;
       assert.match(r, /Disallow: \/panel/); assert.match(r, /Sitemap: /);
       assert.ok(!(await pedir('GET', '/sitemap.xml')).j.includes('/panel'));
+      const llms = (await pedir('GET', '/llms.txt')).j;
+      assert.match(llms, /^# Impulz Gym El Quisco/); assert.match(llms, /\$42\.000/); assert.match(r, /User-agent: GPTBot/);
     });
     await paso('los datos quedan en DATA_DIR, fuera del código', async () => {
       assert.ok(fs.existsSync(path.join(DIR, 'leads.json'))); assert.ok(fs.existsSync(path.join(DIR, 'historial.log')));

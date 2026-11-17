@@ -28,14 +28,17 @@ El orden importa: cada cuenta necesita la anterior.
 | 4 | **Instagram a cuenta profesional** y conectada a la página de Facebook | Estadísticas, botón de contacto y anuncios | Cuenta actual del gimnasio | 10 min |
 | 5 | **Portafolio comercial de Meta** (Business) del gimnasio, y acceso de socio para Influence Chile | Así los anuncios salen de tu cuenta publicitaria y la página sigue siendo del dueño | Dueño comparte, tú administras | 20 min |
 | 6 | **Píxel de Meta** y verificación del dominio | Medir las reservas que vienen de anuncios | En tu cuenta publicitaria | 20 min |
-| 7 | **Perfil de Empresa en Google** (Google Maps) | Aparecer en "gimnasio El Quisco" y en el mapa. Es gratis y es lo que más visitas locales trae | Con el correo del gimnasio. Google verifica por video o por carta | 20 min + verificación (días) |
+| 7 | **Perfil de Empresa en Google** (Google Maps) | Aparecer en "gimnasio El Quisco" y en el mapa. Es gratis y es lo que más visitas locales trae | Con tu cuenta de Google como propietaria. Google verifica por video o por carta. Pasos en `09-seo-geo-indexacion.md` | 20 min + verificación (días) |
 | 8 | **WhatsApp Business** en el número que recibirá las reservas | Perfil con horario, respuestas rápidas y catálogo de planes | Número del gimnasio o tuyo (decidir) | 15 min |
 | 9 | **Publicar la aplicación en Railway** y apuntar el dominio | Sitio, reservas y panel en línea | Tu cuenta de Railway | 30 min (ver `app/README.md`) |
 | 10 | **Link en la bio de Instagram** con `?c=ig` | Que las reservas desde Instagram queden medidas | Tú | 2 min |
 
-**Regla de propiedad:** todo lo que es del gimnasio (correo, página, Instagram, ficha de Google) queda a nombre
-del dueño, contigo como administrador. Lo tuyo (sitio web, dominio, cuenta publicitaria, Píxel, Railway, panel) queda a tu nombre.
-Así, si el acuerdo termina, nadie pierde lo suyo.
+**Regla de propiedad (cambiada el 17 de noviembre, ver Anexo N° 1 del acuerdo):** todo lo que creas tú queda **a tu nombre**:
+sitio, dominio, página de Facebook (en tu portafolio comercial de Meta), perfil de Google (tu cuenta de Google como propietaria),
+fichas en Bing, Apple y Waze, correo del dominio, cuenta publicitaria, Píxel, Railway y panel. El gimnasio los usa gratis mientras
+trabajen juntos y, si quiere quedárselos, los compra a los precios del anexo.
+Del gimnasio son solo su marca, su Instagram @impulzgym.elquisco (ya existía) y su lista de socios.
+Por eso, en los pasos 2 y 7 usa **tu** correo y **tu** cuenta, no las del gimnasio.
 
 ## 3. Dominios y propiedad (decidido el 16 de noviembre)
 

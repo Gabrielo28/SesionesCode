@@ -80,6 +80,7 @@ function pixelHead() {
 const origen = req => ((req.headers['x-forwarded-proto'] || 'http').split(',')[0]) + '://' + (req.headers['x-forwarded-host'] || req.headers.host || 'localhost');
 // SEO: códigos de verificación de buscadores (Search Console y Bing) y una sola dirección oficial (sin www).
 const GOOGLE_VERIFICACION = (process.env.GOOGLE_VERIFICACION || '').trim();
+const INDEXNOW_KEY = /^[a-zA-Z0-9-]{8,128}$/.test(process.env.INDEXNOW_KEY || '') ? process.env.INDEXNOW_KEY : '';
 const BING_VERIFICACION = (process.env.BING_VERIFICACION || '').trim();
 const verificacionHead = () =>
   (GOOGLE_VERIFICACION ? '<meta name="google-site-verification" content="' + esc(GOOGLE_VERIFICACION) + '">' : '') +
@@ -92,6 +93,25 @@ const PLANES = [
   ['Plan Full semestral', 170000, '6 meses continuos. Congelamiento de 14 días.'],
   ['Plan Full anual', 300000, '12 meses continuos. Congelamiento de 30 días.']
 ];
+// GEO: resumen en texto plano para buscadores con IA (ChatGPT, Gemini, Perplexity, Claude). Ver llmstxt.org.
+function llmsTxt(cfg, o) {
+  const l = ['# Impulz Gym El Quisco', '',
+    '> Gimnasio en El Quisco, litoral central de la Región de Valparaíso, Chile. Sala de máquinas, peso libre, cardio y entrenamiento personalizado. Clase de prueba con reserva en línea.', '',
+    '## Datos', '',
+    '- Nombre: Impulz Gym El Quisco (antes World Fit)',
+    '- Ciudad: El Quisco, Región de Valparaíso, Chile' + (cfg.direccion ? ' · Dirección: ' + cfg.direccion : ''),
+    '- Atiende también a: Algarrobo, El Tabo, Isla Negra y Punta de Tralca',
+    '- Horario: lunes a viernes de 5:00 a 22:00; sábado de 8:00 a 14:00; domingo cerrado',
+    ...(cfg.whatsapp ? ['- WhatsApp: +' + cfg.whatsapp] : []),
+    '- Instagram: https://www.instagram.com/' + (cfg.instagram || 'impulzgym.elquisco'),
+    '- Reserva de clase de prueba: ' + o + '/#reserva', '',
+    '## Planes (pesos chilenos)', '',
+    ...PLANES.map(([n, p, d]) => '- ' + n + ': $' + p.toLocaleString('es-CL') + (n.includes('Full') ? '' : ' al mes') + '. ' + d), '',
+    '## Preguntas frecuentes', '',
+    ...preguntas().flatMap(q => ['### ' + q.name, q.acceptedAnswer.text, '']),
+    '## Páginas', '', '- [Sitio oficial](' + o + '/)', '- [Impulz en EntrenaCL](https://entrenachile.cl/gimnasios/impulz)'];
+  return l.join('\n') + '\n';
+}
 const sinEtiquetas = t => t.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 // Las preguntas frecuentes se leen del propio sitio para que los datos estructurados nunca digan otra cosa.
 function preguntas() {
@@ -323,7 +343,7 @@ http.createServer(async (req, res) => {
   try {
     if (PANEL_HOST) {
       const enPanel = hostDe(req) === PANEL_HOST;
-      const esPublico = ruta === '/api/reservas' || ruta === '/salud' || ESTATICOS[ruta] || ruta === '/robots.txt';
+      const esPublico = ruta === '/api/reservas' || ruta === '/salud' || ESTATICOS[ruta] || ruta === '/robots.txt' || ruta === '/llms.txt';
       // La dirección del panel no debe aparecer en buscadores.
       if (enPanel) { res.setHeader('X-Robots-Tag', 'noindex, nofollow'); if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nDisallow: /\n'); } }
       if (enPanel && !ruta.startsWith('/api/') && !ruta.startsWith('/panel') && !esPublico) { res.writeHead(302, { Location: '/panel' }); return res.end(); }
@@ -348,7 +368,12 @@ http.createServer(async (req, res) => {
       res.setHeader('X-Robots-Tag', 'noindex');
       return pagina(res, 'panel.html');
     }
-    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end('User-agent: *\nAllow: /\nDisallow: /panel\nDisallow: /api/\nSitemap: ' + origen(req) + '/sitemap.xml\n'); }
+    if (ruta === '/robots.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end(['User-agent: *', 'Allow: /', 'Disallow: /panel', 'Disallow: /api/', '',
+      '# Buscadores con IA: bienvenidos (GEO)', ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'PerplexityBot', 'Google-Extended', 'Applebot-Extended', 'Bingbot'].map(b => 'User-agent: ' + b + '\nAllow: /\nDisallow: /panel\nDisallow: /api/\n'),
+      'Sitemap: ' + origen(req) + '/sitemap.xml', ''].join('\n')); }
+    if (ruta === '/llms.txt') { res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }); return res.end(llmsTxt(datos.config(), origen(req))); }
+    // IndexNow (Bing, Yandex, Seznam, Naver): avisa al instante cuando el sitio cambia. Ver scripts/indexnow.js.
+    if (INDEXNOW_KEY && ruta === '/' + INDEXNOW_KEY + '.txt') { res.writeHead(200, { 'Content-Type': 'text/plain' }); return res.end(INDEXNOW_KEY); }
     if (ruta === '/salud') return json(res, 200, { ok: true });
     if (/^\/fotos\/[a-z0-9-]+\.jpg$/.test(ruta)) {
       const f = path.join(PUBLICO, ruta);
