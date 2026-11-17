@@ -303,7 +303,7 @@ async function api(req, res, ruta, metodo) {
     const c = {};
     for (const k of ['pctPrimer', 'pctRecurrente', 'mesesRecurrente', 'pctPase', 'mensualidad']) if (k in b) c[k] = Math.max(0, Math.min(k === 'mensualidad' ? 10e6 : 100, +b[k] || 0));
     if ('inicio' in b) c.inicio = /^\d{4}-\d{2}-\d{2}$/.test(b.inicio) ? b.inicio : '';
-    if ('whatsapp' in b) c.whatsapp = soloDigitos(b.whatsapp).slice(0, 15);
+    if ('whatsapp' in b) { const n = soloDigitos(b.whatsapp).slice(0, 15); c.whatsapp = /^9\d{8}$/.test(n) ? '56' + n : n; } // 9 1234 5678 → 56912345678
     if ('beneficio' in b) c.beneficio = texto(b.beneficio, 120);
     if ('promo' in b) c.promo = texto(b.promo, 160);
     for (const k of ['precioMensual', 'precioPareja', 'precioMatricula']) if (k in b) c[k] = Math.max(0, Math.min(10e6, Math.round(+b[k] || 0)));
