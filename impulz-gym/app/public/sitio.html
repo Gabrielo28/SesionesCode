@@ -355,9 +355,21 @@ if (SITIO.coachNombre) {
   const c = $('coach'); c.hidden = false; c.textContent = 'Coach: ' + SITIO.coachNombre + '. ';
   if (SITIO.coachPerfil) { const a = document.createElement('a'); a.href = SITIO.coachPerfil; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver perfil en entrenachile.cl'; c.append(a); }
 }
+/* Origen de la visita: si llegó con un link de campaña (?c=…), se recuerda 30 días en este navegador.
+   Así, si vuelve después escribiendo impulzgym.cl, su reserva igual queda con la campaña que la trajo. */
+const ORIGEN = (() => {
+  const u = new URLSearchParams(location.search), K = 'impulz_origen', DIAS30 = 30 * 864e5;
+  const deUrl = { c: u.get('c') || '', utm_campaign: u.get('utm_campaign') || '', utm_content: u.get('utm_content') || '', utm_source: u.get('utm_source') || '' };
+  try {
+    if (deUrl.c) { localStorage.setItem(K, JSON.stringify({ ...deUrl, t: Date.now() })); return deUrl; }
+    const g = JSON.parse(localStorage.getItem(K) || 'null');
+    if (g && Date.now() - g.t < DIAS30) return { c: g.c || '', utm_campaign: g.utm_campaign || '', utm_content: g.utm_content || '', utm_source: g.utm_source || 'regreso' };
+  } catch (e) {}
+  return deUrl;
+})();
 if (SITIO.whatsapp) {
   // Si la persona llegó desde un anuncio o link con ?c=, el mensaje lo dice: así ese contacto se puede atribuir en el panel.
-  const ref = (new URLSearchParams(location.search).get('c') || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 20);
+  const ref = ORIGEN.c.replace(/[^a-z0-9_-]/gi, '').slice(0, 20);
   const u = 'https://wa.me/' + SITIO.whatsapp + '?text=' + encodeURIComponent('Hola, vi la web de Impulz Gym y quiero información.' + (ref ? ' (ref: ' + ref + ')' : ''));
   $('fab').href = u; $('fab').hidden = false; $('dockWa').href = u; $('dockWa').hidden = false;
 }
@@ -398,7 +410,7 @@ $('f').addEventListener('submit', async e => {
   e.preventDefault();
   const err = $('err'); err.hidden = true;
   const datos = { nombre: $('nombre').value, telefono: $('telefono').value, objetivo: [$('objetivo').value, planElegido].filter(Boolean).join(' · ').slice(0, 60), horario: $('horario').value,
-    acepta: $('acepta').checked, web: $('web').value, c: q.get('c') || '', utm_campaign: q.get('utm_campaign') || '', utm_content: q.get('utm_content') || '', utm_source: q.get('utm_source') || '' };
+    acepta: $('acepta').checked, web: $('web').value, ...ORIGEN };
   const falla = (m, el) => { err.textContent = m; err.hidden = false; if (el) el.focus(); };
   if (datos.nombre.trim().length < 2) return falla('Escribe tu nombre.', $('nombre'));
   if (datos.telefono.replace(/\D/g, '').length < 8) return falla('Revisa tu número de WhatsApp (ej: 9 1234 5678).', $('telefono'));

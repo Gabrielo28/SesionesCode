@@ -143,6 +143,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <script>
 const q = new URLSearchParams(location.search);
+// Mismo registro de origen que el sitio (30 días): si vuelve después a impulzgym.cl, la reserva conserva la campaña.
+const ORIGEN = (() => {
+  const deUrl = { c: q.get('c') || '', utm_campaign: q.get('utm_campaign') || '', utm_content: q.get('utm_content') || '', utm_source: q.get('utm_source') || '' };
+  try {
+    if (deUrl.c) { localStorage.setItem('impulz_origen', JSON.stringify({ ...deUrl, t: Date.now() })); return deUrl; }
+    const g = JSON.parse(localStorage.getItem('impulz_origen') || 'null');
+    if (g && Date.now() - g.t < 30 * 864e5) return { c: g.c || '', utm_campaign: g.utm_campaign || '', utm_content: g.utm_content || '', utm_source: g.utm_source || 'regreso' };
+  } catch (e) {}
+  return deUrl;
+})();
 const PIXEL = '{{PIXEL_ACTIVO}}' === '1';
 const $ = id => document.getElementById(id);
 $('f').addEventListener('submit', async e => {
@@ -151,7 +161,7 @@ $('f').addEventListener('submit', async e => {
   const datos = {
     nombre: $('nombre').value, telefono: $('telefono').value, objetivo: $('objetivo').value, horario: $('horario').value,
     acepta: $('acepta').checked, web: $('web').value,
-    c: q.get('c') || '', utm_campaign: q.get('utm_campaign') || '', utm_content: q.get('utm_content') || '', utm_source: q.get('utm_source') || ''
+    ...ORIGEN
   };
   if (datos.nombre.trim().length < 2) { err.textContent = 'Escribe tu nombre.'; err.hidden = false; $('nombre').focus(); return; }
   if (datos.telefono.replace(/\D/g, '').length < 8) { err.textContent = 'Revisa tu número de WhatsApp (ej: 9 1234 5678).'; err.hidden = false; $('telefono').focus(); return; }
