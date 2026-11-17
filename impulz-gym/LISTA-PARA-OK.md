@@ -37,7 +37,7 @@ El acuerdo se puede firmar con los dos primeros en blanco: dice que se fijan des
 
 **Del dueño (para el acuerdo):**
 - [ ] Nombre o razón social, RUT, cédula y domicilio
-- [ ] Qué da el código de reserva (matrícula gratis, semana gratis u otro)
+- [ ] Qué da el código de reserva. **El gimnasio no cobra matrícula**, así que "matrícula gratis" no sirve. Propuesta: evaluación inicial y plan de entrenamiento gratis con el coach, solo con código
 
 **Tuyos (para el acuerdo):**
 - [ ] Nombre o razón social con que firmas por Influence Chile, RUT, cédula y domicilio

@@ -304,4 +304,7 @@ de verdad, rotar el orden entre VIP y marcar "Destacado", para que otros coaches
   panel con noindex. Pasos externos en `docs/09-seo-geo-indexacion.md`.
 - **Vínculo con entrenachile.cl probado de punta a punta en local:** reserva en `entrenachile.cl/gimnasios/impulz?c=meta&utm_campaign=...`
   → código IMP-XXXX → aparece en el panel con canal meta_ads, campaña y anuncio. El sitio oficial enlaza a la página de entrenachile.
+- **El gimnasio no cobra matrícula** (confirmado por el usuario el 17 de noviembre). No usar "matrícula gratis" como beneficio del código:
+  sería ofrecer gratis algo que ya es gratis para todos (publicidad engañosa según la Ley 19.496) y no motiva a mostrar el código.
+  Propuesta: evaluación inicial y plan de entrenamiento gratis con el coach, solo con código. Pendiente de decidir con el dueño.
 
