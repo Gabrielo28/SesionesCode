@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Impulz · Panel de comisiones</title>
+<title>Impulz · Panel</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,6 +102,21 @@ dialog::backdrop{background:rgba(10,6,6,.55)}
 .fields .full{grid-column:1/-1}
 label.f{display:grid;gap:5px;font:700 12px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 label.f input,label.f select,label.f textarea{font:15px/1.4 var(--body);letter-spacing:0;text-transform:none}
+.wplan{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px}
+.wplan .top{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.wplan .top b{font:800 italic 18px/1 var(--display);text-transform:uppercase}
+.wplan .fields{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.wlist{display:grid;gap:10px}
+.wdia{display:grid;grid-template-columns:110px auto 1fr 1fr;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.wdia:first-child{border-top:0}
+.wdia b{font-size:14px}
+.wesp{display:grid;grid-template-columns:150px 1fr 110px 110px auto;gap:8px;align-items:end}
+.wfotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.wfoto{display:grid;gap:6px;font-size:13px}
+.wfoto img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--surface-2)}
+.wfoto .toolbar{gap:6px}
+.wgrupo{margin:22px 0 10px;font:700 13px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:640px){.wdia{grid-template-columns:1fr 1fr}.wdia b{grid-column:1/-1}.wesp{grid-template-columns:1fr 1fr}}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border-radius:999px;padding:5px 6px 5px 10px;font-size:13px}
 .chip button{border:0;background:var(--line);color:var(--ink);border-radius:50%;width:20px;height:20px;cursor:pointer;line-height:1}
@@ -138,7 +153,7 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
 
 <div class="login" id="login" hidden>
   <form id="loginForm">
-    <div class="brand"><span><b>//</b>Impulz</span><small>Panel de comisiones</small></div>
+    <div class="brand"><span><b>//</b>Impulz</span><small>Comisiones y web</small></div>
     <label class="f">Usuario<input id="lu" autocomplete="username" required></label>
     <label class="f">Clave<input id="lc" type="password" autocomplete="current-password" required></label>
     <div class="err" id="lerr" hidden></div>
@@ -150,7 +165,7 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
 <header class="top">
   <div class="wrap">
     <div class="bar">
-      <div class="brand"><span><b>//</b>Impulz</span><small>Panel de comisiones · El Quisco</small></div>
+      <div class="brand"><span><b>//</b>Impulz</span><small>Comisiones y web · El Quisco</small></div>
       <div class="who"><span id="quien"></span><button class="btn ghost small" id="salir">Salir</button></div>
       <div class="month" aria-label="Mes">
         <button class="iconbtn" id="mPrev" aria-label="Mes anterior">‹</button>
@@ -163,6 +178,7 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
       <a href="#contactos" data-v="contactos">Contactos</a>
       <a href="#liquidacion" data-v="liquidacion">Liquidación</a>
       <a href="#historial" data-v="historial">Historial</a>
+      <a href="#web" data-v="web" id="tabWeb">Web</a>
       <a href="#ajustes" data-v="ajustes">Ajustes</a>
     </nav>
   </div>
@@ -227,6 +243,45 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
     </div>
   </section>
 
+  <section class="view" id="v-web" hidden>
+    <form class="panel" id="webForm">
+      <h3>Planes</h3>
+      <p class="note">Se muestran en la web en este orden. Los mensuales salen como tarjetas; los Plan Full, en la tabla. Precio en 0 = "Consulta".</p>
+      <div class="wgrupo">Mensuales</div><div class="wlist" id="wMensual"></div>
+      <div class="toolbar" style="margin-top:10px"><button class="btn ghost small" type="button" data-add="mensual">+ Plan mensual</button></div>
+      <div class="wgrupo">Plan Full (pago por adelantado)</div><div class="wlist" id="wFull"></div>
+      <div class="toolbar" style="margin-top:10px"><button class="btn ghost small" type="button" data-add="full">+ Plan Full</button></div>
+
+      <h3 style="margin-top:26px">Horario semanal</h3>
+      <div id="wHorario"></div>
+
+      <h3 style="margin-top:26px">Días especiales</h3>
+      <p class="note">Feriados o cambios puntuales. Sin horas = cerrado ese día. La web lo avisa en la portada y en Horarios.</p>
+      <div class="wlist" id="wEsp" style="margin-top:10px"></div>
+      <div class="toolbar" style="margin-top:10px"><button class="btn ghost small" type="button" id="wAddEsp">+ Día especial</button></div>
+
+      <h3 style="margin-top:26px">Datos de contacto</h3>
+      <div class="fields">
+        <label class="f">WhatsApp del gimnasio<input id="w-whatsapp" inputmode="tel" placeholder="9 1234 5678"></label>
+        <label class="f">Instagram (sin @)<input id="w-instagram" maxlength="40"></label>
+        <label class="f full">Dirección<input id="w-direccion" maxlength="120" placeholder="Calle y número, El Quisco"></label>
+        <label class="f full">Link de Google Maps<input id="w-mapsUrl" maxlength="300" placeholder="https://maps.app.goo.gl/..."></label>
+        <label class="f full">Link a las reseñas de Google<input id="w-resenasUrl" maxlength="300" placeholder="https://g.page/..."></label>
+        <label class="f full">Promoción destacada (opcional)<input id="w-promo" maxlength="160" placeholder="Ej: Plan anual a $300.000"></label>
+        <label class="f">Matrícula ($, 0 = no se muestra)<input id="w-precioMatricula" type="number" min="0" step="500"></label>
+        <label class="f">¿La clase de prueba es gratis?<select id="w-pruebaGratis"><option value="0">No decirlo</option><option value="1">Sí, es gratis</option></select></label>
+      </div>
+      <div class="toolbar" style="margin-top:18px"><button class="btn" type="submit" id="wGuardar">Guardar cambios de la web</button><button class="btn ghost" type="button" id="wDescartar">Descartar</button><span class="note" id="wNote"></span></div>
+    </form>
+
+    <div class="panel" id="wFotosPanel">
+      <h3>Fotos de la web</h3>
+      <p class="note">Sube una foto JPG o del celular: se ajusta sola a 1600 px. "Original" vuelve a la foto anterior.</p>
+      <div class="wfotos" id="wFotos" style="margin-top:12px"></div>
+      <input type="file" id="wArchivo" accept="image/*" hidden>
+    </div>
+  </section>
+
   <section class="view" id="v-ajustes" hidden>
     <form class="panel" id="cfg">
       <h3>Acuerdo comercial</h3>
@@ -238,24 +293,13 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
         <label class="f">Mensualidad base ($)<input id="c-mensualidad" type="number" min="0" step="500"></label>
         <label class="f">Inicio del piloto<input id="c-inicio" type="date"></label>
       </div>
-      <h3 style="margin-top:18px">Página de reservas</h3>
+      <h3 style="margin-top:18px">Código de reserva y coach</h3>
       <div class="fields">
-        <label class="f">WhatsApp que recibe las reservas<input id="c-whatsapp" inputmode="tel" placeholder="56912345678"></label>
         <label class="f">Beneficio del código<input id="c-beneficio" maxlength="120" placeholder="Lo que acuerdes con el dueño. Vacío = sin beneficio"></label>
-        <label class="f full">Promoción destacada (opcional)<input id="c-promo" maxlength="160" placeholder="Ej: Plan anual a $300.000"></label>
-      </div>
-      <h3 style="margin-top:18px">Sitio web</h3>
-      <div class="fields">
-        <label class="f">Matrícula ($)<input id="c-precioMatricula" type="number" min="0" step="500"></label>
-        <label class="f">Instagram (sin @)<input id="c-instagram" maxlength="40"></label>
-        <label class="f full">Dirección del gimnasio<input id="c-direccion" maxlength="120" placeholder="Calle y número, El Quisco"></label>
-        <label class="f full">Link de Google Maps<input id="c-mapsUrl" maxlength="300" placeholder="https://maps.app.goo.gl/..."></label>
-        <label class="f full">Link a las reseñas de Google<input id="c-resenasUrl" maxlength="300" placeholder="https://g.page/..."></label>
-        <label class="f">¿La clase de prueba es gratis?<select id="c-pruebaGratis"><option value="0">No decirlo</option><option value="1">Sí, es gratis</option></select></label>
         <label class="f">Nombre del coach<input id="c-coachNombre" maxlength="60"></label>
-        <label class="f">Perfil en entrenachile.cl<input id="c-coachPerfil" maxlength="300" placeholder="https://entrenachile.cl/..."></label>
+        <label class="f full">Perfil en entrenachile.cl<input id="c-coachPerfil" maxlength="300" placeholder="https://entrenachile.cl/..."></label>
       </div>
-      <p class="note">Un precio en 0 se muestra como "Consulta". Los campos vacíos no aparecen en el sitio.</p>
+      <p class="note">Planes, precios, horarios, WhatsApp, dirección y fotos se cambian en la pestaña <b>Web</b>.</p>
       <div class="toolbar" style="margin-top:14px"><button class="btn" type="submit" id="guardarCfg">Guardar</button><span class="note" id="cfgNote"></span></div>
     </form>
     <div class="panel">
@@ -326,6 +370,7 @@ function clp(n){return "$"+Math.round(n||0).toLocaleString("es-CL")}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.append(e);setTimeout(()=>e.remove(),2800)}
 const admin = () => S.yo && S.yo.rol === "admin";
+const puedeWeb = () => S.yo && (S.yo.rol === "admin" || S.yo.rol === "dueno");
 const detalle = l => detallePagos(l, S.config);
 
 async function api(metodo, ruta, cuerpo){
@@ -340,6 +385,7 @@ async function cargar(){
   try {
     const [leads, config, hist] = await Promise.all([api("GET","/api/leads"), api("GET","/api/config"), api("GET","/api/historial")]);
     S.leads = leads; S.config = config; S.hist = hist; S.error = "";
+    $("#planes").innerHTML = (config.planes||[]).map(p => `<option value="${esc(p.nombre)}">`).join("");
     if (admin()) S.ads = await api("GET","/api/inversion");
   } catch (e) { S.error = e.message; }
   render();
@@ -355,6 +401,7 @@ $("#loginForm").addEventListener("submit", async e => {
 $("#salir").onclick = async () => { try { await api("POST","/api/logout"); } catch(e){} S.yo = null; mostrarLogin(); };
 function entrar(){
   $("#login").hidden = true; $("#app").hidden = false;
+  $("#tabWeb").hidden = !puedeWeb();
   $("#quien").textContent = S.yo.usuario + " · " + ({admin:"Coach",dueno:"Dueño",recepcion:"Recepción"}[S.yo.rol]||S.yo.rol);
   route(); cargar();
 }
@@ -363,13 +410,14 @@ function entrar(){
 function render(){
   $("#mLabel").textContent = mName(S.month);
   document.querySelectorAll("nav.tabs a").forEach(a => a.dataset.v === S.view ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
-  ["resumen","contactos","liquidacion","historial","ajustes"].forEach(v => $("#v-"+v).hidden = v !== S.view);
+  ["resumen","contactos","liquidacion","historial","web","ajustes"].forEach(v => $("#v-"+v).hidden = v !== S.view);
   $("#status").hidden = !S.error; $("#status").textContent = S.error ? "No se pudieron cargar los datos: " + S.error : "";
   if (S.view==="resumen") rResumen();
   if (S.view==="contactos") rLista();
   if (S.view==="liquidacion") rLiq();
   if (S.view==="historial") rHist();
   if (S.view==="ajustes") rCfg();
+  if (S.view==="web") rWeb();
 }
 
 function rResumen(){
@@ -448,7 +496,7 @@ function rHist(){
     const d=new Date(h.t);return `<tr><td style="white-space:nowrap">${d.toLocaleDateString("es-CL")} ${d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"})}</td><td>${esc(h.usuario)}</td><td>${esc(h.accion)}${h.codigo?` <span class="mono">${esc(h.codigo)}</span>`:""}</td><td>${esc(h.detalle||"")}</td></tr>`}).join("")}</tbody></table>`;
 }
 
-const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad","precioMatricula","pruebaGratis"], CFG_TXT=["inicio","whatsapp","beneficio","promo","direccion","mapsUrl","instagram","coachNombre","coachPerfil","resenasUrl"];
+const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad"], CFG_TXT=["inicio","beneficio","coachNombre","coachPerfil"];
 function rCfg(){
   [...CFG_NUM,...CFG_TXT].forEach(k=>{const e=$("#c-"+k); if(document.activeElement!==e) e.value=S.config[k]??""});
   const dis=!admin(); $("#cfg").querySelectorAll("input,select,button").forEach(e=>e.disabled=dis);
@@ -467,7 +515,7 @@ function openLead(id){
   $("#l-canal").innerHTML=opcionesCanal();
   $("#l-nombre").value=l?.nombre||""; $("#l-telefono").value=l?.telefono||"";
   $("#l-canal").value=l?.canal||(admin()?"coaching":"meson"); $("#l-canal").disabled=!!l&&!admin();
-  $("#l-etapa").value=l?.etapa||"Contacto"; $("#l-plan").value=l?.plan||"Básico";
+  $("#l-etapa").value=l?.etapa||"Contacto"; $("#l-plan").value=l?.plan||((S.config.planes||[]).find(p=>p.grupo==="mensual")||{}).nombre||"";
   $("#l-monto").value=l?.monto??S.config.mensualidad; $("#l-fecha").value=l?.fechaContacto||today(); $("#l-fecha").disabled=!!l&&!admin();
   $("#l-fechaIns").value=l?.fechaInscripcion||""; $("#l-notas").value=l?.notas||"";
   S.pagos=(l?.pagos||[]).map(p=>({...p})); rPagos();
@@ -488,8 +536,9 @@ $("#leadForm").addEventListener("submit", async e=>{
   }catch(x){ toast(x.message); }
 });
 // Precios de lista de Impulz (nov 2026). En los planes Full se anota el valor mensual equivalente.
-const PRECIOS={"Básico":30000,"Plan Clase":42000,"Estudiante":25000,"Trimestral":28000,"Semestral":28333,"Anual":25000};
-$("#l-plan").addEventListener("change",e=>{const v=PRECIOS[e.target.value.trim()];if(v)$("#l-monto").value=v});
+// Precio mensual de cada plan, según lo editado en Web. En los planes Full se anota el valor mensual equivalente.
+const precioPlan=n=>{const p=(S.config.planes||[]).find(x=>x.nombre===n); return p&&p.precio?Math.round(p.grupo==="full"?p.precio/p.meses:p.precio):0};
+$("#l-plan").addEventListener("change",e=>{const v=precioPlan(e.target.value.trim());if(v)$("#l-monto").value=v});
 $("#cancelar").onclick=()=>$("#dlg").close();
 $("#l-etapa").addEventListener("change",e=>{if(e.target.value==="Inscrito"&&!$("#l-fechaIns").value)$("#l-fechaIns").value=today()});
 $("#l-pagos").addEventListener("click",e=>{const b=e.target.closest("[data-delpago]");if(b){S.pagos=S.pagos.filter(p=>p.mes!==b.dataset.delpago);rPagos()}});
@@ -517,7 +566,7 @@ $("#codForm").addEventListener("submit",async e=>{
 /* ---------- eventos ---------- */
 $("#mPrev").onclick=()=>{S.month=shift(S.month,-1);render()};
 $("#mNext").onclick=()=>{S.month=shift(S.month,1);render()};
-function route(){const v=(location.hash||"#resumen").slice(1);S.view=["resumen","contactos","liquidacion","historial","ajustes"].includes(v)?v:"resumen";render()}
+function route(){const v=(location.hash||"#resumen").slice(1);S.view=["resumen","contactos","liquidacion","historial","web","ajustes"].includes(v)&&(v!=="web"||puedeWeb())?v:"resumen";render()}
 addEventListener("hashchange",route);
 $("#q").addEventListener("input",e=>{S.q=e.target.value;rLista()});
 $("#etapaF").innerHTML+=ETAPAS.map(e=>`<option>${e}</option>`).join("");
@@ -542,7 +591,99 @@ $("#cfg").addEventListener("submit",async e=>{
   e.preventDefault(); const c={}; CFG_NUM.forEach(k=>c[k]=+$("#c-"+k).value||0); CFG_TXT.forEach(k=>c[k]=$("#c-"+k).value);
   try{S.config=await api("PUT","/api/config",c);toast("Guardado");cargar()}catch(x){toast(x.message)}
 });
-setInterval(()=>{ if(S.yo && !document.hidden && !$("#dlg").open && !$("#dlgCod").open) cargar(); }, 30000);
+setInterval(()=>{ if(S.yo && !document.hidden && !$("#dlg").open && !$("#dlgCod").open && !W.sucio) cargar(); }, 30000);
+
+/* ---------- web: planes, horario, días especiales, contacto y fotos ---------- */
+const NOMBRES_DIA=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const FOTOS_WEB={"ia-fachada":"Fachada (portada)","ia-sala":"Sala","ia-maquinas-de-fuerza":"Máquinas de fuerza","ia-peso-libre":"Peso libre","ia-poleas-y-discos":"Poleas y discos","ia-mancuernas":"Mancuernas","ia-cardio":"Cardio","p-principiante":"Si partes de cero","p-madrugador":"Horario difícil","p-coach-sesion":"Coach en sesión","p-coach-plan":"Coach con plan","p-pareja":"Pareja","p-verano":"Verano"};
+const W={sucio:false,planes:[],horario:[],cierres:[]};
+const WCAMPOS=["whatsapp","instagram","direccion","mapsUrl","resenasUrl","promo","precioMatricula","pruebaGratis"];
+function rWeb(forzar){
+  if(W.sucio&&!forzar) return;
+  const c=S.config; if(!c||!c.planes) return;
+  W.planes=JSON.parse(JSON.stringify(c.planes)); W.horario=JSON.parse(JSON.stringify(c.horario)); W.cierres=JSON.parse(JSON.stringify(c.cierres||[]));
+  WCAMPOS.forEach(k=>$("#w-"+k).value=c[k]??"");
+  pintarWeb(); W.sucio=false; $("#wNote").textContent="";
+  $("#wFotosPanel").hidden=!admin(); if(admin()) pintarFotos();
+}
+function pintarWeb(){
+  const fila=(p,i)=>p.grupo==="full"
+    ? `<div class="wplan" data-i="${i}"><div class="top"><b>${esc(p.nombre)||"Nuevo plan"}</b>${botonesPlan(i)}</div><div class="fields">
+        <label class="f">Nombre<input data-k="nombre" value="${esc(p.nombre)}" maxlength="40"></label>
+        <label class="f">Precio total ($)<input data-k="precio" type="number" min="0" step="500" value="${p.precio||0}"></label>
+        <label class="f">Meses<input data-k="meses" type="number" min="1" max="24" value="${p.meses||1}"></label>
+        <label class="f">Congelamiento (días)<input data-k="congela" type="number" min="0" max="90" value="${p.congela||0}"></label></div></div>`
+    : `<div class="wplan" data-i="${i}"><div class="top"><b>${esc(p.nombre)||"Nuevo plan"}</b>${botonesPlan(i)}</div><div class="fields">
+        <label class="f">Nombre<input data-k="nombre" value="${esc(p.nombre)}" maxlength="40"></label>
+        <label class="f">Precio mensual ($)<input data-k="precio" type="number" min="0" step="500" value="${p.precio||0}"></label>
+        <label class="f">Etiqueta destacada<input data-k="etiqueta" value="${esc(p.etiqueta||"")}" maxlength="30" placeholder="Ej: Más elegido"></label>
+        <label class="f">Foto<select data-k="foto">${Object.entries(FOTOS_WEB).map(([k,n])=>`<option value="${k}"${p.foto===k?" selected":""}>${n}</option>`).join("")}</select></label>
+        <label class="f full">Qué incluye (una línea por punto, máx. 5)<textarea data-k="detalle" rows="3" maxlength="400">${esc(p.detalle||"")}</textarea></label></div></div>`;
+  $("#wMensual").innerHTML=W.planes.map((p,i)=>p.grupo==="mensual"?fila(p,i):"").join("")||`<p class="note">Sin planes mensuales.</p>`;
+  $("#wFull").innerHTML=W.planes.map((p,i)=>p.grupo==="full"?fila(p,i):"").join("")||`<p class="note">Sin planes Full: la tabla no se muestra.</p>`;
+  $("#wHorario").innerHTML=W.horario.map((d,i)=>`<div class="wdia" data-d="${i}"><b>${NOMBRES_DIA[i]}</b>
+      <label class="note"><input type="checkbox" data-k="abierto"${d?" checked":""}> Abierto</label>
+      <label class="f">Abre<input type="time" data-k="abre" value="${d?d[0]:"05:00"}"${d?"":" disabled"}></label>
+      <label class="f">Cierra<input type="time" data-k="cierra" value="${d?d[1]:"22:00"}"${d?"":" disabled"}></label></div>`).join("");
+  $("#wEsp").innerHTML=W.cierres.map((x,i)=>`<div class="wesp" data-e="${i}">
+      <label class="f">Fecha<input type="date" data-k="fecha" value="${x.fecha||""}"></label>
+      <label class="f">Motivo<input data-k="nota" value="${esc(x.nota||"")}" maxlength="60" placeholder="Ej: Feriado"></label>
+      <label class="f">Abre<input type="time" data-k="abre" value="${x.abre||""}"></label>
+      <label class="f">Cierra<input type="time" data-k="cierra" value="${x.cierra||""}"></label>
+      <button class="btn danger small" type="button" data-quitar-e="${i}">Quitar</button></div>`).join("")||`<p class="note">No hay días especiales.</p>`;
+}
+const botonesPlan=i=>`<span class="toolbar"><button class="btn ghost small" type="button" data-mover="${i}" data-dir="-1" aria-label="Subir">↑</button><button class="btn ghost small" type="button" data-mover="${i}" data-dir="1" aria-label="Bajar">↓</button><button class="btn danger small" type="button" data-quitar="${i}">Quitar</button></span>`;
+function pintarFotos(){
+  const v=S.config.fotosV||1;
+  $("#wFotos").innerHTML=Object.entries(FOTOS_WEB).map(([k,n])=>`<div class="wfoto"><img src="/fotos/${k}.jpg?v=${v}" alt="" loading="lazy"><b>${n}</b>
+    <span class="toolbar"><button class="btn ghost small" type="button" data-foto="${k}">Cambiar</button><button class="btn ghost small" type="button" data-original="${k}">Original</button></span></div>`).join("");
+}
+$("#webForm").addEventListener("input",e=>{
+  W.sucio=true; $("#wNote").textContent="Hay cambios sin guardar.";
+  const t=e.target, k=t.dataset.k; if(!k) return;
+  const pl=t.closest("[data-i]"), di=t.closest("[data-d]"), es=t.closest("[data-e]");
+  if(pl){const p=W.planes[+pl.dataset.i]; p[k]=["precio","meses","congela"].includes(k)?+t.value||0:t.value; if(k==="nombre") pl.querySelector(".top b").textContent=t.value||"Nuevo plan";}
+  if(di){const i=+di.dataset.d, ab=di.querySelector("[data-k=abierto]").checked, a=di.querySelector("[data-k=abre]"), c=di.querySelector("[data-k=cierra]");
+    a.disabled=c.disabled=!ab; W.horario[i]=ab?[a.value,c.value]:null;}
+  if(es){W.cierres[+es.dataset.e][k]=t.value;}
+});
+$("#webForm").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b||b.type==="submit") return;
+  if(b.dataset.add){W.planes.push(b.dataset.add==="full"?{nombre:"",precio:0,grupo:"full",meses:3,congela:7}:{nombre:"",precio:0,grupo:"mensual",detalle:"",foto:"ia-sala",etiqueta:""});}
+  else if(b.dataset.quitar){if(!confirm("¿Quitar este plan de la web?"))return; W.planes.splice(+b.dataset.quitar,1);}
+  else if(b.dataset.mover){const i=+b.dataset.mover, g=W.planes[i].grupo; let j=i+ +b.dataset.dir; while(j>=0&&j<W.planes.length&&W.planes[j].grupo!==g) j+= +b.dataset.dir; if(j<0||j>=W.planes.length) return; [W.planes[i],W.planes[j]]=[W.planes[j],W.planes[i]];}
+  else if(b.id==="wAddEsp"){W.cierres.push({fecha:"",nota:"",abre:"",cierra:""});}
+  else if(b.dataset.quitarE){W.cierres.splice(+b.dataset.quitarE,1);}
+  else if(b.id==="wDescartar"){W.sucio=false; rWeb(true); return;}
+  else return;
+  W.sucio=true; $("#wNote").textContent="Hay cambios sin guardar."; pintarWeb();
+});
+$("#webForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(W.planes.some(p=>!p.nombre.trim())) return toast("Cada plan necesita un nombre.");
+  if(W.horario.some(d=>d&&d[1]<=d[0])) return toast("Revisa el horario: la hora de cierre debe ser después de la de apertura.");
+  if(W.cierres.some(x=>!x.fecha)) return toast("Cada día especial necesita una fecha.");
+  const c={planes:W.planes,horario:W.horario,cierres:W.cierres}; WCAMPOS.forEach(k=>c[k]=$("#w-"+k).value);
+  $("#wGuardar").disabled=true;
+  try{S.config=await api("PUT","/api/web",c); W.sucio=false; toast("Web actualizada"); rWeb(true); cargar();}
+  catch(x){toast(x.message)} finally{$("#wGuardar").disabled=false}
+});
+// Fotos: se achican en el navegador a 1600 px de ancho antes de subir.
+let fotoDestino="";
+$("#wFotos").addEventListener("click",async e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.foto){fotoDestino=b.dataset.foto; $("#wArchivo").value=""; $("#wArchivo").click();}
+  if(b.dataset.original){if(!confirm("¿Volver a la foto original?"))return; try{const r=await api("DELETE","/api/fotos/"+b.dataset.original); S.config.fotosV=r.fotosV; pintarFotos(); toast("Foto original restaurada")}catch(x){toast(x.message)}}
+});
+$("#wArchivo").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f||!fotoDestino) return;
+  try{
+    const img=await createImageBitmap(f); const ancho=Math.min(1600,img.width), alto=Math.round(img.height*ancho/img.width);
+    const cv=document.createElement("canvas"); cv.width=ancho; cv.height=alto; cv.getContext("2d").drawImage(img,0,0,ancho,alto);
+    const foto=cv.toDataURL("image/jpeg",.84);
+    const r=await api("PUT","/api/fotos/"+fotoDestino,{foto}); S.config.fotosV=r.fotosV; pintarFotos(); toast("Foto actualizada en la web");
+  }catch(x){toast(x.message||"No se pudo subir la foto")}
+});
 
 /* ---------- inicio ---------- */
 (async()=>{ try{ S.yo=await api("GET","/api/yo"); entrar(); }catch(e){ mostrarLogin(); } })();

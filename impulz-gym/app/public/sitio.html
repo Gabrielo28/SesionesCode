@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Impulz Gym El Quisco | Gimnasio en El Quisco desde $25.000 al mes</title>
-<meta name="description" content="Gimnasio en El Quisco, litoral central. Planes desde $25.000 al mes, abierto de lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00. Reserva tu clase de prueba en línea.">
+<title>Impulz Gym El Quisco | Gimnasio en El Quisco{{PRECIO_DESDE_TITULO}}</title>
+<meta name="description" content="Gimnasio en El Quisco, litoral central. {{PRECIO_DESDE_TXT}}horario: {{HORARIO_LARGO}} Reserva tu clase de prueba en línea.">
 <link rel="canonical" href="{{ORIGEN}}/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 {{VERIFICACION}}
@@ -139,6 +139,7 @@ table.full td:nth-child(3)::before{content:"Puedes congelar "}table.full td:nth-
 .hr b{font:700 17px/1.4 var(--display);letter-spacing:.08em;text-transform:uppercase}
 .hr.today{background:var(--panel-2)} .hr.today b::after{content:" · hoy";color:var(--red-hi)}
 .hr.closed span{color:var(--muted)}
+.hr.special{background:rgba(227,23,30,.08)} .hr.special b{font-weight:600} .hr.special b::first-letter{text-transform:uppercase}
 
 .reserve{background:linear-gradient(180deg,var(--bg),#140c0c)}
 .formcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
@@ -193,7 +194,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
-<div class="topbar"><div class="wrap"><span id="topDir">El Quisco, litoral central</span><span>Lun a vie 5:00 – 22:00 · Sáb 8:00 – 14:00</span></div></div>
+<div class="topbar"><div class="wrap"><span id="topDir">El Quisco, litoral central</span><span>{{HORARIO_CORTO}}</span></div></div>
 <header class="nav"><div class="wrap navin">
   <a class="logo" href="#inicio"><b>//</b>Impulz<small>Gym · El Quisco</small></a>
   <nav class="links" aria-label="Secciones">
@@ -204,17 +205,14 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 
 <main id="inicio">
 <section class="hero"><div class="wrap heroin">
-  <span class="state" id="estado"><i></i><span id="estadoTxt">Lun a vie 5:00 – 22:00</span></span>
+  <span class="state" id="estado"><i></i><span id="estadoTxt">{{HORARIO_CORTO}}</span></span>
   <h1>Tu mejor <span class="red">versión</span></h1>
-  <p class="lead">Gimnasio en El Quisco, abierto desde las 5 de la mañana. Entrena a tu ritmo o con un plan personalizado, y parte con una clase de prueba.</p>
+  <p class="lead">Gimnasio en El Quisco, abierto desde las {{ABRE_DESDE}}. Entrena a tu ritmo o con un plan personalizado, y parte con una clase de prueba.</p>
   <div class="promo" id="promo" hidden></div>
   <div class="cta"><a class="btn" href="#reserva">Reservar clase de prueba</a><a class="btn ghost" href="#planes">Ver planes</a></div>
   <div class="trust"><span id="tGratis" hidden>Sin costo</span><span>Sin compromiso</span><span>Sin experiencia previa</span><span>Respuesta por WhatsApp</span></div>
   <div class="stats">
-    <div class="stat"><b>5:00</b><span>abrimos de lunes a viernes</span></div>
-    <div class="stat"><b>22:00</b><span>cerramos en la semana</span></div>
-    <div class="stat"><b>6 días</b><span>abierto, de lunes a sábado</span></div>
-    <div class="stat"><b>91 h</b><span>para entrenar cada semana</span></div>
+    {{STATS}}
   </div>
 </div></section>
 
@@ -236,19 +234,9 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 <section class="blk" id="planes"><div class="wrap">
   <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes son full acceso, sin restricciones de horario.</p></div>
   <div class="plans">
-    <div class="plan"><img class="ph" src="/fotos/ia-sala.jpg" alt="Sala de Impulz Gym" loading="lazy" width="960" height="540"><h3>Básico</h3><div class="price">$30.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Para quienes ya tienen experiencia y saben usar las máquinas</li><li>Entrenas a tu ritmo</li></ul><a class="btn ghost" href="#reserva" data-plan="Básico">Partir con clase de prueba</a></div>
-    <div class="plan top"><img class="ph" src="/fotos/p-coach-sesion.jpg" alt="Profesional guiando a una alumna" loading="lazy" width="960" height="540"><span class="tag">Con acompañamiento</span><h3>Plan Clase</h3><div class="price">$42.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Un profesional acompaña tus entrenamientos</li><li>Aprendes máquinas, técnica, posturas y cargas</li></ul><a class="btn" href="#reserva" data-plan="Plan Clase">Partir con clase de prueba</a></div>
-    <div class="plan"><img class="ph" src="/fotos/p-principiante.jpg" alt="Alumna entrenando en una máquina" loading="lazy" width="960" height="540"><h3>Estudiante</h3><div class="price">$25.000<small> / mes</small></div><ul><li>Full acceso, sin restricciones</li><li>Precio especial para estudiantes</li><li>Presenta tu credencial o comprobante de estudios vigente</li></ul><a class="btn ghost" href="#reserva" data-plan="Estudiante">Partir con clase de prueba</a></div>
+    {{PLANES_HTML}}
   </div>
-  <div class="head" style="margin:44px 0 20px"><span class="eyebrow">Plan Full</span><h3 style="font-size:34px">Paga por adelantado y ahorra</h3><p>Ingresos y tiempo de entrenamiento ilimitados.</p></div>
-  <div class="tablewrap"><table class="full">
-    <thead><tr><th>Plan</th><th>Duración</th><th>Congelamiento</th><th class="num">Valor</th><th class="num">Equivale al mes</th></tr></thead>
-    <tbody>
-      <tr><td><b>Trimestral</b></td><td>3 meses continuos</td><td>7 días</td><td class="num"><b>$84.000</b></td><td class="num">$28.000</td></tr>
-      <tr><td><b>Semestral</b></td><td>6 meses continuos</td><td>14 días</td><td class="num"><b>$170.000</b></td><td class="num">$28.333</td></tr>
-      <tr><td><b>Anual</b></td><td>12 meses continuos</td><td>30 días</td><td class="num"><b>$300.000</b></td><td class="num">$25.000</td></tr>
-    </tbody>
-  </table></div>
+  {{FULL_HTML}}
   <p class="note" id="notaPlanes">Pregunta por las promociones vigentes al reservar.</p>
 </div></section>
 
@@ -331,12 +319,12 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
   <details><summary>¿Tienen entrenamiento personalizado?</summary><p>Sí. Las sesiones personalizadas se agendan directamente con el coach, en el horario que acuerden.</p></details>
   <details><summary>Voy solo por el verano, ¿puedo entrenar?</summary><p>Sí. Reserva tu clase de prueba y pregunta en recepción por la opción que mejor calce con tu estadía.</p></details>
   <details><summary>¿Puedo congelar mi plan?</summary><p>Sí, en el Plan Full: 7 días en el trimestral, 14 en el semestral y 30 en el anual.</p></details>
-  <details><summary>¿Qué horario tienen?</summary><p>Lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00. Domingo cerrado.</p></details>
+  <details><summary>¿Qué horario tienen?</summary><p>{{HORARIO_LARGO}}</p></details>
 </div></section>
 </main>
 
 <footer><div class="wrap foot">
-  <div><div class="logo"><b>//</b>Impulz<small>Tu mejor versión</small></div><p style="margin-top:12px">Lunes a viernes 5:00 – 22:00 · Sábado 8:00 – 14:00</p></div>
+  <div><div class="logo"><b>//</b>Impulz<small>Tu mejor versión</small></div><p style="margin-top:12px">{{HORARIO_CORTO}}</p></div>
   <div style="display:grid;gap:6px;justify-items:end"><a id="ig" href="https://www.instagram.com/impulzgym.elquisco" target="_blank" rel="noopener">Instagram @impulzgym.elquisco</a><a href="https://entrenachile.cl/gimnasios/impulz" target="_blank" rel="noopener">Gimnasio aliado de EntrenaCL</a><span>Sitio oficial de Impulz Gym El Quisco</span></div>
 </div></footer>
 
@@ -374,20 +362,28 @@ if (SITIO.whatsapp) {
   $('fab').href = u; $('fab').hidden = false; $('dockWa').href = u; $('dockWa').hidden = false;
 }
 
-/* Horarios y estado "abierto ahora" (hora de Chile) */
-const DIAS = [['Lunes',5,22],['Martes',5,22],['Miércoles',5,22],['Jueves',5,22],['Viernes',5,22],['Sábado',8,14],['Domingo',0,0]];
-const cl = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Santiago', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
+/* Horarios y estado "abierto ahora" (hora de Chile), según el horario y los días especiales del panel */
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const NOMBRES = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const HOR = SITIO.horario || [], CIERRES = SITIO.cierres || [];
+const hm = h => +h.slice(0,2) + (+h.slice(3)) / 60, hh = h => String(+h.slice(0,2)) + ':' + h.slice(3);
+const cl = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
 const parte = t => cl.find(p => p.type === t).value;
 const hoy = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(parte('weekday'));
 const ahora = (+parte('hour') % 24) + (+parte('minute')) / 60;
-$('horas').innerHTML = DIAS.map(([d, a, c], i) => `<div class="hr${i === hoy ? ' today' : ''}${c ? '' : ' closed'}"><b>${d}</b><span>${c ? a + ':00 – ' + c + ':00' : 'Cerrado'}</span></div>`).join('');
-const [, abre, cierra] = DIAS[hoy];
-if (cierra && ahora >= abre && ahora < cierra) { $('estado').classList.add('on'); $('estadoTxt').textContent = 'Abierto ahora · hasta las ' + cierra + ':00'; }
-else {
-  let i = hoy, txt = '';
-  if (cierra && ahora < abre) txt = 'Abrimos hoy a las ' + abre + ':00';
-  else { do { i = (i + 1) % 7; } while (!DIAS[i][2]); txt = 'Abrimos el ' + DIAS[i][0].toLowerCase() + ' a las ' + DIAS[i][1] + ':00'; }
-  $('estadoTxt').textContent = 'Cerrado · ' + txt;
+const fechaHoy = parte('year') + '-' + parte('month') + '-' + parte('day');
+const fechaMas = n => { const d = new Date(fechaHoy + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+// Horario efectivo de un día (n días desde hoy): el especial manda sobre el semanal.
+const delDia = n => { const f = fechaMas(n), e = CIERRES.find(x => x.fecha === f); if (e) return { h: e.abre ? [e.abre, e.cierra] : null, nota: e.nota }; return { h: HOR[(hoy + n) % 7] || null }; };
+$('horas').innerHTML = HOR.map((d, i) => `<div class="hr${i === hoy ? ' today' : ''}${d ? '' : ' closed'}"><b>${NOMBRES[i]}</b><span>${d ? hh(d[0]) + ' – ' + hh(d[1]) : 'Cerrado'}</span></div>`).join('')
+  + CIERRES.filter(x => x.fecha >= fechaHoy && x.fecha <= fechaMas(30)).map(x => `<div class="hr special"><b>${new Date(x.fecha + 'T12:00:00Z').toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })}${x.nota ? ' · ' + esc(x.nota) : ''}</b><span>${x.abre ? hh(x.abre) + ' – ' + hh(x.cierra) : 'Cerrado'}</span></div>`).join('');
+const hoyD = delDia(0);
+if (hoyD.h && ahora >= hm(hoyD.h[0]) && ahora < hm(hoyD.h[1])) { $('estado').classList.add('on'); $('estadoTxt').textContent = 'Abierto ahora · hasta las ' + hh(hoyD.h[1]); }
+else if (HOR.some(Boolean)) {
+  let txt = '';
+  if (hoyD.h && ahora < hm(hoyD.h[0])) txt = 'Abrimos hoy a las ' + hh(hoyD.h[0]);
+  else for (let n = 1; n <= 14; n++) { const d = delDia(n); if (d.h) { txt = 'Abrimos ' + (n === 1 ? 'mañana' : 'el ' + NOMBRES[(hoy + n) % 7].toLowerCase()) + ' a las ' + hh(d.h[0]); break; } }
+  $('estadoTxt').textContent = 'Cerrado' + (hoyD.nota && !hoyD.h ? ' por ' + hoyD.nota.toLowerCase() : '') + (txt ? ' · ' + txt : '');
 }
 
 /* Medición: clic a WhatsApp */

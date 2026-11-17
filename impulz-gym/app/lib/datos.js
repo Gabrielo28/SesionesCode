@@ -12,12 +12,15 @@ const path = require('path');
 const crypto = require('crypto');
 
 const DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'datos');
+const web = require('./web');
 fs.mkdirSync(DIR, { recursive: true });
 
 const CONFIG_INICIAL = {
   pctPrimer: 100, pctRecurrente: 15, mesesRecurrente: 6, pctPase: 30, mensualidad: 30000,
   inicio: '', whatsapp: '', beneficio: '', promo: '',
-  direccion: '', mapsUrl: '', instagram: 'impulzgym.elquisco', precioMensual: 0, precioPareja: 0, precioMatricula: 0, coachNombre: '', coachPerfil: '', resenasUrl: '', pruebaGratis: 0
+  direccion: '', mapsUrl: '', instagram: 'impulzgym.elquisco', precioMatricula: 0, coachNombre: '', coachPerfil: '', resenasUrl: '', pruebaGratis: 0,
+  // Web (panel → Web)
+  planes: web.PLANES_INICIALES, horario: web.HORARIO_INICIAL, cierres: [], fotosV: 1
 };
 
 function leer(nombre, porDefecto) {

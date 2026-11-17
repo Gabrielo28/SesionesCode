@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Reserva tu clase de prueba · Impulz Gym El Quisco</title>
-<meta name="description" content="Reserva tu clase de prueba en Impulz Gym El Quisco. Lunes a viernes de 5:00 a 22:00 y sábado de 8:00 a 14:00.">
+<meta name="description" content="Reserva tu clase de prueba en Impulz Gym El Quisco. {{HORARIO_LARGO}}">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="{{ORIGEN}}/">
 <meta property="og:title" content="Reserva tu clase de prueba en Impulz Gym El Quisco">
@@ -94,7 +94,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   <div>
     <h1>Reserva tu <span>clase de prueba</span> en Impulz</h1>
     <p class="lead">Deja tus datos, recibe tu código y confirma tu clase por WhatsApp. Te recibimos con un plan según tu objetivo.</p>
-    <div class="chips"><span class="chip">Lun a vie 5:00 – 22:00</span><span class="chip">Sábado 8:00 – 14:00</span><span class="chip">El Quisco</span></div>
+    <div class="chips">{{HORARIO_CHIPS}}<span class="chip">El Quisco</span></div>
     <div class="promo" {{PROMO_OCULTA}}>{{PROMO}}</div>
   </div>
 
@@ -139,7 +139,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   </div>
 </div></section>
 
-<footer><div class="wrap"><span>Impulz Gym · El Quisco</span><span>Lun a vie 5:00 – 22:00 · Sáb 8:00 – 14:00</span></div></footer>
+<footer><div class="wrap"><span>Impulz Gym · El Quisco</span><span>{{HORARIO_CORTO}}</span></div></footer>
 
 <script>
 const q = new URLSearchParams(location.search);

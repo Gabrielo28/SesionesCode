@@ -125,6 +125,22 @@ async function pedir(metodo, ruta, cuerpo, cookie) {
       const llms = (await pedir('GET', '/llms.txt')).j;
       assert.match(llms, /^# Impulz Gym El Quisco/); assert.match(llms, /\$42\.000/); assert.match(r, /User-agent: GPTBot/);
     });
+    await paso('web: el dueño cambia planes, horario y días especiales, y la web lo muestra', async () => {
+      const cfg = (await pedir('GET', '/api/config', null, dueno)).j;
+      const planes = cfg.planes.map(p => p.nombre === 'Básico' ? { ...p, precio: 32000 } : p);
+      const horario = cfg.horario.map((d, i) => i === 5 ? ['09:00', '13:00'] : d);
+      const r = await pedir('PUT', '/api/web', { planes, horario, cierres: [{ fecha: '2099-12-25', nota: 'Navidad' }] }, dueno);
+      assert.equal(r.estado, 200);
+      const h = (await pedir('GET', '/')).j;
+      assert.match(h, /\$32\.000/); assert.match(h, /Sáb 9:00 – 13:00/); assert.ok(!h.includes('{{'), 'quedó un marcador');
+      assert.match(h, /"cierres":\[\{"fecha":"2099-12-25","nota":"Navidad"\}\]/);
+      assert.match((await pedir('GET', '/reserva')).j, /Sáb 9:00 – 13:00/);
+      assert.match((await pedir('GET', '/llms.txt')).j, /\$32\.000/);
+      assert.equal((await pedir('PUT', '/api/web', { horario: [['22:00', '05:00']] }, dueno)).estado, 400);
+      assert.equal((await pedir('PUT', '/api/fotos/ia-sala', { foto: 'x' }, dueno)).estado, 403);
+      assert.equal((await pedir('PUT', '/api/fotos/ia-sala', { foto: 'data:image/jpeg;base64,AAAA' }, coach)).estado, 400);
+      assert.ok((await pedir('GET', '/api/historial', null, coach)).j.some(e => e.accion === 'cambió la web'));
+    });
     await paso('los datos quedan en DATA_DIR, fuera del código', async () => {
       assert.ok(fs.existsSync(path.join(DIR, 'leads.json'))); assert.ok(fs.existsSync(path.join(DIR, 'historial.log')));
     });

@@ -20,6 +20,14 @@ Una sola aplicación Node, sin dependencias, para Railway (mismo patrón que el 
    Se registra la fecha y el primer pago.
 5. Cada mes: **Registrar pago** en los socios activos. Liquidación → **Copiar resumen para WhatsApp**.
 
+## Administrar la web (panel → Web)
+
+Coach y dueño pueden cambiar, sin tocar código: planes y precios (mensuales y Plan Full), horario semanal,
+días especiales (feriados o cambios puntuales: la portada dice "Cerrado por Navidad"), WhatsApp, dirección,
+Google Maps, reseñas, promoción y matrícula. Solo el coach cambia las fotos (se achican solas a 1600 px y
+quedan en `DATA_DIR/fotos`). Todo cambio queda en Historial. De estos datos salen también los datos para Google
+(JSON-LD), el `llms.txt` y la lista de planes al inscribir un socio.
+
 ## Permisos
 
 | | Coach (`admin`) | Dueño / recepción |
