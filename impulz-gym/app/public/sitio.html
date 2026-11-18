@@ -40,7 +40,7 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:76px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
-.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 a{color:var(--red-hi)}
 :focus-visible{outline:2px solid var(--red-hi);outline-offset:3px}
 [hidden]{display:none!important}
@@ -72,14 +72,65 @@ nav.links a:hover{color:var(--red-hi)}
 .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:var(--bg)}
 /* Cielo de la portada: la foto de la fachada cambia según la luz real de El Quisco (día, atardecer, noche). */
 .cielo{position:absolute;inset:0;z-index:0}
-.cielo i{position:absolute;inset:0;background:right top/cover no-repeat;opacity:0;transition:opacity 2.5s ease}
+.cielo i{position:absolute;inset:0;background:82% top/cover no-repeat;opacity:0;transition:opacity 2.5s ease}
 .cielo .c-dia{background-image:url(/fotos/ia-fachada.jpg);opacity:1}
 .hero[data-cielo=tarde] .c-tarde,.hero[data-cielo=noche] .c-noche{opacity:1}
 .hero[data-cielo=tarde] .c-dia,.hero[data-cielo=noche] .c-dia{opacity:0}
-.cielo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,9,9,.97) 0%,rgba(11,9,9,.92) 46%,rgba(11,9,9,.4) 72%,rgba(11,9,9,.2) 100%)}
-@media(prefers-reduced-motion:reduce){.cielo i{transition:none}}
-.hero::before{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(227,23,30,.07) 46px 50px),radial-gradient(70% 90% at 88% 0%,rgba(227,23,30,.38),transparent 60%);pointer-events:none}
-.heroin{position:relative;z-index:2;display:grid;gap:26px;padding-block:56px 64px}
+.cielo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,9,9,.9) 0%,rgba(11,9,9,.72) 55%,rgba(11,9,9,.45) 100%),linear-gradient(0deg,var(--bg) 0%,transparent 30%)}
+/* Computador: mismo concepto que el celular. El letrero de frente, centrado y en grande con el cielo de fondo;
+   el estado y el reloj en el cielo; el texto y los botones centrados debajo. */
+@media(min-width:900px){
+  .hero{display:flex;flex-direction:column}
+  section.hero::before{display:none}
+  .cielo{position:relative;inset:auto;height:clamp(480px,min(44vw,calc(100vh - 200px)),820px);flex:none}
+  .cielo i{background-position:50% 74%}
+  .cielo .c-dia{background-image:url(/fotos/ia-letrero-ancho.jpg)}
+  .cielo::after{background:linear-gradient(0deg,var(--bg) 0%,transparent 16%)}
+  .hero .heroin{position:static;min-height:0;margin-top:-2vw;padding-block:0 60px;gap:22px;justify-items:center;text-align:center}
+  .hero .vivo{position:absolute;left:0;right:0;justify-self:stretch;width:auto;top:clamp(48px,5vw,110px);z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .hero .reloj{flex-direction:column;align-items:center;gap:8px;background:none;border:0;padding:0;backdrop-filter:none}
+  .hero .reloj b{font-size:clamp(72px,7.6vw,132px);text-shadow:0 3px 26px rgba(0,0,0,.45)}
+  .hero .reloj span{font-size:13px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  .hero .state{order:-1;font-size:15px;background:rgba(11,9,9,.72);border-color:rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+  .hero .momento{justify-self:center}
+  .hero .lead{margin-inline:auto}
+  .hero .cta,.hero .trust{justify-content:center}
+  .hero .stats{justify-self:stretch;text-align:left}
+  .hero h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+/* Celular: el letrero en grande y centrado con el cielo de fondo; el estado y la hora van en el cielo, dentro de la imagen */
+@media(max-width:899px){
+  .hero{display:flex;flex-direction:column}
+  .hero::before{display:none}
+  .cielo{position:relative;inset:auto;height:clamp(440px,125vw,760px);flex:none}
+  .cielo i{background-position:50% 50%}
+  .cielo .c-dia{background-image:url(/fotos/ia-letrero.jpg)}
+  .cielo::after{background:linear-gradient(0deg,var(--bg) 0%,transparent 10%)}
+  .hero .heroin{position:static;min-height:0;margin-top:-14vw;padding-block:0 40px;gap:20px}
+  .hero .vivo{position:absolute;left:0;right:0;justify-self:stretch;width:auto;top:clamp(56px,15vw,120px);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .hero .reloj{flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:0;backdrop-filter:none}
+  .hero .reloj b{font-size:clamp(50px,15vw,84px);text-shadow:0 2px 20px rgba(0,0,0,.45)}
+  .hero .reloj span{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  .hero .state{order:-1;background:rgba(11,9,9,.72);border-color:rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+  .hero .momento{justify-self:center}
+  .hero h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+/* De noche el letrero "respira" como un neón encendido */
+@keyframes neon{0%,100%{filter:brightness(1) saturate(1)}50%{filter:brightness(1.1) saturate(1.15)}}
+.hero[data-cielo=noche] .c-noche{animation:neon 4.5s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.cielo i{transition:none;animation:none!important}}
+/* Acentos de toda la web según la hora: cálidos al atardecer, con brillo de neón de noche */
+.eyebrow,.btn,.plan.top,.cinta,section.blk{transition:color .8s,box-shadow .8s,text-shadow .8s,background-color .8s}
+html[data-momento=tarde] .eyebrow{color:#ff7a45}
+html[data-momento=tarde] .cinta{background:linear-gradient(90deg,#e3171e,#f0602d)}
+html[data-momento=tarde] section.blk:not(#horarios){background-image:linear-gradient(180deg,rgba(255,122,48,.05),transparent 45%)}
+html[data-momento=noche] .eyebrow{text-shadow:0 0 14px rgba(255,74,80,.6)}
+html[data-momento=noche] .btn:not(.ghost):not(.wa):not(.waze){box-shadow:0 0 0 1px rgba(255,74,80,.45),0 0 26px rgba(227,23,30,.5)}
+html[data-momento=noche] .plan.top{box-shadow:0 0 44px rgba(227,23,30,.28)}
+html[data-momento=noche] section.blk.marca::before{-webkit-text-stroke-color:rgba(255,74,80,.12)}
+html[data-momento=noche] .cinta{box-shadow:0 0 30px rgba(227,23,30,.5)}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(115deg,transparent 0 46px,rgba(227,23,30,.05) 46px 50px);-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 30%,transparent 55%);mask-image:linear-gradient(90deg,#000 0%,#000 30%,transparent 55%);pointer-events:none}
+.heroin{position:relative;z-index:2;display:grid;gap:24px;align-content:center;min-height:clamp(600px,84vh,860px);padding-block:48px 56px}
 .state{display:inline-flex;align-items:center;gap:10px;justify-self:start;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font:700 14px/1 var(--display);letter-spacing:.1em;text-transform:uppercase}
 .state i{width:10px;height:10px;border-radius:50%;background:var(--muted)}
 .state.on i{background:var(--ok);box-shadow:0 0 0 4px rgba(111,220,151,.2)}
@@ -90,6 +141,8 @@ nav.links a:hover{color:var(--red-hi)}
 .reloj b{font:800 italic 21px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.03em}
 .reloj span{font:700 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .hero h1{font-size:clamp(60px,13vw,150px);max-width:9ch}
+.momento{justify-self:start;display:flex;gap:10px;align-items:center;font:700 16px/1.3 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:rgba(227,23,30,.14);border:1px solid rgba(227,23,30,.45);border-radius:10px;padding:10px 14px;max-width:52ch}
+.momento::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--red-hi)}
 .hero .lead{font-size:clamp(19px,2.4vw,23px);max-width:46ch;color:var(--soft)}
 .cta{display:flex;gap:12px;flex-wrap:wrap}
 .trust{display:flex;flex-wrap:wrap;gap:6px 18px;font:700 14px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
@@ -100,7 +153,22 @@ nav.links a:hover{color:var(--red-hi)}
 .stat b{font:italic 900 36px/1 var(--display)}
 .stat span{font-size:14px;color:var(--muted)}
 
-section.blk{padding-block:76px;border-bottom:1px solid var(--line)}
+section.blk{padding-block:76px;border-bottom:1px solid var(--line);position:relative}
+section.blk>.wrap{position:relative;z-index:1}
+/* "IMPULZ" gigante en contorno: textura para los costados en pantallas grandes */
+section.blk.marca{overflow:hidden}
+section.blk.marca::before{content:"IMPULZ";position:absolute;right:-1.5vw;top:28px;z-index:0;font:italic 900 clamp(120px,21vw,380px)/.8 var(--display);letter-spacing:-.02em;color:transparent;-webkit-text-stroke:2px rgba(246,241,239,.05);pointer-events:none;white-space:nowrap}
+section.blk.marca.izq::before{right:auto;left:-1.5vw}
+/* Cinta en movimiento bajo la portada */
+.cinta{background:var(--red);color:#fff;overflow:hidden;border-bottom:1px solid var(--line)}
+.cinta div{display:flex;width:max-content;animation:cinta 38s linear infinite}
+.cinta span{font:italic 900 22px/1 var(--display);text-transform:uppercase;letter-spacing:.06em;padding:13px 0;white-space:nowrap}
+.cinta span i{font-style:normal;opacity:.55;margin:0 22px}
+@keyframes cinta{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.cinta div{animation:none}}
+/* Horarios sobre foto de fondo */
+#horarios{background:linear-gradient(90deg,rgba(11,9,9,.95) 0%,rgba(11,9,9,.8) 45%,rgba(11,9,9,.55) 100%),url(/fotos/ia-cardio.jpg) center/cover}
+#horarios .hours{background:rgba(11,9,9,.72);backdrop-filter:blur(6px)}
 .head{display:grid;gap:14px;margin-bottom:34px;max-width:720px}
 .head p{font-size:19px;color:var(--muted)}
 .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
@@ -109,6 +177,10 @@ section.blk{padding-block:76px;border-bottom:1px solid var(--line)}
 .card .ic{width:44px;height:44px}
 
 .gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.gal.full{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:clamp(170px,19vw,330px);padding-inline:12px;margin-top:6px;position:relative;z-index:1}
+.gal.full figure:first-child{grid-column:span 2;grid-row:span 2}
+.gal.full img{height:100%;aspect-ratio:auto}
+@media(max-width:700px){.gal.full{grid-template-columns:1fr 1fr;grid-auto-rows:150px}.gal.full figure:first-child{grid-column:span 2;grid-row:span 1}}
 .gal figure{margin:0;position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
 .gal img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
 .gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;background:linear-gradient(transparent,rgba(11,9,9,.9));font:700 14px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase}
@@ -170,6 +242,16 @@ input:focus,select:focus{border-color:var(--red)}
 .code span{font-size:15px;color:var(--ok)}
 
 .loc{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mapa{position:relative;height:clamp(380px,46vw,520px);margin:6px 0 30px;border-block:1px solid var(--line);background:var(--panel)}
+.mapa iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:invert(.92) hue-rotate(180deg) saturate(.6) brightness(.95)}
+.mapa .wrap{position:relative;height:100%;display:flex;align-items:center;pointer-events:none}
+.mapcard{pointer-events:auto;background:rgba(11,9,9,.92);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:12px;max-width:400px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.mapcard b{font:700 13px/1.2 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--red-hi)}
+.mapcard .big{font:italic 800 30px/1.05 var(--display);text-transform:uppercase}
+.mapcard .cta .btn{flex:1}
+.btn.waze{background:#33ccff;color:#06283d} .btn.waze:hover{background:#5ad6ff}
+.topbar a{color:inherit;text-decoration:none} .topbar a:hover{text-decoration:underline}
+@media(max-width:700px){.mapa{height:auto;border:0;background:none}.mapa iframe{position:relative;height:300px;border-block:1px solid var(--line)}.mapa .wrap{height:auto;display:block;margin-top:-40px}.mapcard{max-width:none}}
 .loc .card b{font:700 15px/1.2 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .loc .card .big{font:italic 800 28px/1.1 var(--display);text-transform:uppercase}
 .towns{display:flex;flex-wrap:wrap;gap:8px}
@@ -207,7 +289,7 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
-<div class="topbar"><div class="wrap"><span id="topDir">El Quisco, litoral central</span><span>{{HORARIO_CORTO}}</span></div></div>
+<div class="topbar"><div class="wrap"><a id="topDir" href="#ubicacion">📍 <span id="topDirTxt">El Quisco, litoral central</span> · Cómo llegar</a><span>{{HORARIO_CORTO}}</span></div></div>
 <header class="nav"><div class="wrap navin">
   <a class="logo" href="#inicio"><b>//</b>Impulz<small>Gym · El Quisco</small></a>
   <nav class="links" aria-label="Secciones">
@@ -217,9 +299,10 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 </div></header>
 
 <main id="inicio">
-<section class="hero" id="portada"><div class="cielo" aria-hidden="true"><i class="c-dia"></i><i class="c-tarde" data-src="/fotos/ia-fachada-tarde.jpg"></i><i class="c-noche" data-src="/fotos/ia-fachada-noche.jpg"></i></div><div class="wrap heroin">
+<section class="hero" id="portada"><div class="cielo" aria-hidden="true"><i class="c-dia"></i><i class="c-tarde" data-src="/fotos/ia-letrero-ancho-tarde.jpg" data-cel="/fotos/ia-letrero-tarde.jpg"></i><i class="c-noche" data-src="/fotos/ia-letrero-ancho-noche.jpg" data-cel="/fotos/ia-letrero-noche.jpg"></i></div><div class="wrap heroin">
   <div class="vivo"><span class="state" id="estado" role="status"><i></i><span id="estadoTxt">{{HORARIO_CORTO}}</span></span><span class="reloj" id="reloj" hidden><b id="relojHora">--:--:--</b><span>Hora en El Quisco</span></span></div>
   <h1>Tu mejor <span class="red">versión</span></h1>
+  <p class="momento" id="momento" hidden></p>
   <p class="lead">Gimnasio en El Quisco, abierto desde las {{ABRE_DESDE}}. Entrena a tu ritmo o con un plan personalizado, y parte con una clase de prueba.</p>
   <div class="promo" id="promo" hidden></div>
   <div class="cta"><a class="btn" href="#reserva">Reservar clase de prueba</a><a class="btn ghost" href="#planes">Ver planes</a></div>
@@ -229,7 +312,9 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
   </div>
 </div></section>
 
-<section class="blk" id="para-quien"><div class="wrap">
+<div class="cinta" aria-hidden="true"><div><span>Desde las {{ABRE_DESDE}}<i>//</i>Peso libre<i>//</i>Máquinas y poleas<i>//</i>Cardio con vista<i>//</i>El Quisco<i>//</i>Tu mejor versión<i>//</i></span><span>Desde las {{ABRE_DESDE}}<i>//</i>Peso libre<i>//</i>Máquinas y poleas<i>//</i>Cardio con vista<i>//</i>El Quisco<i>//</i>Tu mejor versión<i>//</i></span></div></div>
+
+<section class="blk marca" id="para-quien"><div class="wrap">
   <div class="head"><span class="eyebrow">¿Para quién es Impulz?</span><h2>Un gimnasio para gente real</h2><p>No necesitas estar en forma para partir. Necesitas un lugar que te quede cómodo.</p></div>
   <div class="cards">
     <div class="card"><img class="ph" src="/fotos/p-principiante.jpg" alt="Mujer entrenando en una máquina de remo" loading="lazy" width="960" height="540"><h3>Si partes de cero</h3><p>Nadie nace sabiendo. Ven a una clase de prueba, conoce el lugar y parte a tu ritmo.</p></div>
@@ -241,10 +326,11 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 
 <section class="blk" id="gimnasio"><div class="wrap">
   <div class="head"><span class="eyebrow">El gimnasio</span><h2>Así es Impulz por dentro</h2><p>Sala amplia, con zona de peso libre, máquinas, poleas y cardio con vista al exterior.</p></div>
-  <div class="gal"><figure><img src="/fotos/ia-sala.jpg" alt="Sala amplia en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Sala amplia</figcaption></figure><figure><img src="/fotos/ia-maquinas-de-fuerza.jpg" alt="Máquinas de fuerza en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Máquinas de fuerza</figcaption></figure><figure><img src="/fotos/ia-peso-libre.jpg" alt="Peso libre frente a los espejos en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Peso libre frente a los espejos</figcaption></figure><figure><img src="/fotos/ia-poleas-y-discos.jpg" alt="Poleas y discos en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Poleas y discos</figcaption></figure><figure><img src="/fotos/ia-mancuernas.jpg" alt="Mancuernas en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Mancuernas</figcaption></figure><figure><img src="/fotos/ia-cardio.jpg" alt="Cardio con vista en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Cardio con vista</figcaption></figure></div>
-</div></section>
+</div>
+  <div class="gal full"><figure><img src="/fotos/ia-sala.jpg" alt="Sala amplia en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Sala amplia</figcaption></figure><figure><img src="/fotos/ia-maquinas-de-fuerza.jpg" alt="Máquinas de fuerza en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Máquinas de fuerza</figcaption></figure><figure><img src="/fotos/ia-peso-libre.jpg" alt="Peso libre frente a los espejos en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Peso libre frente a los espejos</figcaption></figure><figure><img src="/fotos/ia-poleas-y-discos.jpg" alt="Poleas y discos en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Poleas y discos</figcaption></figure><figure><img src="/fotos/ia-mancuernas.jpg" alt="Mancuernas en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Mancuernas</figcaption></figure><figure><img src="/fotos/ia-cardio.jpg" alt="Cardio con vista en Impulz Gym El Quisco" loading="lazy" width="1280" height="720"><figcaption>Cardio con vista</figcaption></figure></div>
+</section>
 
-<section class="blk" id="planes"><div class="wrap">
+<section class="blk marca izq" id="planes"><div class="wrap">
   <div class="head"><span class="eyebrow">Planes</span><h2>Elige cómo entrenar</h2><p>Todos los planes son full acceso, sin restricciones de horario.</p></div>
   <div class="plans">
     {{PLANES_HTML}}
@@ -318,13 +404,20 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
 
 <section class="blk" id="ubicacion"><div class="wrap">
   <div class="head"><span class="eyebrow">Ubicación</span><h2>En El Quisco, cerca de todo el litoral</h2></div>
-  <div class="loc">
-    <div class="card"><b>Dónde estamos</b><span class="big" id="dir">El Quisco, Región de Valparaíso</span><div class="cta"><a class="btn ghost sm" id="mapa" href="#" target="_blank" rel="noopener" hidden>Cómo llegar</a><a class="btn ghost sm" id="resenas" href="#" target="_blank" rel="noopener" hidden>Ver reseñas en Google</a></div></div>
-    <div class="card"><b>También venimos desde</b><div class="towns"><span class="town">Algarrobo</span><span class="town">El Tabo</span><span class="town">Isla Negra</span><span class="town">Punta de Tralca</span><span class="town">Las Cruces</span></div><p>Si veraneas en la zona, también puedes entrenar con nosotros.</p></div>
-  </div>
+</div>
+<div class="mapa">
+  <iframe id="mapaFrame" title="Mapa de Impulz Gym El Quisco" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div class="wrap"><div class="mapcard">
+    <b>Dónde estamos</b><span class="big" id="dir">El Quisco, Región de Valparaíso</span>
+    <div class="cta"><a class="btn" id="mapa" href="#" target="_blank" rel="noopener">Cómo llegar</a><a class="btn waze" id="waze" href="#" target="_blank" rel="noopener">Abrir en Waze</a></div>
+    <a class="btn ghost sm" id="resenas" href="#" target="_blank" rel="noopener" hidden>Ver reseñas en Google</a>
+  </div></div>
+</div>
+<div class="wrap">
+  <div class="card"><b>También venimos desde</b><div class="towns"><span class="town">Algarrobo</span><span class="town">El Tabo</span><span class="town">Isla Negra</span><span class="town">Punta de Tralca</span><span class="town">Las Cruces</span></div><p>Si veraneas en la zona, también puedes entrenar con nosotros.</p></div>
 </div></section>
 
-<section class="blk" id="preguntas"><div class="wrap">
+<section class="blk marca" id="preguntas"><div class="wrap">
   <div class="head"><span class="eyebrow">Preguntas frecuentes</span><h2>Antes de venir</h2></div>
   <details><summary>¿Necesito experiencia para partir?</summary><p>No. Puedes partir a tu ritmo. Y si quieres un plan a tu medida, puedes entrenar con un coach personalizado.</p></details>
   <details><summary>¿Cómo funciona la clase de prueba?</summary><p>Reservas en esta página, recibes un código y coordinamos el día por WhatsApp. Vienes, conoces el gimnasio y entrenas.</p></details>
@@ -354,14 +447,21 @@ const clp = n => '$' + Math.round(n).toLocaleString('es-CL');
 if (SITIO.promo) { $('promo').textContent = SITIO.promo; $('promo').hidden = false; }
 $('beneficio').textContent = SITIO.beneficio || '';
 if (SITIO.precioMatricula) $('notaPlanes').textContent = 'Matrícula: ' + clp(SITIO.precioMatricula) + '. ' + $('notaPlanes').textContent;
-if (SITIO.direccion) { $('dir').textContent = SITIO.direccion; $('topDir').textContent = SITIO.direccion; }
+if (SITIO.direccion) { $('dir').textContent = SITIO.direccion; $('topDirTxt').textContent = SITIO.direccion; }
+/* Mapa: se busca por la dirección del panel (o por el nombre del gimnasio si aún no hay dirección) */
+{
+  const q = encodeURIComponent(SITIO.direccion ? SITIO.direccion + ', El Quisco, Chile' : 'Impulz Gym El Quisco, Chile');
+  $('mapaFrame').src = 'https://maps.google.com/maps?q=' + q + '&z=16&output=embed';
+  const ir = SITIO.mapsUrl || 'https://www.google.com/maps/dir/?api=1&destination=' + q;
+  $('mapa').href = ir; $('topDir').href = ir; $('topDir').target = '_blank'; $('topDir').rel = 'noopener';
+  $('waze').href = 'https://waze.com/ul?q=' + q + '&navigate=yes';
+}
 if (SITIO.resenasUrl) { $('resenas').href = SITIO.resenasUrl; $('resenas').hidden = false; }
 if (+SITIO.pruebaGratis) {
   $('tGratis').hidden = false;
   document.querySelectorAll('a[href="#reserva"]').forEach(a => { if (/clase de prueba$/i.test(a.textContent.trim())) a.textContent = a.textContent.trim() + ' gratis'; });
   document.querySelector('#reserva .eyebrow').textContent = 'Clase de prueba gratis';
 }
-if (SITIO.mapsUrl) { $('mapa').href = SITIO.mapsUrl; $('mapa').hidden = false; }
 if (SITIO.instagram) { $('ig').href = 'https://www.instagram.com/' + SITIO.instagram; $('ig').textContent = 'Instagram @' + SITIO.instagram; }
 /* Origen de la visita: si llegó con un link de campaña (?c=…), se recuerda 30 días en este navegador.
    Así, si vuelve después escribiendo impulzgym.cl, su reserva igual queda con la campaña que la trajo. */
@@ -430,13 +530,12 @@ function tick() {
   $('relojHora').textContent = a.txt; $('reloj').hidden = false;
   if (a.fecha !== ultimaFecha) { ultimaFecha = a.fecha; pintarHoras(a); }
   // Estado: abierto, pronto cerramos, o cerrado con cuenta regresiva
-  const hoy = delDia(a, 0); let clase = 'off', txt = '';
+  const hoy = delDia(a, 0); let clase = 'off', txt = '', prox = null;
   if (hoy.h && a.min >= mins(hoy.h[0]) && a.min < mins(hoy.h[1])) {
     const quedan = mins(hoy.h[1]) - a.min;
     if (quedan <= 60) { clase = 'soon'; txt = 'Pronto cerramos · quedan ' + duracion(quedan); }
     else { clase = 'on'; txt = 'Abierto ahora · hasta las ' + hh(hoy.h[1]); }
   } else if (HOR.some(Boolean) || CIERRES.length) {
-    let prox = null;
     if (hoy.h && a.min < mins(hoy.h[0])) prox = { n: 0, h: hoy.h };
     else for (let n = 1; n <= 14 && !prox; n++) { const d = delDia(a, n); if (d.h) prox = { n, h: d.h }; }
     txt = 'Cerrado' + (hoy.nota && !hoy.h ? ' por ' + hoy.nota.toLowerCase() : '');
@@ -447,13 +546,23 @@ function tick() {
     }
   }
   if (txt && txt !== ultimoTxt) { ultimoTxt = txt; $('estadoTxt').textContent = txt; $('estado').className = 'state ' + clase; }
+  // Mensaje según el momento del día
+  let msg = '';
+  if (clase === 'on') msg = a.min < 9 * 60 ? 'Entrena antes del trabajo: abrimos desde las ' + hh(hoy.h[0]) + '.'
+    : a.min >= 17 * 60 ? 'Todavía alcanzas a entrenar hoy: cerramos a las ' + hh(hoy.h[1]) + '.'
+    : 'Hoy estamos abiertos hasta las ' + hh(hoy.h[1]) + '. Ven cuando quieras.';
+  else if (clase === 'soon') msg = 'Última hora del día. Reserva tu clase de prueba para mañana.';
+  else if (prox) msg = (prox.n === 0 ? 'Hoy abrimos a las ' : prox.n === 1 ? 'Mañana abrimos a las ' : 'Abrimos el ' + NOMBRES[(a.dia + prox.n) % 7].toLowerCase() + ' a las ') + hh(prox.h[0]) + '. Reserva ahora tu clase de prueba.';
+  if (msg && msg !== $('momento').textContent) { $('momento').textContent = msg; $('momento').hidden = false; }
   // Luz de la portada según la hora real del sol
   const c = cielo(a);
   if (c !== ultimoCielo) {
-    ultimoCielo = c;
+    ultimoCielo = c; document.documentElement.dataset.momento = c;
     const capa = document.querySelector('.cielo .c-' + c);
-    if (capa && capa.dataset.src && !capa.style.backgroundImage) {
-      const img = new Image(); img.onload = () => { capa.style.backgroundImage = 'url("' + capa.dataset.src + '")'; $('portada').dataset.cielo = c; }; img.src = capa.dataset.src;
+    // Celular: letrero en formato vertical; computador: la misma toma en horizontal.
+    const src = capa && (matchMedia('(max-width:899px)').matches && capa.dataset.cel ? capa.dataset.cel : capa.dataset.src);
+    if (src && !capa.style.backgroundImage) {
+      const img = new Image(); img.onload = () => { capa.style.backgroundImage = 'url("' + src + '")'; $('portada').dataset.cielo = c; }; img.src = src;
     } else $('portada').dataset.cielo = c;
   }
 }
