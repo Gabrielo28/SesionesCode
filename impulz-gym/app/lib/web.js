@@ -9,7 +9,7 @@ const DIAS_CORTOS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const DIAS_SCHEMA = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // Fotos que se pueden usar en las tarjetas de planes (y reemplazar desde el panel).
-const FOTOS = ['ia-fachada', 'ia-sala', 'ia-maquinas-de-fuerza', 'ia-peso-libre', 'ia-poleas-y-discos', 'ia-mancuernas', 'ia-cardio',
+const FOTOS = ['ia-fachada', 'ia-fachada-tarde', 'ia-fachada-noche', 'ia-sala', 'ia-maquinas-de-fuerza', 'ia-peso-libre', 'ia-poleas-y-discos', 'ia-mancuernas', 'ia-cardio',
   'p-principiante', 'p-madrugador', 'p-coach-sesion', 'p-coach-plan', 'p-pareja', 'p-verano'];
 
 const PLANES_INICIALES = [

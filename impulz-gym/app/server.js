@@ -118,7 +118,8 @@ function preguntas(cfg) {
 const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMatricula', 'resenasUrl', 'pruebaGratis', 'horario', 'cierres'];
 // Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo ni los datos del coach
 // (la web oficial es del gimnasio; el coach aparece solo en entrenachile.cl).
-const sitioPublico = cfg => JSON.stringify(Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? '']))).replace(/</g, '\\u003c');
+// `ahora`: hora del servidor, para que el reloj de la portada no dependa del reloj del teléfono.
+const sitioPublico = cfg => JSON.stringify({ ...Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? ''])), ahora: Date.now() }).replace(/</g, '\\u003c');
 function jsonLd(cfg, req) {
   const o = origen(req);
   const d = {
