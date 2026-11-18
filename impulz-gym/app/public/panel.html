@@ -40,6 +40,10 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 nav.tabs a{font:700 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:10px 12px 12px;border-bottom:3px solid transparent;white-space:nowrap}
 nav.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--red)}
+nav.tabs .tgrp{align-self:center;font:700 11px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--red-ink);padding:0 4px 0 14px;white-space:nowrap}
+nav.tabs .tgrp:first-child{padding-left:0}
+.vtitle{margin:0 0 4px;font:800 italic 26px/1 var(--display);text-transform:uppercase}
+.vnote{margin:0 0 14px}
 main{padding-block:20px 48px}
 .view{display:grid;gap:16px}
 .note{font-size:13px;color:var(--muted)}
@@ -174,11 +178,15 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
       </div>
     </div>
     <nav class="tabs" aria-label="Secciones">
+      <span class="tgrp">Comisiones del coach</span>
       <a href="#resumen" data-v="resumen">Resumen</a>
       <a href="#contactos" data-v="contactos">Contactos</a>
       <a href="#liquidacion" data-v="liquidacion">Liquidación</a>
-      <a href="#historial" data-v="historial">Historial</a>
+      <span class="tgrp">Gimnasio</span>
+      <a href="#gimnasio" data-v="gimnasio">Reservas web</a>
       <a href="#web" data-v="web" id="tabWeb">Web</a>
+      <span class="tgrp">Registro</span>
+      <a href="#historial" data-v="historial">Historial</a>
       <a href="#ajustes" data-v="ajustes">Ajustes</a>
     </nav>
   </div>
@@ -203,15 +211,16 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
     <div class="grid2">
       <div class="panel"><h3>Embudo de la gestión de redes</h3><div class="funnel" id="funnel"></div><p class="note" id="funnelNote"></p></div>
       <div class="panel"><h3>Inscritos por mes</h3><div id="chart"></div>
-        <div class="legend"><span><i class="dot" style="background:var(--red)"></i>Por gestión de redes</span><span><i class="dot" style="background:var(--gym)"></i>Por el gimnasio</span></div></div>
+        <div class="legend"><span><i class="dot" style="background:var(--red)"></i>Socios atribuidos al coach</span></div></div>
     </div>
     <div class="panel"><h3>De dónde llegan</h3><div class="tablewrap" id="canales"></div></div>
   </section>
 
   <section class="view" id="v-contactos" hidden>
+    <h2 class="vtitle" id="listaTitulo"></h2><p class="note vnote" id="listaNota"></p>
     <div class="toolbar">
       <input class="search" id="q" type="search" placeholder="Buscar por nombre, teléfono o código" aria-label="Buscar">
-      <div class="seg" role="group" aria-label="Origen">
+      <div class="seg" role="group" aria-label="Origen" hidden>
         <button data-f="todos" aria-pressed="true">Todos</button>
         <button data-f="g" aria-pressed="false">Gestión redes</button>
         <button data-f="y" aria-pressed="false">Gimnasio</button>
@@ -408,10 +417,10 @@ function entrar(){
 function render(){
   $("#mLabel").textContent = mName(S.month);
   document.querySelectorAll("nav.tabs a").forEach(a => a.dataset.v === S.view ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
-  ["resumen","contactos","liquidacion","historial","web","ajustes"].forEach(v => $("#v-"+v).hidden = v !== S.view);
+  ["resumen","contactos","liquidacion","historial","web","ajustes"].forEach(v => $("#v-"+v).hidden = v !== (S.view==="gimnasio"?"contactos":S.view));
   $("#status").hidden = !S.error; $("#status").textContent = S.error ? "No se pudieron cargar los datos: " + S.error : "";
   if (S.view==="resumen") rResumen();
-  if (S.view==="contactos") rLista();
+  if (S.view==="contactos"||S.view==="gimnasio") rLista();
   if (S.view==="liquidacion") rLiq();
   if (S.view==="historial") rHist();
   if (S.view==="ajustes") rCfg();
@@ -426,8 +435,8 @@ function rResumen(){
   L.filter(isG).forEach(l=>detalle(l).forEach(p=>{if(p.mes===m){ingreso+=p.monto;com+=p.valor;pagosMes++}}));
   const conv=contG.length?Math.round(100*contG.filter(l=>l.etapa==="Inscrito").length/contG.length):0;
   $("#kpis").innerHTML=`
-   <div class="kpi"><span class="lbl">Contactos del mes</span><span class="val">${contG.length}<small style="font-size:20px;opacity:.6"> / ${cont.length}</small></span><span class="sub">${contG.length} por gestión de redes de ${cont.length} en total</span></div>
-   <div class="kpi"><span class="lbl">Inscritos del mes</span><span class="val">${insG.length}<small style="font-size:20px;opacity:.6"> + ${ins.length-insG.length}</small></span><span class="sub">${insG.length} por gestión · ${ins.length-insG.length} por el gimnasio · conversión ${conv}%</span></div>
+   <div class="kpi"><span class="lbl">Contactos del mes</span><span class="val">${contG.length}</span><span class="sub">Llegaron por entrenachile.cl o links del coach</span></div>
+   <div class="kpi"><span class="lbl">Inscritos del mes</span><span class="val">${insG.length}</span><span class="sub">Conversión de contacto a socio: ${conv}%</span></div>
    <div class="kpi"><span class="lbl">Ingreso de socios atribuidos</span><span class="val">${clp(ingreso)}</span><span class="sub">${pagosMes} pagos de socios atribuidos este mes</span></div>
    <div class="kpi hero"><span class="lbl">Comisión del mes</span><span class="val">${clp(com)}</span><span class="sub">Al gimnasio le quedan ${clp(ingreso-com)}</span></div>`;
   $("#mine").hidden = !admin();
@@ -441,7 +450,7 @@ function rResumen(){
   $("#funnel").innerHTML=steps.map(([n,fn])=>{const c=contG.filter(fn).length;return `<div class="frow"><span>${n}</span><div class="ftrack"><div class="ffill" style="width:${contG.length?100*c/tot:0}%"></div></div><span class="n">${c}</span></div>`}).join("");
   $("#funnelNote").textContent=contG.length?`Contactos de ${mName(m)} por gestión de redes, según hasta dónde llegaron.`:`Aún no hay contactos por gestión de redes en ${mName(m)}.`;
   const ms=[...Array(6)].map((_,i)=>shift(m,i-5));
-  const data=ms.map(x=>{const a=L.filter(l=>l.etapa==="Inscrito"&&mOf(l.fechaInscripcion)===x);const g=a.filter(isG).length;return {x,g,y:a.length-g}});
+  const data=ms.map(x=>{const a=L.filter(l=>l.etapa==="Inscrito"&&mOf(l.fechaInscripcion)===x&&isG(l));return {x,g:a.length,y:0}});
   const max=Math.max(4,...data.map(d=>d.g+d.y)), nice=Math.ceil(max/4)*4;
   const W=520,H=220,pl=30,pb=26,pt=14,bw=(W-pl)/6, sy=v=>H-pb-(H-pb-pt)*v/nice;
   let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Inscritos por mes">`;
@@ -452,7 +461,7 @@ function rResumen(){
     if(d.g+d.y) svg+=`<text x="${x+w/2}" y="${yy-5}" text-anchor="middle" style="fill:var(--ink)">${d.g+d.y}</text>`;
     svg+=`<text x="${x+w/2}" y="${H-8}" text-anchor="middle"${d.x===m?' style="fill:var(--ink);font-weight:700"':""}>${mName(d.x,true)}</text>`});
   $("#chart").innerHTML=svg+"</svg>";
-  const rows=CANALES.map(c=>({c,a:cont.filter(l=>l.canal===c.id).length,i:ins.filter(l=>l.canal===c.id).length})).filter(r=>r.a||r.i);
+  const rows=CANALES.filter(c=>c.g).map(c=>({c,a:cont.filter(l=>l.canal===c.id).length,i:ins.filter(l=>l.canal===c.id).length})).filter(r=>r.a||r.i);
   $("#canales").innerHTML=rows.length?`<table><thead><tr><th>Canal</th><th>Atribución</th><th class="num">Contactos</th><th class="num">Inscritos</th></tr></thead><tbody>${rows.sort((a,b)=>b.i-a.i||b.a-a.a).map(r=>`<tr><td>${esc(r.c.nombre)}</td><td><span class="pill ${r.c.g?"g":"y"}">${r.c.g?"Gestión redes":"Gimnasio"}</span></td><td class="num">${r.a}</td><td class="num">${r.i}</td></tr>`).join("")}</tbody></table>`
    :`<p class="note">Cuando haya contactos en ${mName(m)}, aquí verás qué canal trae más gente.</p>`;
 }
@@ -460,14 +469,17 @@ function rResumen(){
 function rLista(){
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.f===S.f));
   const q=S.q.trim().toLowerCase();
-  const L=S.leads.filter(l=>(S.f==="todos"||(S.f==="g")===isG(l))&&(!S.etapaF||l.etapa===S.etapaF)&&(!q||[l.nombre,l.telefono,l.codigo].join(" ").toLowerCase().includes(q)))
+  const gym=S.view==="gimnasio";
+  $("#listaTitulo").textContent=gym?"Reservas web del gimnasio":"Contactos del coach";
+  $("#listaNota").textContent=gym?"Reservas que llegaron solas a la web del gimnasio y contactos registrados por el gimnasio. No generan comisión.":"Solo quienes llegaron por entrenachile.cl o por un link de campaña del coach. Son los que generan comisión.";
+  const L=S.leads.filter(l=>(gym?!isG(l):isG(l))&&(!S.etapaF||l.etapa===S.etapaF)&&(!q||[l.nombre,l.telefono,l.codigo].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>(b.fechaContacto||"").localeCompare(a.fechaContacto||"")||(b.creadoEn||"").localeCompare(a.creadoEn||""));
-  if(!S.leads.length){$("#lista").innerHTML=`<div class="empty"><strong>Sin contactos todavía</strong><span>Las reservas del sitio web de Impulz aparecerán aquí solas. También puedes registrar a alguien a mano.</span></div>`;return}
-  if(!L.length){$("#lista").innerHTML=`<div class="empty">Ningún contacto coincide con el filtro.</div>`;return}
+  if(!S.leads.length){$("#lista").innerHTML=`<div class="empty"><strong>Sin contactos todavía</strong><span>Las reservas aparecerán aquí solas. También puedes registrar a alguien a mano.</span></div>`;return}
+  if(!L.length){$("#lista").innerHTML=`<div class="empty">${q||S.etapaF?"Ningún contacto coincide con el filtro.":"Todavía no hay contactos en esta lista."}</div>`;return}
   $("#lista").innerHTML=L.map(l=>{const g=isG(l), pagoMes=(l.pagos||[]).some(p=>p.mes===S.month);
     return `<div class="lead ${g?"g":""}">
       <div class="whoL"><strong>${esc(l.nombre)}</strong><span><span class="mono">${esc(l.codigo)}</span> · ${esc(l.telefono||"Sin teléfono")} · ${esc(l.fechaContacto||"")}</span></div>
-      <div class="src"><span class="pill ${g?"g":"y"}">${g?"Gestión redes":"Gimnasio"}</span>${esc(canal(l.canal).nombre)}${l.campana?" · "+esc(l.campana):""}</div>
+      <div class="src"><span class="pill ${g?"g":"y"}">${g?"Coach":"Gimnasio"}</span>${esc(canal(l.canal).nombre)}${l.campana?" · "+esc(l.campana):""}</div>
       <select data-etapa="${l.id}" aria-label="Etapa de ${esc(l.nombre)}">${ETAPAS.map(e=>`<option${e===l.etapa?" selected":""}>${e}</option>`).join("")}</select>
       <div class="acts">${l.etapa==="Inscrito"?(pagoMes?`<span class="pill ok">Pagó ${mName(S.month,true)}</span>`:`<button class="btn small" data-pago="${l.id}">Registrar pago ${mName(S.month,true)}</button>`):""}<button class="btn ghost small" data-edit="${l.id}">Editar</button></div>
     </div>`}).join("");
@@ -512,7 +524,7 @@ function openLead(id){
   $("#dlgCodigo").hidden=!l; if(l) $("#dlgCodigo").innerHTML=`Código <span class="mono">${esc(l.codigo)}</span> · ${l.origen==="reserva"?"reservó en la página":"registrado a mano por "+esc(l.creadoPor)}`;
   $("#l-canal").innerHTML=opcionesCanal();
   $("#l-nombre").value=l?.nombre||""; $("#l-telefono").value=l?.telefono||"";
-  $("#l-canal").value=l?.canal||(admin()?"coaching":"meson"); $("#l-canal").disabled=!!l&&!admin();
+  $("#l-canal").value=l?.canal||(S.view==="gimnasio"||!admin()?"meson":"coaching"); $("#l-canal").disabled=!!l&&!admin();
   $("#l-etapa").value=l?.etapa||"Contacto"; $("#l-plan").value=l?.plan||((S.config.planes||[]).find(p=>p.grupo==="mensual")||{}).nombre||"";
   $("#l-monto").value=l?.monto??S.config.mensualidad; $("#l-fecha").value=l?.fechaContacto||today(); $("#l-fecha").disabled=!!l&&!admin();
   $("#l-fechaIns").value=l?.fechaInscripcion||""; $("#l-notas").value=l?.notas||"";
@@ -564,7 +576,7 @@ $("#codForm").addEventListener("submit",async e=>{
 /* ---------- eventos ---------- */
 $("#mPrev").onclick=()=>{S.month=shift(S.month,-1);render()};
 $("#mNext").onclick=()=>{S.month=shift(S.month,1);render()};
-function route(){const v=(location.hash||"#resumen").slice(1);S.view=["resumen","contactos","liquidacion","historial","web","ajustes"].includes(v)&&(v!=="web"||puedeWeb())?v:"resumen";render()}
+function route(){const v=(location.hash||"#resumen").slice(1);S.view=["resumen","contactos","gimnasio","liquidacion","historial","web","ajustes"].includes(v)&&(v!=="web"||puedeWeb())?v:"resumen";render()}
 addEventListener("hashchange",route);
 $("#q").addEventListener("input",e=>{S.q=e.target.value;rLista()});
 $("#etapaF").innerHTML+=ETAPAS.map(e=>`<option>${e}</option>`).join("");
