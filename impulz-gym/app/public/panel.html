@@ -293,11 +293,9 @@ svg text{fill:var(--muted);font:600 12px var(--body)}
         <label class="f">Mensualidad base ($)<input id="c-mensualidad" type="number" min="0" step="500"></label>
         <label class="f">Inicio del piloto<input id="c-inicio" type="date"></label>
       </div>
-      <h3 style="margin-top:18px">Código de reserva y coach</h3>
+      <h3 style="margin-top:18px">Código de reserva</h3>
       <div class="fields">
         <label class="f">Beneficio del código<input id="c-beneficio" maxlength="120" placeholder="Lo que acuerdes con el dueño. Vacío = sin beneficio"></label>
-        <label class="f">Nombre del coach<input id="c-coachNombre" maxlength="60"></label>
-        <label class="f full">Perfil en entrenachile.cl<input id="c-coachPerfil" maxlength="300" placeholder="https://entrenachile.cl/..."></label>
       </div>
       <p class="note">Planes, precios, horarios, WhatsApp, dirección y fotos se cambian en la pestaña <b>Web</b>.</p>
       <div class="toolbar" style="margin-top:14px"><button class="btn" type="submit" id="guardarCfg">Guardar</button><span class="note" id="cfgNote"></span></div>
@@ -496,7 +494,7 @@ function rHist(){
     const d=new Date(h.t);return `<tr><td style="white-space:nowrap">${d.toLocaleDateString("es-CL")} ${d.toLocaleTimeString("es-CL",{hour:"2-digit",minute:"2-digit"})}</td><td>${esc(h.usuario)}</td><td>${esc(h.accion)}${h.codigo?` <span class="mono">${esc(h.codigo)}</span>`:""}</td><td>${esc(h.detalle||"")}</td></tr>`}).join("")}</tbody></table>`;
 }
 
-const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad"], CFG_TXT=["inicio","beneficio","coachNombre","coachPerfil"];
+const CFG_NUM=["pctPrimer","pctRecurrente","mesesRecurrente","pctPase","mensualidad"], CFG_TXT=["inicio","beneficio"];
 function rCfg(){
   [...CFG_NUM,...CFG_TXT].forEach(k=>{const e=$("#c-"+k); if(document.activeElement!==e) e.value=S.config[k]??""});
   const dis=!admin(); $("#cfg").querySelectorAll("input,select,button").forEach(e=>e.disabled=dis);

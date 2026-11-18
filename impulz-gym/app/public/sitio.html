@@ -131,7 +131,6 @@ table.full td:nth-child(3)::before{content:"Puedes congelar "}table.full td:nth-
 .step b{font:700 19px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;display:block}
 .step span{font-size:15.5px;color:var(--muted)}
 .bullets{margin:18px 0 22px;padding-left:20px;display:grid;gap:6px;color:var(--soft)}
-.coach{margin-top:14px;font-size:15px;color:var(--muted)}
 
 .hours{display:grid;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:560px}
 .hr{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-top:1px solid var(--line);font-size:17px}
@@ -251,7 +250,6 @@ footer{padding-block:36px 110px;color:var(--muted);font-size:14px}
       <li>Seguimiento de tu técnica y tu progreso.</li>
     </ul>
     <a class="btn" href="#reserva" data-plan="Entrenamiento personalizado">Agendar una evaluación</a>
-    <p class="coach" id="coach" hidden></p>
   </div>
   <div>
     <img class="wide" src="/fotos/p-coach-plan.jpg" alt="Entrenador revisando un plan con un alumno" loading="lazy" width="960" height="540">
@@ -351,10 +349,6 @@ if (+SITIO.pruebaGratis) {
 }
 if (SITIO.mapsUrl) { $('mapa').href = SITIO.mapsUrl; $('mapa').hidden = false; }
 if (SITIO.instagram) { $('ig').href = 'https://www.instagram.com/' + SITIO.instagram; $('ig').textContent = 'Instagram @' + SITIO.instagram; }
-if (SITIO.coachNombre) {
-  const c = $('coach'); c.hidden = false; c.textContent = 'Coach: ' + SITIO.coachNombre + '. ';
-  if (SITIO.coachPerfil) { const a = document.createElement('a'); a.href = SITIO.coachPerfil; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Ver perfil en entrenachile.cl'; c.append(a); }
-}
 /* Origen de la visita: si llegó con un link de campaña (?c=…), se recuerda 30 días en este navegador.
    Así, si vuelve después escribiendo impulzgym.cl, su reserva igual queda con la campaña que la trajo. */
 const ORIGEN = (() => {

@@ -115,8 +115,9 @@ function preguntas(cfg) {
   for (const [k, v] of Object.entries(web.reemplazos(cfg, esc))) html = html.split('{{' + k + '}}').join(v);
   return [...html.matchAll(/<details><summary>(.*?)<\/summary><p>(.*?)<\/p><\/details>/g)].map(m => ({ '@type': 'Question', name: sinEtiquetas(m[1]), acceptedAnswer: { '@type': 'Answer', text: sinEtiquetas(m[2]) } }));
 }
-const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMatricula', 'coachNombre', 'coachPerfil', 'resenasUrl', 'pruebaGratis', 'horario', 'cierres'];
-// Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo.
+const SITIO_CLAVES = ['whatsapp', 'beneficio', 'promo', 'direccion', 'mapsUrl', 'instagram', 'precioMatricula', 'resenasUrl', 'pruebaGratis', 'horario', 'cierres'];
+// Solo sale al público lo que es del sitio. Nunca los porcentajes del acuerdo ni los datos del coach
+// (la web oficial es del gimnasio; el coach aparece solo en entrenachile.cl).
 const sitioPublico = cfg => JSON.stringify(Object.fromEntries(SITIO_CLAVES.map(k => [k, cfg[k] ?? '']))).replace(/</g, '\\u003c');
 function jsonLd(cfg, req) {
   const o = origen(req);
