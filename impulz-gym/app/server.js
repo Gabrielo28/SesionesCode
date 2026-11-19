@@ -64,11 +64,25 @@ function permitido(clave, max, ventanaMs) {
 setInterval(() => { const a = Date.now(); for (const [k, v] of intentos) if (!v.some(t => a - t < 3600e3)) intentos.delete(k); }, 600e3).unref();
 
 /* ---------- páginas ---------- */
+// Huella corta del contenido de la foto que se sirve (la propia del panel o la original); se recalcula solo si el archivo cambia.
+const huellas = new Map();
+function versionFoto(nombre) {
+  for (const f of [path.join(datos.DIR, 'fotos', nombre), path.join(PUBLICO, 'fotos', nombre)]) {
+    let st; try { st = fs.statSync(f); } catch { continue; }
+    const clave = f + ':' + st.size + ':' + st.mtimeMs, h = huellas.get(f);
+    if (h && h.clave === clave) return h.v;
+    const v = require('crypto').createHash('sha1').update(fs.readFileSync(f)).digest('hex').slice(0, 8);
+    huellas.set(f, { clave, v }); return v;
+  }
+  return '0';
+}
 function pagina(res, archivo, reemplazos = {}) {
   let html = fs.readFileSync(path.join(PUBLICO, archivo), 'utf8');
   for (const [k, v] of Object.entries(reemplazos)) html = html.split('{{' + k + '}}').join(v);
-  // Las fotos se guardan en caché una semana: la versión cambia cuando se reemplaza una desde el panel.
-  html = html.replace(/(\/fotos\/[a-z0-9-]+\.jpg)(?!\?)/g, '$1?v=' + (datos.config().fotosV || 1));
+  // Las fotos se guardan en caché una semana: la versión cambia cuando se reemplaza una desde el panel
+  // o cuando el archivo cambia en un despliegue (fecha de modificación del archivo que se sirve).
+  const v = datos.config().fotosV || 1;
+  html = html.replace(/(\/fotos\/([a-z0-9-]+\.jpg))(?!\?)/g, (_, url, nombre) => url + '?v=' + v + '-' + versionFoto(nombre));
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
   res.end(html);
 }
