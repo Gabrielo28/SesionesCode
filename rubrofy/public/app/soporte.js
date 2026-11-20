@@ -36,12 +36,12 @@
     const foto = min(op.foto);
     const video = min(op.video);
     return [
-      { q: '¿Por qué no se publicó mi publicación?', a: 'Rubrofy publica solo lo que apruebas, en su fecha y hora, y solo si Instagram está conectado. Si una publicación falla, queda en Por aprobar con el motivo y un botón "Reintentar".', ir: ['cola'], b: 'Ir a Por aprobar' },
-      { q: 'Instagram dice "Reconectar"', a: 'Instagram pide volver a iniciar sesión cada cierto tiempo o si cambiaste tu clave. Ve a Conexiones y ajustes y pulsa "Reconectar con Instagram". Lo programado se publica solo al reconectar.', ir: ['config', null, 'cfg-conexiones'], b: 'Ir a Conexiones' },
+      { q: '¿Por qué no se publicó mi publicación?', a: 'Rubrofy publica solo lo que apruebas, en su fecha y hora, y solo si Instagram está conectado. Si una publicación falla, queda en Publicaciones con el motivo y un botón "Reintentar".', ir: ['cola'], b: 'Ir a Publicaciones' },
+      { q: 'Instagram dice "Reconectar"', a: 'Instagram pide volver a iniciar sesión cada cierto tiempo o si cambiaste tu clave. Ve a Más → Cuentas conectadas y pulsa "Reconectar con Instagram". Lo programado se publica solo al reconectar.', ir: ['config'], b: 'Ir a Cuentas conectadas' },
       { q: 'Subí fotos desde el celular y no se ven', a: 'Recarga la página para tener la versión nueva del panel: ahora convierte las fotos del iPhone (HEIC) y las muy pesadas antes de subirlas. Si una foto antigua dice "No se puede mostrar", bórrala y vuelve a subirla.', ir: ['fotos'], b: 'Ir a Galería' },
       { q: 'Una foto o un video con IA falló. ¿Pierdo mis créditos?', a: 'No. Si una creación falla, los créditos se devuelven solos. Puedes ver cada movimiento en Mi cuenta → Créditos.', ir: ['cuenta', null, 'cta-creditos'], b: 'Ver mis créditos' },
       { q: '¿Cuántos créditos usa una foto o un video?', a: `Antes de crear siempre ves cuánto usa.${isFinite(foto) ? ` Una foto usa desde ${foto} ⚡` : ''}${isFinite(video) ? ` y un video de 5 segundos desde ${video} ⚡` : ''}. Tu plan trae créditos cada mes y puedes comprar más.`, ir: ['cuenta', null, 'cta-creditos'], b: 'Ver mis créditos' },
-      { q: '¿Cómo cambio el texto o la foto de una publicación?', a: 'En Por aprobar, cada tarjeta tiene "Editar" para el texto y opciones para la foto: elegirla de tu galería, subir una o crearla con IA. Nada se publica sin tu aprobación.', ir: ['cola'], b: 'Ir a Por aprobar' },
+      { q: '¿Cómo cambio el texto o la foto de una publicación?', a: 'En Publicaciones, el lápiz de cada tarjeta edita el texto. El botón "⋯" cambia la foto: la eliges de tu galería, subes una o la creas con IA. En un carrusel puedes marcar varias y ordenarlas. Nada se publica sin tu aprobación.', ir: ['cola'], b: 'Ir a Publicaciones' },
       { q: '¿Cómo cancelo o cambio mi plan?', a: 'En Mi cuenta → Plan y pago. Si cancelas, tu plan sigue hasta el fin del período que pagaste y no se vuelve a cobrar.', ir: ['cuenta', null, 'cta-plan'], b: 'Ir a Plan y pago' },
       { q: '¿Cómo cambio mi tarjeta?', a: 'En Mi cuenta → Plan y pago, pulsa "Cambiar tarjeta". Te lleva a Flow para registrar la nueva.', ir: ['cuenta', null, 'cta-plan'], b: 'Ir a Plan y pago' },
       { q: '¿Cómo obtengo mi boleta o factura?', a: 'La boleta electrónica de cada pago te llega por correo desde Flow, al correo con que pagaste (revisa también spam). Si necesitas factura, escríbenos con el formulario de abajo eligiendo "Pagos y facturación" e incluye el RUT, la razón social y el giro.', escribir: 'pagos', b: 'Pedir una factura' },
@@ -58,14 +58,14 @@
     const ig = n.instagramConectado ? (n.instagramEstado === 'reconectar' ? 'reconectar' : 'ok') : 'no';
     filas.push(ig === 'ok'
       ? { ok: true, t: `Instagram conectado${n.instagramUsuario ? ` (@${esc(n.instagramUsuario)})` : ''}` }
-      : { ok: false, t: ig === 'reconectar' ? 'Instagram pide que lo vuelvas a conectar' : 'Instagram no está conectado', d: 'Sin esto, nada se publica solo.', ir: ['config', null, 'cfg-conexiones'], b: ig === 'reconectar' ? 'Reconectar' : 'Conectar' });
+      : { ok: false, t: ig === 'reconectar' ? 'Instagram pide que lo vuelvas a conectar' : 'Instagram no está conectado', d: 'Sin esto, nada se publica solo.', ir: ['config'], b: ig === 'reconectar' ? 'Reconectar' : 'Conectar' });
     const pg = n.pagos || {};
     if (pg.estado === 'past_due') filas.push({ ok: false, t: 'No pudimos cobrar tu plan', d: 'Cambia la tarjeta para seguir creando contenido.', ir: ['cuenta', null, 'cta-plan'], b: 'Revisar pago' });
     else if (n.sinPlan) filas.push({ ok: false, t: 'No tienes un plan activo', d: 'Elige un plan para crear contenido.', ir: ['cuenta', null, 'cta-plan'], b: 'Ver planes' });
     else filas.push({ ok: true, t: `Plan ${esc((ctx.planes.find((p) => p.id === n.plan) || {}).nombre || n.plan)} activo` });
     const fallidas = (ctx.contenido || []).filter((i) => i.publicacion && i.publicacion.estado === 'fallida').length;
     filas.push(fallidas
-      ? { ok: false, t: fallidas === 1 ? '1 publicación no se pudo publicar' : `${fallidas} publicaciones no se pudieron publicar`, d: 'Ahí ves el motivo y puedes reintentar.', ir: ['cola'], b: 'Ver en Por aprobar' }
+      ? { ok: false, t: fallidas === 1 ? '1 publicación no se pudo publicar' : `${fallidas} publicaciones no se pudieron publicar`, d: 'Ahí ves el motivo y puedes reintentar.', ir: ['cola'], b: 'Ver en Publicaciones' }
       : { ok: true, t: 'Ninguna publicación con error' });
     const cr = n.creditos || {};
     filas.push(cr.pausa
@@ -130,9 +130,8 @@
     const palabras = sinTildes(busqueda).split(/[^a-z0-9ñ]+/).filter((p) => p.length > 1 && !VACIAS.has(p)).map(raiz);
     if (!palabras.length) { res.innerHTML = ''; return; }
     const faq = preguntas(ctx.negocio).map((p) => ({ t: p.q, d: p.a, p: [], ir: p.ir, b: p.b, escribir: p.escribir }));
-    // Sin la ayuda de Google Ads mientras esté en pausa en el servidor.
     const ayudas = Object.entries((window.Ayuda && window.Ayuda.textos) || {})
-      .filter(([k, a]) => !/^admin|^adm-/.test(a.t || '') && (k !== 'google' || ctx.negocio.googleActivo)).map(([, a]) => a);
+      .filter(([k]) => !/^admin|^adm-/.test(k)).map(([, a]) => a);
     const todo = [...faq, ...ayudas.map((a) => ({ t: a.t, d: a.d, p: a.p || [], n: a.n }))];
     // Primero lo que coincide en el título.
     const hallados = todo.map((a) => {

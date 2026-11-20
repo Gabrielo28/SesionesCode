@@ -1,6 +1,6 @@
 // Brief de la semana y plan de marketing (server/brief.js): lo que el dueño
 // le dice a Rubrofy para que la semana salga como quiere. Se usa al generar
-// la semana (dlg-generar), en Por aprobar ("Esta semana…") y en Estrategia
+// la semana (dlg-generar), en Publicaciones ("Esta semana…") y en Estrategia
 // (tarjeta "Plan de marketing").
 (function () {
   'use strict';
@@ -84,7 +84,7 @@
     return { listo: false, total: estructurado.ritmo ? Object.values(estructurado.ritmo).reduce((s, x) => s + x, 0) : null };
   }
 
-  // ---------- Por aprobar: "Esta semana…" ----------
+  // ---------- Publicaciones: "Esta semana…" ----------
   async function pintarCola(cont) {
     if (!cont) return;
     const contenido = ctx.contenido();

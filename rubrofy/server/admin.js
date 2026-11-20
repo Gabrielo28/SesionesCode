@@ -106,7 +106,6 @@ function fila(n, contenido, rutaNegocio) {
     ultimoAcceso: n.ultimoAcceso || null,
     bienvenida: !!n.bienvenidaCompletada,
     instagram: n.instagram && n.instagram.accessToken ? (n.instagram.estado === 'reconectar' ? 'reconectar' : 'ok') : 'no',
-    publicidad: !!((n.meta && n.meta.adAccountId) || (require('./google').activo() && n.google && n.google.customerId)),
     avisos: !(n.avisos && n.avisos.semanal === false),
     semanal: planContenido.totalSemanal(n.planContenido) || null,
     etapa: rutaNegocio ? rutaNegocio.etapaActual : null,
@@ -189,9 +188,6 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     ...(require('./mercadopago').configurado() ? { 'Mercado Pago cobrando de verdad (credenciales de producción, sin MERCADOPAGO_PRUEBA)': require('./mercadopago').entorno() === 'produccion' } : {}),
     'Conectar con Instagram': !!(process.env.INSTAGRAM_APP_ID && process.env.INSTAGRAM_APP_SECRET),
     'Instagram aprobado por Meta (INSTAGRAM_APP_APROBADA; mientras no, el panel explica cómo pedir que habiliten la cuenta)': process.env.INSTAGRAM_APP_APROBADA === '1',
-    'Meta Ads y competencia (Conectar con Facebook)': !!(process.env.META_APP_ID && process.env.META_APP_SECRET),
-    'Meta Ads y Competencia abiertos a todos (META_LOGIN_PUBLICO; mientras no, dicen "Próximamente")': require('./meta').loginPublico(),
-    ...(require('./google').activo() ? { 'Google Ads': require('./google').configurado() } : {}),
     'Correo semanal (Resend)': !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM),
     'URL pública (PUBLIC_URL)': !!process.env.PUBLIC_URL,
     'Respaldo externo (R2/S3)': require('./respaldos').configurado(),
@@ -220,9 +216,6 @@ function resumen({ dias = 30, calcularRuta, inicio, version }) {
     porPlan,
     porEtapa,
     referentes: sql.referentes.all(desde).map((r) => ({ dominio: r.dominio, n: r.n })),
-    // Publicidad que aprende: cuántas recomendaciones se hacen y cuántas
-    // funcionan (solo números de todos los negocios, sin su contenido).
-    publicidad: require('./aprendizaje-ads').estadisticas(90),
     sistema: {
       version,
       encendidoDesde: new Date(inicio).toISOString(),

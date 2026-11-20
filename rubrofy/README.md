@@ -32,8 +32,9 @@ puerta de entrada es una **prueba gratis de 7 días del plan Pro** que se
 activa dejando nombre, correo y teléfono (ver "Solo de
 pago y prueba gratis" más abajo). Pro genera con Claude
 (piezas completas: gancho, texto con llamado a la acción y hashtags) y
-Estudio agrega fotos y videos con IA — ver `server/planes.js` y la sección
-de Stripe más abajo.
+Estudio trae cuotas más altas: 300 textos con IA al mes (Pro 150), 30 reels
+editados (Pro 10) y más créditos ⚡ para fotos y videos con IA — ver
+`server/planes.js` y la sección de Stripe más abajo.
 
 ## Cómo correrlo
 
@@ -52,8 +53,8 @@ clínica dental) y levanta el servidor en
 queda a propósito en un plan distinto, para ver los tres niveles sin tocar
 Stripe:
 
-- `demo-turismo@rubrofy.com` — plan Estudio (texto + fotos con IA)
-- `demo-panaderia@rubrofy.com` — plan Pro (solo texto con IA)
+- `demo-turismo@rubrofy.com` — plan Estudio (las cuotas más altas)
+- `demo-panaderia@rubrofy.com` — plan Pro
 - `demo-clinica@rubrofy.com` — sin plan (muestra el aviso para elegir un plan)
 
 Para un servidor real (sin negocios de ejemplo falsos) usar `npm start`,
@@ -64,7 +65,7 @@ Para sembrar los ejemplos sin levantar el servidor: `npm run seed`.
 ## Antes de ponerlo en un servidor público
 
 **Paso a paso para Railway: [DEPLOY-RAILWAY.md](DEPLOY-RAILWAY.md)** (Volume,
-variables, dominio rubrofy.com y URLs de Stripe, Google y Meta).
+variables, dominio rubrofy.com y URLs de Stripe y Meta).
 
 **Datos persistentes:** todo vive en una carpeta de datos — la base
 `rubrofy.db` (negocios, colas de contenido, métricas), las fotos, los videos
@@ -104,41 +105,47 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
 
 ## Qué incluye
 
-- **Cola de aprobación** — tarjetas con el diseño real del post: si hay una
-  foto cargada para su categoría, un `<canvas>` la compone con logo y texto
-  encima (igual que el programa original); si no, muestra un degradé de
-  marcador. Aprobar, rechazar, deshacer, pedir otra versión y editar el
-  texto a mano funcionan de verdad contra la API. Arriba, filtros **Por
-  aprobar · Aprobadas · Rechazadas · Todas** (con cuántas hay; por defecto
-  Por aprobar si queda alguna). "Aprobadas" reúne todo lo aprobado
-  (programado, publicado o con error) con el texto y los hashtags que se
-  publican y su origen ("Texto: de la IA / escrito por ti / de Rubrofy",
-  "Hashtags: …"; `editado` y `hashtagsEditados` en la pieza). Los contadores
-  Pendientes y Aprobados de arriba llevan a cada filtro. Si la pieza está
-  abierta en "Editar", aprobar, publicar ahora, reintentar o deshacer
-  guardan antes lo escrito (antes se perdía si no se pulsaba "Guardar").
-  Una aprobada se sigue editando ("Editar texto") hasta que se publica: el
-  publicador arma el texto al publicar, así que usa lo último guardado. Una
-  publicada o publicándose ya no se edita (409).
-  Junto al formato, **🖼 Imagen / 🎬 Video**: en una historia se elige
-  (`PUT …/contenido/:id/medio { medio }`, queda en `item.medio`; la idea se
-  rehace para ese medio y se publica con lo elegido: con video sin video,
-  falla y explica qué falta); en un post, "Video" lo pasa a Reel, y en un
-  Reel, "Imagen" lo pasa a Post (con confirmación, vía el cambio de formato).
-  Las historias nuevas quedan en Imagen salvo que la idea de la IA pida
-  video; las antiguas sin elección siguen como antes (video si tienen uno,
-  si no foto). Subir o crear un video para una historia la deja en Video.
+- **Publicaciones** (vista interna `cola`) — arriba, los filtros **Por
+  aprobar · Programadas · Publicadas** (y **Descartadas** si hay); por
+  defecto, Por aprobar si queda alguna. "Programadas" reúne lo aprobado que
+  todavía no sale (también lo que no se pudo publicar) y "Publicadas", lo
+  que ya está en Instagram. La tarjeta es limpia: la foto (o el diseño con
+  la marca; sin foto, un degradé de marcador con el titular), cuándo sale,
+  el texto, **Aprobar**, el lápiz para editar y **⋯** con el resto: cambiar
+  la foto, diseñar con mi marca, otra versión, pedir un cambio, fecha y
+  hora, formato, copiar el texto y descartar. Aprobar, descartar, deshacer,
+  pedir otra versión y editar el texto a mano funcionan de verdad contra la
+  API. Al tocar el texto se ve completo, con los hashtags que se publican y
+  su origen ("Texto: de la IA / escrito por ti / de Rubrofy", "Hashtags: …";
+  `editado` y `hashtagsEditados` en la pieza). Si la pieza está abierta en
+  edición, aprobar, publicar ahora, reintentar o deshacer guardan antes lo
+  escrito. Una aprobada se sigue editando ("⋯ → Editar el texto") hasta que
+  se publica: el publicador arma el texto al publicar, así que usa lo último
+  guardado. Una publicada o publicándose ya no se edita (409).
+  En **⋯ → Formato** se cambia el formato y, en una historia, se elige
+  **Con imagen / Con video** (`PUT …/contenido/:id/medio { medio }`, queda
+  en `item.medio`; la idea se rehace para ese medio y se publica con lo
+  elegido: con video sin video, falla y explica qué falta). Las historias
+  nuevas quedan en Imagen salvo que la idea de la IA pida video; las que no
+  tienen una elección guardada usan video si tienen uno y, si no, foto.
+  Subir o crear un video para una historia la deja en Video.
+- **Fotos del carrusel** — "⋯ → Elegir las fotos del carrusel" abre un
+  selector donde se marcan de 2 a 10 fotos, numeradas en el orden en que
+  salen; se pueden subir varias de una vez y reordenar arrastrando. Se
+  guardan en `item.fotosCarrusel` con
+  `PUT /api/negocios/:id/contenido/:item/fotos { fotos: [{ categoria, archivo }] }`;
+  si no se eligen, se usan las de la categoría de la pieza.
 - **Calendario** (`public/app/calendario.js`) — vista **Semana** (por
   defecto: 7 columnas con la foto, la hora, el formato y el estado de cada
   publicación; en celular, una lista por día) o **Mes**, con flechas y
   "Hoy" (la vista elegida se recuerda en el navegador, `rubrofy-cal-modo`).
-  Las publicaciones **por aprobar y aprobadas se cambian de día**:
+  Las publicaciones **por aprobar y programadas se cambian de día**:
   arrastrándolas en el computador, o con "↔ Mover" (celular, o "Mover a
   otro día" en el detalle), que abre una hoja con los 7 días (los puntos
   dicen cuántas tiene cada uno), flechas de semana y la hora. Mantiene la
   hora salvo que se cambie ahí; los días pasados no se pueden elegir; las
   publicadas (🔒) y las que se están publicando no se mueven; las
-  rechazadas no aparecen. Usa `PUT …/contenido/:id/reprogramar` (si estaba
+  descartadas no aparecen. Usa `PUT …/contenido/:id/reprogramar` (si estaba
   aprobada, se reprograma sola) y después ofrece "Deshacer". Días y horas
   se calculan en la zona del negocio, no la del navegador.
 - **Fotos del negocio** — subir y borrar fotos por categoría (las categorías
@@ -149,39 +156,42 @@ publicación, por defecto `America/Santiago`) y `PUBLICADOR_INTERVALO_SEG`
   (nombre, una descripción libre de su rubro, email, clave y sus datos
   reales), sin tocar código ni scripts. Al crear la cuenta, Claude genera
   su estrategia de contenido a la medida (ver más abajo).
-- **Configuración** — editar el nombre y los datos del negocio, o eliminar
-  la cuenta (borra también su contenido, sus fotos y cierra la sesión). El
-  rubro y su estrategia de contenido no se pueden cambiar una vez creados.
+- **Datos del negocio y cuenta** — el nombre y los datos del negocio se
+  editan en Tu marca → Tu negocio; eliminar la cuenta (borra también su
+  contenido, sus fotos y cierra la sesión) está en Mi cuenta. El rubro y su
+  estrategia de contenido no se pueden cambiar una vez creados.
 - **Conexión con Instagram y publicación programada** — cada negocio conecta
   su cuenta (ID de usuario + token, obtenidos desde su app de Meta) en
-  Configuración. Aprobar deja la pieza **programada** para su fecha y hora
+  Cuentas conectadas. Aprobar deja la pieza **programada** para su fecha y hora
   (hora de Chile, no la del servidor); el publicador la publica solo cuando
   llega el momento, con su foto real o una generada por IA como respaldo.
   Ver "Cómo publica" más abajo. Sin Instagram conectado, aprobar solo marca
   la pieza como aprobada.
 - **Formatos** — cada pieza puede ser Post (una foto), Carrusel (de 2 a
-  10 fotos de su categoría), Reel (video 9:16 subido a la tarjeta,
-  obligatorio) o Historia (foto, o video si se sube uno). El formato se
-  elige en la tarjeta; los videos pesan hasta 100 MB (`MAX_VIDEO_MB`) y
-  se guardan en `data/videos/`. Meta procesa los videos unos minutos antes
-  de poder publicarlos: el publicador consulta el estado cada minuto sin
-  gastar reintentos.
-- **Fecha y hora editables** — se cambian tocando la fecha en la tarjeta.
-  "Publicar ahora" adelanta una programada; "Reintentar" vuelve a intentar
-  una que falló.
+  10 fotos: las elegidas o, si no, las de su categoría), Reel (video 9:16
+  subido a la tarjeta, obligatorio) o Historia (foto, o video si se sube
+  uno). El formato se elige en "⋯" de la tarjeta; los videos pesan hasta
+  100 MB (`MAX_VIDEO_MB`) y se guardan en `data/videos/`. Meta procesa los
+  videos unos minutos antes de poder publicarlos: el publicador consulta el
+  estado cada minuto sin gastar reintentos.
+- **Fecha y hora editables** — se cambian tocando la fecha en la tarjeta
+  o con "⋯ → Cambiar fecha y hora". "Publicar ahora" adelanta una
+  programada; "Reintentar" vuelve a intentar una que falló.
 - **Fotos generadas por IA** — cuando una pieza no tiene una foto real
   subida para su categoría, se puede pedir una foto generada por IA
-  (botón "Generar foto con IA" en la tarjeta, o automáticamente al aprobar
-  si Instagram está conectado). Requiere `HIGGSFIELD_API_KEY` u `OPENAI_API_KEY` y el plan
-  Estudio; sin ellos, la pieza sigue mostrando el degradé de marcador de
-  siempre. En Configuración, cada negocio elige si esa foto generada debe
+  ("✨ Crear con IA" en la tarjeta, o automáticamente al aprobar
+  si Instagram está conectado). Requiere `HIGGSFIELD_API_KEY` u `OPENAI_API_KEY` y
+  créditos ⚡; sin ellos, la pieza sigue mostrando el degradé de marcador de
+  siempre. En Tu marca → Tu negocio, cada negocio elige si esa foto generada debe
   quedar limpia (sin texto) o con el titular incrustado como una gráfica de
   marketing — nunca reemplaza una foto real ya subida.
-- **Plan y cobro** — en Configuración, cada negocio ve su plan actual, sube
+- **Plan y cobro** — en Mi cuenta, cada negocio ve su plan actual, sube
   a Pro o Estudio (Stripe Checkout) o gestiona su suscripción (Billing
   Portal). Sin plan no se crea contenido
   nuevo; Pro y Estudio habilitan la IA de texto (con un techo mensual de
-  piezas, contra el abuso), y Estudio agrega fotos y videos con IA.
+  piezas, contra el abuso: 150 en Pro y 300 en Estudio). Estudio se
+  diferencia de Pro solo por cuotas: más textos, 30 reels editados al mes
+  (Pro 10) y más créditos ⚡ para fotos y videos con IA.
 - **Publicación sin duplicados** — cada pieza se publica una sola vez: un
   doble clic mientras se publica se ignora, y una pieza ya publicada que se
   deshace y se vuelve a aprobar no se publica de nuevo (deshacer no la
@@ -195,23 +205,6 @@ celular o llegar con Tab, muestra qué es y los pasos para hacerlo (Esc
 cierra). Todos los textos están en `AYUDA` dentro de `ayuda.js`; para
 agregar uno: una clave nueva con `t` (título), `d` (qué es), `p` (pasos) y
 `n` (nota), y `Ayuda.boton('clave')` donde se quiera mostrar.
-
-## Guías de cada pantalla (public/app/guias.js)
-
-Para que nadie tenga que aprender a usar el panel por su cuenta: cada
-pantalla (y cada pestaña de Resultados) muestra arriba un banner con qué se
-hace ahí en 3 pasos; "Muéstrame cómo" abre un recorrido que oscurece la
-pantalla e ilumina los botones uno a uno con un cartel. Al cerrar el banner
-queda un consejo corto. El menú muestra el avance de la ruta y el siguiente
-paso, y abajo a la derecha está "¿Cómo se usa esto?" (repite el recorrido).
-Lo cerrado se recuerda por negocio en el navegador (`localStorage`).
-
-- Cada persona puede apagarlas o volver a mostrarlas en **Conexiones y
-  ajustes → Guías y consejos**.
-- `GUIAS=no` en el servidor las apaga para todos (vuelve el panel de antes
-  sin desplegar código).
-- Los textos y los pasos del recorrido están en `GUIAS` dentro de
-  `guias.js`; un paso cuyo elemento no está en pantalla se salta solo.
 
 ## Cuenta: recuperar clave y correos del servicio
 
@@ -232,7 +225,7 @@ Lo cerrado se recuerda por negocio en el navegador (`localStorage`).
 
 Para quien administra la plataforma. Se activa con `ADMIN_EMAILS` (emails
 separados por coma de cuentas de Rubrofy); esas cuentas ven el enlace
-"Administración" en su menú y entran a `/admin`. Sin la variable, `/admin`
+"Administración" en "Más" y entran a `/admin`. Sin la variable, `/admin`
 y `/api/admin/*` responden 404, y también para cualquier otra cuenta. Como
 los emails no se verifican al registrarse, un email de `ADMIN_EMAILS` no se
 puede registrar: la cuenta administradora se crea antes de listarla.
@@ -255,15 +248,15 @@ sin cookies ni IP y sin bots; el origen se guarda solo como dominio.
 ## Conectar con Instagram y resumen semanal (server/instagram.js, server/avisos.js, server/correo.js)
 
 **Conectar con Instagram**: con `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET`,
-el panel muestra el botón "Conectar con Instagram" (también en el último
-paso de la bienvenida). Mientras Meta no apruebe la app
+el panel muestra en Cuentas conectadas el botón "Conectar con Instagram"
+(también en el último paso de la bienvenida). Mientras Meta no apruebe la app
 (`INSTAGRAM_APP_APROBADA` distinto de `1`), junto al botón se explica el error
 "Rol de desarrollador insuficiente" y "Escribir a soporte" deja escrita la
 solicitud "Habilitar mi Instagram en Rubrofy" con su @usuario, para agregarlo
 como evaluador. El dueño inicia sesión en Instagram y acepta los
 permisos `instagram_business_basic`, `instagram_business_content_publish` e
 `instagram_business_manage_insights`. `GET /api/negocios/:id/instagram/conectar`
-redirige con un state firmado y ligado a la sesión (igual que Google);
+redirige con un state firmado y ligado a la sesión;
 `GET /api/instagram/callback` canjea el código, lo cambia por un token de 60
 días (que el publicador renueva solo), lee el ID de la cuenta profesional y
 el @usuario, y programa lo aprobado que estaba esperando. Sin esas
@@ -273,7 +266,7 @@ variables se sigue conectando pegando ID y token.
 las 8:00 (hora del negocio) llega un correo con las 3 tareas de la ruta y
 lo que se publica en los próximos 7 días. Una vez por semana ISO, solo a
 quien terminó la bienvenida y solo si hay algo que contar. Se apaga desde
-Conexiones y ajustes (`PUT /api/negocios/:id/avisos`) o con el enlace
+Mi cuenta → Avisos (`PUT /api/negocios/:id/avisos`) o con el enlace
 firmado del correo (`GET /api/avisos/baja`, también en `List-Unsubscribe`).
 `POST /api/negocios/:id/avisos/prueba` lo manda en el momento (3 por hora).
 
@@ -285,16 +278,18 @@ El panel y el sitio siguen la misma ruta de cuatro etapas:
 |---|---|---|
 | 1. Configura | Una vez | Bienvenida (datos, objetivo, tono, cuánto publicar, estrategia), conectar Instagram, fotos en cada categoría, 5 ejemplos en Mi estilo |
 | 2. Crea | Cada semana | Tener lista la próxima semana (según el plan), aprobar, subir videos de reels y fotos que faltan, corregir lo que no se pudo publicar |
-| 3. Mide | Automático | Resultados (Pro), publicidad con Meta/Google Ads (Estudio), competencia (Estudio) |
+| 3. Mide | Automático | Resultados (Pro) |
 | 4. Mejora | Cada mes | Leer el informe del mes anterior (Pro) y ajustar la estrategia |
 
 `GET /api/negocios/:id/ruta` calcula el estado de cada paso con los datos
 reales (hecho, pendiente, bloqueado por plan o próximo), la etapa en que va
-el negocio y las 3 acciones más urgentes ("Qué hacer ahora" en Inicio). Lo
-urgente primero: publicaciones fallidas, Instagram por reconectar, lo que
-sale en los próximos 3 días sin aprobar o sin video/foto. El menú del panel
-está agrupado por estas etapas. `POST /api/negocios/:id/ruta/informe-visto`
-marca el informe del mes como leído.
+el negocio y las 3 acciones más urgentes (`siguientes`). Lo urgente
+primero: publicaciones fallidas, Instagram por reconectar, lo que sale en
+los próximos 3 días sin aprobar o sin video/foto. Inicio muestra la primera
+como la tarea del momento, las otras dos en "Después" y todas las etapas
+con sus pasos en "Tu avance" (plegado).
+`POST /api/negocios/:id/ruta/informe-visto` marca el informe del mes como
+leído.
 
 ## Bienvenida, estrategia y plan semanal (server/plan-contenido.js, public/app/bienvenida.js)
 
@@ -322,20 +317,20 @@ Orden:
    la estrategia se genera en segundo plano.
 3. **Tu estrategia**: "Rubrofy aprende de tus resultados" mientras se arma →
    "Tu estrategia de contenido" (resumen y temas; "Proponer otra con IA").
-4. **Conexiones**: "Conecta tu Instagram" (Meta Ads dice "Próximamente"
-   mientras no esté abierto). Sin plan sigue "Empieza gratis o elige tu
+4. **Conexiones**: "Conecta tu Instagram" (TikTok dice "Próximamente").
+   Sin plan sigue "Empieza gratis o elige tu
    plan"; con plan, o al activar la prueba, pasa a "Creando tu primera
    semana…" con los pasos animados, genera la semana según el plan y se
    cierra.
 
 Precio, unidad y promoción ya no se preguntan aquí: quedan en Estrategia.
 
-Después todo se cambia en **Estrategia**. **Generar semana** crea exactamente
-la mezcla del plan (máximo 12 por vez) y la reparte en la semana, después de
-lo que ya está programado: las piezas del feed parejas en los 7 días y las
-historias aparte, a las 18:30. **Inicio** muestra los primeros pasos
-pendientes (conectar Instagram, subir fotos, Mi estilo...), lo próximo que
-se publica y el plan.
+Después todo se cambia en **Tu marca → Estrategia**. **Crear → Generar mi
+semana** crea exactamente la mezcla del plan (máximo 12 por vez) y la
+reparte en la semana, después de lo que ya está programado: las piezas del
+feed parejas en los 7 días y las historias aparte, a las 18:30. **Inicio**
+muestra la tarea más urgente de la ruta (conectar Instagram, subir fotos,
+Mi estilo...) y lo próximo que se publica.
 
 API: `GET /api/plan-contenido` (opciones), `PUT /api/negocios/:id/plan-contenido`,
 `PUT /api/negocios/:id/estrategia`, `POST /api/negocios/:id/estrategia/generar`
@@ -368,200 +363,6 @@ Requiere que el token de Instagram tenga el permiso
 la publicación sigue funcionando igual. Una sincronización usa unas 30 a 45
 llamadas (el límite de Meta es ~200 por hora por cuenta).
 
-## Meta Ads (server/meta.js)
-
-**Próximamente:** Meta Ads y Competencia esperan la aprobación de la app
-en Meta. Hasta entonces solo las usan las cuentas de Rubrofy en
-`META_LOGIN_PRUEBA_EMAILS` (para probar y grabar el video de la revisión);
-para el resto (`meta.abiertoPara`): el sitio, la tabla de planes
-(`adsProximamente` y `competenciaProximamente` en `/api/planes`), el menú,
-las pestañas de Resultados, la conexión con Meta, la bienvenida y la ruta
-dicen "Próximamente"; sus rutas responden 404 con `proximamente: true`, no
-se sincronizan, no van al informe y lo aprendido de los anuncios no va al
-prompt. Desconectar Meta sí se puede. Con `META_LOGIN_PUBLICO=1` se abre
-para todos; el texto fijo del sitio (`public/site/index.html`: sección
-"Publicidad y competencia", integraciones y la pregunta sobre publicidad)
-hay que cambiarlo a mano en ese momento.
-
-En el plan Estudio, Resultados → **Meta Ads** muestra la inversión, los
-resultados (compras, formularios y conversaciones iniciadas por WhatsApp,
-Messenger o Instagram Direct), el costo por resultado, CTR, CPC, ROAS y una
-tabla por campaña, también como sección del informe mensual. Es **solo
-lectura**: Rubrofy no crea ni modifica campañas. Si hay inversión y ningún
-resultado, avisa que puede faltar configurar las conversiones.
-
-**Conexión con Meta** (Conexiones y ajustes): es distinta de la de
-Instagram y sirve también para la competencia.
-
-- **"Conectar con Facebook"** (con `META_APP_ID` y `META_APP_SECRET`): el
-  dueño entra con la cuenta de Facebook que administra sus anuncios y su
-  página, y acepta los permisos (`ads_read`, `pages_show_list`,
-  `pages_read_engagement`, `instagram_basic`, `instagram_manage_insights` y
-  `business_management`). `GET /api/negocios/:id/meta/conectar` redirige al
-  diálogo de Meta con un state firmado, ligado al negocio y a la sesión;
-  `GET /api/meta/callback` canjea el código por un token de ~60 días y lee
-  las cuentas. Con una cuenta publicitaria y un Instagram queda conectado
-  solo; con varias, el panel pide elegir (`PUT /api/negocios/:id/meta` sin
-  token) y el token espera en el servidor 30 minutos (`metaPendiente`, nunca
-  llega al panel). Con `META_LOGIN_CONFIG_ID` (Facebook Login para
-  empresas) se manda esa configuración en vez de la lista de permisos.
-  Mientras Meta no apruebe la app, el botón solo aparece para las cuentas
-  de `META_LOGIN_PRUEBA_EMAILS` (a los demás Facebook les diría "La app no
-  está activa"); el resto ve la conexión como "Próximamente". Con
-  `META_LOGIN_PUBLICO=1` queda para todos.
-- **Token pegado** (opción avanzada, o si no está la app): un token con
-  esos mismos permisos; lo más práctico es uno de **usuario del sistema** de
-  Business Manager, que no vence. Con la app configurada, un token de
-  usuario se canjea por uno de ~60 días.
-
-Si Meta rechaza el token, la conexión queda en "Reconectar" sin afectar la
-publicación en Instagram.
-
-Se sincroniza cada 12 h: la primera vez 30 días, después los últimos 3
-(Meta sigue atribuyendo conversiones a días anteriores).
-
-**Desgloses** (mismo permiso `ads_read`, tabla `meta_ads_desglose`): por
-anuncio (con su miniatura, tabla `meta_anuncios`), por edad y sexo, y por
-ubicación (plataforma y posición: Feed, Historias, Reels…). Se guardan por
-día, así que siguen el selector de 7, 30 o 90 días. Si Meta no entrega uno
-de ellos, el resumen por campaña igual se actualiza.
-
-## Análisis de publicidad (server/analisis-ads.js)
-
-Común a Meta Ads y Google Ads, con reglas explicables (sin IA):
-
-- **Variación contra el período anterior** del mismo largo en inversión,
-  resultados, costo por resultado, clics y ROAS. Solo se muestra si hay
-  datos de todo el período anterior (una cuenta recién conectada no tiene
-  con qué compararse).
-- **Diagnóstico** con "qué hacer": campañas o anuncios que gastan sin
-  resultados, diferencia de costo por resultado entre campañas, CTR bajo,
-  ventas que no cubren la inversión, costo que subió o bajó contra el
-  período anterior y, en Meta, el público (edad y sexo) y la ubicación con
-  resultados más baratos.
-- **"Hacer este cambio en Meta"**: cada hallazgo de Meta trae un `destino`
-  (`tipo`: campañas, conjuntos o anuncios; los `ids` involucrados y `que`,
-  el texto de lo que se abre) y el servidor lo convierte en `enlace` con
-  `meta.enlaceAdministrador()`. El botón abre el Administrador de anuncios
-  de Meta en esa cuenta, en esa vista y con esas campañas o anuncios
-  seleccionados. Rubrofy no cambia nada: el cambio lo hace el dueño en Meta.
-  Los parámetros `selected_campaign_ids` y `selected_ad_ids` no están
-  documentados por Meta; si dejan de funcionar, el enlace igual abre la
-  cuenta y la vista correctas (`act` y la ruta sí son estables).
-- No se recomienda apagar lo que ya está apagado: las campañas y anuncios
-  pausados, archivados o rechazados en Meta quedan fuera del diagnóstico.
-
-## Publicidad que aprende (server/aprendizaje-ads.js)
-
-Rubrofy sigue siendo de **solo lectura** en Meta, pero aprende de lo que el
-dueño hace con sus recomendaciones. Todo usa el mismo permiso `ads_read`.
-
-- **Cada recomendación tiene una clave estable** (`regla:ids`, por ejemplo
-  `anuncios-sin-resultados:ad3`), una `alternativa` (qué proponer si ya se
-  hizo y no funcionó; no se manda al panel) y `cambio` (la acción en pocas
-  palabras, como aparece en "Tus cambios").
-- **Se registra** (tabla `meta_cambios`) cuando el dueño toca "Hacer este
-  cambio en Meta", "Ya lo hice" o "No me sirve"
-  (`POST /api/negocios/:id/ads/cambios`), con una foto de cómo estaba la
-  cuenta (estado, objetivo y presupuesto de las campañas, estado de los
-  anuncios, gasto diario).
-- **Detecta solo si se hizo**, después de cada sincronización y al abrir
-  Meta Ads: campaña o anuncio pausado, objetivo cambiado, presupuesto
-  movido (de la campaña cara a la barata o de toda la cuenta), reparto del
-  gasto, campaña o anuncio que dejó de gastar (con 2 días completos de
-  datos), anuncio nuevo (en "pocos clics", de esa misma campaña) o más
-  inversión. La sincronización ahora lee también `/campaigns` (estado,
-  objetivo y presupuesto, tabla `meta_campanas`) y de cada anuncio su
-  campaña, fecha de creación, texto y si es video o imagen.
-- **Mide si funcionó**: 7 días antes del cambio contra los 7 días después
-  (sin contar el día del cambio). Desde el día 4 muestra un resultado
-  parcial; a los 7 queda cerrado. Según la regla mide el costo por
-  resultado, el CTR de esas campañas, el retorno, los resultados por día o
-  "escala" (más resultados sin que el costo suba 15 % o más). ±10 % es
-  "funcionó" o "no mejoró"; menos, "sin cambio claro".
-- **Ajusta el próximo diagnóstico**: lo que ya le funcionó a ese negocio va
-  primero en su nivel con "Te funcionó antes"; si el último intento de esa
-  regla no mejoró, propone la alternativa; "No me sirve" oculta esa
-  recomendación 30 días (dos veces la misma regla en 90 días oculta la
-  regla) y se puede deshacer con "Volver a mostrarlas". Una recomendación
-  abierta en Meta y nunca hecha se archiva a los 21 días.
-- **Enseña al contenido** (`leccion`): de los últimos 60 días, el texto y
-  formato de los anuncios con resultados al menos 20 % más baratos, video
-  contra imagen, la ubicación y el público más baratos (con 3 resultados
-  como mínimo). Va al prompt de la IA que escribe las publicaciones
-  (`aprendizaje.js`, solo en planes con publicidad) y al panel en "Lo que
-  Rubrofy aprendió de tus anuncios".
-- **"Crear esta pieza en Rubrofy"** (`POST /api/negocios/:id/ads/pieza`): en
-  la recomendación de ubicación crea un Reel, historia o post pensado para
-  ese lugar, con lo que enseñan sus anuncios. Usa una pieza con IA del mes
-  y llega a Por aprobar marcada "Sugerida por tus anuncios".
-- **Informe mensual**: la sección de Meta incluye los cambios del mes con
-  su resultado y lo aprendido. **/admin** muestra solo números por regla
-  (abiertas, hechas, "No me sirve", cuántas funcionaron), útiles para
-  ajustar las reglas; nunca el contenido de un negocio.
-
-## Google Ads (server/google.js) — en pausa
-
-**En pausa:** Rubrofy se concentra en Instagram y Meta Ads, así que Google
-Ads no se ofrece en el sitio, el panel, el informe ni /admin. El código sigue
-completo para cuando se amplíe el servicio. Para reactivarlo: definir
-`GOOGLE_ADS_ACTIVO=1` (además de las claves de abajo) y volver a mencionarlo
-en el sitio (`public/site/index.html`: sección Publicidad, integraciones,
-preguntas y tabla de planes), en `privacidad.html`, `terminos.html` y
-`eliminar-datos.html`, y en los textos de ayuda (`ayuda.js`, `guias.js`).
-Sin la variable, sus rutas responden 404, no se sincroniza y el panel no
-muestra la pestaña ni la tarjeta de conexión. Los datos ya guardados se
-conservan.
-
-En el plan Estudio, Resultados → **Google Ads** muestra inversión, clics,
-conversiones, costo por conversión, ROAS y campañas (mismo panel que Meta
-Ads), y se suma al informe mensual. **Solo lectura.**
-
-- **Conexión**: en Configuración, "Conectar con Google" abre el inicio de
-  sesión de Google (permiso `adwords`, acceso sin conexión) y vuelve a
-  `/api/google/callback`. El parámetro `state` va firmado, dura 15 minutos
-  y tiene que coincidir con la sesión, así nadie puede enganchar su cuenta
-  de Google a la de otro. Si la cuenta es administradora (MCC), se listan
-  sus clientes y se consulta con `login-customer-id`.
-- **Sincronización** con GAQL (`searchStream`, 1 operación por consulta):
-  30 días la primera vez, después los últimos 7 (Google sigue atribuyendo
-  conversiones). Performance Max entrega menos detalle que Búsqueda.
-- **Configurar**: crear en Google Cloud un proyecto con la API de Google
-  Ads habilitada y el acceso solicitado (Explorer alcanza para empezar),
-  un cliente OAuth de tipo "aplicación web" con la URI de redirección
-  `https://<tu dominio>/api/google/callback`, y definir `GOOGLE_CLIENT_ID`
-  y `GOOGLE_CLIENT_SECRET`. Opcionales: `GOOGLE_ADS_DEVELOPER_TOKEN` (si el
-  proyecto todavía usa uno) y `GOOGLE_ADS_API_VERSION` (por defecto `v25`).
-  El permiso `adwords` es "sensible": hasta que Google verifique la app,
-  admite 100 usuarios y muestra la pantalla de "app no verificada".
-
-## Competencia (server/competencia.js)
-
-En el plan Estudio, Resultados → **Competencia** compara la cuenta del
-negocio con hasta 5 competidores: seguidores y su variación en 30 días,
-publicaciones de los últimos 30 días, interacción promedio por post (me
-gusta + comentarios de los últimos 12), su mejor post reciente y un enlace
-a sus anuncios activos en la Biblioteca de Anuncios de Meta. También va en
-el informe mensual.
-
-Usa Business Discovery, que solo existe en la API de Instagram con inicio
-de sesión de **Facebook**: por eso depende de la conexión con Meta (y de
-elegir ahí la cuenta de Instagram del negocio). Solo funciona con cuentas
-profesionales y entrega datos públicos (no el alcance de otros). Los
-anuncios de la competencia no se leen por API porque, en Chile, la API de
-la Biblioteca de Anuncios solo incluye anuncios políticos; se enlaza la
-búsqueda pública. Una foto por competidor al día (1 llamada cada uno).
-
-Con las mismas 25 publicaciones recientes de cada cuenta (sin llamadas
-extra) y las de la cuenta propia, se analiza con la misma vara: **tasa de
-interacción** (interacción por post ÷ seguidores), **publicaciones por
-semana**, **mezcla de formatos** (videos y reels, carruseles, fotos) con la
-interacción de cada uno, **día y franja** en que más publican, **hashtags**
-más usados y sus **3 mejores publicaciones**. De ahí salen conclusiones con
-"qué hacer": el formato que más rinde en el rubro, si publicas menos que
-ellos, quién tiene mejor tasa, cuándo publican, quién crece más rápido y
-qué hashtags usan que tú no.
-
 ## Perfil del negocio y bienvenida (server/perfil.js, public/app/bienvenida.js)
 
 Lo primero que hace un negocio nuevo es presentarse, una pregunta por
@@ -569,7 +370,8 @@ pantalla: **qué es y qué hace**, si ofrece servicios o productos, **qué
 vende**, a quién le habla, por qué lo eligen, **cómo vende** (local, online,
 domicilio, WhatsApp, agenda, ferias) y **dónde lo encuentran** (ciudad,
 Instagram, WhatsApp, web). Después: objetivo, tono, cuánto publicar,
-estrategia, conexiones y primera semana (ver la sección anterior).
+estrategia, conexiones y primera semana (ver "Bienvenida, estrategia y
+plan semanal").
 
 - **Leer mi web con IA** (Pro y Estudio): descarga el sitio (solo URL
   públicas: se resuelve el dominio y se rechazan IP privadas, también en
@@ -580,37 +382,47 @@ estrategia, conexiones y primera semana (ver la sección anterior).
   y la IA solo menciona las redes y canales que el negocio escribió.
 - Las cuentas que ya habían pasado la bienvenida ven una vez por sesión
   solo las preguntas del negocio (el botón final dice "Guardar" y arriba
-  "Ahora no") hasta completar el perfil. También se edita en Conexiones y
-  ajustes → Tu negocio.
+  "Ahora no") hasta completar el perfil. También se edita en Tu marca →
+  Tu negocio.
 
-## Menú por etapas y "Tu marca"
+## El panel: menú, Inicio, "Crear" y "Más"
 
-El menú agrupa las pantallas en 1 · Configura, 2 · Cada semana, 3 · Mide y
-4 · Cada mes. Cada etapa se abre y se cierra con un clic (se recuerda en el
-navegador, `localStorage` `rubrofy-menu-cerrados`); si se navega a una
-pantalla de una etapa cerrada, esa etapa se abre sola. Con el menú de solo
-íconos (pantallas angostas) las etapas no se pliegan.
+El menú tiene 5 entradas: **Inicio**, **Publicaciones**, **Crear**,
+**Calendario** y **Más**. En el teléfono es una barra abajo con "Crear" al
+centro; en el computador, una columna a la izquierda. Publicaciones lleva
+el número de piezas por aprobar, y Más, un punto si Instagram no está
+conectado o pide reconectar, o si hay una respuesta de soporte sin leer.
 
-En tablet y celular el menú es de solo íconos y se desplaza hasta el
-último. El botón **☰** de arriba lo despliega encima del contenido con el
-nombre de cada sección (también se desplaza); se cierra al elegir una, al
-tocar fuera o con Esc. El panel mide `100dvh` (el alto visible): con
-`100vh` los celulares contaban el espacio bajo la barra del navegador y lo
-último del menú quedaba escondido sin poder desplazarse.
+El encabezado es simple: el título de la pantalla, un "?" de ayuda y el
+plan (en pantallas anchas, también el saldo de créditos ⚡), sin contadores.
+Los avisos de arriba (plan y confirmar correo) solo se ven en Inicio; el de
+confirmar correo, también en Mi cuenta. El panel mide `100dvh` (el alto
+visible): con `100vh` los celulares cuentan el espacio bajo la barra del
+navegador y lo de abajo queda escondido.
 
-Abajo, el botón destacado **Vincular cuentas** (lleva a Conexiones; un
-punto rojo si Instagram no está conectado o pide reconectar) y la sección
-plegable **Configuración** (Administración, Conexiones y ajustes, Mi cuenta,
-Ayuda y soporte).
+- **Inicio** (`public/app/inicio.js`): una sola tarea a la vez, la más
+  urgente de la ruta (`server/ruta.js`). Debajo, **Próximas** (lo aprobado
+  con su fecha) y **Tu avance**, plegado, con todos los pasos.
+- **Publicaciones** (vista interna `cola`): filtros Por aprobar,
+  Programadas, Publicadas (y Descartadas si hay) y la tarjeta de cada pieza
+  (ver "Qué incluye").
+- **Crear** abre: Generar mi semana, Hacer un reel con mi video y Subir
+  fotos.
+- **Calendario**: la semana o el mes, para mover publicaciones de día.
+- **Más**: Tu marca, Galería, Estudio de reels, Resultados (con el Informe
+  mensual), Cuentas conectadas (Instagram; TikTok dice "Próximamente"), Mi
+  cuenta (plan, créditos, pagos, avisos y sesión) y Ayuda. Las cuentas
+  administradoras ven además Administración. Sus pantallas tienen arriba
+  una flecha para volver a Más.
 
-**Tu marca** reúne en pestañas Cómo hablas (voz.js), Tus ejemplos
-(estilo.js) y Cómo se ve (Kit de marca, diseno.js), con un resumen arriba de
-lo que falta. Los enlaces antiguos siguen sirviendo: `#voz`, `#estilo` y
-`config` → `cfg-marca` abren la pestaña que corresponde.
+**Tu marca** reúne en pestañas Tu negocio, Estrategia (plan.js), Cómo
+hablas (voz.js), Tus ejemplos (estilo.js), Cómo se ve (Kit de marca,
+diseno.js) y Contexto para la IA (contexto.js). Los enlaces `#voz` y
+`#estilo` abren la pestaña que corresponde.
 
 ## Mi cuenta (public/app/cuenta.js)
 
-Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
+Se abre desde Más o tocando el plan arriba. Reúne:
 
 - **Perfil**: correo para entrar, cambiar la clave (pide la actual; al
   cambiarla se cierran las sesiones de los otros dispositivos) y enlace a
@@ -622,6 +434,8 @@ Se abre desde el menú o tocando el nombre del negocio arriba. Reúne:
   al sincronizar la suscripción; si uno está pendiente, botón para pagarlo)
   y las compras de créditos. Si hay `CONTACTO_EMAIL`, a quién pedir boleta o
   factura.
+- **Avisos**: las notificaciones push de este dispositivo y el resumen
+  semanal por correo.
 - **Sesión**: cerrar sesión, cerrarla en todos los dispositivos y eliminar
   la cuenta.
 
@@ -714,8 +528,8 @@ servidor revisa los bytes y rechaza HEIC o lo que no sea JPG, PNG o WebP.
 
 ## Ayuda y soporte (server/soporte.js, public/app/soporte.js)
 
-Pantalla "Ayuda y soporte" del panel (menú, con aviso cuando hay una
-respuesta nueva):
+Pantalla "Ayuda" del panel (en Más, con aviso cuando hay una respuesta
+nueva):
 
 - **Buscador** sobre las ayudas de cada pantalla y las preguntas frecuentes
   (compara por la raíz de cada palabra y sin tildes).
@@ -758,12 +572,11 @@ cifras de uso.
 
 El panel se instala como app (PWA): ícono en la pantalla de inicio, abre a
 pantalla completa y muestra una página propia sin conexión. Botón "Instalar
-Rubrofy" en el menú (en iPhone explica cómo agregarlo desde Safari).
+Rubrofy" en Más (en iPhone explica cómo agregarlo desde Safari).
 
 **Notificaciones push** (Web Push, sin dependencias: VAPID con ES256 y
 contenido cifrado aes128gcm, todo con `node:crypto`). Cada dispositivo se
-activa en Conexiones y ajustes → Avisos (o desde el aviso en Por aprobar).
-Se avisa cuando:
+activa en Mi cuenta → Avisos. Se avisa cuando:
 
 - se publica una pieza, falla una publicación o Instagram se desconecta;
 - un video con IA está listo o falló;
@@ -803,7 +616,7 @@ la cuenta. Rubrofy los usa para sacarle más provecho a lo que ya funcionó:
 La ficha de cómo habla la marca ("ADN"): quiénes son, a quién le hablan,
 personalidad, trato (tú o usted), variante del español, emojis, largo,
 palabras propias y prohibidas, frases de marca, promesas o temas prohibidos
-y ejemplos que "sí suenan a la marca". Vista **Voz de marca** del panel.
+y ejemplos que "sí suenan a la marca". Pestaña **Cómo hablas** de Tu marca.
 
 - **Completar con IA**: Claude propone la ficha a partir de la estrategia,
   el plan, "Mi estilo" y lo aprobado. No se guarda hasta que el dueño la
@@ -813,9 +626,9 @@ y ejemplos que "sí suenan a la marca". Vista **Voz de marca** del panel.
   emojis, chilenismos, frases de plantilla, palabras propias, largo). Se
   recalcula al editar, al pedir otra versión y al cambiar la ficha. El panel
   muestra el promedio de lo pendiente y el % aprobado sin cambios.
-- **Escribir con mi voz**: anuncios de Meta Ads, correos, WhatsApp, fichas
-  de producto, textos web, bio de Instagram o publicaciones, en 3 versiones
-  puntuadas (1 texto de IA por pedido). "Así sí suena" guarda el texto como
+- **Escribir con mi voz**: correos, WhatsApp, fichas de producto, textos
+  web, bio de Instagram o publicaciones para Instagram o TikTok, en 3
+  versiones puntuadas (1 texto de IA por pedido). "Así sí suena" guarda el texto como
   ejemplo de la ficha.
 - La ficha entra en todos los prompts que escriben por el negocio.
 
@@ -827,9 +640,9 @@ Tres capas, de menos a más específica:
    los negocios. Son criterios de calidad; el administrador sigue sin ver el
    contenido de ningún negocio.
 2. **Contexto del negocio** por sección: general, voz, estrategia, copys,
-   post, carrusel, reel, historia, imágenes y videos. Vista **Contexto para
-   la IA** y editores plegables en Estrategia, Por aprobar, Voz de marca y
-   Fotos.
+   post, carrusel, reel, historia, imágenes y videos. Pestaña **Contexto
+   para la IA** de Tu marca y editores plegables en Estrategia y Cómo
+   hablas.
 3. **Indicación del pedido**: al generar la semana ("esta semana es el
    aniversario") o con **Pedir cambio** en una pieza ("más corto").
 
@@ -909,7 +722,7 @@ en Instagram, luego publicarlo). Lo que hace ante cada problema:
 | Meta dice "límite de llamadas" | Igual, pero espera al menos 15 minutos |
 | Falló al publicar un contenedor ya creado | El reintento publica **ese mismo** contenedor (no crea otro post) |
 | El servidor se cae a mitad de una publicación | Al arrancar, la pieza vuelve a programada y se retoma con su contenedor |
-| Token vencido o revocado | El negocio queda en "Reconectar" (aviso en Configuración y en las tarjetas); sus piezas esperan sin gastar reintentos y se publican solas al pegar un token nuevo |
+| Token vencido o revocado | El negocio queda en "Reconectar" (aviso en Cuentas conectadas y en las tarjetas); sus piezas esperan sin gastar reintentos y se publican solas al pegar un token nuevo |
 | Contenido inválido (ej. texto demasiado largo) o pieza sin foto | "No se publicó" con el motivo, sin reintentos automáticos |
 | Reel o historia con video en proceso | Consulta el estado cada minuto (hasta 15 veces) sin gastar reintentos |
 | Meta no pudo procesar el video | "No se publicó" con el detalle de Meta; al reintentar se crea un contenedor nuevo con el video actual |
@@ -1061,8 +874,8 @@ responden 402 `sinPlan`.
 - **Bienvenida**: sin plan, el último paso es "Elige tu plan", con los
   botones de pago (Stripe Checkout). Al volver del pago, el panel espera a
   que el webhook active el plan y crea la primera semana solo.
-- **Panel**: mientras no tenga plan, un aviso arriba ofrece Pro y Estudio;
-  "Generar semana" lleva a ese aviso.
+- **Panel**: mientras no tenga plan, un aviso arriba de Inicio ofrece Pro
+  y Estudio; "Crear → Generar mi semana" lleva a ese aviso.
 - **Cuentas administradoras** (`ADMIN_EMAILS`): si no tienen plan, reciben
   Estudio de cortesía (`cortesia: true`), que en `/admin` no cuenta como
   ingreso. Si pagan un plan, manda el pagado. Es acceso al plan, no al
@@ -1075,7 +888,7 @@ responden 402 `sinPlan`.
   - Dónde se pide: en el registro (casilla marcada por defecto; el
     formulario se valida antes de crear la cuenta), en el último paso de la
     bienvenida ("Empieza gratis o elige tu plan", que además crea la
-    primera semana), en el aviso de arriba del panel y en Configuración →
+    primera semana), en el aviso de arriba del panel y en Mi cuenta →
     Plan. El sitio lo anuncia con una franja arriba, el botón principal y
     un banner en Precios.
   - Una por negocio y por teléfono: los números usados quedan en
@@ -1121,7 +934,7 @@ un **pago único** (Stripe Checkout en modo `payment`, no una suscripción):
 
 ## Kit de marca y diseño de imágenes (server/marca.js, public/app/diseno.js)
 
-- **Kit de marca** (Configuración): logo (PNG, JPG o WebP, máx. 2 MB,
+- **Kit de marca** (Tu marca → Cómo se ve): logo (PNG, JPG o WebP, máx. 2 MB,
   validado por sus bytes), color principal y de apoyo, tipografía (Moderna,
   Impacto, Elegante, Manuscrita), posición del logo y llamado a la acción
   por defecto.
@@ -1236,13 +1049,13 @@ logo y llamado a la acción); también **Solo subtítulos** y **Personalizado**
 Lo que el dueño le dice a Rubrofy para que la semana salga como quiere:
 
 - **Brief de la semana** (tabla `briefs`, por semana ISO): texto libre de
-  hasta 5.000 caracteres en el diálogo "Generar semana". La IA lo ordena en
+  hasta 5.000 caracteres en el diálogo "Generar mi semana". La IA lo ordena en
   `{ resumen, comunicar[], obligatorias[{formato, dia, idea}], evitar[],
   ritmo }` y el panel muestra cómo lo entendió antes de generar (segundo
   clic genera). El ritmo del brief manda sobre el plan de contenido esa
   semana; las obligatorias toman piezas de su formato con su idea y, si
   fija el día, esa fecha. Cada pieza queda con `briefSemana` y `briefPunto`
-  (etiqueta 📝 en la tarjeta). Por aprobar muestra "Esta semana…" con
+  (etiqueta 📝 en la tarjeta). Publicaciones muestra "Esta semana…" con
   "Cambiar el brief" → `POST /brief/rehacer` reescribe las pendientes de la
   tanda (las aprobadas no se tocan) y agrega piezas si el ritmo pide más.
   "Usar el de la semana pasada" y "Proponer desde mi plan" rellenan el
@@ -1286,7 +1099,7 @@ aviso se manda una vez (marcas en `negocio.avisos`). `POST
   cobra dos veces). El panel ofrece la pausa al tocar "Cancelar".
 - **Celebraciones:** push cuando una publicación de los últimos 3 días
   supera en 50 % el promedio de los 30 anteriores (mín. 5 publicaciones y
-  10 interacciones); tarjeta "Lo que lograste este mes" en Inicio (`GET
+  10 interacciones); resumen de lo logrado en el mes en Inicio (`GET
   /api/negocios/:id/logros`: publicaciones, alcance, horas a 20 min por
   publicación, racha, referido); correo a los 3 meses con resumen y
   créditos de regalo.
@@ -1434,7 +1247,7 @@ desactivan en Flow (Medios de pago) o se emite la boleta aparte.
 ## Planes y cobro (Stripe)
 
 Todo negocio nace **sin plan**. Para pasar a **Pro** o **Estudio** desde
-Configuración, el panel abre una sesión de Stripe Checkout; Stripe cobra la
+Mi cuenta, el panel abre una sesión de Stripe Checkout; Stripe cobra la
 suscripción y avisa al servidor por webhook cuándo se activó, canceló o
 falló el pago — el servidor nunca ve ni guarda el número de tarjeta.
 "Gestionar suscripción" (cambiar tarjeta, cancelar) abre el Billing Portal
@@ -1494,11 +1307,6 @@ server/
   informe.js    Datos del informe mensual y su conclusión (Claude o automática)
   estilo.js     "Mi estilo": ejemplos del negocio, importación desde Instagram y guía de estilo con IA
   diseno-ia.js  "Descubre tu diseño con IA": lee Instagram y la web, propone paleta, letra y fotos, y lo aplica al kit
-  meta.js       Conexión con Meta (lado Facebook) y Meta Ads de solo lectura
-  analisis-ads.js Variación contra el período anterior y diagnóstico de publicidad
-  aprendizaje-ads.js Publicidad que aprende: detecta los cambios en Meta, mide si funcionaron y enseña al contenido
-  google.js     Google Ads de solo lectura (OAuth con Google, GAQL)
-  competencia.js Seguimiento de competidores en Instagram (Business Discovery)
   guardian.js   Qué verificar en cada texto antes de aprobarlo (promesas, datos inventados, frases genéricas)
   programacion.js Fechas de publicación en la zona horaria del negocio
   medios.js     Imágenes y videos con IA (Higgsfield u OpenAI), videos en segundo plano
@@ -1531,7 +1339,7 @@ data/
 - **Capa B** — la publicación real a Instagram ya funciona (probada de punta
   a punta), pero conectar la cuenta hoy es manual: el negocio pide su ID y
   token siguiendo los pasos de Meta (agregar la app como tester, generar el
-  token) y los pega en Configuración. Para que cualquier negocio conecte su
+  token) y los pega en Cuentas conectadas. Para que cualquier negocio conecte su
   Instagram con un botón (sin pasar por el panel de Meta) hace falta App
   Review + Business Verification, y armar el flujo de login con Instagram
   (OAuth) en vez del campo manual.

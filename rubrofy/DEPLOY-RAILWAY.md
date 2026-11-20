@@ -67,15 +67,13 @@ queda apagada y el resto funciona igual)
 | Imágenes y videos con IA | `HIGGSFIELD_API_KEY` (la llave completa, tal como se copia de open.higgsfield.ai/api-keys; preferido) u `OPENAI_API_KEY`. Opcionales: `HIGGSFIELD_MODELO_IMAGEN`, `HIGGSFIELD_MODELO_VIDEO`, `OPENAI_IMAGE_MODEL`, `OPENAI_VIDEO_MODEL`, `VIDEO_IA_SEGUNDOS`, `VIDEO_IA_AUDIO` |
 | Notificaciones push | Nada: las claves VAPID se generan solas. Opcional fijarlas con `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` |
 | Cobro (**obligatorio**: el servicio es solo de pago) | Con **Flow** (recomendado en Chile): `FLOW_API_KEY`, `FLOW_SECRET_KEY` y, mientras pruebas, `FLOW_SANDBOX=1` (bórrala al pasar a producción, con las claves de producción: ver "Pasar de sandbox a producción" en el README). Los planes se crean solos en Flow. Con Stripe (alternativa): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ESTUDIO`. Si están las de Flow, se usa Flow. Con **Mercado Pago** además (o en vez de Flow): `MERCADOPAGO_ACCESS_TOKEN` y, mientras pruebas, `MERCADOPAGO_PRUEBA=1`; con Flow y Mercado Pago, el cliente elige con cuál pagar. Sin ninguna, nadie puede pagar ni crear contenido. |
-| Meta (Ads y competencia) | `META_APP_ID`, `META_APP_SECRET` (activan "Conectar con Facebook"), `META_LOGIN_CONFIG_ID` (configuración de Facebook Login para empresas; recomendada), `META_LOGIN_PRUEBA_EMAILS` (correos de las cuentas de Rubrofy que usan Meta Ads y Competencia mientras Meta revisa la app, separados por coma; para el resto dicen "Próximamente"), `META_LOGIN_PUBLICO=1` (Meta Ads y Competencia para todos, después de la aprobación) y opcional `META_GRAPH_VERSION` |
-| Google Ads (en pausa) | No se ofrece. Para reactivarlo: `GOOGLE_ADS_ACTIVO=1`, `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` (opcionales `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_API_VERSION`; ver README) |
 | "Conectar con Instagram" | `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` (sin ellas, Instagram se conecta pegando ID y token) |
 | Instagram aprobado por Meta | `INSTAGRAM_APP_APROBADA=1` cuando Meta apruebe la app y la publiques (quita el aviso "¿Instagram te muestra 'Rol de desarrollador insuficiente'?") |
 | Páginas legales | `CONTACTO_EMAIL` (el correo que aparece en privacidad, términos y eliminación de datos; si falta, se usa el de `EMAIL_FROM`) |
 | Panel de administración (`/admin`) | `ADMIN_EMAILS` (emails de las cuentas administradoras, separados por coma). La cuenta tiene que existir antes: un email listado no se puede registrar. |
 | Resumen semanal por correo | `RESEND_API_KEY`, `EMAIL_FROM` (ej: `Rubrofy <avisos@rubrofy.com>`; opcional `AVISOS_HORA`, por defecto 8) |
 | Edición de reels | Nada que configurar: `railpack.json` instala `ffmpeg` y `fonts-dejavu-core` al desplegar. Si `/api/salud` dice `"edicionReels": false`, agrega la variable `RAILPACK_DEPLOY_APT_PACKAGES` = `ffmpeg fonts-dejavu-core` y vuelve a desplegar. Opcional: `OPENAI_API_KEY` para subtítulos automáticos (sin ella, el dueño escribe el texto), `EDICION_CONCURRENCIA` (1), `EDICION_TIMEOUT_SEG` (360). |
-| Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100) |
+| Ajustes | `RUBROFY_TZ` (por defecto `America/Santiago`), `PUBLICADOR_INTERVALO_SEG` (30), `MAX_VIDEO_MB` (100), `META_GRAPH_VERSION` (versión de la Graph API de Meta que usa Instagram, por defecto `v25.0`) |
 
 ## 4. Primer deploy y verificación
 
@@ -118,43 +116,12 @@ Una vez que `https://rubrofy.com` funcione:
   `STRIPE_SECRET_KEY=... node scripts/setup-stripe.js` (en tu computador)
   para crear los precios y copia los IDs a `STRIPE_PRICE_PRO` y
   `STRIPE_PRICE_ESTUDIO`.
-- **Google Ads** (solo si se reactiva) → en el cliente OAuth de Google Cloud, URI de redirección
-  autorizada: `https://rubrofy.com/api/google/callback`.
 - **Meta** → en la app de Meta (Configuración → Básica): dominio de la app
   `rubrofy.com`, URL de la política de privacidad
   `https://rubrofy.com/privacidad.html`, URL de las condiciones del servicio
   `https://rubrofy.com/terminos.html` y, en "Eliminación de datos", la URL de
   instrucciones `https://rubrofy.com/eliminar-datos.html`. Revisa el texto de
   esas páginas con un abogado antes de lanzar.
-- **"Conectar con Facebook"** (Meta Ads y competencia, plan Estudio), en
-  la misma app de Meta (tipo Empresa):
-  1. Agrega el producto **Inicio de sesión con Facebook para empresas**
-     (Facebook Login for Business). En su Configuración, en "URI de
-     redireccionamiento de OAuth válidos", agrega
-     `https://rubrofy.com/api/meta/callback`.
-  2. Crea una **configuración** de inicio de sesión: tipo de token "Token de
-     acceso de usuario" y los permisos `ads_read`, `pages_show_list`,
-     `pages_read_engagement`, `instagram_basic`, `instagram_manage_insights`
-     y `business_management`. Copia su ID a `META_LOGIN_CONFIG_ID`.
-  3. En Configuración → Básica copia el **identificador de la app** y la
-     **clave secreta** a `META_APP_ID` y `META_APP_SECRET` (son los de la
-     app de Meta, distintos de los de Instagram).
-  4. Mientras la app no tenga esos permisos aprobados en **Revisión de la
-     app** (con la empresa verificada), solo pueden conectarse las personas
-     con un rol en la app; a cualquier otra Facebook le muestra "La app no
-     está activa". Por eso Meta Ads y Competencia solo los usan las cuentas
-     de Rubrofy en `META_LOGIN_PRUEBA_EMAILS` (la tuya de prueba y la que le
-     das al revisor de Meta); para el resto de los clientes, el sitio y el
-     panel dicen "Próximamente". Cuando Meta apruebe y pases la app a
-     **En vivo**, define `META_LOGIN_PUBLICO=1` (en /admin → Sistema aparece
-     la línea) y cambia en `public/site/index.html` los textos que dicen
-     "Próximamente". Para abrirlo a todos los clientes, pide acceso
-     avanzado a esos permisos; Meta pide un video del flujo: botón
-     "Conectar con Facebook", aceptar permisos y ver los anuncios en
-     Resultados → Meta Ads. Muestra también el botón "Hacer este cambio en
-     Meta" de una recomendación: explica que Rubrofy solo lee (`ads_read`)
-     y que los cambios los hace el dueño en el Administrador de anuncios.
-     Ese botón es un enlace y no necesita permisos extra.
 - **Instagram**: Meta descarga las fotos y videos desde `PUBLIC_URL` con
   enlaces firmados temporales.
 - **"Conectar con Instagram"** (para que el cliente inicie sesión en vez de
@@ -186,8 +153,8 @@ Una vez que `https://rubrofy.com` funcione:
      Resend marque el dominio como verificado.
   3. En Resend → API Keys, crea una con permiso de envío y cópiala a
      `RESEND_API_KEY`. Pon `EMAIL_FROM` = `Rubrofy <avisos@rubrofy.com>`.
-  4. En el panel, Conexiones y ajustes → Avisos por correo → "Enviarme uno
-     ahora" para probar. Los resúmenes salen solos los lunes desde las 8:00.
+  4. En el panel, Más → Mi cuenta → Avisos → "Enviarme uno ahora" para
+     probar. Los resúmenes salen solos los lunes desde las 8:00.
 
 ## 6b. Respaldo fuera de Railway (Cloudflare R2)
 
@@ -240,4 +207,3 @@ Las fotos y videos se copian de vuelta desde `archivos/`.
 | Instagram responde que no pudo descargar la imagen | `PUBLIC_URL` no coincide con el dominio público real |
 | Errores de permiso al escribir en `/data` | Agrega `RAILWAY_RUN_UID=0` |
 | El webhook de Stripe responde "Firma inválida" | `STRIPE_WEBHOOK_SECRET` no corresponde a ese endpoint (cada endpoint tiene el suyo) |
-| Google vuelve con "la conexión venció o no corresponde a tu sesión" | La URI de redirección no es exactamente `PUBLIC_URL` + `/api/google/callback`, o se inició la conexión desde otro dominio |

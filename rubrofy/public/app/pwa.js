@@ -61,7 +61,7 @@
     return reg.pushManager.getSubscription();
   }
 
-  // Tarjeta "Notificaciones en este dispositivo" (Conexiones y ajustes).
+  // Tarjeta "Notificaciones en este dispositivo" (Mi cuenta → Avisos).
   async function renderTarjeta(cont, ctx) {
     if (!cont) return;
     const titulo = '<div class="ig-card-head"><h2>Notificaciones en este dispositivo' + (window.Ayuda ? window.Ayuda.boton('notificaciones') : '') + '</h2><span class="ig-estado" data-push-estado></span></div>';
@@ -126,27 +126,7 @@
     try { localStorage.setItem('rubrofy-push-aviso', 'visto'); } catch (err) { /* sin almacenamiento */ }
   }
 
-  // Aviso chico en Por aprobar para quien todavía no activa las notificaciones.
-  async function aviso(cont, ctx) {
-    if (!cont) return;
-    cont.innerHTML = '';
-    let visto = null;
-    try { visto = localStorage.getItem('rubrofy-push-aviso'); } catch (err) { visto = 'visto'; }
-    if (visto || !soportaPush() || Notification.permission === 'denied') return;
-    const sub = await suscripcionActual().catch(() => null);
-    if (sub) return;
-    cont.innerHTML = `<div class="res-aviso push-aviso"><span>🔔 Activa las notificaciones y te avisamos cuando tengas contenido por aprobar o algo necesite tu atención.</span>
-      <button type="button" class="btn-approve" data-push-si>Activar</button><button type="button" class="btn-text" data-push-no>Ahora no</button></div>`;
-    cont.querySelector('[data-push-si]').addEventListener('click', async () => {
-      try { await activar(ctx); cont.innerHTML = '<div class="res-aviso push-aviso"><span>Listo: te avisaremos en este dispositivo.</span></div>'; } catch (err) { cont.innerHTML = `<div class="res-aviso error">${e(err.mensaje || err.message)}</div>`; }
-    });
-    cont.querySelector('[data-push-no]').addEventListener('click', () => {
-      try { localStorage.setItem('rubrofy-push-aviso', 'visto'); } catch (err) { /* nada */ }
-      cont.innerHTML = '';
-    });
-  }
-
-  window.RubrofyPWA = { iniciar, instalar, renderTarjeta, aviso, mostrarBotonInstalar };
+  window.RubrofyPWA = { iniciar, instalar, renderTarjeta, mostrarBotonInstalar };
   iniciar();
 
   // Versión nueva: si se publicó una actualización mientras la app estaba

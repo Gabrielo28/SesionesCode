@@ -2,7 +2,7 @@
 // detalle de la que se elija. Las publicaciones por aprobar y aprobadas se
 // cambian de día arrastrándolas (computador) o con "Mover" (celular, o el
 // botón del detalle); mantienen su hora salvo que el dueño la cambie. Usa la
-// misma ruta que el cambio de fecha en Por aprobar (PUT …/reprogramar): si
+// misma ruta que el cambio de fecha en Publicaciones (PUT …/reprogramar): si
 // ya estaba aprobada, el servidor la reprograma sola.
 (function () {
   const DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -205,7 +205,7 @@
       <p class="detail-text">${ctx.escapeHtml(it.variants[it.variantIndex] || '')}</p>
       ${it.hashtags && it.hashtags.length ? `<div class="card-hashtags">${it.hashtags.map((h) => `<span>${ctx.escapeHtml(h)}</span>`).join('')}</div>` : ''}
       ${movible(it) ? `<button type="button" class="btn-ghost cal-det-mover" data-cal-mover="${it.id}">↔ Mover a otro día</button>` : ''}
-      ${it.status === 'pendiente' ? '<button type="button" class="btn-text cal-det-ir" data-cal-ir="cola">Revisar en Por aprobar →</button>' : ''}`;
+      ${it.status === 'pendiente' ? '<button type="button" class="btn-text cal-det-ir" data-cal-ir="cola">Revisar y aprobar →</button>' : ''}`;
   }
 
   // ---------- mover ----------

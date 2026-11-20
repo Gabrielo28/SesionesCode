@@ -299,7 +299,7 @@ async function analizar(negocio, deseoTexto) {
   const webUtil = web && (web.colores.length || web.fuentes.length || web.logo || web.portada);
   if (ig.length < 2 && !webUtil) {
     return { error: webError ? `No pudimos leer tu web (${webError}) y faltan publicaciones de Instagram. Conecta tu Instagram o importa tus publicaciones en "Tus ejemplos".`
-      : 'Para analizar tu diseño necesitamos tu Instagram conectado (con publicaciones) o tu web en Conexiones y ajustes → Tu negocio.' };
+      : 'Para analizar tu diseño necesitamos tu Instagram conectado (con publicaciones) o tu web en Tu marca → Tu negocio.' };
   }
 
   const contenido = [];

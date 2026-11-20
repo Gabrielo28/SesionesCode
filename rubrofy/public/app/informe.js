@@ -59,8 +59,8 @@
     return html + (enLista ? '</ul>' : '');
   }
 
-  // Secciones de otras fuentes (Meta Ads, Google Ads, competencia): cada
-  // una registra su propio dibujo en RubrofyInforme.secciones.
+  // Secciones de otras fuentes: cada una registra su propio dibujo en
+  // RubrofyInforme.secciones.
   const secciones = {};
 
   function pintar(d) {
@@ -234,71 +234,6 @@
     });
     cargar();
   }
-
-  // --- secciones de publicidad (Meta Ads y Google Ads comparten forma) ---
-  function dinero(v, moneda) {
-    if (v == null) return '–';
-    try {
-      return Number(v).toLocaleString('es-CL', { style: 'currency', currency: moneda || 'CLP', maximumFractionDigits: (moneda || 'CLP') === 'CLP' ? 0 : 2 });
-    } catch (err) {
-      return Math.round(v).toLocaleString('es-CL');
-    }
-  }
-  function seccionAds(titulo, textoResultados) {
-    return (datos) => {
-      const div = document.createElement('section');
-      div.className = 'card';
-      const t = datos.total;
-      const m = datos.moneda;
-      const pct = (v) => (v == null ? '–' : (v * 100).toLocaleString('es-CL', { maximumFractionDigits: 2 }) + '%');
-      div.innerHTML = `
-        <h2>${titulo}${datos.cuenta ? ` · ${e(datos.cuenta)}` : ''}</h2>
-        <div class="kpis">
-          ${kpi('Inversión', dinero(t.gasto, m), n(t.impresiones) + ' impresiones')}
-          ${kpi('Resultados', n(t.resultados), textoResultados)}
-          ${kpi('Costo por resultado', dinero(t.costoPorResultado, m), '')}
-          ${kpi('Clics', n(t.clics), 'CTR ' + pct(t.ctr))}
-          ${kpi('Retorno (ROAS)', t.roas == null ? '–' : t.roas.toLocaleString('es-CL', { maximumFractionDigits: 2 }) + '×', t.valorCompras ? dinero(t.valorCompras, m) + ' en ventas' : '')}
-        </div>
-        ${datos.campanas.length ? `<table class="tabla" style="margin-top:12px">
-          <thead><tr><th>Campaña</th><th>Inversión</th><th>Clics</th><th>Resultados</th><th>Costo / resultado</th></tr></thead>
-          <tbody>${datos.campanas.slice(0, 8).map((c) => `<tr><td>${e(c.nombre || c.id)}</td><td>${dinero(c.gasto, m)}</td><td>${n(c.clics)}</td><td>${n(c.resultados)}</td><td>${dinero(c.costoPorResultado, m)}</td></tr>`).join('')}</tbody>
-        </table>` : '<p class="vacio">Sin campañas con actividad este mes.</p>'}
-        ${cambiosDelMes(datos.cambios, m)}
-        ${datos.aprendido && datos.aprendido.length ? `<h3 class="sub-h">Lo que aprendimos de tus anuncios</h3><ul class="lista-aprendido">${datos.aprendido.map((f) => `<li>${e(f)}</li>`).join('')}</ul>` : ''}`;
-      return div;
-    };
-  }
-  // Cambios que el dueño hizo en Meta este mes (publicidad que aprende) y si funcionaron.
-  function cambiosDelMes(cambios, m) {
-    if (!cambios || !cambios.length) return '';
-    const veredicto = { mejoro: 'Funcionó', empeoro: 'No mejoró', igual: 'Sin cambio claro', sin_datos: 'Sin datos suficientes' };
-    const signo = (v) => (v == null ? '' : ` (${v > 0 ? '+' : '−'}${Math.round(Math.abs(v) * 100)} %)`);
-    const fila = (c) => {
-      let r = c.resultado ? veredicto[c.resultado] : 'Midiendo';
-      if (c.resultado && c.resultado !== 'sin_datos' && c.metrica === 'cpr' && c.antes && c.despues && c.antes.valor != null && c.despues.valor != null) {
-        r += `: ${dinero(c.antes.valor, m)} → ${dinero(c.despues.valor, m)} por resultado${signo(c.variacion)}`;
-      } else if (c.resultado && c.resultado !== 'sin_datos' && c.variacion != null) r += signo(c.variacion);
-      return `<tr><td>${e(c.titulo)}</td><td>${new Date(c.hechoEl + 'T12:00:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}</td><td>${e(r)}</td></tr>`;
-    };
-    return `<h3 class="sub-h">Cambios que hiciste este mes</h3>
-      <table class="tabla"><thead><tr><th>Recomendación</th><th>Hecho</th><th>Resultado (7 días antes y después)</th></tr></thead>
-      <tbody>${cambios.map(fila).join('')}</tbody></table>`;
-  }
-  secciones.metaAds = seccionAds('Publicidad en Meta', 'compras, formularios y conversaciones');
-  secciones.googleAds = seccionAds('Publicidad en Google', 'conversiones');
-
-  secciones.competencia = (datos) => {
-    const div = document.createElement('section');
-    div.className = 'card';
-    div.innerHTML = `<h2>Tu cuenta frente a la competencia</h2>
-      <p class="nota">Datos públicos de Instagram. Interacción = me gusta + comentarios promedio de las últimas 12 publicaciones.</p>
-      <table class="tabla"><thead><tr><th>Cuenta</th><th>Seguidores</th><th>Variación 30 días</th><th>Posts 30 días</th><th>Interacción / post</th></tr></thead>
-      <tbody>${datos.filas.map((f) => `<tr><td>${f.propio ? '<b>Tú</b>' : '@' + e(f.username)}</td><td>${n(f.seguidores)}</td>
-        <td>${f.variacionSeguidores == null ? '–' : (f.variacionSeguidores > 0 ? '+' : '') + n(f.variacionSeguidores)}</td>
-        <td>${f.posts30d == null ? '–' : f.posts30d}</td><td>${n(f.interaccionPromedio)}</td></tr>`).join('')}</tbody></table>`;
-    return div;
-  };
 
   window.RubrofyInforme = { secciones, kpi, variacionHTML };
   iniciar();

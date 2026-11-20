@@ -4,6 +4,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { URL } = require('url');
 
 const store = require('./store');
@@ -22,11 +23,6 @@ const { crearPublicador } = require('./publicador');
 const programacion = require('./programacion');
 const analitica = require('./analitica');
 const informe = require('./informe');
-const meta = require('./meta');
-const google = require('./google');
-const competencia = require('./competencia');
-const analisisAds = require('./analisis-ads');
-const aprendizajeAds = require('./aprendizaje-ads');
 const contextoIA = require('./contexto-ia');
 const voz = require('./voz');
 const reelsPrueba = require('./reels-prueba');
@@ -284,46 +280,10 @@ function sendJSON(res, status, data, extraHeaders) {
   res.end(body);
 }
 
-// "Conectar con Facebook" con varias cuentas deja el token esperando (30
-// minutos) a que el negocio elija cuáles usar.
-const META_PENDIENTE_MS = 30 * 60 * 1000;
-function metaPendienteVigente(p) {
-  return !!(p && p.accessToken && p.opciones && Date.now() - Date.parse(p.creadoEl) < META_PENDIENTE_MS);
-}
-
-// Guarda la conexión con Meta (token pegado o de "Conectar con Facebook") y
-// trae los anuncios si corresponde.
-async function guardarMeta(negocioId, plan, { accessToken, venceEl, cuenta, ig }) {
-  const fresco = store.getNegocio(negocioId);
-  fresco.meta = {
-    accessToken,
-    adAccountId: cuenta ? cuenta.id : null, cuentaNombre: cuenta ? cuenta.nombre : null, moneda: cuenta ? cuenta.moneda : null,
-    igUserId: ig ? ig.id : null, igUsername: ig ? ig.username : null,
-    venceEl: venceEl || null,
-    conectadoEl: new Date().toISOString(),
-  };
-  delete fresco.metaPendiente;
-  store.saveNegocio(fresco);
-  if (fresco.meta.adAccountId && plan.ads && meta.abiertoPara(fresco)) await meta.sincronizarAds(negocioId);
-  return store.getNegocio(negocioId);
-}
-
 // Datos públicos de un negocio (nunca la clave, el token de Instagram, ni
 // los IDs internos de Stripe, Flow o Mercado Pago).
 function negocioPublico(negocio) {
-  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, mp: _mpInfo, mpPrueba: _mpPrueba, medioPago: _medioPago, meta: metaInfo, metaPendiente, google: googleInfo, ...resto } = negocio;
-  resto.metaConexion = meta.publicoMeta(metaInfo);
-  // Meta Ads y Competencia: "Próximamente" hasta que Meta apruebe la app.
-  resto.metaAbierto = meta.abiertoPara(negocio);
-  resto.metaLoginDisponible = meta.loginDisponible(negocio);
-  // Vuelta de "Conectar con Facebook" con varias cuentas: el panel muestra
-  // cuáles elegir (sin el token, que queda en el servidor).
-  resto.metaElegir = metaPendienteVigente(metaPendiente) ? {
-    cuentasPublicitarias: metaPendiente.opciones.cuentasPublicitarias, cuentasInstagram: metaPendiente.opciones.cuentasInstagram,
-  } : null;
-  resto.googleActivo = google.activo();
-  resto.googleConexion = google.activo() ? google.publico(googleInfo) : null;
-  resto.googleConfigurado = google.activo() && google.configurado();
+  const { auth: _auth, instagram: igInfo, stripe: stripeInfo, flow: _flowInfo, flowSandbox: _flowSandbox, mp: _mpInfo, mpPrueba: _mpPrueba, medioPago: _medioPago, meta: _meta, metaPendiente: _metaPendiente, google: _google, ...resto } = negocio;
   resto.instagramConectado = !!(igInfo && igInfo.accessToken);
   // 'ok' | 'reconectar' (el token venció o fue revocado: las publicaciones
   // programadas esperan hasta que se reconecte).
@@ -358,7 +318,6 @@ function negocioPublico(negocio) {
   resto.videosIADisponibles = videosIADisponibles(negocio);
   resto.mediosIA = { imagen: !!medios.proveedorImagen(), video: !!medios.proveedorVideo(), edicion: medios.edicionDisponible() && !!creditos.costo('edicion', 'recomendada') };
   resto.iaConfigurada = !!process.env.ANTHROPIC_API_KEY;
-  resto.guias = process.env.GUIAS !== 'no'; // GUIAS=no apaga las guías del panel para todos
   resto.perfilCompleto = perfil.completo(negocio);
   resto.prueba = pruebaGratis.publico(negocio);
   resto.reelsEditadosDisponibles = reelsEditadosDisponibles(negocio);
@@ -533,6 +492,23 @@ function fotoDeItem(negocioId, item) {
   if (fe && ((store.listFotos(negocioId)[fe.categoria]) || []).includes(fe.archivo)) return { categoria: fe.categoria, archivo: fe.archivo };
   const archivo = item.categoriaFoto ? elegirFoto(negocioId, item.categoriaFoto, item.id) : null;
   return archivo ? { categoria: item.categoriaFoto, archivo } : null;
+}
+
+// Las fotos de un carrusel, en orden: las que el negocio eligió (las que
+// sigan existiendo) o, si no eligió, las de la categoría de la pieza,
+// empezando en una distinta por pieza. [{ categoria, archivo }]; con menos
+// de 2 no hay carrusel.
+function fotosCarruselDe(negocioId, item) {
+  const fotos = store.listFotos(negocioId);
+  const elegidas = (Array.isArray(item.fotosCarrusel) ? item.fotosCarrusel : [])
+    .filter((f) => f && (fotos[f.categoria] || []).includes(f.archivo));
+  if (elegidas.length >= 2) return elegidas.slice(0, MAX_FOTOS_CARRUSEL).map((f) => ({ categoria: f.categoria, archivo: f.archivo }));
+  const categoria = item.categoriaFoto;
+  const disponibles = (categoria && fotos[categoria]) || [];
+  if (disponibles.length < 2) return [];
+  const inicio = hashString(item.id) % disponibles.length;
+  return disponibles.slice(inicio).concat(disponibles.slice(0, inicio)).slice(0, MAX_FOTOS_CARRUSEL)
+    .map((archivo) => ({ categoria, archivo }));
 }
 
 // Extensión según los primeros bytes (las imágenes de IA llegan como PNG, JPG o WebP).
@@ -820,15 +796,12 @@ async function prepararPublicacion(negocio, item) {
     return { tipo: formato === 'historia' ? 'historia' : 'imagen', imageUrl: enlace('_marca', diseno), caption, generadaPorIA: false };
   }
   if (formato === 'carrusel') {
-    const categoria = item.categoriaFoto;
-    const disponibles = (categoria && store.listFotos(negocio.id)[categoria]) || [];
-    if (disponibles.length < 2) {
-      return { motivo: `Un carrusel necesita al menos 2 fotos en la categoría "${categoria}". Sube más en Fotos y usa "Reintentar".` };
+    // Las fotos que eligió el negocio, en su orden (o las de la categoría).
+    const orden = fotosCarruselDe(negocio.id, item);
+    if (orden.length < 2) {
+      return { motivo: 'Un carrusel necesita al menos 2 fotos. Elígelas en la tarjeta ("⋯" → Elegir las fotos del carrusel) y usa "Reintentar".' };
     }
-    // Empieza en una foto distinta por pieza (mismo reparto que el panel).
-    const inicio = hashString(item.id) % disponibles.length;
-    const orden = disponibles.slice(inicio).concat(disponibles.slice(0, inicio)).slice(0, MAX_FOTOS_CARRUSEL);
-    const imageUrls = orden.map((archivo) => enlace(categoria, archivo));
+    const imageUrls = orden.map((f) => enlace(f.categoria, f.archivo));
     if (diseno) imageUrls[0] = enlace('_marca', diseno); // la portada diseñada
     return { tipo: 'carrusel', imageUrls, caption };
   }
@@ -909,15 +882,6 @@ const sincronizador = analitica.crearSincronizador({
     if (fuente === 'instagram') {
       return plan.analitica && !!(negocio.instagram && negocio.instagram.accessToken && negocio.instagram.estado !== 'reconectar');
     }
-    if (fuente === 'meta_ads') {
-      return meta.abiertoPara(negocio) && plan.ads && !!(negocio.meta && negocio.meta.accessToken && negocio.meta.adAccountId && negocio.meta.estado !== 'reconectar');
-    }
-    if (fuente === 'google_ads') {
-      return google.activo() && plan.ads && !!(negocio.google && negocio.google.customerId && negocio.google.estado !== 'reconectar');
-    }
-    if (fuente === 'competencia') {
-      return meta.abiertoPara(negocio) && plan.competencia && !!(negocio.meta && negocio.meta.igUserId && negocio.meta.estado !== 'reconectar');
-    }
     return false;
   },
   fuentes: {
@@ -941,28 +905,7 @@ const sincronizador = analitica.crearSincronizador({
       }
       return r;
     },
-    meta_ads: async (id) => {
-      const r = await meta.sincronizarAds(id);
-      // Publicidad que aprende: ¿el dueño hizo los cambios? ¿funcionaron?
-      if (r.ok) {
-        try { aprendizajeAds.revisar(id); } catch (err) { console.log(`Aprendizaje ads: ${id}: ${err.message}`); }
-      }
-      return r;
-    },
-    google_ads: (id) => google.sincronizar(id),
-    competencia: (id) => competencia.sincronizar(id),
   },
-});
-
-informe.registrarSeccion('competencia', (negocio) => {
-  if (!meta.abiertoPara(negocio) || !getPlan(negocio.plan).competencia || !negocio.meta || !negocio.meta.igUserId) return null;
-  const c = competencia.comparacion(negocio);
-  return c.filas.length > 1 ? c : null;
-});
-
-informe.registrarSeccion('googleAds', (negocio, desde, hasta) => {
-  if (!google.activo() || !getPlan(negocio.plan).ads || !negocio.google || !negocio.google.customerId) return null;
-  return Object.assign(google.resumen(negocio.id, desde, hasta), { moneda: negocio.google.moneda, cuenta: negocio.google.nombre });
 });
 
 // Estado de la ruta del cliente (server/ruta.js) con los datos del negocio.
@@ -973,7 +916,6 @@ function calcularRuta(negocio) {
     contenido: store.getContenido(negocio.id),
     fotos: store.listFotos(negocio.id),
     referencias: estilo.listar(negocio.id).length,
-    competidores: competencia.contar(negocio.id),
     fotosIA: medios.proveedorImagen() ? fotosIADisponibles(negocio) : 0,
     syncInstagram: analitica.estadoSync(negocio.id, 'instagram'),
     mesHoy: informe.mesActual(),
@@ -1025,35 +967,6 @@ function urlPublica(req) {
   return process.env.PUBLIC_URL ? process.env.PUBLIC_URL.replace(/\/$/, '') : urlBase(req);
 }
 
-// Sección de Meta Ads en el informe mensual (si el plan la incluye y hay cuenta).
-informe.registrarSeccion('metaAds', (negocio, desde, hasta) => {
-  if (!meta.abiertoPara(negocio) || !getPlan(negocio.plan).ads || !negocio.meta || !negocio.meta.adAccountId) return null;
-  // También los cambios que hizo el dueño en el mes y lo que enseñan sus anuncios.
-  let cambios = [];
-  let aprendido = null;
-  try {
-    cambios = aprendizajeAds.delPeriodo(negocio.id, desde, hasta);
-    aprendido = aprendizajeAds.leccion(negocio.id, { hoy: hasta });
-  } catch (err) { /* sin datos: el resumen igual sale */ }
-  return Object.assign(meta.resumenAds(negocio.id, desde, hasta), {
-    moneda: negocio.meta.moneda, cuenta: negocio.meta.cuentaNombre, cambios, aprendido: aprendido ? aprendido.frases : [],
-  });
-});
-
-// Análisis de Meta Ads de los últimos `dias` días, con lo aprendido de los
-// cambios que el dueño hizo antes (ver aprendizaje-ads.js).
-function analisisMeta(negocioId, dias) {
-  const n = store.getNegocio(negocioId);
-  const hasta = analitica.fechaLocal(new Date());
-  const enlaceDe = (destino) => meta.enlaceAdministrador(n.meta.adAccountId, destino);
-  const a = analisisAds.analizar({
-    resumenDe: (d, h) => meta.resumenAds(negocioId, d, h), desglosesDe: (d, h) => meta.desglosesAds(negocioId, d, h),
-    desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.meta.moneda, sumarDias: analitica.sumarDias, primeraFecha: meta.primeraFechaAds(negocioId),
-    enlaceDe,
-  });
-  return { n, analisis: a, aprendido: aprendizajeAds.aplicar(negocioId, n.meta.adAccountId, a.diagnostico, { enlaceDe }) };
-}
-
 // --- notificaciones push (server/push.js) ---
 const NOMBRE_FORMATO = { post: 'post', carrusel: 'carrusel', reel: 'Reel', historia: 'historia' };
 function notificar(negocioId, mensaje) {
@@ -1077,14 +990,14 @@ function avisoPublicador(evento, negocioId, item) {
     notificar(negocioId, { titulo: `Se publicó tu ${formato} en Instagram`, cuerpo: (item.variants[item.variantIndex] || '').slice(0, 120), url: '/app#cola', tag: 'publicada' });
   } else if (evento === 'fallida') {
     const motivo = (item.publicacion && item.publicacion.motivo) || '';
-    notificar(negocioId, { titulo: `No se pudo publicar tu ${formato}`, cuerpo: motivo || 'Revísala en Por aprobar y usa "Reintentar".', url: '/app#cola', tag: 'fallida-' + item.id, urgente: true });
+    notificar(negocioId, { titulo: `No se pudo publicar tu ${formato}`, cuerpo: motivo || 'Revísala en Publicaciones y usa "Reintentar".', url: '/app#cola', tag: 'fallida-' + item.id, urgente: true });
     if (Date.now() - (ultimoCorreoFallida.get(negocioId) || 0) > 6 * 3600 * 1000) {
       ultimoCorreoFallida.set(negocioId, Date.now());
       correoCliente(negocioId, (negocio, url) => avisos.correoPublicacionFallida({ negocio, urlPanel: url('#cola'), formato, motivo }));
     }
     alertas.alertar('instagram', 'Falló una publicación en Instagram', `${(store.getNegocio(negocioId) || {}).nombre || negocioId}: ${motivo || 'sin motivo'}`);
   } else if (evento === 'reconectar') {
-    notificar(negocioId, { titulo: 'Instagram se desconectó', cuerpo: 'Tus publicaciones programadas esperan hasta que lo vuelvas a conectar en Conexiones y ajustes.', url: '/app#config', tag: 'reconectar', urgente: true });
+    notificar(negocioId, { titulo: 'Instagram se desconectó', cuerpo: 'Tus publicaciones programadas esperan hasta que lo vuelvas a conectar en Más → Cuentas conectadas.', url: '/app#config', tag: 'reconectar', urgente: true });
   }
 }
 
@@ -1132,6 +1045,11 @@ function planDeCortesia(negocio) {
 // de una versión anterior (las de 7 días del formulario no se tocan).
 for (const n of store.listNegocios()) {
   let cambio = false;
+  // Rubrofy ya no lee publicidad ni competencia: no se guardan los accesos
+  // a Facebook ni a Google que quedaron de esas funciones.
+  for (const k of ['meta', 'metaPendiente', 'google']) {
+    if (n[k]) { delete n[k]; cambio = true; }
+  }
   if (n.prueba && n.prueba.codigo) {
     const suscrito = pagos.suscrito(n);
     if (!suscrito) n.plan = 'gratis';
@@ -2032,7 +1950,7 @@ const server = http.createServer(async (req, res) => {
         const titulo = !valido ? 'El enlace no es válido o ya venció'
           : r.aprobadas ? `Listo: ${r.aprobadas === 1 ? 'aprobamos 1 publicación' : `aprobamos ${r.aprobadas} publicaciones`}`
           : r.faltan ? 'Nada que aprobar todavía' : 'No había publicaciones pendientes';
-        const detalle = !valido ? 'Entra al panel y apruébalas desde Por aprobar.'
+        const detalle = !valido ? 'Entra al panel y apruébalas en Publicaciones.'
           : [r.aprobadas ? (r.igConectado ? 'Se publican solas en su fecha.' : 'Conecta Instagram en el panel para que se publiquen solas.') : '',
             r.faltan ? `${r.faltan === 1 ? '1 reel espera su video' : `${r.faltan} reels esperan su video`}: súbelo en Estudio de reels.` : ''].filter(Boolean).join(' ');
         res.writeHead(valido ? 200 : 400, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...CABECERAS_SEGURIDAD });
@@ -2055,12 +1973,13 @@ const server = http.createServer(async (req, res) => {
         return res.end(`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Rubrofy</title>
           <body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#140f0a;color:#f5efe4;font-family:Arial,sans-serif;padding:24px">
           <div style="max-width:420px;text-align:center"><h1 style="font-size:22px">${valido ? 'Listo: ya no recibirás el resumen semanal' : 'El enlace no es válido o ya venció'}</h1>
-          <p style="color:#b9a892">${valido ? 'Puedes volver a activarlo cuando quieras en Conexiones y ajustes.' : 'Puedes desactivar el resumen en Conexiones y ajustes.'}</p>
+          <p style="color:#b9a892">${valido ? 'Puedes volver a activarlo cuando quieras en Mi cuenta → Avisos.' : 'Puedes desactivar el resumen en Mi cuenta → Avisos.'}</p>
           <p><a href="/app" style="color:#ffac2b">Ir a mi panel</a></p></div></body></html>`);
       }
 
       // GET /api/instagram/callback?code&state — vuelta de "Conectar con
-      // Instagram". Igual que Google: state firmado, ligado al negocio y a la sesión.
+      // Instagram". El state va firmado, ligado al negocio y a la sesión: nadie
+      // puede enganchar su Instagram a otra cuenta.
       if (parts[1] === 'instagram' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
         const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
         const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
@@ -2076,67 +1995,6 @@ const server = http.createServer(async (req, res) => {
           return volver({ instagram: 'ok' });
         } catch (err) {
           return volver({ instagram: 'error', motivo: 'No se pudo conectar Instagram: ' + err.message });
-        }
-      }
-
-      // GET /api/meta/callback?code&state — vuelta de "Conectar con Facebook"
-      // (Meta Ads y competencia). Mismo cuidado: state firmado, ligado al
-      // negocio y a la sesión. Con una sola cuenta de cada tipo queda conectado;
-      // con varias, el panel pide elegir (el token espera en el servidor).
-      if (parts[1] === 'meta' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET') {
-        const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
-        const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
-        const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'meta-oauth', nonce);
-        if (!firmaOk || sesionActual(req) !== negocioId) return volver({ meta: 'error', motivo: 'La conexión venció o no corresponde a tu sesión. Intenta de nuevo.' });
-        if (url.searchParams.get('error')) return volver({ meta: 'error', motivo: 'No se dieron los permisos en Facebook. Vuelve a intentarlo y acepta todos los permisos.' });
-        const negocioM = store.getNegocio(negocioId);
-        const planM = getPlan(negocioM && negocioM.plan);
-        if (!negocioM || (!planM.ads && !planM.competencia)) return volver({ meta: 'error', motivo: 'Meta Ads y competencia están disponibles en el plan Estudio.' });
-        try {
-          const t = await meta.canjearCodigo(url.searchParams.get('code'), urlPublica(req) + '/api/meta/callback');
-          const op = await meta.opcionesDeCuenta(t.accessToken);
-          const ads = op.cuentasPublicitarias;
-          const igs = op.cuentasInstagram;
-          if (!ads.length && !igs.length) {
-            return volver({ meta: 'error', motivo: 'Esa cuenta de Facebook no administra cuentas publicitarias ni un Instagram profesional vinculado a una página. Entra con la cuenta que administra tus anuncios.' });
-          }
-          if (ads.length <= 1 && igs.length <= 1) {
-            await guardarMeta(negocioId, planM, { accessToken: t.accessToken, venceEl: t.venceEl, cuenta: ads[0] || null, ig: igs[0] || null });
-            return volver({ meta: 'ok' });
-          }
-          const n = store.getNegocio(negocioId);
-          n.metaPendiente = { accessToken: t.accessToken, venceEl: t.venceEl, opciones: op, creadoEl: new Date().toISOString() };
-          store.saveNegocio(n);
-          return volver({ meta: 'elegir' });
-        } catch (err) {
-          return volver({ meta: 'error', motivo: 'No se pudo conectar con Meta: ' + err.message });
-        }
-      }
-
-      // GET /api/google/callback?code&state — vuelta de "Iniciar sesión con
-      // Google". El state va firmado y ligado al negocio, y además tiene que
-      // coincidir con la sesión: nadie puede enganchar su Google a otra cuenta.
-      if (parts[1] === 'google' && parts[2] === 'callback' && parts.length === 3 && req.method === 'GET' && google.activo()) {
-        const volver = (q) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams(q) }); res.end(); };
-        const [negocioId, nonce, firma] = String(url.searchParams.get('state') || '').split('.');
-        const firmaOk = negocioId && nonce && firma && auth.verificarTokenFoto(firma.replace(/_/g, '.'), negocioId, 'google-oauth', nonce);
-        if (!firmaOk || sesionActual(req) !== negocioId) return volver({ google: 'error', motivo: 'La conexión venció o no corresponde a tu sesión. Intenta de nuevo.' });
-        if (url.searchParams.get('error')) return volver({ google: 'error', motivo: 'No se dio permiso en Google.' });
-        try {
-          const tokens = await google.canjearCodigo(url.searchParams.get('code'), urlPublica(req) + '/api/google/callback');
-          if (!tokens.refresh_token) return volver({ google: 'error', motivo: 'Google no entregó acceso permanente; quita el acceso de Rubrofy en tu cuenta de Google y vuelve a conectar.' });
-          const opciones = await google.cuentasAccesibles(tokens.refresh_token);
-          const n = store.getNegocio(negocioId);
-          n.google = { refreshToken: tokens.refresh_token, opciones, conectadoEl: new Date().toISOString() };
-          if (opciones.length === 1) {
-            Object.assign(n.google, { customerId: opciones[0].id, nombre: opciones[0].nombre, moneda: opciones[0].moneda, loginCustomerId: opciones[0].loginCustomerId });
-            delete n.google.opciones;
-          }
-          store.saveNegocio(n);
-          if (n.google.customerId) await google.sincronizar(negocioId);
-          return volver({ google: opciones.length ? 'ok' : 'sin-cuentas' });
-        } catch (err) {
-          return volver({ google: 'error', motivo: 'No se pudo conectar con Google Ads: ' + err.message });
         }
       }
 
@@ -2202,7 +2060,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(302, { Location: '/app?' + new URLSearchParams({ instagram: 'error', motivo: 'El inicio de sesión con Instagram no está configurado en este servidor. Usa el ID y el token.' }) });
             return res.end();
           }
-          const nonce = google.nuevoEstadoOAuth();
+          const nonce = crypto.randomBytes(9).toString('hex');
           const firma = auth.crearTokenFoto(negocioId, 'instagram-oauth', nonce, 15).replace(/\./g, '_');
           res.writeHead(302, { Location: instagram.urlLogin(urlPublica(req) + '/api/instagram/callback', `${negocioId}.${nonce}.${firma}`) });
           return res.end();
@@ -2974,246 +2832,6 @@ const server = http.createServer(async (req, res) => {
           return sendJSON(res, 200, items);
         }
 
-        // Conexión con Meta (lado Facebook) para Meta Ads y competencia:
-        //   POST   /api/negocios/:id/meta/cuentas { accessToken } — qué cuentas puede elegir
-        //   PUT    /api/negocios/:id/meta { accessToken, adAccountId, igUserId }
-        //   DELETE /api/negocios/:id/meta
-        //   GET    /api/negocios/:id/meta/conectar — "Conectar con Facebook"
-        //   PUT    /api/negocios/:id/meta { adAccountId, igUserId } — elige tras "Conectar con Facebook"
-        if (parts[3] === 'meta') {
-          const plan = getPlan(negocio.plan);
-          if (parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
-            const volverM = (motivo) => { res.writeHead(302, { Location: '/app?' + new URLSearchParams({ meta: 'error', motivo }) }); return res.end(); };
-            if (!meta.abiertoPara(negocio)) return volverM('Meta Ads y Competencia llegan pronto a Rubrofy.');
-            if (!plan.ads && !plan.competencia) return volverM('Meta Ads y competencia están disponibles en el plan Estudio.');
-            if (!meta.loginDisponible(negocio)) return volverM('"Conectar con Facebook" no está configurado en este servidor. Usa la opción con token.');
-            const nonce = google.nuevoEstadoOAuth();
-            const firma = auth.crearTokenFoto(negocioId, 'meta-oauth', nonce, 15).replace(/\./g, '_');
-            res.writeHead(302, { Location: meta.urlLogin(urlPublica(req) + '/api/meta/callback', `${negocioId}.${nonce}.${firma}`) });
-            return res.end();
-          }
-          // Desconectar se puede siempre; conectar, solo si Meta está abierto para este negocio.
-          if (!meta.abiertoPara(negocio) && req.method !== 'DELETE') return sendJSON(res, 404, { error: 'Meta Ads y Competencia llegan pronto a Rubrofy.', proximamente: true });
-          if (!plan.ads && !plan.competencia) {
-            return sendJSON(res, 403, { error: 'Meta Ads y competencia están disponibles en el plan Estudio' });
-          }
-          if (parts[4] === 'cuentas' && parts.length === 5 && req.method === 'POST') {
-            const body = await readBody(req);
-            const token = String(body.accessToken || '').trim();
-            if (!token) return sendJSON(res, 400, { error: 'Falta el token de Meta' });
-            try {
-              return sendJSON(res, 200, await meta.opcionesDeCuenta(token));
-            } catch (err) {
-              return sendJSON(res, 400, { error: err.tipo === 'token' ? 'Meta rechazó el token: revisa que esté completo y vigente.' : err.message });
-            }
-          }
-          if (parts.length === 4 && req.method === 'PUT') {
-            const body = await readBody(req);
-            let token = String(body.accessToken || '').trim();
-            let venceEl = null;
-            let opciones = null;
-            // Sin token: es la elección después de "Conectar con Facebook".
-            if (!token && negocio.metaPendiente) {
-              if (!metaPendienteVigente(negocio.metaPendiente)) return sendJSON(res, 400, { error: 'Pasó mucho rato: vuelve a pulsar "Conectar con Facebook".' });
-              ({ accessToken: token, venceEl, opciones } = negocio.metaPendiente);
-            }
-            if (!token) return sendJSON(res, 400, { error: 'Falta el token de Meta' });
-            if (!opciones) {
-              try {
-                opciones = await meta.opcionesDeCuenta(token);
-              } catch (err) {
-                return sendJSON(res, 400, { error: 'Meta rechazó el token: revisa que esté completo y vigente.' });
-              }
-            }
-            const cuenta = opciones.cuentasPublicitarias.find((c) => c.id === body.adAccountId) || null;
-            const ig = opciones.cuentasInstagram.find((c) => c.id === body.igUserId) || null;
-            if (body.adAccountId && !cuenta) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta publicitaria elegida' });
-            if (body.igUserId && !ig) return sendJSON(res, 400, { error: 'Ese token no tiene acceso a la cuenta de Instagram elegida' });
-            if (!cuenta && !ig) return sendJSON(res, 400, { error: 'Elige una cuenta publicitaria o una cuenta de Instagram' });
-            if (!venceEl) {
-              const largo = await meta.tokenLargo(token);
-              if (largo) {
-                token = largo.accessToken;
-                venceEl = largo.expiraEnSeg ? new Date(Date.now() + largo.expiraEnSeg * 1000).toISOString() : null;
-              }
-            }
-            return sendJSON(res, 200, negocioPublico(await guardarMeta(negocioId, plan, { accessToken: token, venceEl, cuenta, ig })));
-          }
-          if (parts.length === 4 && req.method === 'DELETE') {
-            const fresco = store.getNegocio(negocioId);
-            delete fresco.meta;
-            delete fresco.metaPendiente;
-            store.saveNegocio(fresco);
-            return sendJSON(res, 200, negocioPublico(fresco));
-          }
-          return sendJSON(res, 400, { error: 'Acción inválida' });
-        }
-
-        // Competencia en Instagram (plan Estudio, requiere la conexión con Meta):
-        //   GET    /api/negocios/:id/competencia
-        //   POST   /api/negocios/:id/competencia { username }
-        //   DELETE /api/negocios/:id/competencia/:username
-        //   POST   /api/negocios/:id/competencia/sincronizar
-        if (parts[3] === 'competencia') {
-          if (!meta.abiertoPara(negocio)) return sendJSON(res, 404, { error: 'Competencia llega pronto a Rubrofy.', proximamente: true });
-          if (!getPlan(negocio.plan).competencia) return sendJSON(res, 403, { error: 'Competencia está disponible en el plan Estudio' });
-          if (!negocio.meta || !negocio.meta.igUserId) {
-            return sendJSON(res, 400, { error: 'Conecta Meta en Conexiones y ajustes y elige tu cuenta de Instagram para seguir a tu competencia' });
-          }
-          const vista = () => ({ comparacion: competencia.comparacion(store.getNegocio(negocioId)), sync: analitica.estadoSync(negocioId, 'competencia') });
-          if (parts.length === 4 && req.method === 'GET') return sendJSON(res, 200, vista());
-          if (parts.length === 4 && req.method === 'POST') {
-            const body = await readBody(req);
-            const r = await competencia.agregar(negocio, body.username);
-            if (r.error) return sendJSON(res, 400, { error: r.error });
-            return sendJSON(res, 201, vista());
-          }
-          if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
-            const r = await sincronizador.sincronizarAhora(negocioId, 'competencia');
-            if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
-            return sendJSON(res, 200, vista());
-          }
-          if (parts.length === 5 && req.method === 'DELETE') {
-            competencia.quitar(negocioId, parts[4]);
-            return sendJSON(res, 200, vista());
-          }
-          return sendJSON(res, 400, { error: 'Acción inválida' });
-        }
-
-        // Google Ads (plan Estudio):
-        //   GET    /api/negocios/:id/google/conectar — redirige a Google
-        //   PUT    /api/negocios/:id/google { customerId } — elige la cuenta
-        //   DELETE /api/negocios/:id/google
-        //   GET    /api/negocios/:id/google-ads?dias=30 · POST .../google-ads/sincronizar
-        if (parts[3] === 'google' || parts[3] === 'google-ads') {
-          if (!google.activo()) return sendJSON(res, 404, { error: 'Google Ads no está disponible por ahora' });
-          if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Google Ads está disponible en el plan Estudio' });
-          if (parts[3] === 'google' && parts[4] === 'conectar' && parts.length === 5 && req.method === 'GET') {
-            if (!google.configurado()) return sendJSON(res, 400, { error: 'Google Ads no está configurado en este servidor' });
-            const nonce = google.nuevoEstadoOAuth();
-            // el token firmado lleva un punto; se cambia por _ para separar el state con puntos
-            const firma = auth.crearTokenFoto(negocioId, 'google-oauth', nonce, 15).replace(/\./g, '_');
-            res.writeHead(302, { Location: google.urlAutorizacion(urlPublica(req) + '/api/google/callback', `${negocioId}.${nonce}.${firma}`) });
-            return res.end();
-          }
-          if (parts[3] === 'google' && parts.length === 4 && req.method === 'PUT') {
-            const body = await readBody(req);
-            const g = negocio.google;
-            const elegida = g && (g.opciones || []).find((o) => o.id === String(body.customerId));
-            if (!elegida) return sendJSON(res, 400, { error: 'Elige una de las cuentas disponibles' });
-            const n = store.getNegocio(negocioId);
-            Object.assign(n.google, { customerId: elegida.id, nombre: elegida.nombre, moneda: elegida.moneda, loginCustomerId: elegida.loginCustomerId });
-            delete n.google.opciones;
-            store.saveNegocio(n);
-            await google.sincronizar(negocioId);
-            return sendJSON(res, 200, negocioPublico(store.getNegocio(negocioId)));
-          }
-          if (parts[3] === 'google' && parts.length === 4 && req.method === 'DELETE') {
-            const n = store.getNegocio(negocioId);
-            delete n.google;
-            store.saveNegocio(n);
-            return sendJSON(res, 200, negocioPublico(n));
-          }
-          if (parts[3] === 'google-ads') {
-            if (!negocio.google || !negocio.google.customerId) return sendJSON(res, 400, { error: 'Conecta Google Ads en Conexiones y ajustes' });
-            if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
-              const r = await sincronizador.sincronizarAhora(negocioId, 'google_ads');
-              if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
-            } else if (!(parts.length === 4 && req.method === 'GET')) {
-              return sendJSON(res, 400, { error: 'Acción inválida' });
-            }
-            const dias = [7, 30, 90].includes(Number(url.searchParams.get('dias'))) ? Number(url.searchParams.get('dias')) : 30;
-            const hasta = analitica.fechaLocal(new Date());
-            const n = store.getNegocio(negocioId);
-            return sendJSON(res, 200, Object.assign({
-              dias,
-              conexion: google.publico(n.google),
-              sync: analitica.estadoSync(negocioId, 'google_ads'),
-            }, analisisAds.analizar({
-              resumenDe: (d, h) => google.resumen(negocioId, d, h),
-              desde: analitica.sumarDias(hasta, -(dias - 1)), hasta, dias, moneda: n.google.moneda, sumarDias: analitica.sumarDias, primeraFecha: google.primeraFecha(negocioId),
-            })));
-          }
-          return sendJSON(res, 400, { error: 'Acción inválida' });
-        }
-
-        // GET  /api/negocios/:id/ads?dias=30 — Meta Ads del período (solo lectura)
-        // POST /api/negocios/:id/ads/sincronizar
-        if (parts[3] === 'ads') {
-          if (!meta.abiertoPara(negocio)) return sendJSON(res, 404, { error: 'Meta Ads llega pronto a Rubrofy.', proximamente: true });
-          if (!getPlan(negocio.plan).ads) return sendJSON(res, 403, { error: 'Meta Ads está disponible en el plan Estudio' });
-          if (!negocio.meta || !negocio.meta.adAccountId) return sendJSON(res, 400, { error: 'Conecta tu cuenta publicitaria de Meta en Conexiones y ajustes' });
-          const diasDe = (v) => ([7, 30, 90].includes(Number(v)) ? Number(v) : 30);
-          // POST /api/negocios/:id/ads/cambios — publicidad que aprende:
-          //   { clave, accion: 'abrir' | 'hecho' | 'descartar', dias } sobre una recomendación del diagnóstico,
-          //   { id, accion: 'hecho' | 'descartar' } sobre un cambio de "Tus cambios",
-          //   { accion: 'mostrar-ocultas' } vuelve a mostrar las que dijo que no le sirven.
-          if (parts.length === 5 && parts[4] === 'cambios' && req.method === 'POST') {
-            const body = await readBody(req);
-            if (body.accion === 'mostrar-ocultas') {
-              aprendizajeAds.mostrarOcultas(negocioId);
-              return sendJSON(res, 200, { ok: true });
-            }
-            if (!['abrir', 'hecho', 'descartar'].includes(body.accion)) return sendJSON(res, 400, { error: 'Acción inválida' });
-            if (body.id != null) {
-              if (body.accion === 'abrir' || !aprendizajeAds.actualizar(negocioId, body.id, body.accion)) return sendJSON(res, 404, { error: 'Ese cambio ya no está pendiente' });
-              return sendJSON(res, 200, { ok: true });
-            }
-            const { n, analisis } = analisisMeta(negocioId, diasDe(body.dias));
-            const h = typeof body.clave === 'string' && analisis.diagnostico.find((x) => x.clave === body.clave);
-            if (!h) return sendJSON(res, 404, { error: 'Esa recomendación ya no aparece. Actualiza la página.' });
-            aprendizajeAds.registrar(negocioId, n.meta.adAccountId, h, body.accion);
-            const despues = analisisMeta(negocioId, diasDe(body.dias)).aprendido;
-            const ahora = despues.diagnostico.find((x) => x.clave === body.clave) || null;
-            return sendJSON(res, 200, { ok: true, hallazgo: ahora, ocultas: despues.ocultas });
-          }
-          // POST /api/negocios/:id/ads/pieza { clave } — "Crear esta pieza en Rubrofy":
-          // una pieza para la ubicación donde sus anuncios rinden más, con lo
-          // que enseñan sus anuncios. Llega a Por aprobar, como todo.
-          if (parts.length === 5 && parts[4] === 'pieza' && req.method === 'POST') {
-            const body = await readBody(req);
-            const { analisis } = analisisMeta(negocioId, diasDe(body.dias));
-            const h = typeof body.clave === 'string' && analisis.diagnostico.find((x) => x.clave === body.clave && x.pieza);
-            if (!h) return sendJSON(res, 404, { error: 'Esa recomendación ya no aparece. Actualiza la página.' });
-            const usaIA = getPlan(negocio.plan).usaIA;
-            if (usaIA && textosIADisponibles(negocio) <= 0) return sendJSON(res, 403, sinCupo('piezas', 'Ya usaste todas las piezas con IA de este mes. Se renuevan el día 1, o puedes cargar más.'));
-            const leccion = aprendizajeAds.leccion(negocioId);
-            const existentes = store.getContenido(negocioId);
-            const formato = h.pieza.formato;
-            const [nueva] = await generarBanco(negocio, 1, existentes.length, {
-              usarIA: usaIA, formato, diaInicio: diaSiguienteDeLaCola(existentes),
-              indicaciones: contextoIA.indicacion(`Esta pieza es para ${h.pieza.lugar}, donde los anuncios del negocio consiguen resultados más baratos, y tiene que servir también para promocionarla como anuncio: lo importante (producto y precio) en los primeros 2 segundos${formato === 'post' ? '' : ', formato vertical'} y un llamado a la acción directo.${leccion && leccion.prompt.length ? ' Lo que mejor le funciona en anuncios: ' + leccion.prompt.join(' ') : ''}`),
-            });
-            registrarUsoIA(negocioId, 'usoTextosIA', nueva.generadoConIA ? 1 : 0);
-            nueva.sugeridaPorAnuncios = String(h.pieza.lugar).slice(0, 60); // el panel la marca
-            store.saveContenido(negocioId, store.getContenido(negocioId).concat([nueva]));
-            return sendJSON(res, 200, { ok: true, item: nueva });
-          }
-          if (parts.length === 5 && parts[4] === 'sincronizar' && req.method === 'POST') {
-            const r = await sincronizador.sincronizarAhora(negocioId, 'meta_ads');
-            if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
-          } else if (!(parts.length === 4 && req.method === 'GET')) {
-            return sendJSON(res, 400, { error: 'Acción inválida' });
-          }
-          const dias = diasDe(url.searchParams.get('dias'));
-          // Pone al día los cambios (detectar y medir) antes de mostrar.
-          try { aprendizajeAds.revisar(negocioId); } catch (err) { console.log(`Aprendizaje ads: ${negocioId}: ${err.message}`); }
-          const { n, analisis, aprendido } = analisisMeta(negocioId, dias);
-          let leccion = null;
-          try { leccion = aprendizajeAds.leccion(negocioId); } catch (err) { leccion = null; }
-          return sendJSON(res, 200, Object.assign({
-            dias,
-            conexion: meta.publicoMeta(n.meta),
-            sync: analitica.estadoSync(negocioId, 'meta_ads'),
-          }, analisis, {
-            diagnostico: aprendido.diagnostico,
-            ocultas: aprendido.ocultas,
-            cambios: aprendido.cambios,
-            resumenCambios: aprendido.resumenCambios,
-            aprendido: leccion ? { frases: leccion.frases, usaIA: !!getPlan(n.plan).usaIA } : null,
-          }));
-        }
-
         // POST /api/negocios/:id/prueba — activa los días gratis con el formulario.
         if (parts[3] === 'prueba' && parts.length === 4 && req.method === 'POST') {
           const espera = limiteEstrategia.esperaSegundos('prueba:' + negocioId);
@@ -3416,7 +3034,7 @@ const server = http.createServer(async (req, res) => {
           }
           if (parts[4] === 'importar' && parts.length === 5 && req.method === 'POST') {
             if (!negocio.instagram || !negocio.instagram.accessToken) {
-              return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para importar tus publicaciones' });
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Más → Cuentas conectadas para importar tus publicaciones' });
             }
             try {
               const r = await estilo.importarDeInstagram(negocio);
@@ -3490,7 +3108,7 @@ const server = http.createServer(async (req, res) => {
           }
           if (parts[4] === 'sincronizar' && parts.length === 5 && req.method === 'POST') {
             if (!negocio.instagram || !negocio.instagram.accessToken) {
-              return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para ver tus resultados' });
+              return sendJSON(res, 400, { error: 'Conecta Instagram en Más → Cuentas conectadas para ver tus resultados' });
             }
             const r = await sincronizador.sincronizarAhora(negocioId);
             if (!r.ok && r.espera) return sendJSON(res, 429, { error: r.error });
@@ -3802,6 +3420,29 @@ const server = http.createServer(async (req, res) => {
               if (!((store.listFotos(negocioId)[categoria]) || []).includes(archivo)) return sendJSON(res, 404, { error: 'No encontramos esa foto en tu galería' });
               aplicar = (it) => { it.fotoElegida = { categoria, archivo }; delete it.diseno; };
             }
+          } else if (accion === 'fotos' && req.method === 'PUT') {
+            // PUT /api/negocios/:id/contenido/:item/fotos  { fotos: [{ categoria, archivo }] } | { quitar: true }
+            // Las fotos del carrusel, en el orden en que salen (de 2 a 10).
+            if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada' });
+            const b = await readBody(req);
+            if (b.quitar) {
+              aplicar = (it) => { delete it.fotosCarrusel; delete it.diseno; };
+            } else {
+              const galeria = store.listFotos(negocioId);
+              const vistas = new Set();
+              const elegidas = [];
+              for (const f of (Array.isArray(b.fotos) ? b.fotos : [])) {
+                const categoria = String((f && f.categoria) || '');
+                const archivo = path.basename(String((f && f.archivo) || ''));
+                if (!(galeria[categoria] || []).includes(archivo)) return sendJSON(res, 404, { error: 'No encontramos una de esas fotos en tu galería' });
+                if (vistas.has(categoria + '/' + archivo)) continue;
+                vistas.add(categoria + '/' + archivo);
+                elegidas.push({ categoria, archivo });
+              }
+              if (elegidas.length < 2) return sendJSON(res, 400, { error: 'Un carrusel necesita al menos 2 fotos' });
+              if (elegidas.length > MAX_FOTOS_CARRUSEL) return sendJSON(res, 400, { error: `Un carrusel lleva hasta ${MAX_FOTOS_CARRUSEL} fotos` });
+              aplicar = (it) => { it.fotosCarrusel = elegidas; delete it.diseno; };
+            }
           } else if (accion === 'aprobar' && req.method === 'POST') {
             if (publicada) {
               // Ya está en Instagram (se aprobó, se deshizo y se vuelve a
@@ -3832,7 +3473,7 @@ const server = http.createServer(async (req, res) => {
           } else if ((accion === 'publicar-ahora' || accion === 'reintentar') && req.method === 'POST') {
             if (item.status !== 'aprobado') return sendJSON(res, 400, { error: 'Primero aprueba la pieza' });
             if (publicada) return sendJSON(res, 409, { error: 'Esta pieza ya está publicada en Instagram' });
-            if (!igConectado) return sendJSON(res, 400, { error: 'Conecta Instagram en Conexiones y ajustes para publicar' });
+            if (!igConectado) return sendJSON(res, 400, { error: 'Conecta Instagram en Más → Cuentas conectadas para publicar' });
             if (seEstaPublicando) return ocupada();
             aplicar = (it) => {
               const ahora = new Date().toISOString();

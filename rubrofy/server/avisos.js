@@ -180,7 +180,7 @@ function correoReconectar({ negocio, urlPanel, motivo }) {
   const { html, texto } = plantilla({
     titulo: 'Reconecta tu Instagram',
     parrafos: [`Instagram dejó de aceptar la conexión de ${negocio.nombre}${motivo ? ` (${motivo})` : ''}. Lo que tienes programado está en espera: no se pierde, pero no se publicará hasta que reconectes.`,
-      'Entra a Conexiones y ajustes y vuelve a conectar Instagram. Lo programado sale solo al reconectar.'],
+      'Entra a Más → Cuentas conectadas y vuelve a conectar Instagram. Lo programado sale solo al reconectar.'],
     boton: { texto: 'Reconectar Instagram', url: urlPanel },
   });
   return { para: negocio.email, asunto: 'Tu Instagram se desconectó de Rubrofy', html, texto };
@@ -246,7 +246,7 @@ function correoCancelacion({ negocio, urlPanel, hasta }) {
 function correoPublicacionFallida({ negocio, urlPanel, formato, motivo }) {
   const { html, texto } = plantilla({
     titulo: `No se pudo publicar tu ${formato}`,
-    parrafos: [`Instagram no aceptó una publicación de ${negocio.nombre}${motivo ? `: ${motivo}` : '.'}`, 'Entra a Por aprobar: ahí ves el motivo y puedes pulsar "Reintentar" cuando esté resuelto.'],
+    parrafos: [`Instagram no aceptó una publicación de ${negocio.nombre}${motivo ? `: ${motivo}` : '.'}`, 'Entra a Publicaciones: ahí ves el motivo y puedes pulsar "Reintentar" cuando esté resuelto.'],
     boton: boton('Revisar la publicación', urlPanel),
   });
   return { para: negocio.email, asunto: `No se pudo publicar tu ${formato} en Instagram`, html, texto };

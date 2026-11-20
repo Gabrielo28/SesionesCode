@@ -1,7 +1,7 @@
 // "Contexto para la IA": lo que el negocio quiere que la IA sepa, por
 // sección (general, voz, estrategia, copys, cada formato, imágenes y
 // videos). Se usa como vista completa y como editor chico dentro de otras
-// vistas (Estrategia, Por aprobar, Fotos, Voz de marca). Datos de
+// vistas (Tu marca → Estrategia y Contexto para la IA). Datos de
 // /api/negocios/:id/contexto-ia.
 (function () {
   const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');

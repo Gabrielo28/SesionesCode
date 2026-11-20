@@ -1,7 +1,6 @@
 // Informe mensual: junta los resultados del mes (y la comparación con el
 // anterior), lo que se publicó, cuánto aprobó el dueño sin cambios y las
-// secciones que agreguen otros módulos (Meta Ads, Google Ads, competencia),
-// más una conclusión en español escrita por Claude ("qué pasó, qué funcionó,
+// secciones que agreguen otros módulos, más una conclusión en español escrita por Claude ("qué pasó, qué funcionó,
 // qué haremos el próximo mes"). La conclusión se guarda: no se vuelve a pagar
 // cada vez que alguien abre el informe.
 

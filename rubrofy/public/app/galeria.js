@@ -1,7 +1,8 @@
 // Galería del negocio: todas sus fotos (por categoría), las generadas con
-// IA y el selector "Foto para la publicación" de cada tarjeta (elegir de la
-// galería, subir o generar con IA). Ver server/server.js: /fotos,
-// /galeria/ia y /contenido/:item/foto.
+// IA y los selectores de cada tarjeta: "Foto para la publicación" (elegir de
+// la galería, subir o generar con IA) y "Fotos del carrusel" (varias, en
+// orden). Ver server/server.js: /fotos, /galeria/ia, /contenido/:item/foto y
+// /contenido/:item/fotos.
 (function () {
   'use strict';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -432,7 +433,8 @@
       dlg.innerHTML = `<div class="dlg-caja gl-dlg">
         <div class="gl-dlg-cab"><h2>Foto para la publicación</h2><button type="button" class="gl-x" data-gl-cerrar aria-label="Cerrar">×</button></div>
         <div class="gl-pestanas" role="tablist">${[['galeria', '▦ Mi galería'], ['subir', '⬆ Subir'], ['ia', '✨ Crear con IA']].map(([id, t]) => `<button type="button" role="tab" class="gl-pest${pest === id ? ' on' : ''}" data-gl-pest="${id}" aria-selected="${pest === id}">${t}</button>`).join('')}</div>
-        <div class="gl-dlg-cuerpo">${cuerpo}</div></div>`;
+        <div class="gl-dlg-cuerpo">${cuerpo}</div>
+        ${pest === 'galeria' && item.formato === 'post' && fotos.length >= 2 ? '<div class="gl-dlg-pie"><span>¿Quieres publicar varias fotos juntas?</span><button type="button" class="btn-ghost" data-gl-a-carrusel>Hacerlo carrusel</button></div>' : ''}</div>`;
       if (pest === 'ia') activarFormIA(dlg, { item, alCrear: async () => { await ctx.refrescar(); setTimeout(() => dlg.close(), 900); } });
     };
     dlg.onclick = async (e) => {
@@ -441,6 +443,17 @@
       if (p) { pest = p.dataset.glPest; pintar(); return; }
       const l = e.target.closest('[data-gl-lupa]');
       if (l) { verFotos(lista(), Number(l.dataset.glLupa)); return; }
+      const c = e.target.closest('[data-gl-a-carrusel]');
+      if (c) {
+        c.disabled = true;
+        try {
+          await ctx.api(`/api/negocios/${n().id}/contenido/${item.id}/formato`, { method: 'PUT', body: JSON.stringify({ formato: 'carrusel' }) });
+          await ctx.refrescar();
+          dlg.close();
+          abrirCarrusel(Object.assign({}, item, { formato: 'carrusel' }), []);
+        } catch (err) { alert(err.mensaje || 'No se pudo cambiar a carrusel.'); c.disabled = false; }
+        return;
+      }
       const u = e.target.closest('[data-gl-usar]');
       if (u) {
         u.disabled = true;
@@ -462,6 +475,147 @@
     if (!dlg.open) dlg.showModal();
   }
 
+  // --- Selector "Fotos del carrusel": varias fotos, numeradas en el orden en que salen ---
+  const MAX_CARRUSEL = 10;
+  function abrirCarrusel(item, inicial) {
+    let dlg = document.getElementById('dlg-carrusel');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-carrusel';
+      dlg.className = 'dlg dlg-galeria dlg-carrusel';
+      document.body.appendChild(dlg);
+    }
+    const clave = (f) => f.categoria + '/' + f.archivo;
+    // Las elegidas, en orden: [{ categoria, archivo }].
+    let elegidas = (inicial || []).map((f) => ({ categoria: f.categoria, archivo: f.archivo }));
+    let subiendo = '';
+    let guardando = false;
+    let error = '';
+
+    const pintar = () => {
+      const fotos = lista();
+      const existentes = new Set(fotos.map(clave));
+      elegidas = elegidas.filter((f) => existentes.has(clave(f)));
+      const pos = new Map(elegidas.map((f, i) => [clave(f), i + 1]));
+      const n = elegidas.length;
+      const cuerpoAntes = dlg.querySelector('.gl-dlg-cuerpo');
+      const scroll = cuerpoAntes ? cuerpoAntes.scrollTop : 0;
+      dlg.innerHTML = `<div class="dlg-caja gl-dlg">
+        <div class="gl-dlg-cab"><div><h2>Fotos del carrusel</h2><p class="crs-sub">Elige de 2 a ${MAX_CARRUSEL}. El número es el orden en que salen.</p></div><button type="button" class="gl-x" data-cr-cerrar aria-label="Cerrar">×</button></div>
+        <div class="gl-dlg-cuerpo">
+          <div class="crs-grid">
+            <label class="crs-subir${subiendo ? ' subiendo' : ''}"><input type="file" accept="image/*" multiple hidden data-cr-subir${subiendo ? ' disabled' : ''}><span aria-hidden="true">⬆</span><b>${subiendo || 'Subir varias'}</b></label>
+            ${fotos.map((f) => {
+              const p = pos.get(clave(f));
+              return `<button type="button" class="crs-foto${p ? ' sel' : ''}" data-cr-cat="${esc(f.categoria)}" data-cr-foto="${esc(f.archivo)}" aria-pressed="${!!p}" aria-label="${p ? `Foto ${p} del carrusel. Toca para quitarla` : 'Agregar al carrusel'}"><img src="${esc(f.url)}" alt="" loading="lazy">${p ? `<span class="crs-n">${p}</span>` : ''}</button>`;
+            }).join('')}
+          </div>
+          ${fotos.length ? '' : '<p class="crs-vacio">Tu galería está vacía. Sube las fotos de tu carrusel con “Subir varias”.</p>'}
+        </div>
+        <div class="crs-pie">
+          ${n ? `${n > 1 ? '<span class="crs-orden-tit">Así salen. Arrastra una foto para cambiarla de lugar.</span>' : ''}<div class="crs-orden" data-cr-orden aria-label="Orden del carrusel">${elegidas.map((f, i) => `<div class="crs-mini" data-cr-i="${i}" tabindex="0" role="button" aria-label="Foto ${i + 1} de ${n}. Arrástrala o usa las flechas para moverla"><img src="${esc(url(f.categoria, f.archivo))}" alt="" draggable="false"><b>${i + 1}</b></div>`).join('')}</div>` : ''}
+          ${error ? `<p class="config-error">${esc(error)}</p>` : ''}
+          <button type="button" class="btn-approve crs-usar" data-cr-usar${n < 2 || guardando ? ' disabled' : ''}>${guardando ? 'Guardando…' : n < 2 ? (n ? 'Elige al menos una más' : 'Elige al menos 2 fotos') : `Usar estas ${n} fotos`}</button>
+        </div></div>`;
+      const cuerpo = dlg.querySelector('.gl-dlg-cuerpo');
+      if (cuerpo) cuerpo.scrollTop = scroll;
+    };
+
+    const mover = (de, a) => {
+      if (a < 0 || a >= elegidas.length || a === de) return false;
+      elegidas.splice(a, 0, elegidas.splice(de, 1)[0]);
+      return true;
+    };
+
+    dlg.onclick = async (e) => {
+      if (e.target === dlg || e.target.closest('[data-cr-cerrar]')) { dlg.close(); return; }
+      const f = e.target.closest('[data-cr-foto]');
+      if (f) {
+        const foto = { categoria: f.dataset.crCat, archivo: f.dataset.crFoto };
+        const i = elegidas.findIndex((x) => clave(x) === clave(foto));
+        error = '';
+        if (i >= 0) elegidas.splice(i, 1);
+        else if (elegidas.length >= MAX_CARRUSEL) error = `Instagram permite hasta ${MAX_CARRUSEL} fotos por carrusel. Quita una para agregar otra.`;
+        else elegidas.push(foto);
+        pintar();
+        return;
+      }
+      if (e.target.closest('[data-cr-usar]') && elegidas.length >= 2 && !guardando) {
+        guardando = true; error = ''; pintar();
+        try {
+          await ctx.api(`/api/negocios/${n().id}/contenido/${item.id}/fotos`, { method: 'PUT', body: JSON.stringify({ fotos: elegidas }) });
+          await ctx.refrescar();
+          dlg.close();
+        } catch (err) {
+          guardando = false;
+          error = err.mensaje || 'No se pudieron guardar las fotos. Intenta de nuevo.';
+          pintar();
+        }
+      }
+    };
+
+    // Subir varias de una vez: quedan elegidas, al final, en el orden en que se subieron.
+    dlg.onchange = async (e) => {
+      const inp = e.target.closest('[data-cr-subir]');
+      if (!inp || !inp.files.length) return;
+      const archivos = [...inp.files];
+      const cat = categorias().includes(item.categoriaFoto) ? item.categoriaFoto : categorias()[0];
+      error = '';
+      subiendo = archivos.length > 1 ? `Subiendo ${archivos.length}…` : 'Subiendo…';
+      pintar();
+      try {
+        const nuevas = await subir(cat, archivos);
+        for (const a of nuevas) if (elegidas.length < MAX_CARRUSEL) elegidas.push({ categoria: cat, archivo: a });
+        if (nuevas.length && elegidas.length >= MAX_CARRUSEL && nuevas.some((a) => !elegidas.some((x) => x.archivo === a))) error = `Se subieron todas, pero el carrusel lleva hasta ${MAX_CARRUSEL}: las demás quedaron en tu galería.`;
+      } catch (err) {
+        error = 'No se pudo subir: ' + (err.mensaje || err.message);
+      }
+      subiendo = '';
+      pintar();
+    };
+
+    // Cambiar el orden: arrastrando la miniatura (mouse o dedo) o con las flechas del teclado.
+    dlg.onkeydown = (e) => {
+      const m = e.target.closest && e.target.closest('[data-cr-i]');
+      if (!m || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+      e.preventDefault();
+      const de = Number(m.dataset.crI), a = de + (e.key === 'ArrowRight' ? 1 : -1);
+      if (!mover(de, a)) return;
+      pintar();
+      const nuevo = dlg.querySelector(`[data-cr-i="${a}"]`);
+      if (nuevo) nuevo.focus();
+    };
+    dlg.onpointerdown = (e) => {
+      const m = e.target.closest('[data-cr-i]');
+      if (!m || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      e.preventDefault();
+      let de = Number(m.dataset.crI);
+      const alMover = (ev) => {
+        const minis = [...dlg.querySelectorAll('[data-cr-i]')];
+        const a = minis.findIndex((el) => { const r = el.getBoundingClientRect(); return ev.clientX >= r.left && ev.clientX <= r.right; });
+        if (a < 0 || !mover(de, a)) return;
+        de = a;
+        pintar();
+        const actual = dlg.querySelector(`[data-cr-i="${de}"]`);
+        if (actual) actual.classList.add('moviendo');
+      };
+      const alSoltar = () => {
+        document.removeEventListener('pointermove', alMover);
+        document.removeEventListener('pointerup', alSoltar);
+        document.removeEventListener('pointercancel', alSoltar);
+        const actual = dlg.querySelector('.crs-mini.moviendo');
+        if (actual) actual.classList.remove('moviendo');
+      };
+      m.classList.add('moviendo');
+      document.addEventListener('pointermove', alMover);
+      document.addEventListener('pointerup', alSoltar);
+      document.addEventListener('pointercancel', alSoltar);
+    };
+
+    pintar();
+    if (!dlg.open) dlg.showModal();
+  }
+
   // Sube una foto desde la tarjeta y la deja como la foto de esa publicación.
   async function subirParaPieza(item, file) {
     const cat = categorias().includes(item.categoriaFoto) ? item.categoriaFoto : categorias()[0];
@@ -469,5 +623,5 @@
     if (nuevas[0]) await usarEnPieza(item, cat, nuevas[0]);
   }
 
-  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, subirParaPieza, verFotos, editarConIA };
+  window.RubrofyGaleria = { iniciar, renderVista, abrirSelector, abrirCarrusel, subirParaPieza, verFotos, editarConIA };
 })();

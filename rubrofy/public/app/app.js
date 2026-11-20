@@ -13,7 +13,8 @@
   const editingIds = new Set();
   const fechaEditIds = new Set(); // piezas con el selector de fecha abierto
   const pedirCambioIds = new Set(); // piezas con el campo "Pedir cambio" abierto
-  let filtroCola = null; // 'pendientes' | 'aprobadas' | 'rechazadas' | 'todas' (null: según lo que haya)
+  let filtroCola = null; // 'pendientes' | 'programadas' | 'publicadas' | 'descartadas' (null: según lo que haya)
+  let accionPieza = null; // acciones de una publicación (se define en init)
 
   const $ = (sel) => document.querySelector(sel);
   const AY = (k) => (window.Ayuda ? window.Ayuda.boton(k) : '');
@@ -122,7 +123,7 @@
     if (pub.estado === 'programada' && pub.procesando) return { color: 'var(--amber)', texto: 'Instagram está procesando el video&hellip;' };
     if (pub.estado === 'fallida') return { color: 'var(--coral)', texto: 'No se publicó: ' + escapeHtml(pub.motivo || 'error desconocido') };
     if (negocioActual.instagramEstado === 'reconectar') {
-      return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Conexiones y ajustes' };
+      return { color: 'var(--coral)', texto: 'En espera: reconecta Instagram en Más → Cuentas conectadas' };
     }
     if (pub.intentos) {
       return { color: 'var(--amber)', texto: `Reintento ${pub.intentos} a las ${escapeHtml(horaCorta(pub.proximoIntento))} &middot; ${escapeHtml(pub.ultimoError || '')}` };
@@ -132,11 +133,6 @@
 
   // ---------- render: stats ----------
   function renderStats() {
-    const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
-    const aprobados = contenido.filter((i) => i.status === 'aprobado').length;
-    $('#stat-pendientes').textContent = pendientes;
-    $('#stat-aprobados').textContent = aprobados;
-    $('#stat-total').textContent = contenido.length;
     if (window.RubrofyCreditos) window.RubrofyCreditos.pintarChip();
   }
 
@@ -153,54 +149,6 @@
     const arr = fotos[categoria];
     if (!arr || !arr.length) return null;
     return arr[hashString(itemId) % arr.length];
-  }
-
-  function drawCardCanvas(canvas) {
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    const headline = canvas.dataset.headline || '';
-    const inicial = canvas.dataset.inicial || '?';
-
-    const img = new Image();
-    img.onload = () => {
-      const scale = Math.max(w / img.width, h / img.height);
-      const sw = w / scale;
-      const sh = h / scale;
-      const sx = (img.width - sw) / 2;
-      const sy = (img.height - sh) / 2;
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
-
-      const grad = ctx.createLinearGradient(0, h * 0.35, 0, h);
-      grad.addColorStop(0, 'rgba(10,9,7,0)');
-      grad.addColorStop(1, 'rgba(10,9,7,0.88)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, h * 0.35, w, h * 0.65);
-
-      ctx.beginPath();
-      ctx.arc(30, 30, 15, 0, Math.PI * 2);
-      ctx.fillStyle = '#f3ede1';
-      ctx.fill();
-      ctx.fillStyle = '#161310';
-      ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(inicial, 30, 31);
-
-      ctx.fillStyle = '#f8f4ea';
-      ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'alphabetic';
-      const lines = headline.split('\n');
-      const lineHeight = 30;
-      const baseY = h - 22 - (lines.length - 1) * lineHeight;
-      lines.forEach((line, i) => ctx.fillText(line, 18, baseY + i * lineHeight));
-    };
-    img.onerror = () => {
-      ctx.fillStyle = '#201c17';
-      ctx.fillRect(0, 0, w, h);
-    };
-    img.src = canvas.dataset.src;
   }
 
   const FORMATOS = { post: 'Post', carrusel: 'Carrusel', reel: 'Reel', historia: 'Historia' };
@@ -232,19 +180,6 @@
     }
   }
 
-  // Edición de reels (public/app/reels.js): estado y botones en la tarjeta.
-  function edicionHTML(item) {
-    const ed = item.edicion || {};
-    const er = negocioActual.edicionReels || {};
-    if (ed.estado === 'editando') return '<span class="card-video-ok card-video-ia">Editando tu reel… suele tardar 1 o 2 minutos</span>';
-    const partes = [];
-    if (item.video.editado) partes.push(`<span class="card-video-ok card-editado">Reel editado${ed.duracion ? ` · ${String(ed.duracion).replace('.', ',')} s` : ''}</span><a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>`);
-    if (er.disponible) partes.push(`<button class="btn-text" data-action="editar-reel" data-id="${item.id}">${item.videoOriginal ? 'Editar de nuevo' : 'Editar con Rubrofy'}</button>${AY('editar-reel')}`);
-    if (item.videoOriginal) partes.push(`<button class="btn-text" data-action="video-original" data-id="${item.id}">Volver al original</button>`);
-    if (ed.estado === 'error') partes.push(`<span class="card-video-error">La edición falló: ${escapeHtml(ed.error || '')}</span>`);
-    return partes.join('');
-  }
-
   // La foto de la Galería de la pieza: la que el negocio eligió o una de su categoría.
   function fotoGaleriaDe(item) {
     const fe = item.fotoElegida && (fotos[item.fotoElegida.categoria] || []).includes(item.fotoElegida.archivo) ? item.fotoElegida : null;
@@ -253,8 +188,27 @@
     return archivo ? { categoria, archivo } : null;
   }
 
+  const urlFoto = (f) => `/fotos/${negocioActual.id}/${encodeURIComponent(f.categoria)}/${encodeURIComponent(f.archivo)}`;
+
+  // Las fotos de un carrusel, en orden: las que eligió el negocio o, si no
+  // eligió, las de la categoría de la pieza (igual que el servidor al publicar).
+  const MAX_FOTOS_CARRUSEL = 10;
+  function fotosCarruselDe(item) {
+    const elegidas = (item.fotosCarrusel || []).filter((f) => (fotos[f.categoria] || []).includes(f.archivo));
+    if (elegidas.length >= 2) return elegidas.slice(0, MAX_FOTOS_CARRUSEL);
+    const disponibles = fotos[item.categoriaFoto] || [];
+    if (disponibles.length < 2) return [];
+    const inicio = hashString(item.id) % disponibles.length;
+    return disponibles.slice(inicio).concat(disponibles.slice(0, inicio)).slice(0, MAX_FOTOS_CARRUSEL)
+      .map((archivo) => ({ categoria: item.categoriaFoto, archivo }));
+  }
+
   // La foto de la pieza: de la Galería o, si no hay, la creada con IA.
   function fotoDe(item) {
+    if (formatoDe(item) === 'carrusel') {
+      const c = fotosCarruselDe(item);
+      if (c.length) return urlFoto(c[0]);
+    }
     const g = fotoGaleriaDe(item);
     if (g) return `/fotos/${negocioActual.id}/${encodeURIComponent(g.categoria)}/${encodeURIComponent(g.archivo)}`;
     return item.imagenIA ? `/fotos/${negocioActual.id}/_ia/${item.id}.png${item.imagenIAVersion ? '?v=' + item.imagenIAVersion : ''}` : null;
@@ -272,158 +226,274 @@
     return `<p class="card-origen${item.editado || item.hashtagsEditados ? ' tuyo' : ''}"><span>Texto: <b>${texto}</b></span>${tags ? `<span>Hashtags: <b>${tags}</b></span>` : ''}</p>`;
   }
 
+  // "Jueves 26 · 19:30" (o "Hoy", "Mañana"), en la zona del negocio.
+  const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  function fechaAmigable(iso) {
+    const p = partesEnZona(iso);
+    const hoy = partesEnZona(new Date().toISOString());
+    const dia = Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day));
+    const dif = Math.round((dia - Date.UTC(Number(hoy.year), Number(hoy.month) - 1, Number(hoy.day))) / 86400000);
+    const nombre = dif === 0 ? 'Hoy' : dif === 1 ? 'Mañana'
+      : `${DIAS[new Date(dia).getUTCDay()]} ${Number(p.day)}${p.month !== hoy.month ? ' ' + MESES[Number(p.month) - 1].toLowerCase() : ''}`;
+    return `${nombre} · ${p.hour}:${p.minute}`;
+  }
+  const cuandoDe = (item) => (item.publicarEl ? fechaAmigable(item.publicarEl) : String(item.date || '').split(' - ').slice(0, 2).join(' · '));
+
+  // Lo que pasa con el video de la pieza mientras se crea o se edita.
+  function estadoVideoHTML(item) {
+    const partes = [];
+    const ed = item.edicion || {};
+    const vi = item.videoIA || {};
+    if (vi.estado === 'generando') partes.push('<span class="pz-aviso">Creando el video con IA… suele tardar 1 a 3 minutos</span>');
+    if (ed.estado === 'editando') partes.push('<span class="pz-aviso">Editando tu reel… suele tardar 1 o 2 minutos</span>');
+    if (vi.estado === 'error') partes.push(`<span class="pz-aviso mal">El video con IA falló: ${escapeHtml(vi.error || '')}</span>`);
+    if (ed.estado === 'error') partes.push(`<span class="pz-aviso mal">La edición falló: ${escapeHtml(ed.error || '')}</span>`);
+    return partes.join('');
+  }
+
+  const abiertasIds = new Set(); // piezas con el texto completo y sus detalles a la vista
+  const RED_IG = '<span class="pz-red ig" title="Instagram">IG</span>';
+
   function cardHTML(item) {
-    const meta = statusMeta(item.status);
     const caption = item.variants[item.variantIndex];
-    const isPost = item.aspect.trim().startsWith('4');
     const isPending = item.status === 'pendiente';
     const isEditing = editingIds.has(item.id);
     const pub = item.publicacion;
-    const publicada = (pub && pub.estado === 'publicada') || !!(item.instagram && item.instagram.ok);
+    const publicada = estaPublicada(item);
     const publicando = !!(pub && pub.estado === 'publicando');
     const puedeCambiarFecha = !publicada && !publicando && item.status !== 'rechazado';
     const formato = formatoDe(item);
     const medio = medioDe(item);
-    const conVideo = medio === 'video';
+    const vertical = formato === 'reel' || formato === 'historia';
     const inicial = escapeHtml((negocioActual.nombre || '?').charAt(0).toUpperCase());
-
     const fotoUrl = fotoDe(item);
-    // Diseño con la marca: la tarjeta muestra la imagen diseñada.
     const disenoUrl = disenoDe(item);
-    const puedeDisenar = !!fotoUrl && !publicada && medio === 'imagen';
-    // Lo que le falta para publicarse, a la vista en la imagen de la tarjeta.
+    const carrusel = formato === 'carrusel' ? fotosCarruselDe(item) : [];
     const uniendoClips = !!(item.union && item.union.estado === 'uniendo');
-    const faltaVideo = !publicada && medio === 'video' && !item.video && !(item.videoIA && item.videoIA.estado === 'generando') && !uniendoClips;
-    const faltaFoto = !publicada && !disenoUrl && !fotoUrl && medio === 'imagen';
-    const mediosIA = negocioActual.mediosIA || {};
-    const videoIA = item.videoIA || null;
-    const canvasW = 480;
-    const canvasH = isPost ? 600 : 854;
+    const creandoVideo = !!(item.videoIA && item.videoIA.estado === 'generando');
+    const faltaVideo = !publicada && medio === 'video' && !item.video && !creandoVideo && !uniendoClips;
+    const faltanFotos = !publicada && formato === 'carrusel' && carrusel.length < 2;
+    const faltaFoto = !publicada && formato !== 'carrusel' && !disenoUrl && !fotoUrl && medio === 'imagen';
+    const conIAVideo = (negocioActual.mediosIA || {}).video && !negocioActual.sinPlan;
+    const nota = isPending ? null : notaAprobacion(item);
+    const fallida = !!(pub && pub.estado === 'fallida');
+
+    let medioHTML;
+    if (uniendoClips) {
+      medioHTML = `<div class="card-vacia"><div class="card-vacia-ic">⧉</div><b>Uniendo ${item.union.clips || ''} clips…</b><p>Suele tardar menos de un minuto.</p></div>`;
+    } else if (creandoVideo) {
+      medioHTML = '<div class="card-vacia"><div class="card-vacia-ic">✨</div><b>Creando el video con IA…</b><p>Suele tardar 1 a 3 minutos. Puedes seguir con lo demás.</p></div>';
+    } else if (faltaVideo) {
+      medioHTML = `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Falta el video de ${formato === 'historia' ? 'esta historia' : 'este reel'}</b><div class="card-vacia-acc"><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">Elegir video</button>${conIAVideo ? `<button class="btn-ia card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear con IA</button>` : ''}</div></div>`;
+    } else if (medio === 'video' && item.video) {
+      medioHTML = `<video class="pz-video" src="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}#t=0.1" preload="metadata" muted playsinline></video><button type="button" class="pz-play" data-action="play" data-id="${item.id}" aria-label="Reproducir el video">▶</button>`;
+    } else if (faltanFotos) {
+      medioHTML = `<div class="card-vacia"><div class="card-vacia-ic">▦</div><b>Elige las fotos del carrusel</b><p>De 2 a 10 fotos, en el orden que quieras.</p><div class="card-vacia-acc"><button class="btn-approve card-vacia-btn" data-action="elegir-foto" data-id="${item.id}">Elegir fotos</button></div></div>`;
+    } else if (carrusel.length) {
+      const urls = carrusel.map(urlFoto);
+      if (disenoUrl) urls[0] = disenoUrl;
+      medioHTML = `<img class="pz-img" src="${escapeHtml(urls[0])}" alt="" loading="lazy" data-carrusel='${escapeHtml(JSON.stringify(urls))}' data-i="0">
+        <button type="button" class="pz-paso ant" data-action="carrusel-paso" data-paso="-1" data-id="${item.id}" aria-label="Foto anterior">‹</button>
+        <button type="button" class="pz-paso sig" data-action="carrusel-paso" data-paso="1" data-id="${item.id}" aria-label="Foto siguiente">›</button>
+        <span class="pz-puntos" aria-hidden="true">${urls.map((u, i) => `<i${i === 0 ? ' class="on"' : ''}></i>`).join('')}</span>`;
+    } else if (disenoUrl || fotoUrl) {
+      medioHTML = `<img class="pz-img" src="${escapeHtml(disenoUrl || fotoUrl)}" alt="" loading="lazy">`;
+    } else if (faltaFoto) {
+      medioHTML = `<div class="card-vacia"><div class="card-vacia-ic">🖼</div><b>Falta la foto</b><div class="card-vacia-acc"><button class="btn-approve card-vacia-btn" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">Elegir de mi galería</button><button class="btn-ia card-vacia-btn" data-action="elegir-foto" data-pest="ia" data-id="${item.id}">✨ Crear con IA</button><label class="btn-ghost card-vacia-btn">Subir foto<input type="file" accept="image/*" data-foto-item="${item.id}" hidden></label></div></div>`;
+    } else {
+      medioHTML = `<div class="card-texture"></div><div class="card-logo">${inicial}</div><div class="card-headline">${escapeHtml(item.headline)}</div>`;
+    }
+
+    const chip = `${FORMATOS[formato]}${carrusel.length >= 2 ? ` · <span data-carrusel-n>1</span>/${carrusel.length}` : ''}`;
+    const arriba = fechaEditIds.has(item.id)
+      ? `<input type="datetime-local" class="card-date-input" data-fecha-id="${item.id}" value="${item.publicarEl ? valorInputFecha(item.publicarEl) : ''}">`
+      : isPending
+        ? `<button type="button" class="pz-cuando" data-action="fecha" data-id="${item.id}" title="Cambiar fecha y hora">${escapeHtml(cuandoDe(item))}</button>`
+        : `<span class="pz-estado" style="color:${nota.color}">${nota.texto}</span>`;
 
     return `
-      <div class="card" id="card-${item.id}">
-        <div class="card-media ${isPost ? 'post' : 'historia'}" ${fotoUrl ? '' : `style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
-          ${uniendoClips
-            ? `<div class="card-vacia"><div class="card-vacia-ic">⧉</div><b>Uniendo ${item.union.clips || ''} clips…</b><p>Suele tardar menos de un minuto. Después lo puedes editar en Estudio de reels.</p></div>`
-            : disenoUrl
-            ? `<img class="card-diseno" src="${escapeHtml(disenoUrl)}" alt="Diseño con tu marca" loading="lazy"><span class="card-diseno-tag">Con tu marca</span>`
-            : faltaVideo
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🎬</div><b>Sube el video de ${formato === 'historia' ? 'esta historia' : 'este reel'}</b><p>${formato === 'historia' ? 'Un video vertical corto, de 5 a 15 segundos. ¿Prefieres una foto? Elige "Imagen" abajo.' : 'Grábalo con tu celular. Rubrofy corta los silencios y le pone subtítulos, gancho y tu logo.'}</p><div class="card-vacia-acc"><button class="btn-approve card-vacia-btn" data-action="elegir-video" data-id="${item.id}">🎬 Elegir video</button>${(negocioActual.mediosIA || {}).video && !negocioActual.sinPlan ? `<button class="btn-ia card-vacia-btn" data-action="video-ia" data-id="${item.id}">✨ Crear con IA</button>` : ''}</div></div>`
-            : fotoUrl
-            ? `<canvas class="card-canvas" width="${canvasW}" height="${canvasH}" data-src="${escapeHtml(fotoUrl)}" data-headline="${escapeHtml(item.headline)}" data-inicial="${inicial}"></canvas>`
-            : faltaFoto
-            ? `<div class="card-vacia"><div class="card-vacia-ic">🖼</div><b>Elige la foto de esta publicación</b><div class="card-vacia-acc"><button class="btn-ghost card-vacia-btn" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">▦ De mi galería</button><button class="btn-ia card-vacia-btn" data-action="elegir-foto" data-pest="ia" data-id="${item.id}">✨ Crear con IA</button><label class="btn-ghost card-vacia-btn">⬆ Subir foto<input type="file" accept="image/*" data-foto-item="${item.id}" hidden></label></div>${item.idea ? `<p class="card-vacia-idea">Idea: ${escapeHtml(item.idea)}</p>` : ''}</div>`
-            : `<div class="card-texture"></div><div class="card-logo">${inicial}</div><div class="card-headline">${escapeHtml(item.headline)}</div>`}
-          ${conVideo && item.video && !item.video.editado && !publicada && (negocioActual.edicionReels || {}).disponible && !(item.edicion && item.edicion.estado === 'editando') ? `<button class="card-editar-reel" data-action="editar-reel" data-id="${item.id}">✂ Editar video con Rubrofy</button>` : ''}
-          <div class="card-network"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f3ede1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="#f3ede1" stroke="none"/></svg></div>
-          <div class="card-status"><span class="dot" style="background:${meta.color}"></span><span class="label" style="color:#f3ede1">${meta.label}</span></div>
+      <article class="pz${vertical ? ' vertical' : ''}${abiertasIds.has(item.id) ? ' abierta' : ''}${isEditing ? ' editando' : ''}" id="card-${item.id}">
+        <div class="pz-media"${fotoUrl || disenoUrl || carrusel.length ? '' : ` style="background:linear-gradient(160deg, ${item.hueFrom}, ${item.hueTo})"`}>
+          ${medioHTML}
+          <span class="pz-chip">${chip}</span>
+          <span class="pz-redes">${RED_IG}</span>
         </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="card-tag">${escapeHtml(item.tag)}</span>${item.briefPunto ? `<span class="card-tag card-tag-brief" title="Responde al brief de la semana">📝 ${escapeHtml(item.briefPunto)}</span>` : ''}${item.sugeridaPorAnuncios ? `<span class="card-tag card-tag-brief" title="Pensada para ${escapeHtml(item.sugeridaPorAnuncios)}, donde tus anuncios rinden más">📣 Sugerida por tus anuncios</span>` : ''}
-            ${fechaEditIds.has(item.id)
-              ? `<input type="datetime-local" class="card-date-input" data-fecha-id="${item.id}" value="${item.publicarEl ? valorInputFecha(item.publicarEl) : ''}">`
-              : (puedeCambiarFecha
-                ? `<button class="card-date card-date-btn" data-action="fecha" data-id="${item.id}" title="Cambiar fecha y hora">${escapeHtml(item.date)}</button>`
-                : `<span class="card-date">${escapeHtml(item.date)}</span>`)}
-          </div>
-          ${puedeCambiarFecha ? `
-            <div class="card-formato">
-              <select data-formato-id="${item.id}" aria-label="Formato de publicación">
-                ${Object.keys(FORMATOS).map((f) => `<option value="${f}"${f === formato ? ' selected' : ''}>${FORMATOS[f]}</option>`).join('')}
-              </select>
-              <span class="card-medio" role="group" aria-label="¿Imagen o video?">
-                <button type="button" data-action="medio" data-medio="imagen" data-id="${item.id}" class="${medio === 'imagen' ? 'on' : ''}" aria-pressed="${medio === 'imagen'}">🖼 Imagen</button><button type="button" data-action="medio" data-medio="video" data-id="${item.id}" class="${medio === 'video' ? 'on' : ''}" aria-pressed="${medio === 'video'}">🎬 Video</button>
-              </span>
-              ${AY('pieza-formato')}
-              ${conVideo ? (videoIA && videoIA.estado === 'generando'
-                ? `<span class="card-video-ok card-video-ia">Generando video con IA… suele tardar 1 a 3 minutos</span>`
-                : (item.video
-                  ? `<span class="card-video-ok">${item.video.generadoIA ? 'Video con IA' : 'Video cargado'} (${(item.video.bytes / 1048576).toFixed(1)} MB)</span>${item.video.generadoIA ? `<a class="btn-text" href="/videos/${negocioActual.id}/${escapeHtml(item.video.archivo)}" target="_blank" rel="noopener">Ver</a>` : ''}<button class="btn-text" data-action="quitar-video" data-id="${item.id}">Quitar</button>`
-                  : `<label class="btn-text card-video-subir">${formato === 'reel' ? 'Subir video (obligatorio)' : 'Subir video'}<input type="file" accept="video/mp4,video/quicktime" data-video-id="${item.id}" hidden></label>${mediosIA.video && !negocioActual.sinPlan ? `<button class="btn-text" data-action="video-ia" data-id="${item.id}">o generarlo con IA</button>${AY('video-ia')}` : ''}`)) : ''}
-              ${conVideo && videoIA && videoIA.estado === 'error' ? `<span class="card-video-error">El video con IA falló: ${escapeHtml(videoIA.error || '')}</span>` : ''}
-              ${conVideo && item.video ? edicionHTML(item) : ''}
-              ${formato === 'carrusel' ? `<span class="card-video-ok">${Math.min((fotos[item.categoriaFoto] || []).length, 10)} fotos de "${escapeHtml(item.categoriaFoto || '')}"</span>` : ''}
-            </div>` : ''}
-          ${item.gancho && !isEditing ? `<p class="card-gancho"><span>${formato === 'reel' ? 'Gancho · primeros 2 segundos' : formato === 'historia' ? 'Gancho' : 'Gancho · primera línea'}</span>${escapeHtml(item.gancho)}</p>` : ''}
+        <div class="pz-body">
+          <div class="pz-linea">${arriba}${isPending ? '' : `<button type="button" class="pz-mas" data-action="mas" data-id="${item.id}" aria-label="Más opciones">⋯</button>`}</div>
+          ${estadoVideoHTML(item)}
           ${isEditing
             ? `<textarea class="card-textarea" data-id="${item.id}">${escapeHtml(caption)}</textarea>
                <label class="card-hashtags-edit">Hashtags<input data-hashtags-id="${item.id}" value="${escapeHtml((item.hashtags || []).join(' '))}" placeholder="#tunegocio #tuciudad"></label>`
-            : `<p class="card-caption" data-action="expandir" title="Toca para ver el texto completo">${escapeHtml(caption)}</p>`}
-          ${!isEditing && item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
-          ${!isEditing ? origenTextoHTML(item) : ''}
-          ${!isEditing ? `<button class="btn-text card-copiar" data-action="copiar" data-id="${item.id}" title="Copia el texto y los hashtags tal como se publican">Copiar texto${item.hashtags && item.hashtags.length ? ' y hashtags' : ''}</button>` : ''}
-          ${item.prueba ? `<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen${item.prueba.origen && item.prueba.origen.permalink ? ` · <a href="${escapeHtml(item.prueba.origen.permalink)}" target="_blank" rel="noopener">ver el original</a>` : ''} ${AY('reels-prueba')}</p>` : ''}
-          ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}${formato === 'historia' && medio === 'imagen' && /\bvideo\b/i.test(item.idea) ? '<span class="card-idea-nota">Esta idea es para video, pero está elegida "Imagen": se publica con una foto. Si prefieres video, elige 🎬 Video.</span>' : ''}</p>` : ''}
-          ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span>${AY('voz-puntaje')}</div>` : ''}
+            : `<p class="pz-texto" data-action="expandir" data-id="${item.id}" title="Toca para ver todo">${escapeHtml(caption)}</p>
+               <div class="pz-extra">
+                 ${item.hashtags && item.hashtags.length ? `<div class="card-hashtags">${item.hashtags.map((h) => `<span>${escapeHtml(h)}</span>`).join('')}</div>` : ''}
+                 ${item.idea && !publicada ? `<p class="card-idea"><b>Idea:</b> ${escapeHtml(item.idea)}</p>` : ''}
+                 ${!publicada && item.voz ? `<div class="card-voz">${window.RubrofyVoz.insignia(item.voz)}<span>${escapeHtml((item.voz.notas.find((n) => n.tipo === 'mal') || item.voz.notas[0] || { texto: 'Calza con tu voz de marca' }).texto)}</span></div>` : ''}
+                 ${item.prueba ? '<p class="card-prueba"><b>Reel de prueba</b> · se muestra primero a quienes no te siguen</p>' : ''}
+                 ${origenTextoHTML(item)}
+               </div>`}
           ${isPending && pedirCambioIds.has(item.id) ? `<form class="card-pedir" data-pedir-id="${item.id}"><input name="indicacion" maxlength="500" placeholder="Ej: más corto, menciona el despacho gratis" required><button class="btn-approve">Pedir</button><button type="button" class="btn-text" data-action="cancelar-pedir" data-id="${item.id}">Cancelar</button></form>` : ''}
-          ${!publicada && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}<li class="alerta-ayuda">Qué hacer ${AY('alertas')}</li></ul>` : ''}
-          ${isPending ? `
-            <div class="card-actions">
+          ${!publicada && !isEditing && item.alertas && item.alertas.length ? `<ul class="card-alertas" aria-label="Qué verificar">${item.alertas.map((a) => `<li class="alerta-${escapeHtml(a.tipo)}"><span aria-hidden="true">⚠</span> ${escapeHtml(a.texto)}</li>`).join('')}</ul>` : ''}
+          ${isEditing ? `
+            <div class="pz-acc">
+              <button class="btn-approve" data-action="toggle-edit" data-id="${item.id}">Guardar</button>
+              <button class="btn-ghost" data-action="cancelar-edit" data-id="${item.id}">Cancelar</button>
+            </div>` : isPending ? `
+            <div class="pz-acc">
               <button class="btn-approve" data-action="approve" data-id="${item.id}">Aprobar</button>
-              <button class="btn-ghost" data-action="regenerate" data-id="${item.id}">Otra versión</button>
-              <button class="btn-ghost" data-action="pedir" data-id="${item.id}" title="Pídele un cambio a la IA">Pedir cambio</button>
-              ${!fotoGaleriaDe(item) && item.imagenIA && mediosIA.imagen ? `<button class="btn-ghost" data-action="imagen-otra" data-id="${item.id}">Otra foto con IA</button>` : ''}
-              ${puedeDisenar ? `<button class="btn-ghost" data-action="disenar" data-id="${item.id}" data-foto="${escapeHtml(fotoUrl)}">${item.diseno ? 'Cambiar diseño' : '✦ Diseñar con mi marca'}</button>` : ''}
-              ${fotoUrl && !publicada && formato !== 'reel' ? `<button class="btn-ghost" data-action="elegir-foto" data-pest="galeria" data-id="${item.id}">⇄ Cambiar foto</button>` : ''}
-              <button class="btn-text" data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar'}</button>
-              <button class="btn-x" data-action="reject" data-id="${item.id}" title="Rechazar">&times;</button>
-              ${AY('pieza-acciones')}
-            </div>
-          ` : `
-            <div class="card-note">
-              <span class="note-text" style="color:${notaAprobacion(item).color}">${notaAprobacion(item).texto}</span>
-              <span class="note-actions">
-                ${item.status === 'aprobado' && !publicada && !publicando ? `<button data-action="toggle-edit" data-id="${item.id}">${isEditing ? 'Guardar' : 'Editar texto'}</button>` : ''}
-                ${pub && pub.estado === 'programada' && !publicada && negocioActual.instagramEstado === 'ok' ? `<button data-action="publish-now" data-id="${item.id}">Publicar ahora</button>` : ''}
-                ${pub && pub.estado === 'fallida' ? `<button data-action="retry" data-id="${item.id}">Reintentar</button>` : ''}
-                ${publicando ? '' : `<button data-action="undo" data-id="${item.id}">Deshacer</button>`}
-                ${AY('pieza-acciones')}
-              </span>
-            </div>
-          `}
+              <button class="pz-ic" data-action="toggle-edit" data-id="${item.id}" aria-label="Editar el texto" title="Editar el texto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 L5 15 L15 5 L19 9 L9 19 Z"/><path d="M13 7 L17 11"/></svg></button>
+              <button class="pz-ic" data-action="mas" data-id="${item.id}" aria-label="Más opciones" title="Más opciones">⋯</button>
+            </div>` : fallida ? `
+            <div class="pz-acc"><button class="btn-approve" data-action="retry" data-id="${item.id}">Reintentar</button></div>` : ''}
         </div>
-      </div>
+      </article>
     `;
   }
 
-  let ctxColaListo = false;
-  function renderCola() {
-    if (!ctxColaListo) {
-      ctxColaListo = true;
-      window.RubrofyPWA.aviso($('#push-aviso'), ctxPanel());
-      window.RubrofyContexto.editor($('#ctx-cola'), ctxPanel(), ['copys', 'post', 'carrusel', 'reel', 'historia'], 'textos y formatos');
+  // Al editar: el cuadro de texto crece con lo escrito y queda arriba, a la
+  // vista (en el teléfono la foto se pliega para dejarle el espacio).
+  function ajustarAlto(t) {
+    t.style.height = 'auto';
+    t.style.height = Math.min(t.scrollHeight + 4, Math.round(window.innerHeight * 0.7)) + 'px';
+  }
+  function enfocarEdicion(id) {
+    const t = document.querySelector(`textarea[data-id="${id}"]`);
+    if (!t) return;
+    ajustarAlto(t);
+    t.addEventListener('input', () => ajustarAlto(t));
+    const tarjeta = t.closest('.pz');
+    if (tarjeta) tarjeta.scrollIntoView({ block: 'start' });
+    t.focus({ preventScroll: true });
+    t.setSelectionRange(t.value.length, t.value.length);
+  }
+
+  // Todo lo que no es "Aprobar" ni "Editar" vive en el menú "⋯" de la pieza.
+  function opcionesPieza(item) {
+    const isPending = item.status === 'pendiente';
+    const pub = item.publicacion;
+    const publicada = estaPublicada(item);
+    const publicando = !!(pub && pub.estado === 'publicando');
+    const puedeCambiar = !publicada && !publicando && item.status !== 'rechazado';
+    const formato = formatoDe(item);
+    const medio = medioDe(item);
+    const mediosIA = negocioActual.mediosIA || {};
+    const er = negocioActual.edicionReels || {};
+    const fotoUrl = fotoDe(item);
+    const id = item.id;
+    const op = (accion, icono, texto, extra) => `<button type="button" class="hoja-op${extra && extra.clase ? ' ' + extra.clase : ''}" data-action="${accion}" data-id="${id}"${extra && extra.attrs ? ' ' + extra.attrs : ''}><i aria-hidden="true">${icono}</i><span>${texto}${extra && extra.sub ? `<small>${extra.sub}</small>` : ''}</span></button>`;
+    const partes = [];
+
+    if (puedeCambiar && medio === 'imagen') {
+      if (formato === 'carrusel') partes.push(op('elegir-foto', '▦', 'Elegir las fotos del carrusel', { sub: 'De 2 a 10, en el orden que quieras' }));
+      else partes.push(op('elegir-foto', '⇄', fotoUrl ? 'Cambiar la foto' : 'Elegir la foto', { attrs: 'data-pest="galeria"' }));
+      if (fotoUrl) partes.push(op('disenar', '✦', item.diseno ? 'Cambiar el diseño' : 'Diseñar con mi marca', { attrs: `data-foto="${escapeHtml(fotoUrl)}"`, sub: 'Tu logo, tus colores y el titular' }));
+      if (isPending && formato !== 'carrusel' && !fotoGaleriaDe(item) && item.imagenIA && mediosIA.imagen) partes.push(op('imagen-otra', '✨', 'Otra foto con IA'));
     }
+    if (puedeCambiar && medio === 'video') {
+      if (item.video) {
+        if (er.disponible && !(item.edicion && item.edicion.estado === 'editando')) partes.push(op('editar-reel', '✂', item.videoOriginal ? 'Editar el video de nuevo' : 'Editar el video con Rubrofy', { sub: 'Corta silencios y pone subtítulos' }));
+        if (item.videoOriginal) partes.push(op('video-original', '↺', 'Volver al video original'));
+        partes.push(op('quitar-video', '✕', 'Quitar el video'));
+      } else {
+        partes.push(op('elegir-video', '🎬', 'Elegir o subir el video'));
+        if (mediosIA.video && !negocioActual.sinPlan) partes.push(op('video-ia', '✨', 'Crear el video con IA'));
+      }
+    }
+    if (isPending) {
+      partes.push(op('regenerate', '↻', 'Otra versión del texto'));
+      partes.push(op('pedir', '💬', 'Pedirle un cambio a la IA', { sub: 'Ej: más corto, menciona el despacho' }));
+    }
+    if (item.status === 'aprobado' && !publicada && !publicando) partes.push(op('toggle-edit', '✎', 'Editar el texto'));
+    if (puedeCambiar) partes.push(op('fecha', '🗓', 'Cambiar fecha y hora', { sub: escapeHtml(cuandoDe(item)) }));
+    if (pub && pub.estado === 'programada' && !publicada && negocioActual.instagramEstado === 'ok') partes.push(op('publish-now', '➤', 'Publicar ahora'));
+    if (pub && pub.estado === 'fallida') partes.push(op('retry', '↻', 'Reintentar la publicación'));
+    partes.push(op('copiar', '⧉', 'Copiar el texto'));
+    if (puedeCambiar) {
+      partes.push(`<div class="hoja-grupo"><span>Formato</span><div class="hoja-chips">${Object.keys(FORMATOS).map((f) => `<button type="button" data-action="formato" data-formato="${f}" data-id="${id}" class="${f === formato ? 'on' : ''}" aria-pressed="${f === formato}">${FORMATOS[f]}</button>`).join('')}</div>
+        ${formato === 'historia' ? `<div class="hoja-chips"><button type="button" data-action="medio" data-medio="imagen" data-id="${id}" class="${medio === 'imagen' ? 'on' : ''}" aria-pressed="${medio === 'imagen'}">Con imagen</button><button type="button" data-action="medio" data-medio="video" data-id="${id}" class="${medio === 'video' ? 'on' : ''}" aria-pressed="${medio === 'video'}">Con video</button></div>` : ''}</div>`);
+    }
+    if (isPending) partes.push(op('reject', '✕', 'Descartar esta publicación', { clase: 'peligro' }));
+    else if (!publicando) partes.push(op('undo', '↩', item.status === 'rechazado' ? 'Recuperar esta publicación' : 'Volver a Por aprobar', { clase: item.status === 'rechazado' ? '' : 'peligro' }));
+    return partes.join('');
+  }
+
+  // Hoja que sube desde abajo en el teléfono (y un cuadro al centro en el computador).
+  function abrirHoja(titulo, html) {
+    let dlg = $('#dlg-hoja');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-hoja';
+      dlg.className = 'hoja';
+      document.body.appendChild(dlg);
+      dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-hoja-cerrar]')) dlg.close(); });
+    }
+    dlg.onclick = null;
+    dlg.onchange = null;
+    dlg.innerHTML = `<div class="hoja-caja"><span class="hoja-asa" aria-hidden="true"></span>
+      <div class="hoja-cab"><h2>${escapeHtml(titulo)}</h2><button type="button" class="hoja-x" data-hoja-cerrar aria-label="Cerrar">×</button></div>
+      <div class="hoja-cuerpo">${html}</div></div>`;
+    if (!dlg.open) { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); }
+    return dlg;
+  }
+
+  function abrirOpciones(item) {
+    const dlg = abrirHoja(`${FORMATOS[formatoDe(item)]} · ${cuandoDe(item)}`, opcionesPieza(item));
+    dlg.onclick = (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      if (btn.dataset.action === 'copiar') { accionPieza(btn); setTimeout(() => dlg.close(), 700); return; }
+      dlg.close();
+      accionPieza(btn);
+    };
+  }
+
+  // "Crear": lo que se puede empezar desde cualquier pantalla.
+  function abrirCrear() {
+    if (!negocioActual) return;
+    const dlg = abrirHoja('Crear', `
+      <button type="button" class="hoja-op" data-crear="semana"><i aria-hidden="true">✨</i><span>Generar mi semana<small>Rubrofy escribe todas las publicaciones de la semana</small></span></button>
+      <button type="button" class="hoja-op" data-crear="reels"><i aria-hidden="true">🎬</i><span>Hacer un reel con mi video<small>Sube tu video y Rubrofy lo corta y le pone subtítulos</small></span></button>
+      <button type="button" class="hoja-op" data-crear="fotos"><i aria-hidden="true">🖼</i><span>Subir fotos<small>A tu galería, para usarlas en tus publicaciones</small></span></button>`);
+    dlg.onclick = (e) => {
+      const b = e.target.closest('[data-crear]');
+      if (!b) return;
+      dlg.close();
+      if (b.dataset.crear === 'semana') abrirGenerar(); else irAVista(b.dataset.crear);
+    };
+  }
+
+  function renderCola() {
     vigilarVideos();
     if (window.RubrofyBrief) window.RubrofyBrief.pintarCola($('#cola-brief'));
     const grid = $('#cola-grid');
     const filtros = $('#cola-filtros');
     if (!contenido.length) {
       filtros.innerHTML = '';
-      grid.innerHTML = '<p class="empty-state">Sin contenido todavía. Usa "Generar más contenido" para crear el primer lote.</p>';
+      grid.innerHTML = '<div class="vacio"><b>Todavía no tienes publicaciones</b><p>Rubrofy escribe tu semana completa. Tú la revisas y apruebas.</p><button type="button" class="btn-approve" data-action="generar">Generar mi semana</button></div>';
       return;
     }
     const n = {};
     Object.keys(FILTROS_COLA).forEach((f) => { n[f] = contenido.filter(FILTROS_COLA[f].incluye).length; });
     const filtro = filtroColaActual();
-    filtros.innerHTML = Object.keys(FILTROS_COLA).map((f) => `<button type="button" role="tab" data-cola-filtro="${f}" aria-selected="${f === filtro}" class="${f === filtro ? 'on' : ''}">${FILTROS_COLA[f].nombre} <i>${n[f]}</i></button>`).join('');
+    filtros.innerHTML = Object.keys(FILTROS_COLA).filter((f) => !FILTROS_COLA[f].soloSiHay || n[f] || f === filtro)
+      .map((f) => `<button type="button" role="tab" data-cola-filtro="${f}" aria-selected="${f === filtro}" class="${f === filtro ? 'on' : ''}">${FILTROS_COLA[f].nombre}${n[f] && !FILTROS_COLA[f].sinNumero ? ` <i>${n[f]}</i>` : ''}</button>`).join('');
     const lista = contenido.filter(FILTROS_COLA[filtro].incluye);
-    grid.innerHTML = lista.length ? lista.map(cardHTML).join('') : `<p class="empty-state">${FILTROS_COLA[filtro].vacio}</p>`;
-    grid.querySelectorAll('.card-canvas').forEach(drawCardCanvas);
+    if (FILTROS_COLA[filtro].recientes) lista.sort((a, b) => Date.parse(b.publicarEl || 0) - Date.parse(a.publicarEl || 0));
+    grid.innerHTML = lista.length ? lista.map(cardHTML).join('') : `<div class="vacio"><p>${FILTROS_COLA[filtro].vacio}</p></div>`;
   }
 
-  // Por aprobar, todo lo aprobado (programado, publicado o con error) y lo rechazado.
+  // Por aprobar, programadas (aprobadas que todavía no salen), publicadas y descartadas.
   const estaPublicada = (it) => !!((it.publicacion && it.publicacion.estado === 'publicada') || (it.instagram && it.instagram.ok));
   const FILTROS_COLA = {
-    pendientes: { nombre: 'Por aprobar', incluye: (it) => it.status === 'pendiente', vacio: 'No tienes publicaciones por aprobar. Cuando generes tu semana, aparecen aquí.' },
-    aprobadas: { nombre: 'Aprobadas', incluye: (it) => it.status === 'aprobado' || estaPublicada(it), vacio: 'Todavía no apruebas ninguna publicación.' },
-    rechazadas: { nombre: 'Rechazadas', incluye: (it) => it.status === 'rechazado' && !estaPublicada(it), vacio: 'No tienes publicaciones rechazadas.' },
-    todas: { nombre: 'Todas', incluye: () => true, vacio: 'Sin contenido todavía.' },
+    pendientes: { nombre: 'Por aprobar', incluye: (it) => it.status === 'pendiente', vacio: 'No tienes nada por aprobar. Con "Crear" generas tu próxima semana.' },
+    programadas: { nombre: 'Programadas', incluye: (it) => it.status === 'aprobado' && !estaPublicada(it), vacio: 'No tienes publicaciones programadas. Lo que apruebes aparece aquí con su fecha.' },
+    publicadas: { nombre: 'Publicadas', incluye: (it) => estaPublicada(it), vacio: 'Todavía no se publica nada. Lo que salga en Instagram queda aquí.', sinNumero: true, recientes: true },
+    descartadas: { nombre: 'Descartadas', incluye: (it) => it.status === 'rechazado' && !estaPublicada(it), vacio: 'No tienes publicaciones descartadas.', soloSiHay: true, sinNumero: true },
   };
   function filtroColaActual() {
     if (filtroCola && FILTROS_COLA[filtroCola]) return filtroCola;
     if (contenido.some(FILTROS_COLA.pendientes.incluye)) return 'pendientes';
-    return contenido.some(FILTROS_COLA.aprobadas.incluye) ? 'aprobadas' : 'todas';
+    return contenido.some(FILTROS_COLA.programadas.incluye) ? 'programadas' : 'publicadas';
   }
   function verCola(filtro) {
     filtroCola = filtro;
@@ -454,7 +524,6 @@
 
   // ---------- render: fotos ----------
   function renderFotos() {
-    window.RubrofyContexto.editor($('#ctx-fotos'), ctxPanel(), ['imagen', 'video'], 'imágenes y videos con IA');
     const cont = $('#fotos-categorias');
     if (!nichoActual) { cont.innerHTML = ''; return; }
     window.RubrofyGaleria.renderVista(cont);
@@ -466,7 +535,7 @@
     window.RubrofyVideos.renderEstudio($('#reels-estudio'));
   }
 
-  // "Tu negocio" en Conexiones y ajustes: el mismo perfil de la bienvenida.
+  // Tu marca → Tu negocio: el mismo perfil de la bienvenida.
   function renderPerfil() {
     const cont = $('#perfil-card');
     if (!cont) return;
@@ -474,7 +543,7 @@
     const ctx = Object.assign({}, ctxPanel(), { negocio: () => negocioActual });
     const n = negocioActual;
     cont.innerHTML = `<div class="ig-card-head"><h2>Perfil del negocio${window.Ayuda ? window.Ayuda.boton('perfil') : ''}</h2><span class="ig-estado ${n.perfilCompleto ? 'conectado' : ''}">${n.perfilCompleto ? 'Completo' : 'Falta completar'}</span></div>
-      <p class="sub">Toda la IA usa esto: estrategia, publicaciones, voz y anuncios.</p>
+      <p class="sub">Toda la IA usa esto: tu estrategia, tus publicaciones y tu voz.</p>
       <div data-perfil>${P.camposPerfil(n, { leerWeb: n.usaIA && n.iaConfigurada })}
         <label class="pf-productos">¿Qué ofreces? <span class="opc">productos o servicios</span><textarea data-pf="productos" rows="2" maxlength="800" placeholder="Tus productos o servicios principales">${escapeHtml((n.perfil && n.perfil.productos) || '')}</textarea></label></div>
       <p class="config-ok" data-perfil-ok hidden></p>
@@ -498,10 +567,10 @@
     });
   }
 
-  function renderConfig() {
+  // Tu marca → Tu negocio: el perfil y los datos que usa la IA tal cual.
+  function renderNegocio() {
     if (!negocioActual) return;
     renderPerfil();
-    window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
     $('#config-nombre').value = negocioActual.nombre || '';
     $('#config-precio').value = (negocioActual.datos && negocioActual.datos.precioDesde) || '';
     $('#config-unidad').value = (negocioActual.datos && negocioActual.datos.unidad) || '';
@@ -510,7 +579,11 @@
     $('#config-estilo-imagen').value = negocioActual.estiloImagen || 'limpia';
     $('#config-error').hidden = true;
     $('#config-ok').hidden = true;
+  }
 
+  // Cuentas conectadas: Instagram (y TikTok cuando esté listo).
+  function renderConfig() {
+    if (!negocioActual) return;
     const conectado = !!negocioActual.instagramConectado;
     const reconectar = negocioActual.instagramEstado === 'reconectar';
     $('#ig-estado').textContent = reconectar ? 'Reconectar' : (conectado ? 'Conectado' : 'Sin conectar');
@@ -547,185 +620,9 @@
     $('#ig-manual-titulo').hidden = !login;
     $('#ig-cuenta').hidden = !(conectado && negocioActual.instagramUsuario);
     $('#ig-cuenta').textContent = negocioActual.instagramUsuario ? 'Cuenta: @' + negocioActual.instagramUsuario : '';
-
-    renderAvisos();
-
-    renderMeta();
-    renderGoogle();
-  }
-
-  // Google Ads: se conecta con "Iniciar sesión con Google" (redirige a
-  // Google y vuelve a /app?google=...), luego se elige la cuenta. En pausa
-  // mientras el servidor no lo active (GOOGLE_ADS_ACTIVO): no se muestra.
-  function renderGoogle() {
-    const cont = $('#google-card');
-    cont.hidden = !negocioActual.googleActivo;
-    if (cont.hidden) return;
-    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
-    const g = negocioActual.googleConexion;
-    const cabecera = `<div class="ig-card-head"><h2>Conexión con Google Ads${AY('google')}</h2>
-      <span class="ig-estado ${g && g.customerId ? (g.estado === 'reconectar' ? 'reconectar' : 'conectado') : ''}">${g && g.customerId ? (g.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : 'Sin conectar'}</span></div>`;
-    if (!plan.ads) {
-      cont.innerHTML = cabecera + '<p class="sub">Para ver tus campañas de Google junto a tu Instagram. Disponible en el plan Estudio.</p>';
-      return;
-    }
-    if (!negocioActual.googleConfigurado) {
-      cont.innerHTML = cabecera + '<p class="sub">Google Ads todavía no está configurado en este servidor.</p>';
-      return;
-    }
-    const conectar = `<a class="btn-approve estilo-btn" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/google/conectar">${g ? 'Volver a conectar con Google' : 'Conectar con Google'}</a>`;
-    if (g && g.customerId && g.estado !== 'reconectar') {
-      cont.innerHTML = cabecera + `<p class="sub">Cuenta: <b>${escapeHtml(g.nombre || g.customerId)}</b> (${escapeHtml(g.moneda || '')}) · solo lectura.</p>
-        <button type="button" class="btn-danger" data-google="desconectar">Desconectar Google Ads</button>`;
-    } else if (g && g.opciones && g.opciones.length) {
-      cont.innerHTML = cabecera + `<form class="config-form" data-google="elegir">
-          <label>¿Qué cuenta de Google Ads quieres ver?<select name="customerId">${g.opciones.map((o) => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.nombre)} · ${escapeHtml(o.moneda || '')}${o.via ? ' (vía ' + escapeHtml(o.via) + ')' : ''}</option>`).join('')}</select></label>
-          <div class="config-actions"><button type="submit" class="btn-approve">Usar esta cuenta</button></div>
-        </form>`;
-    } else {
-      cont.innerHTML = cabecera + `<p class="sub">${g && g.estado === 'reconectar' ? 'Google revocó el permiso o venció. ' : ''}Inicia sesión con la cuenta de Google que administra tus anuncios. Rubrofy solo lee los datos, no modifica campañas.</p>${conectar}`;
-    }
-  }
-
-  async function accionGoogle(e) {
-    const btn = e.target.closest('[data-google="desconectar"]');
-    if (!btn) return;
-    if (!confirm('¿Desconectar Google Ads?')) return;
-    negocioActual = await api(`/api/negocios/${negocioActual.id}/google`, { method: 'DELETE' });
-    renderGoogle();
-  }
-
-  async function elegirCuentaGoogle(e) {
-    e.preventDefault();
-    try {
-      negocioActual = await api(`/api/negocios/${negocioActual.id}/google`, { method: 'PUT', body: JSON.stringify({ customerId: e.target.customerId.value }) });
-      renderGoogle();
-    } catch (err) {
-      alert(err.mensaje || 'No se pudo elegir la cuenta.');
-    }
-  }
-
-  // Conexión con Meta (Ads y competencia): token → elegir cuentas → conectar.
-  function renderMeta() {
-    const cont = $('#meta-card');
-    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
-    const c = negocioActual.metaConexion;
-    const cabecera = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2>
-      <span class="ig-estado ${c ? (c.estado === 'reconectar' ? 'reconectar' : 'conectado') : negocioActual.metaElegir ? 'reconectar' : ''}">${c ? (c.estado === 'reconectar' ? 'Reconectar' : 'Conectado') : negocioActual.metaElegir ? 'Falta elegir' : 'Sin conectar'}</span></div>`;
-    if (negocioActual.metaAbierto === false) {
-      // Meta Ads y Competencia esperan la aprobación de Meta.
-      cont.innerHTML = `<div class="ig-card-head"><h2>Conexión con Meta (Ads y competencia)${AY('meta')}</h2><span class="ig-estado pronto">Próximamente</span></div>
-        <p class="sub">Muy pronto vas a poder conectar tu Facebook para ver tu publicidad en Meta y seguir a tu competencia, en el plan Estudio.</p>`;
-      return;
-    }
-    if (!plan.ads && !plan.competencia) {
-      cont.innerHTML = cabecera + '<p class="sub">Para ver tu publicidad en Meta y seguir a tu competencia. Disponible en el plan Estudio.</p>';
-      return;
-    }
-    // Vuelta de "Conectar con Facebook" con varias cuentas: elegir cuáles usar.
-    const elegir = negocioActual.metaElegir;
-    if (elegir) {
-      const opAds = elegir.cuentasPublicitarias.map((x, i) => `<option value="${escapeHtml(x.id)}"${i === 0 ? ' selected' : ''}>${escapeHtml(x.nombre)} · ${escapeHtml(x.moneda || '')}${x.activa ? '' : ' (inactiva)'}</option>`).join('');
-      const opIg = elegir.cuentasInstagram.map((x, i) => `<option value="${escapeHtml(x.id)}"${i === 0 ? ' selected' : ''}>@${escapeHtml(x.username)} · ${escapeHtml(x.pagina)}</option>`).join('');
-      cont.innerHTML = cabecera + `
-        <p class="sub">Tu Facebook administra varias cuentas. Elige cuáles quieres ver en Rubrofy:</p>
-        <form class="config-form" data-meta="elegir">
-          <label>Cuenta publicitaria<select name="adAccountId"><option value="">(ninguna)</option>${opAds}</select></label>
-          <label>Tu cuenta de Instagram (para comparar con tu competencia)<select name="igUserId"><option value="">(ninguna)</option>${opIg}</select></label>
-          <p class="config-error" data-meta="error" hidden></p>
-          <div class="config-actions"><button type="submit" class="btn-approve">Usar estas cuentas</button></div>
-        </form>`;
-      return;
-    }
-    if (c && c.estado !== 'reconectar') {
-      cont.innerHTML = cabecera + `
-        <p class="sub">${c.cuentaNombre ? `Cuenta publicitaria: <b>${escapeHtml(c.cuentaNombre)}</b> (${escapeHtml(c.moneda || '')})` : 'Sin cuenta publicitaria'}<br>
-        ${c.igUsername ? `Instagram para competencia: <b>@${escapeHtml(c.igUsername)}</b>` : 'Sin cuenta de Instagram para competencia'}
-        ${c.venceEl ? `<br>La conexión vence el ${fechaCorta(c.venceEl)}${negocioActual.metaLoginDisponible ? ': antes de esa fecha, vuelve a pulsar "Conectar con Facebook".' : '.'}` : ''}</p>
-        <div class="config-actions cta-acciones-izq">
-          ${negocioActual.metaLoginDisponible ? `<a class="btn-ghost estilo-btn" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/meta/conectar">Cambiar de cuenta</a>` : ''}
-          <button type="button" class="btn-danger" data-meta="desconectar">Desconectar Meta</button>
-        </div>`;
-      return;
-    }
-    const formToken = `
-        <p class="sub">Pega un token de Meta con los permisos <code>ads_read</code>, <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>instagram_basic</code> e <code>instagram_manage_insights</code>. Lo más cómodo es un token de "usuario del sistema" de tu Business Manager, que no vence.</p>
-        <form class="config-form" data-meta="form">
-          <label>Token de acceso de Meta<input type="password" name="token" required></label>
-          <div data-meta="opciones" hidden>
-            <label>Cuenta publicitaria<select name="adAccountId"></select></label>
-            <label>Cuenta de Instagram (para competencia)<select name="igUserId"></select></label>
-          </div>
-          <p class="config-error" data-meta="error" hidden></p>
-          <div class="config-actions">
-            <button type="button" class="btn-ghost" data-meta="buscar">Buscar mis cuentas</button>
-            <button type="submit" class="btn-approve" data-meta="conectar" hidden>Conectar</button>
-          </div>
-        </form>`;
-    const aviso = c && c.estado === 'reconectar' ? '<p class="sub"><b>Meta pidió volver a conectar.</b> Mientras tanto, tus anuncios y tu competencia no se actualizan.</p>' : '';
-    if (!negocioActual.metaLoginDisponible) {
-      cont.innerHTML = cabecera + aviso + formToken;
-      return;
-    }
-    cont.innerHTML = cabecera + aviso + `
-      <div class="ig-login">
-        <a class="btn-fb" href="/api/negocios/${encodeURIComponent(negocioActual.id)}/meta/conectar"><span class="fb-f" aria-hidden="true">f</span>${c ? 'Volver a conectar con Facebook' : 'Conectar con Facebook'}</a>
-        <p class="sub">Entra con la cuenta de Facebook que administra tus anuncios y la página de tu negocio, y acepta los permisos. Rubrofy solo lee: no crea ni cambia anuncios.</p>
-      </div>
-      <details class="ig-manual"><summary>Conectar con un token (avanzado)</summary>${formToken}</details>`;
-  }
-
-  async function accionMeta(e) {
-    const cont = $('#meta-card');
-    const btn = e.target.closest('[data-meta]');
-    if (!btn) return;
-    const error = cont.querySelector('[data-meta="error"]');
-    const mostrarError = (m) => { if (error) { error.textContent = m; error.hidden = false; } else alert(m); };
-    if (btn.dataset.meta === 'desconectar') {
-      if (!confirm('¿Desconectar Meta? Se dejan de actualizar tus anuncios y competidores.')) return;
-      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, { method: 'DELETE' });
-      return renderMeta();
-    }
-    if (btn.dataset.meta === 'buscar') {
-      const form = cont.querySelector('[data-meta="form"]');
-      btn.disabled = true;
-      try {
-        const r = await api(`/api/negocios/${negocioActual.id}/meta/cuentas`, { method: 'POST', body: JSON.stringify({ accessToken: form.token.value }) });
-        form.adAccountId.innerHTML = '<option value="">(ninguna)</option>' + r.cuentasPublicitarias.map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.nombre)} · ${escapeHtml(c.moneda)}${c.activa ? '' : ' (inactiva)'}</option>`).join('');
-        form.igUserId.innerHTML = '<option value="">(ninguna)</option>' + r.cuentasInstagram.map((c) => `<option value="${escapeHtml(c.id)}">@${escapeHtml(c.username)} · ${escapeHtml(c.pagina)}</option>`).join('');
-        if (r.cuentasPublicitarias.length) form.adAccountId.selectedIndex = 1;
-        if (r.cuentasInstagram.length) form.igUserId.selectedIndex = 1;
-        cont.querySelector('[data-meta="opciones"]').hidden = false;
-        cont.querySelector('[data-meta="conectar"]').hidden = false;
-        if (error) error.hidden = true;
-      } catch (err) {
-        mostrarError(err.mensaje || 'No se pudo leer tus cuentas.');
-      }
-      btn.disabled = false;
-    }
-  }
-
-  async function conectarMeta(e) {
-    e.preventDefault();
-    const form = e.target;
-    // "elegir": después de "Conectar con Facebook" (el token quedó en el servidor).
-    const datos = { adAccountId: form.adAccountId.value || null, igUserId: form.igUserId.value || null };
-    if (form.dataset.meta !== 'elegir') datos.accessToken = form.token.value;
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) btn.disabled = true;
-    try {
-      negocioActual = await api(`/api/negocios/${negocioActual.id}/meta`, { method: 'PUT', body: JSON.stringify(datos) });
-      renderMeta();
-    } catch (err) {
-      const error = $('#meta-card [data-meta="error"]');
-      error.textContent = err.mensaje || 'No se pudo conectar.';
-      error.hidden = false;
-      if (btn) btn.disabled = false;
-    }
   }
 
   function renderAvisos() {
-    renderGuiasAjustes();
     const activo = !!negocioActual.avisosSemanal;
     const config = !!negocioActual.correoConfigurado;
     $('#avisos-semanal').checked = activo;
@@ -759,7 +656,8 @@
   function renderAvisoCorreo() {
     const cont = $('#aviso-correo');
     if (!cont || !negocioActual) return;
-    cont.hidden = negocioActual.emailVerificado !== false;
+    // Sin envío de correos configurado no hay enlace que confirmar.
+    cont.hidden = negocioActual.emailVerificado !== false || !negocioActual.correoConfigurado;
     if (cont.hidden) return;
     cont.innerHTML = `<span class="aviso-correo-txt">📧 <b>Confirma tu correo:</b> te enviamos un enlace a <b>${escapeHtml(negocioActual.email || '')}</b>. Así puedes recuperar tu clave y te llegan los avisos de cobros y publicaciones.</span>
       <span class="aviso-correo-acc"><button type="button" class="btn-ghost" data-correo-reenviar>Reenviar enlace</button><button type="button" class="btn-text" data-correo-cambiar>¿Está mal escrito?</button></span>`;
@@ -1141,77 +1039,59 @@
     if (window.RubrofyRecargas) window.RubrofyRecargas.renderUso($('#plan-uso'));
   }
 
-  // Resultados tiene pestañas: Instagram, Meta Ads y Competencia (y Google
-  // Ads, solo si el servidor lo tiene activo).
-  let tabResultados = 'instagram';
   function renderResultados() {
-    const tabGoogle = document.querySelector('#resultados-pestanas [data-tab="google"]');
-    if (tabGoogle) tabGoogle.hidden = !negocioActual.googleActivo;
-    if (tabResultados === 'google' && !negocioActual.googleActivo) tabResultados = 'meta';
-    document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.classList.toggle('activa', b.dataset.tab === tabResultados));
     const ctx = { api, negocio: negocioActual, planes: planesInfo, irA: irAVista, recargarContenido: ctxPanel().recargarContenido };
-    const cont = $('#resultados');
-    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
-    if (tabResultados === 'instagram') return window.RubrofyResultados.render(cont, ctx);
-    if (negocioActual.metaAbierto === false && (tabResultados === 'meta' || tabResultados === 'competencia')) {
-      cont.innerHTML = tabResultados === 'competencia'
-        ? `<div class="res-pronto"><span class="pronto">Próximamente</span><h2>Tu competencia, en Rubrofy</h2>
-            <p>Sigue hasta 5 cuentas de Instagram de tu competencia y descubre qué publican, cuándo y qué les funciona, comparado contigo.</p>
-            <p class="sub">Llega pronto al plan Estudio. Mientras tanto, tus resultados de Instagram están en la pestaña Instagram.</p></div>`
-        : `<div class="res-pronto"><span class="pronto">Próximamente</span><h2>Meta Ads, en Rubrofy</h2>
-            <p>Verás cuánto inviertes en Instagram y Facebook, qué te trae cada anuncio y qué cambiar, en palabras simples. Rubrofy también aprenderá de tus anuncios para escribir mejor tus publicaciones.</p>
-            <p class="sub">Llega pronto al plan Estudio. Mientras tanto, tus resultados de Instagram están en la pestaña Instagram.</p></div>`;
-      return;
-    }
-    const clave = tabResultados === 'competencia' ? 'competencia' : 'ads';
-    if (!plan[clave]) {
-      cont.innerHTML = `<div class="res-aviso">${tabResultados === 'competencia'
-        ? 'Sigue a tus competidores en Instagram (seguidores, frecuencia e interacción) y compáralos contigo.'
-        : 'Ve tu inversión en publicidad, los resultados y el costo de cada uno junto a tu Instagram.'}${AY(tabResultados === 'competencia' ? 'competencia' : 'publicidad')} Está disponible en el plan <b>Estudio</b>. <button class="btn-approve estilo-btn" data-ir="cuenta">Ver planes</button></div>`;
-      cont.querySelector('[data-ir]').addEventListener('click', () => irAVista('cuenta', null, 'cta-plan'));
-      return;
-    }
-    if (tabResultados === 'competencia') return window.RubrofyCompetencia && window.RubrofyCompetencia.render(cont, ctx);
-    return window.RubrofyAds.render(cont, ctx, tabResultados);
+    return window.RubrofyResultados.render($('#resultados'), ctx);
   }
 
-  const VISTAS = ['inicio', 'estrategia', 'marca', 'contexto', 'cola', 'reels', 'calendario', 'fotos', 'resultados', 'config', 'cuenta', 'soporte'];
-  // Voz de marca, Mi estilo y el Kit de marca ahora son pestañas de "Tu marca":
-  // los enlaces antiguos (avisos, ruta de Inicio, /app#voz) siguen sirviendo.
-  const ALIAS_MARCA = { voz: 'voz', estilo: 'ejemplos', kit: 'kit' };
-  let tabMarca = 'voz';
+  // Lo de todos los días está en el menú (Inicio, Publicaciones, Calendario);
+  // lo que se configura una vez queda en "Más".
+  const VISTAS = ['inicio', 'cola', 'calendario', 'mas', 'marca', 'fotos', 'reels', 'resultados', 'config', 'cuenta', 'soporte'];
+  const DE_MAS = ['marca', 'fotos', 'reels', 'resultados', 'config', 'cuenta', 'soporte'];
+  const TITULOS = { cola: 'Publicaciones', calendario: 'Calendario', mas: 'Más', marca: 'Tu marca', fotos: 'Galería', reels: 'Estudio de reels', resultados: 'Resultados', config: 'Cuentas conectadas', cuenta: 'Mi cuenta', soporte: 'Ayuda' };
+  const AYUDA_VISTA = { inicio: 'inicio', cola: 'cola', calendario: 'calendario', marca: 'marca', fotos: 'fotos', reels: 'editar-reel', resultados: 'resultados', config: 'instagram', cuenta: 'cuenta', soporte: 'soporte' };
+  // "Tu marca" reúne lo que antes eran pantallas aparte (Estrategia, Voz,
+  // Mi estilo, Kit de marca, Contexto): los enlaces antiguos siguen sirviendo.
+  const ALIAS_MARCA = { voz: 'voz', estilo: 'ejemplos', kit: 'kit', estrategia: 'estrategia', contexto: 'contexto' };
+  let tabMarca = 'negocio';
 
-  // El menú lateral tiene entradas que abren Resultados en una pestaña
-  // (Publicidad, Competencia): la marcada es la que coincide en vista y pestaña.
+  // Marca la sección en el menú y pone el título (y la ayuda) arriba.
   function marcarMenu() {
-    document.querySelectorAll('.rail-btn[data-view]').forEach((b) => b.classList.toggle('active',
-      b.dataset.view === vistaActual && (!b.dataset.tab || vistaActual !== 'resultados' || b.dataset.tab === tabMenu())));
+    if (!negocioActual) return;
+    const sub = DE_MAS.includes(vistaActual);
+    const enMenu = sub ? 'mas' : vistaActual;
+    document.querySelectorAll('.nav-btn[data-view]').forEach((b) => {
+      const on = b.dataset.view === enMenu;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    $('#top-volver').hidden = !sub;
+    $('#view-app').dataset.vista = vistaActual;
+    $('#view-app').classList.toggle('en-sub', sub);
+    $('#top-titulo').textContent = vistaActual === 'inicio' ? (negocioActual.nombre || 'Rubrofy') : TITULOS[vistaActual];
+    $('#top-ayuda').innerHTML = AYUDA_VISTA[vistaActual] ? AY(AYUDA_VISTA[vistaActual]) : '';
   }
-  function tabMenu() { return tabResultados === 'google' ? 'meta' : tabResultados; }
 
   // ancla: id de una sección dentro de la vista (ej: 'cta-plan').
   let vistaPrevia = 'inicio'; // para saber desde qué pantalla se pide ayuda
-  // "Tu marca": cómo hablas (voz.js), tus ejemplos (estilo.js) y cómo se ve
-  // (Kit de marca, diseno.js). Arriba, un resumen de lo que ya sabe Rubrofy.
+  // "Tu marca": tu negocio, la estrategia (plan.js), cómo hablas (voz.js), tus
+  // ejemplos (estilo.js), cómo se ve (diseno.js) y el contexto para la IA.
   function renderMarca() {
-    const n = negocioActual;
-    const v = n.voz || {};
-    const vozLista = !!(v.quienesSomos || (v.personalidad || []).length || (v.palabrasNo || []).length || (v.ejemplos || []).length);
-    const estiloListo = !!(n.estilo && (n.estilo.general || n.estilo.post || n.estilo.reel));
-    const logo = !!(n.marca && n.marca.logo);
-    const item = (ok, si, no, tab) => `<button type="button" class="marca-res ${ok ? 'ok' : 'falta'}" data-marca-tab="${tab}"><i aria-hidden="true">${ok ? '✓' : '○'}</i>${escapeHtml(ok ? si : no)}</button>`;
-    $('#marca-resumen').innerHTML = `<span class="marca-res-tit">Lo que Rubrofy ya sabe de tu marca:</span>
-      ${item(vozLista, 'Conoce tu forma de hablar', 'Falta tu forma de hablar', 'voz')}
-      ${item(estiloListo, 'Aprendió de tus ejemplos', 'Faltan ejemplos de lo que te gusta', 'ejemplos')}
-      ${item(logo, 'Tiene tu logo y colores', 'Falta tu logo', 'kit')}`;
     document.querySelectorAll('#view-marca [role="tab"][data-marca-tab]').forEach((b) => {
       const on = b.dataset.marcaTab === tabMarca;
       b.classList.toggle('activa', on);
       b.setAttribute('aria-selected', on);
+      if (on && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     });
     document.querySelectorAll('#view-marca [data-marca-panel]').forEach((p) => { p.hidden = p.dataset.marcaPanel !== tabMarca; });
-    if (tabMarca === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
+    if (tabMarca === 'negocio') renderNegocio();
+    else if (tabMarca === 'estrategia') {
+      window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
+      window.RubrofyContexto.editor($('#ctx-estrategia'), ctxPanel(), ['estrategia'], 'estrategia');
+    }
+    else if (tabMarca === 'voz') window.RubrofyVoz.render($('#voz'), ctxPanel());
     else if (tabMarca === 'ejemplos') window.RubrofyEstilo.render($('#estilo'), { api, negocio: negocioActual });
+    else if (tabMarca === 'contexto') window.RubrofyContexto.render($('#contexto'), ctxPanel());
     else if (window.RubrofyDiseno) {
       if (window.RubrofyDisenoIA) {
         window.RubrofyDisenoIA.render($('#marca-ia'), Object.assign(ctxPanel(), {
@@ -1223,40 +1103,60 @@
     }
   }
 
-  // Menú por etapas (1 Configura, 2 Cada semana, 3 Mide, 4 Cada mes): cada
-  // una se abre y se cierra, y se recuerda en este navegador. Si se va a una
-  // pantalla de una etapa cerrada, esa etapa se abre sola.
-  const LLAVE_MENU = 'rubrofy-menu-cerrados';
-  let gruposCerrados = [];
-  try { gruposCerrados = JSON.parse(localStorage.getItem(LLAVE_MENU) || '[]'); } catch (e) { gruposCerrados = []; }
-  function pintarGrupos() {
-    document.querySelectorAll('.rail-grupo[data-grupo]').forEach((b) => {
-      const cerrado = gruposCerrados.includes(b.dataset.grupo);
-      b.setAttribute('aria-expanded', String(!cerrado));
-      const items = document.querySelector(`[data-grupo-items="${b.dataset.grupo}"]`);
-      if (items) items.classList.toggle('cerrado', cerrado);
-    });
-  }
-  function alternarGrupo(grupo, abrir) {
-    const cerrado = gruposCerrados.includes(grupo);
-    const cerrar = abrir === undefined ? !cerrado : !abrir;
-    gruposCerrados = gruposCerrados.filter((g) => g !== grupo).concat(cerrar ? [grupo] : []);
-    try { localStorage.setItem(LLAVE_MENU, JSON.stringify(gruposCerrados)); } catch (e) { /* sin almacenamiento */ }
-    pintarGrupos();
-  }
-  function abrirGrupoDe(vista) {
-    const b = document.querySelector(`.rail-grupo-items .rail-btn[data-view="${vista}"]`);
-    const g = b && b.closest('[data-grupo-items]');
-    if (g && gruposCerrados.includes(g.dataset.grupoItems)) alternarGrupo(g.dataset.grupoItems, true);
+  // "Más": todo lo que se configura una vez, fuera de la vista de todos los días.
+  const ICONOS_MAS = {
+    marca: '<path d="M12 3.5 L13.9 9.1 L19.5 9.3 L15 12.8 L16.6 18.5 L12 15.2 L7.4 18.5 L9 12.8 L4.5 9.3 L10.1 9.1 Z"/>',
+    fotos: '<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16 L15 11 L6 19"/>',
+    reels: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M10 9.2 V14.8 L14.8 12 Z"/>',
+    resultados: '<path d="M4 20 H20"/><path d="M7 16 V11"/><path d="M12 16 V6"/><path d="M17 16 V9"/>',
+    config: '<path d="M10 13.5 a4 4 0 0 0 5.7 0 l3 -3 a4 4 0 0 0 -5.7 -5.7 l-1.2 1.2"/><path d="M14 10.5 a4 4 0 0 0 -5.7 0 l-3 3 a4 4 0 0 0 5.7 5.7 l1.2 -1.2"/>',
+    cuenta: '<circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20 C5.7 16.2 8.5 14.2 12 14.2 S18.3 16.2 19.2 20"/>',
+    soporte: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6 a2.5 2.5 0 1 1 3.4 2.3 c-.7.3-1 .8-1 1.6"/><circle cx="12" cy="16.6" r=".6" fill="currentColor" stroke="none"/>',
+    admin: '<path d="M12 3.5 L19.5 6.5 V11.5 C19.5 16 16.3 19.3 12 20.5 C7.7 19.3 4.5 16 4.5 11.5 V6.5 Z"/><path d="M9 12 L11.2 14.2 L15.2 10"/>',
+    instalar: '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5 V14.5 M9 11.5 L12 14.5 L15 11.5"/>',
+  };
+  function renderMas() {
+    const n = negocioActual;
+    const plan = planesInfo.find((p) => p.id === (n.plan || 'gratis')) || {};
+    const reconectar = n.instagramEstado === 'reconectar';
+    const totalFotos = Object.values(fotos || {}).reduce((s, a) => s + a.length, 0);
+    const ig = reconectar ? '<b class="mas-falta">Instagram pide reconectar</b>'
+      : n.instagramConectado ? `<b class="mas-ok">● Instagram${n.instagramUsuario ? ' @' + escapeHtml(n.instagramUsuario) : ''}</b>`
+      : '<b class="mas-falta">Conectar Instagram</b>';
+    const sinLeer = n.soporteSinLeer || 0;
+    const fila = (clave, titulo, sub, attrs, extra) => `<${attrs.startsWith('href') ? 'a' : 'button type="button"'} class="mas-fila" ${attrs}>
+        <i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONOS_MAS[clave]}</svg></i>
+        <span class="mas-txt"><b>${titulo}</b><small>${sub}</small></span>${extra || ''}<em aria-hidden="true">›</em>
+      </${attrs.startsWith('href') ? 'a' : 'button'}>`;
+    $('#mas').innerHTML = `<div class="mas-lista">
+      ${fila('marca', 'Tu marca', 'Tu negocio, tu estrategia y tu estilo', 'data-ir="marca"')}
+      ${fila('fotos', 'Galería', totalFotos ? `${totalFotos} foto${totalFotos === 1 ? '' : 's'}` : 'Sube las fotos de tu negocio', 'data-ir="fotos"')}
+      ${fila('reels', 'Estudio de reels', 'Tus videos, cortados y con subtítulos', 'data-ir="reels"')}
+      ${fila('resultados', 'Resultados', 'Cómo le va a tu Instagram', 'data-ir="resultados"', planesInfo.length && !plan.analitica ? '<span class="mas-plan">Pro</span>' : '')}
+      ${fila('config', 'Cuentas conectadas', `${ig}<span>TikTok, próximamente</span>`, 'data-ir="config"')}
+      ${fila('cuenta', 'Mi cuenta', `${plan.nombre ? `Plan ${escapeHtml(plan.nombre)} · ` : ''}créditos, pagos y avisos`, 'data-ir="cuenta"')}
+      ${fila('soporte', 'Ayuda', 'Preguntas y soporte', 'data-ir="soporte"', sinLeer ? `<span class="nav-num" title="Respuestas nuevas">${sinLeer}</span>` : '')}
+      ${n.esAdmin ? fila('admin', 'Administración', 'Clientes, pagos y soporte', 'href="/admin"') : ''}
+      ${fila('instalar', 'Instalar Rubrofy', 'Ábrela como una app desde tu pantalla de inicio', 'id="btn-instalar" hidden')}
+    </div>`;
+    window.RubrofyPWA.mostrarBotonInstalar();
   }
 
   function irAVista(vista, tab, ancla) {
     if (ALIAS_MARCA[vista]) { tab = ALIAS_MARCA[vista]; vista = 'marca'; }
+    // Lo que estaba en "Conexiones y ajustes" ahora vive en Tu marca y en Mi cuenta.
     if (vista === 'config' && ancla === 'cfg-marca') { vista = 'marca'; tab = 'kit'; ancla = null; }
+    else if (vista === 'config' && (ancla === 'cfg-perfil' || ancla === 'cfg-datos')) { vista = 'marca'; tab = 'negocio'; if (ancla === 'cfg-perfil') ancla = null; }
+    else if (vista === 'config' && ancla === 'cfg-avisos') { vista = 'cuenta'; ancla = 'cta-avisos'; }
+    if (!VISTAS.includes(vista)) vista = 'inicio';
     if (vista === 'soporte' && vistaActual !== 'soporte') vistaPrevia = vistaActual;
+    // Una pieza en particular: se abre el filtro donde está.
+    if (vista === 'cola' && ancla && ancla.startsWith('card-')) {
+      const it = contenido.find((x) => 'card-' + x.id === ancla);
+      if (it) filtroCola = Object.keys(FILTROS_COLA).find((f) => FILTROS_COLA[f].incluye(it)) || filtroCola;
+    }
     vistaActual = vista;
-    if (vista === 'marca') { if (tab) tabMarca = tab; } else if (tab) tabResultados = tab;
-    abrirGrupoDe(vista);
+    if (vista === 'marca' && tab) tabMarca = tab;
     marcarMenu();
     for (const v of VISTAS) $('#view-' + v).hidden = v !== vista;
     render();
@@ -1265,32 +1165,27 @@
     else $('#view-' + vista).scrollTop = 0;
   }
 
-  // Etiquetas del menú: pendientes por aprobar y qué plan pide cada sección.
+  // El menú: cuántas publicaciones esperan aprobación, un punto en "Más" si
+  // falta conectar Instagram o hay una respuesta de soporte, y el plan.
   function renderMenu() {
     if (!negocioActual) return;
     const pendientes = contenido.filter((i) => i.status === 'pendiente').length;
-    const num = $('#rail-pendientes');
+    const num = $('#nav-pendientes');
     num.textContent = pendientes; num.hidden = !pendientes;
-    const respuestas = negocioActual.soporteSinLeer || 0;
-    const numSop = $('#rail-soporte');
-    numSop.textContent = respuestas; numSop.hidden = !respuestas;
-    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
-    // Meta Ads y Competencia dicen "Pronto" hasta que Meta apruebe la app.
-    const metaPronto = negocioActual.metaAbierto === false;
-    document.querySelectorAll('[data-plan-req]').forEach((el) => {
-      const deMeta = el.dataset.planReq === 'ads' || el.dataset.planReq === 'competencia';
-      el.hidden = (deMeta && metaPronto) || !!plan[el.dataset.planReq] || !planesInfo.length;
-    });
-    document.querySelectorAll('[data-meta-pronto]').forEach((el) => { el.hidden = !metaPronto; });
-    const enlaceAdmin = $('#rail-admin');
-    enlaceAdmin.hidden = !negocioActual.esAdmin;
-    // "Vincular cuentas": un punto si Instagram no está conectado o pide reconectar.
     const igFalta = !negocioActual.instagramConectado || negocioActual.instagramEstado === 'reconectar';
-    $('#rail-vincular-punto').hidden = !igFalta;
-    $('#rail-vincular').title = igFalta ? (negocioActual.instagramEstado === 'reconectar' ? 'Instagram pide reconectar' : 'Instagram no está conectado') : (negocioActual.googleActivo ? 'Vincular Instagram, Meta y Google' : 'Vincular Instagram y Meta');
-    const actual = $('#rail-planactual');
-    actual.hidden = !plan.nombre;
-    actual.innerHTML = plan.nombre ? `Plan <b>${escapeHtml(plan.nombre)}</b>` : '';
+    $('#nav-mas-punto').hidden = !(igFalta || negocioActual.soporteSinLeer);
+    const plan = planesInfo.find((p) => p.id === (negocioActual.plan || 'gratis')) || {};
+    ['#nav-plan', '#top-plan'].forEach((sel) => {
+      $(sel).hidden = !plan.nombre;
+      $(sel).innerHTML = plan.nombre ? `Plan <b>${escapeHtml(plan.nombre)}</b>` : '';
+    });
+  }
+
+  // Los avisos de arriba (plan y correo) solo en Inicio: en las demás
+  // pantallas no tapan lo que se vino a hacer.
+  function avisosSegunVista() {
+    if (vistaActual !== 'inicio') $('#aviso-plan').hidden = true;
+    if (vistaActual !== 'inicio' && vistaActual !== 'cuenta') $('#aviso-correo').hidden = true;
   }
 
   function render() {
@@ -1298,12 +1193,13 @@
     renderMenu();
     renderAvisoPlan();
     renderAvisoCorreo();
-    mostrarGuias();
+    avisosSegunVista();
     if (vistaActual === 'cola') renderCola();
     else if (vistaActual === 'calendario') renderCalendario();
     else if (vistaActual === 'fotos') renderFotos();
     else if (vistaActual === 'reels') renderEstudioReels();
     else if (vistaActual === 'config') renderConfig();
+    else if (vistaActual === 'mas') renderMas();
     else if (vistaActual === 'soporte') {
       window.RubrofySoporte.render(Object.assign(ctxPanel(), {
         vista: vistaPrevia,
@@ -1312,30 +1208,13 @@
     }
     else if (vistaActual === 'cuenta') {
       renderPlan();
-      window.RubrofyCuenta.render(Object.assign(ctxPanel(), { alCambiar: () => { renderAvisoCorreo(); actualizarSwitcher(); } })).catch(() => {});
+      renderAvisos();
+      window.RubrofyPWA.renderTarjeta($('#push-card'), ctxPanel());
+      window.RubrofyCuenta.render(Object.assign(ctxPanel(), { alCambiar: () => { renderAvisoCorreo(); avisosSegunVista(); actualizarSwitcher(); } })).catch(() => {});
     }
     else if (vistaActual === 'marca') renderMarca();
     else if (vistaActual === 'resultados') renderResultados();
     else if (vistaActual === 'inicio') window.RubrofyInicio.render($('#inicio'), ctxPanel()).catch(() => {});
-    else if (vistaActual === 'estrategia') {
-      window.RubrofyPlan.renderVista($('#estrategia'), ctxPanel()).catch(() => {});
-      window.RubrofyContexto.editor($('#ctx-estrategia'), ctxPanel(), ['estrategia'], 'estrategia');
-    }
-    else if (vistaActual === 'contexto') window.RubrofyContexto.render($('#contexto'), ctxPanel());
-  }
-
-  // Guías de cada pantalla (guias.js); se apagan con GUIAS=no en el servidor.
-  function mostrarGuias() {
-    if (window.RubrofyGuias && negocioActual) window.RubrofyGuias.mostrar(vistaActual, tabResultados, ctxPanel());
-  }
-  function renderGuiasAjustes() {
-    if (!window.RubrofyGuias) return;
-    const a = window.RubrofyGuias.ajustes();
-    $('#guias-card').hidden = !a.habilitadas;
-    $('#guias-activas').checked = a.activas;
-    $('#guias-estado').textContent = a.activas ? 'Activas' : 'Apagadas';
-    $('#guias-estado').classList.toggle('conectado', a.activas);
-    $('#btn-guias-reiniciar').hidden = !a.activas || !a.cerradas;
   }
 
   // Lo que necesitan Inicio, Estrategia y la bienvenida del resto del panel.
@@ -1351,11 +1230,16 @@
       planIncluye: (clave) => !!plan[clave],
       planes: planesInfo,
       fechaCorta,
+      fechaAmigable,
+      formatoDe,
+      miniatura: (it) => disenoDe(it) || fotoDe(it),
+      abrirCrear,
       irA: irAVista,
       abrirBienvenida,
       abrirGenerar,
       guardarDatos: (datos) => guardarConfig({ nombre: negocioActual.nombre, datos, estiloImagen: negocioActual.estiloImagen }),
       setNegocio: (n) => { negocioActual = n; actualizarSwitcher(); },
+      verCola,
       setEstrategia: (e) => { nichoActual = e; negocioActual.estrategia = e; },
       recargarContenido: () => api('/api/negocios/' + negocioActual.id + '/contenido').then((c) => { contenido = c; renderStats(); renderMenu(); }).catch(() => {}),
     };
@@ -1375,10 +1259,11 @@
     }), { soloPerfil }).catch(() => {});
   }
 
-  // "Generar semana": muestra qué se va a crear según el plan y lo genera.
+  // "Generar mi semana": muestra qué se va a crear según el plan y lo genera.
   function abrirGenerar() {
     if (negocioActual.sinPlan) {
-      // Sin plan no se genera: se destaca el aviso para elegir uno.
+      // Sin plan no se genera: se destaca el aviso (en Inicio) para elegir uno.
+      if (vistaActual !== 'inicio') irAVista('inicio');
       renderAvisoPlan();
       const aviso = $('#aviso-plan');
       aviso.classList.remove('destello');
@@ -1392,8 +1277,8 @@
     const total = pc ? Object.values(pc.semanal).reduce((a, b) => a + b, 0) : 6;
     $('#dlg-generar-texto').innerHTML = pc
       ? window.RubrofyPlan.textoTotal(pc.semanal) + (total > 12 ? '. Se crean 12 por vez: vuelve a generar para completar la semana.' : '.')
-      : 'Se crearán 6 publicaciones. Define tu plan en <b>Estrategia</b> para elegir cuántos posts, carruseles, reels e historias quieres.';
-    $('#dlg-generar-fechas').textContent = 'Siguen después de lo que ya tienes programado y llegan a Por aprobar.';
+      : 'Se crearán 6 publicaciones. Define tu plan en <b>Más → Tu marca → Estrategia</b> para elegir cuántos posts, carruseles, reels e historias quieres.';
+    $('#dlg-generar-fechas').textContent = 'Siguen después de lo que ya tienes programado y llegan a Publicaciones, para que las apruebes.';
     $('#dlg-generar-error').hidden = true;
     $('#dlg-generar-indicaciones').value = '';
     $('#dlg-generar-ok').textContent = 'Generar';
@@ -1457,12 +1342,8 @@
     fotos = await api(`/api/negocios/${negocioActual.id}/fotos/${encodeURIComponent(categoria)}/${encodeURIComponent(archivo)}`, { method: 'DELETE' });
   }
 
-  function actualizarSwitcher() {
-    $('#switcher-badge').textContent = (negocioActual.nombre || '??').slice(0, 2).toUpperCase();
-    $('#switcher-nombre').textContent = negocioActual.nombre || '-';
-    const rubro = negocioActual.estrategia && negocioActual.estrategia.rubro;
-    $('#switcher-niche').textContent = (rubro || '').toUpperCase();
-  }
+  // El nombre del negocio es el título de Inicio.
+  function actualizarSwitcher() { marcarMenu(); }
 
   async function guardarConfig(datos) {
     negocioActual = await api(`/api/negocios/${negocioActual.id}`, { method: 'PUT', body: JSON.stringify(datos) });
@@ -1481,7 +1362,7 @@
     const hay = contenido.some((i) => (i.videoIA && i.videoIA.estado === 'generando') || (i.edicion && i.edicion.estado === 'editando') || (i.union && i.union.estado === 'uniendo'));
     if (hay && !vigilancia) {
       vigilancia = setInterval(() => {
-        if ((vistaActual !== 'cola' && vistaActual !== 'reels') || document.hidden) return;
+        if ((vistaActual !== 'cola' && vistaActual !== 'reels') || document.hidden || colaOcupada()) return;
         refreshContenido().catch(() => {});
       }, 10000);
     } else if (!hay && vigilancia) {
@@ -1500,6 +1381,9 @@
     contenido = await api('/api/negocios/' + negocioActual.id + '/contenido');
     render();
   }
+  // Refrescar solo redibujaría las tarjetas: no se hace mientras se ve un
+  // video o está abierto el menú de una pieza.
+  const colaOcupada = () => [...document.querySelectorAll('#cola-grid video')].some((v) => !v.paused) || !!($('#dlg-hoja') && $('#dlg-hoja').open);
 
   async function accionSimple(accion, id) {
     await api(`/api/negocios/${negocioActual.id}/contenido/${id}/${accion}`, { method: 'POST' });
@@ -1549,8 +1433,7 @@
 
   async function generarMas() {
     const btn = $('#dlg-generar-ok');
-    const btnTop = $('#btn-generar');
-    btn.disabled = true; btnTop.disabled = true;
+    btn.disabled = true;
     btn.textContent = 'Generando…';
     let revisar = false;
     try {
@@ -1580,7 +1463,7 @@
       $('#dlg-generar-error').textContent = err.mensaje || 'No se pudo generar contenido. Intenta de nuevo.';
       $('#dlg-generar-error').hidden = false;
     } finally {
-      btn.disabled = false; btnTop.disabled = false;
+      btn.disabled = false;
       btn.textContent = revisar ? 'Generar con este brief' : 'Generar';
     }
   }
@@ -1695,23 +1578,21 @@
     $('#view-login').hidden = true;
     $('#view-app').hidden = false;
     vistaActual = 'inicio';
-    // Enlaces de las notificaciones: /app#cola, /app#config…
+    // Enlaces de las notificaciones y los correos: /app#cola, /app#cuenta…
     const destino = window.location.hash.slice(1);
     irAVista(VISTAS.includes(destino) || ALIAS_MARCA[destino] ? destino : 'inicio');
     if (destino) history.replaceState(null, '', window.location.pathname + window.location.search);
-    const volvioDeOAuth = /[?&](google|instagram|meta)=/.test(window.location.search);
+    const volvioDeOAuth = /[?&]instagram=/.test(window.location.search);
     avisarRetornoCorreo();
     avisarRetornoCheckout();
     avisarRetornoRecarga();
-    avisarRetornoGoogle();
     avisarRetornoInstagram();
-    avisarRetornoMeta();
     let yaPregunto = false;
     try { yaPregunto = sessionStorage.getItem('rubrofy-perfil-' + negocioActual.id) === '1'; sessionStorage.setItem('rubrofy-perfil-' + negocioActual.id, '1'); } catch (err) { yaPregunto = false; }
     if (!volvioDeOAuth && (!negocioActual.bienvenidaCompletada || (!negocioActual.perfilCompleto && !yaPregunto))) abrirBienvenida();
   }
 
-  // Vuelta de "Conectar con Instagram": avisa si falló y abre Conexiones.
+  // Vuelta de "Conectar con Instagram": avisa si falló y abre Cuentas conectadas.
   function avisarRetornoInstagram() {
     const params = new URLSearchParams(window.location.search);
     const r = params.get('instagram');
@@ -1720,29 +1601,6 @@
     if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar Instagram.');
     irAVista(r === 'ok' ? 'inicio' : 'config');
     return true;
-  }
-
-  // Vuelta de "Conectar con Facebook" (Meta Ads y competencia).
-  function avisarRetornoMeta() {
-    const params = new URLSearchParams(window.location.search);
-    const r = params.get('meta');
-    if (!r) return;
-    history.replaceState(null, '', '/app');
-    if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar con Meta.');
-    const c = negocioActual.metaConexion;
-    if (r === 'ok' && c && c.adAccountId) return irAVista('resultados', 'meta');
-    irAVista('config', null, 'meta-card');
-  }
-
-  // Vuelta de "Iniciar sesión con Google": avisa el resultado y abre Configuración.
-  function avisarRetornoGoogle() {
-    const params = new URLSearchParams(window.location.search);
-    const r = params.get('google');
-    if (!r) return;
-    history.replaceState(null, '', '/app');
-    if (r === 'error') alert(params.get('motivo') || 'No se pudo conectar Google Ads.');
-    if (r === 'sin-cuentas') alert('Esa cuenta de Google no tiene cuentas de Google Ads que Rubrofy pueda leer.');
-    irAVista('config');
   }
 
   // Tras volver de Stripe Checkout (éxito o cancelado), refresca el negocio
@@ -1794,7 +1652,7 @@
       try {
         await generarSemana();
         irAVista('cola');
-        alert(`¡Listo! Tu plan ${plan.nombre || ''} está activo y tu primera semana está en Por aprobar.`);
+        alert(`¡Listo! Tu plan ${plan.nombre || ''} está activo y tu primera semana te espera en Publicaciones.`);
         return;
       } catch (err) { /* se genera después con el botón */ }
     }
@@ -1812,8 +1670,6 @@
   }
 
   async function init() {
-    $('#btn-instalar').addEventListener('click', () => window.RubrofyPWA.instalar());
-    window.RubrofyPWA.mostrarBotonInstalar();
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = $('#btn-login');
@@ -1828,12 +1684,6 @@
         btn.disabled = false;
       }
     });
-    $('#btn-logout').addEventListener('click', () => {
-      cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
-    });
-    pintarGrupos();
-    $('#rail-vincular').addEventListener('click', () => { if (negocioActual) irAVista('config', null, 'cfg-conexiones'); });
-    document.querySelectorAll('.rail-grupo[data-grupo]').forEach((b) => b.addEventListener('click', () => alternarGrupo(b.dataset.grupo)));
     $('#view-marca').addEventListener('click', (e) => {
       const t = e.target.closest('[data-marca-tab]');
       if (!t) return;
@@ -1844,73 +1694,41 @@
       cerrarSesion().catch((err) => alert('No se pudo cerrar sesión: ' + err.message));
     });
 
-    // Mi cuenta: desde el nombre del negocio (arriba), el plan del menú y
-    // los enlaces "Plan y pagos" de Conexiones y ajustes.
-    const irACuenta = () => { if (negocioActual) irAVista('cuenta'); };
-    $('#switcher').addEventListener('click', irACuenta);
-    $('#switcher').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); irACuenta(); } });
-    $('#rail-planactual').addEventListener('click', () => { if (negocioActual) irAVista('cuenta', null, 'cta-plan'); });
+    // Mi cuenta: desde el plan (arriba o en el menú) y los enlaces "Plan y pagos".
+    ['#top-plan', '#nav-plan'].forEach((sel) => $(sel).addEventListener('click', () => { if (negocioActual) irAVista('cuenta', null, 'cta-plan'); }));
     document.addEventListener('click', (e) => {
       if (!e.target.closest('[data-ir-cuenta]')) return;
       e.preventDefault();
       irAVista('cuenta', null, 'cta-plan');
     });
 
-    // conexión con Meta (delegación: el contenido de la tarjeta se redibuja)
-    $('#meta-card').addEventListener('click', (e) => { accionMeta(e).catch((err) => alert(err.mensaje || err.message)); });
-    $('#meta-card').addEventListener('submit', conectarMeta);
-
-    $('#google-card').addEventListener('click', (e) => { accionGoogle(e).catch((err) => alert(err.mensaje || err.message)); });
-    $('#google-card').addEventListener('submit', elegirCuentaGoogle);
-
     // saldo de créditos ⚡ arriba: abre la compra
     $('#creditos-chip').addEventListener('click', () => window.RubrofyCreditos && window.RubrofyCreditos.abrirComprar());
 
-    // pestañas de Resultados
-    document.querySelectorAll('#resultados-pestanas [data-tab]').forEach((b) => b.addEventListener('click', () => {
-      tabResultados = b.dataset.tab;
-      marcarMenu();
-      renderResultados();
-      mostrarGuias();
-    }));
-
-    // Por aprobar: filtros (por aprobar, aprobadas, rechazadas, todas). Los
-    // contadores de arriba llevan directo a cada uno.
+    // Publicaciones: filtros (por aprobar, programadas, publicadas).
     $('#cola-filtros').addEventListener('click', (e) => {
       const b = e.target.closest('[data-cola-filtro]');
       if (b) verCola(b.dataset.colaFiltro);
     });
-    [['#stat-pendientes', 'pendientes'], ['#stat-aprobados', 'aprobadas']].forEach(([sel, filtro]) => {
-      const stat = $(sel).closest('.stat');
-      stat.classList.add('stat-ir');
-      stat.setAttribute('role', 'button');
-      stat.tabIndex = 0;
-      stat.title = filtro === 'aprobadas' ? 'Ver todo lo aprobado' : 'Ver lo que falta aprobar';
-      const ir = () => verCola(filtro);
-      stat.addEventListener('click', ir);
-      stat.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ir(); } });
-    });
 
-    // navegación entre vistas
-    document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
-      btn.addEventListener('click', () => irAVista(btn.dataset.view, btn.dataset.tab));
+    // navegación: el menú, "Crear", volver a "Más" y sus filas
+    document.querySelectorAll('.nav-btn[data-view]').forEach((btn) => {
+      btn.addEventListener('click', () => irAVista(btn.dataset.view));
     });
-
-    // Tablet y celular: el menú es solo íconos; "☰" lo despliega con los
-    // nombres y se cierra al elegir una sección, al tocar fuera o con Esc.
-    const menuDesplegado = (abrir) => {
-      $('#view-app').classList.toggle('menu-abierto', abrir);
-      $('#rail-abrir').setAttribute('aria-expanded', String(abrir));
-      $('#rail-abrir').setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Ver los nombres del menú');
-      if (abrir) $('.rail').scrollTop = 0;
-    };
-    $('#rail-abrir').addEventListener('click', () => menuDesplegado(!$('#view-app').classList.contains('menu-abierto')));
-    $('#rail-velo').addEventListener('click', () => menuDesplegado(false));
-    $('.rail').addEventListener('click', (e) => {
-      if (e.target.closest('.rail-btn, .rail-avance, .rail-planactual')) menuDesplegado(false);
+    $('#btn-crear').addEventListener('click', abrirCrear);
+    // Un aviso o un correo abierto con el panel ya en pantalla solo cambia
+    // el "#…" de la dirección: se va a esa pantalla igual.
+    window.addEventListener('hashchange', () => {
+      const destino = window.location.hash.slice(1);
+      if (!negocioActual || !destino) return;
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      irAVista(destino);
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && $('#view-app').classList.contains('menu-abierto')) { menuDesplegado(false); $('#rail-abrir').focus(); }
+    $('#top-volver').addEventListener('click', () => irAVista('mas'));
+    $('#mas').addEventListener('click', (e) => {
+      if (e.target.closest('#btn-instalar')) return window.RubrofyPWA.instalar();
+      const f = e.target.closest('[data-ir]');
+      if (f) irAVista(f.dataset.ir);
     });
 
     // fotos: subir y borrar (delegación)
@@ -1934,8 +1752,6 @@
         btn.disabled = false;
       }
     });
-    $('#guias-activas').addEventListener('change', (e) => { window.RubrofyGuias.activar(e.target.checked); renderGuiasAjustes(); });
-    $('#btn-guias-reiniciar').addEventListener('click', () => { window.RubrofyGuias.reiniciar(); renderGuiasAjustes(); });
     $('#avisos-semanal').addEventListener('change', async (e) => {
       try {
         negocioActual = await api(`/api/negocios/${negocioActual.id}/avisos`, { method: 'PUT', body: JSON.stringify({ semanal: e.target.checked }) });
@@ -2085,7 +1901,6 @@
       if (confirmado) eliminarNegocioActual().catch((err) => alert('No se pudo eliminar: ' + err.message));
     });
 
-    $('#btn-generar').addEventListener('click', abrirGenerar);
     $('#aviso-correo').addEventListener('click', async (e) => {
       const re = e.target.closest('[data-correo-reenviar]');
       if (re) {
@@ -2117,12 +1932,47 @@
     $('#dlg-generar-cancelar').addEventListener('click', () => $('#dlg-generar').close());
     $('#dlg-generar-plan').addEventListener('click', () => { $('#dlg-generar').close(); irAVista('estrategia'); });
 
-    // delegación de eventos en la cola
-    $('#cola-grid').addEventListener('click', async (e) => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
+    // Acciones de una publicación: desde su tarjeta o desde su menú "⋯".
+    accionPieza = async (btn) => {
       const id = btn.dataset.id;
       const accion = btn.dataset.action;
+
+      if (accion === 'generar') return abrirGenerar();
+      if (accion === 'mas') {
+        const it = contenido.find((x) => x.id === id);
+        if (it) abrirOpciones(it);
+        return;
+      }
+      if (accion === 'cancelar-edit') { editingIds.delete(id); renderCola(); return; }
+      if (accion === 'play') {
+        const v = btn.parentElement.querySelector('video');
+        if (v) { v.controls = true; v.muted = false; btn.hidden = true; v.play().catch(() => {}); }
+        return;
+      }
+      if (accion === 'carrusel-paso') {
+        const img = btn.parentElement.querySelector('img[data-carrusel]');
+        if (!img) return;
+        const urls = JSON.parse(img.dataset.carrusel);
+        const i = (Number(img.dataset.i) + Number(btn.dataset.paso) + urls.length) % urls.length;
+        img.dataset.i = i;
+        img.src = urls[i];
+        const tarjeta = btn.closest('.pz');
+        tarjeta.querySelectorAll('.pz-puntos i').forEach((p, k) => p.classList.toggle('on', k === i));
+        const n = tarjeta.querySelector('[data-carrusel-n]');
+        if (n) n.textContent = i + 1;
+        return;
+      }
+      if (accion === 'formato') {
+        const it = contenido.find((x) => x.id === id);
+        if (!it || formatoDe(it) === btn.dataset.formato) return;
+        try {
+          await api(`/api/negocios/${negocioActual.id}/contenido/${id}/formato`, { method: 'PUT', body: JSON.stringify({ formato: btn.dataset.formato }) });
+        } catch (err) {
+          alert(err.mensaje || 'No se pudo cambiar el formato.');
+        }
+        await refreshContenido().catch(() => {});
+        return;
+      }
 
       if (accion === 'toggle-edit') {
         if (editingIds.has(id)) {
@@ -2132,10 +1982,17 @@
         } else {
           editingIds.add(id);
           renderCola();
+          enfocarEdicion(id);
         }
         return;
       }
-      if (accion === 'expandir') return btn.classList.toggle('abierta');
+      if (accion === 'expandir') {
+        const abrir = !abiertasIds.has(id);
+        if (abrir) abiertasIds.add(id); else abiertasIds.delete(id);
+        const tarjeta = btn.closest('.pz');
+        if (tarjeta) tarjeta.classList.toggle('abierta', abrir);
+        return;
+      }
       if (accion === 'medio') {
         const it = contenido.find((x) => x.id === id);
         const nuevo = btn.dataset.medio;
@@ -2173,7 +2030,9 @@
       }
       if (accion === 'elegir-foto') {
         const it = contenido.find((x) => x.id === id);
-        if (it) window.RubrofyGaleria.abrirSelector(it, btn.dataset.pest);
+        if (!it) return;
+        if (formatoDe(it) === 'carrusel') window.RubrofyGaleria.abrirCarrusel(it, (it.fotosCarrusel || []).length ? fotosCarruselDe(it) : []);
+        else window.RubrofyGaleria.abrirSelector(it, btn.dataset.pest);
         return;
       }
       if (accion === 'video-original') {
@@ -2196,7 +2055,7 @@
         const texto = tags.length ? base + '\n\n' + tags.join(' ') : base;
         try {
           await navigator.clipboard.writeText(texto);
-          btn.textContent = 'Copiado ✓';
+          (btn.querySelector('span') || btn).textContent = 'Copiado ✓';
         } catch (err) {
           prompt('Copia el texto:', texto);
         }
@@ -2211,7 +2070,7 @@
         await accionConAviso('aprobar', id);
         const it = contenido.find((x) => x.id === id);
         if (it && it.status === 'aprobado' && filtroColaActual() === 'pendientes') {
-          avisoCola(it.publicacion && it.publicacion.estado === 'programada' ? `Aprobada ✓ Se publica el ${fechaCorta(it.publicarEl || it.publicacion.proximoIntento)}.` : 'Aprobada ✓', 'Ver aprobadas', () => verCola('aprobadas'));
+          avisoCola(it.publicacion && it.publicacion.estado === 'programada' ? `Aprobada ✓ Se publica el ${fechaCorta(it.publicarEl || it.publicacion.proximoIntento)}.` : 'Aprobada ✓', 'Ver programadas', () => verCola('programadas'));
         }
         return;
       }
@@ -2302,6 +2161,23 @@
         }
         return;
       }
+    };
+    $('#cola-grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (btn) accionPieza(btn);
+    });
+    // Carrusel: en el teléfono se pasa de foto deslizando.
+    let deslizaX = null;
+    $('#cola-grid').addEventListener('touchstart', (e) => {
+      deslizaX = e.touches.length === 1 && e.target.closest('.pz-media') && e.target.closest('.pz-media').querySelector('img[data-carrusel]') ? e.touches[0].clientX : null;
+    }, { passive: true });
+    $('#cola-grid').addEventListener('touchend', (e) => {
+      if (deslizaX == null) return;
+      const dx = e.changedTouches[0].clientX - deslizaX;
+      deslizaX = null;
+      const media = e.target.closest('.pz-media');
+      const b = media && Math.abs(dx) > 40 && media.querySelector(`.pz-paso.${dx < 0 ? 'sig' : 'ant'}`);
+      if (b) accionPieza(b);
     });
 
     // "Pedir cambio": otra versión con una indicación para la IA
@@ -2324,21 +2200,8 @@
       }
     });
 
-    // cambio de fecha y hora de una pieza (selector abierto desde la tarjeta)
+    // foto o video subidos desde la tarjeta, y cambio de fecha y hora
     $('#cola-grid').addEventListener('change', async (e) => {
-      const selFormato = e.target.closest('select[data-formato-id]');
-      if (selFormato) {
-        try {
-          await api(`/api/negocios/${negocioActual.id}/contenido/${selFormato.dataset.formatoId}/formato`, {
-            method: 'PUT',
-            body: JSON.stringify({ formato: selFormato.value }),
-          });
-        } catch (err) {
-          alert(err.mensaje || 'No se pudo cambiar el formato.');
-        }
-        await refreshContenido().catch(() => {});
-        return;
-      }
       const inputFoto = e.target.closest('input[data-foto-item]');
       if (inputFoto && inputFoto.files[0]) {
         const it = contenido.find((x) => x.id === inputFoto.dataset.fotoItem);
@@ -2380,7 +2243,7 @@
     setInterval(async () => {
       if (!negocioActual || document.hidden) return;
       if (vistaActual !== 'cola' && vistaActual !== 'calendario') return;
-      if (editingIds.size || fechaEditIds.size) return;
+      if (editingIds.size || fechaEditIds.size || pedirCambioIds.size || colaOcupada()) return;
       const pendientes = contenido.some((i) => i.publicacion && ['programada', 'publicando'].includes(i.publicacion.estado));
       if (!pendientes) return;
       try { await refreshContenido(); } catch (err) { /* reintenta en la próxima vuelta */ }

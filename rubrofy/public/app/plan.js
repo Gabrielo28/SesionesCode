@@ -437,7 +437,7 @@
           <div class="es-fila"><span class="es-etq">Suenas</span><div class="es-chips"><span class="es-chip">${[tonoCat && tonoCat.label, est.tono].filter(Boolean).map(esc).join(' · ') || 'Sin definir'}</span></div></div>`);
 
     const ritmo = editando === 'ritmo'
-      ? tarjetaEdicion('ritmo', '📅', 'Cuánto publicas', 'cuanto-publicar', `<p class="sub">"Generar semana" crea exactamente esta mezcla y la reparte en los días de la semana.</p>${camposRitmo(plan, cat)}`)
+      ? tarjetaEdicion('ritmo', '📅', 'Cuánto publicas', 'cuanto-publicar', `<p class="sub">"Generar mi semana" crea exactamente esta mezcla y la reparte en los días de la semana.</p>${camposRitmo(plan, cat)}`)
       : tarjetaVista('ritmo', '📅', 'Cuánto publicas', 'cuanto-publicar', `
           <div class="es-numeros">${Object.keys(ETIQUETAS).map((f) => `<div class="es-numero${semanal[f] ? '' : ' cero'}"><b>${semanal[f] || 0}</b><span>${(semanal[f] === 1 ? SINGULAR[f] : ETIQUETAS[f])}</span></div>`).join('')}</div>
           <p class="es-total"><b>${total} por semana</b> · ${esc(nombreRitmo(semanal, cat))} · posts a las ${esc(plan.hora || '09:00')}</p>`);

@@ -63,21 +63,6 @@
     cargar();
   });
 
-  // Recomendaciones de publicidad (90 días): abiertas en Meta, hechas y si funcionaron.
-  const REGLAS_ADS = {
-    'campana-sin-resultados': 'Pausar campaña sin resultados', 'costo-campanas': 'Mover presupuesto entre campañas', 'ctr-bajo': 'Cambiar anuncio con pocos clics',
-    'roas-bajo': 'Ventas que no cubren la inversión', 'costo-subio': 'Costo que subió', 'costo-bajo': 'Subir presupuesto', 'sin-resultados-periodo': 'Sin resultados en el período',
-    publico: 'Público más barato', ubicacion: 'Ubicación más barata', 'anuncios-sin-resultados': 'Apagar anuncios sin resultados',
-  };
-  function publicidadHTML(p) {
-    if (!p) return '';
-    const t = p.total;
-    const tasa = (r) => (r.medidas ? `${r.funcionaron} de ${r.medidas}` : '–');
-    return `<h3 class="adm-sub">Recomendaciones de publicidad (90 días)${AY('adm-publicidad')}</h3>
-      <ul class="adm-lista"><li><span>Abiertas en Meta o marcadas</span><b>${num(t.abiertas)}</b></li><li><span>Hechas</span><b>${num(t.hechas)}</b></li>
-        <li><span>Funcionaron (de las medidas)</span><b>${tasa(t)}</b></li><li><span>"No me sirve"</span><b>${num(t.descartadas)}</b></li></ul>
-      ${p.porRegla.some((r) => r.medidas) ? `<ul class="adm-lista">${p.porRegla.filter((r) => r.medidas).map((r) => `<li><span>${esc(REGLAS_ADS[r.regla] || r.regla)}</span><b>${tasa(r)}</b></li>`).join('')}</ul>` : ''}`;
-  }
 
   function tile(titulo, valor, detalle, alerta) {
     return `<div class="adm-kpi${alerta ? ' alerta' : ''}"><span>${esc(titulo)}</span><b>${valor}</b><em>${detalle || ''}</em></div>`;
@@ -130,8 +115,7 @@
             : '<p class="sub">Todavía no hay visitas desde otros sitios en el periodo.</p>'}
           <p class="adm-nota">Sin cookies ni IP: solo el dominio desde el que llegan.</p></div>
         <div class="ig-card"><div class="ig-card-head"><h2>Uso de IA este mes${AY('adm-ia')}</h2></div>
-          <ul class="adm-lista"><li><span>Textos escritos con IA</span><b>${num(k.iaTextosMes)}</b></li><li><span>Fotos generadas con IA</span><b>${num(k.iaFotosMes)}</b></li></ul>
-          ${publicidadHTML(r.publicidad)}</div>
+          <ul class="adm-lista"><li><span>Textos escritos con IA</span><b>${num(k.iaTextosMes)}</b></li><li><span>Fotos generadas con IA</span><b>${num(k.iaFotosMes)}</b></li></ul></div>
         <div class="ig-card"><div class="ig-card-head"><h2>Sistema${AY('adm-sistema')}</h2><span class="adm-ayuda">v${esc(r.sistema.version)}</span></div>
           <ul class="adm-lista adm-config">${Object.entries(r.sistema.config).map(([n, ok]) => `<li><span>${esc(n)}</span><b class="${ok ? 'ok' : 'no'}">${ok ? 'Activo' : 'Falta configurar'}</b></li>`).join('')}</ul>
           <p class="adm-nota">Encendido ${esc(hace(r.sistema.encendidoDesde))} · base de datos ${esc(bytes(r.sistema.tamanoDb))} · zona ${esc(r.sistema.zona)}</p>
@@ -273,11 +257,11 @@
   });
 
   function descargarCSV() {
-    const cab = ['nombre', 'email', 'plan', 'alta', 'ultima_actividad', 'bienvenida', 'etapa', 'instagram', 'publicidad', 'resumen_semanal', 'por_semana', 'pendientes', 'aprobadas', 'publicadas', 'fallidas', 'ia_textos_mes', 'ia_fotos_mes'];
+    const cab = ['nombre', 'email', 'plan', 'alta', 'ultima_actividad', 'bienvenida', 'etapa', 'instagram', 'resumen_semanal', 'por_semana', 'pendientes', 'aprobadas', 'publicadas', 'fallidas', 'ia_textos_mes', 'ia_fotos_mes'];
     // Comillas escapadas y sin fórmulas: un nombre que empiece con = + - @
     // se antepone con ' para que Excel no lo ejecute.
     const q = (v) => '"' + String(v == null ? '' : v).replace(/^[=+\-@\t\r]/, "'$&").replace(/"/g, '""') + '"';
-    const filas = visibles().map((n) => [n.nombre, n.email, n.plan, n.creadoEl, n.ultimoAcceso, n.bienvenida ? 'si' : 'no', n.etapa, n.instagram, n.publicidad ? 'si' : 'no', n.avisos ? 'si' : 'no', n.semanal,
+    const filas = visibles().map((n) => [n.nombre, n.email, n.plan, n.creadoEl, n.ultimoAcceso, n.bienvenida ? 'si' : 'no', n.etapa, n.instagram, n.avisos ? 'si' : 'no', n.semanal,
       n.piezas.pendientes, n.piezas.aprobadas, n.piezas.publicadas, n.piezas.fallidas, n.iaMes.textos, n.iaMes.fotos].map(q).join(','));
     const blob = new Blob(['﻿' + [cab.join(',')].concat(filas).join('\n')], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');

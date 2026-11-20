@@ -51,7 +51,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS ig_posts_fecha ON ig_posts (negocio_id, publicado_el);
   CREATE TABLE IF NOT EXISTS sync_estado (
     negocio_id TEXT NOT NULL,
-    fuente TEXT NOT NULL,             -- instagram | meta_ads | google_ads | competencia
+    fuente TEXT NOT NULL,             -- instagram
     ultima_ok TEXT,
     ultimo_intento TEXT,
     error TEXT,                       -- null | token | permiso | otro
@@ -65,7 +65,7 @@ store.registrarLimpieza((negocioId) => {
   }
 });
 
-// --- estado de sincronización (compartido con ads y competencia) ---
+// --- estado de sincronización (una fila por negocio y fuente) ---
 
 const sqlEstado = {
   get: db.prepare('SELECT * FROM sync_estado WHERE negocio_id = ? AND fuente = ?'),
@@ -464,8 +464,8 @@ const REINTENTO_ERROR_MS = 3600 * 1000;     // si falló, reintenta en 1 h
 const MIN_ENTRE_MANUALES_MS = 5 * 60 * 1000; // "Actualizar ahora" como mucho cada 5 min
 
 function crearSincronizador({ debeSincronizar, fuentes = {}, intervaloMs = 10 * 60 * 1000, log = console.log }) {
-  // fuentes: { nombre: async (negocioId) => ({ ok, error }) } — ads y
-  // competencia se enganchan acá con el mismo calendario y estado.
+  // fuentes: { nombre: async (negocioId) => ({ ok, error }) } — otras
+  // fuentes se enganchan acá con el mismo calendario y estado.
   const todas = Object.assign({ instagram: (id) => sincronizar(id, log) }, fuentes);
   let corriendo = false;
   let timer = null;

@@ -4,7 +4,7 @@
 //
 //   1. Configura (una vez)      datos y objetivo, Instagram, fotos, Mi estilo
 //   2. Crea cada semana         generar la semana, aprobar, subir videos/fotos
-//   3. Mide (automático)        resultados, publicidad, competencia
+//   3. Mide (automático)        resultados
 //   4. Mejora cada mes          leer el informe y ajustar la estrategia
 //
 // calcular() es pura: recibe todo lo que necesita y no lee la base.
@@ -41,7 +41,10 @@ function faltaMaterial(item, fotos, hayFotosIA) {
   const f = formatoDe(item);
   const enCategoria = (item.categoriaFoto && fotos[item.categoriaFoto]) || [];
   if (f === 'reel') return item.video ? null : 'reel';
-  if (f === 'carrusel') return enCategoria.length >= 2 ? null : 'carrusel';
+  if (f === 'carrusel') {
+    const elegidas = (Array.isArray(item.fotosCarrusel) ? item.fotosCarrusel : []).filter((x) => x && (fotos[x.categoria] || []).includes(x.archivo));
+    return elegidas.length >= 2 || enCategoria.length >= 2 ? null : 'carrusel';
+  }
   if (f === 'historia') {
     const medio = item.medio === 'imagen' || item.medio === 'video' ? item.medio : (item.video ? 'video' : 'imagen');
     if (medio === 'video') return item.video ? null : 'historia';
@@ -50,10 +53,10 @@ function faltaMaterial(item, fotos, hayFotosIA) {
   return enCategoria.length || hayFotosIA ? null : 'foto';
 }
 
-// input: { negocio, plan, contenido, fotos, referencias, competidores,
+// input: { negocio, plan, contenido, fotos, referencias,
 //          fotosIA, syncInstagram, mesHoy, ahora }
 function calcular(input) {
-  const { negocio, plan, contenido, fotos, referencias, competidores, fotosIA, syncInstagram, mesHoy } = input;
+  const { negocio, plan, contenido, fotos, referencias, fotosIA, syncInstagram, mesHoy } = input;
   const ahora = input.ahora || Date.now();
   const igOk = !!negocio.instagramConectado && negocio.instagramEstado !== 'reconectar';
   const vivas = contenido.filter((i) => i.status !== 'rechazado' && !(i.publicacion && i.publicacion.estado === 'publicada'));
@@ -70,7 +73,7 @@ function calcular(input) {
       detalle: 'Qué haces, qué vendes, tus redes y tu web, a quién le hablas, tu objetivo y cuánto publicar. Con eso la IA arma tu estrategia.',
       estado: negocio.bienvenidaCompletada && negocio.perfilCompleto !== false ? 'hecho' : 'pendiente',
       prioridad: 1,
-      accion: negocio.bienvenidaCompletada && negocio.perfilCompleto !== false ? { tipo: 'vista', vista: 'config', ancla: 'cfg-perfil' } : { tipo: 'bienvenida' },
+      accion: negocio.bienvenidaCompletada && negocio.perfilCompleto !== false ? { tipo: 'vista', vista: 'marca', tab: 'negocio' } : { tipo: 'bienvenida' },
       boton: 'Empezar',
       botonHecho: 'Ver o cambiar',
     },
@@ -107,7 +110,7 @@ function calcular(input) {
       estado: referencias >= 5 ? 'hecho' : 'pendiente',
       prioridad: 7,
       accion: { tipo: 'vista', vista: 'estilo' },
-      boton: 'Ir a Tu marca',
+      boton: 'Agregar ejemplos',
       botonHecho: 'Ver mi estilo',
     },
   ];
@@ -133,7 +136,7 @@ function calcular(input) {
     crea.push({
       id: 'fallidas',
       titulo: `${plural(fallidas.length, 'publicación no se pudo publicar', 'publicaciones no se pudieron publicar')}`,
-      detalle: 'La tarjeta dice qué faltó. Corrígelo y usa "Reintentar".',
+      detalle: 'Cada una dice qué faltó. Corrígelo y toca "Reintentar".',
       estado: 'pendiente',
       prioridad: 0,
       accion: { tipo: 'vista', vista: 'cola' },
@@ -150,18 +153,18 @@ function calcular(input) {
       estado: proximos7 >= objetivoSemana ? 'hecho' : 'pendiente',
       prioridad: proximos7 === 0 ? 2 : 3,
       accion: { tipo: 'generar' },
-      boton: 'Generar semana',
+      boton: 'Generar mi semana',
     },
     {
       id: 'aprobar',
-      titulo: 'Revisa y aprueba',
+      titulo: pendientes.length ? `Tienes ${plural(pendientes.length, 'publicación', 'publicaciones')} por aprobar` : 'Revisa y aprueba',
       detalle: pendientes.length
-        ? `${plural(pendientes.length, 'publicación espera', 'publicaciones esperan')} tu aprobación${pendientesUrgentes ? `, ${pendientesUrgentes} para los próximos 3 días` : ''}.`
+        ? `Revísalas y quedan programadas para publicarse solas${pendientesUrgentes ? `. ${pendientesUrgentes === 1 ? 'Una sale' : pendientesUrgentes + ' salen'} en los próximos 3 días` : ''}.`
         : 'No hay nada esperando tu aprobación.',
       estado: pendientes.length ? 'pendiente' : 'hecho',
       prioridad: pendientesUrgentes ? 1 : 4,
       accion: { tipo: 'vista', vista: 'cola' },
-      boton: 'Ir a Por aprobar',
+      boton: 'Revisar ahora',
     },
     {
       id: 'material',
@@ -191,31 +194,6 @@ function calcular(input) {
       accion: igOk ? { tipo: 'vista', vista: 'resultados', tab: 'instagram' } : { tipo: 'vista', vista: 'config' },
       boton: igOk ? 'Ver resultados' : 'Conectar Instagram',
       botonHecho: 'Ver resultados',
-    },
-    {
-      id: 'publicidad',
-      titulo: 'Conecta tu publicidad',
-      detalle: negocio.googleActivo ? 'Meta Ads y Google Ads: cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.' : 'Meta Ads: cuánto inviertes en Instagram y Facebook, qué obtienes y cuánto cuesta cada resultado.',
-      // Meta Ads espera la aprobación de Meta: "Próximamente" (sin botón).
-      estado: negocio.metaAbierto === false && !negocio.googleConexion ? 'proximo' : !plan.ads ? 'bloqueado' : (negocio.metaConexion || negocio.googleConexion) ? 'hecho' : 'pendiente',
-      requierePlan: negocio.metaAbierto === false && !negocio.googleConexion ? 'Próximamente' : plan.ads ? null : 'Estudio',
-      prioridad: 8,
-      accion: (negocio.metaConexion || negocio.googleConexion) ? { tipo: 'vista', vista: 'resultados', tab: 'meta' } : { tipo: 'vista', vista: 'config' },
-      boton: 'Conectar',
-      botonHecho: 'Ver publicidad',
-    },
-    {
-      id: 'competencia',
-      titulo: 'Sigue a tu competencia',
-      detalle: competidores
-        ? `Sigues ${plural(competidores, 'cuenta', 'cuentas')}. Compara seguidores, frecuencia e interacción.`
-        : 'Agrega hasta 5 cuentas de Instagram y compárate con ellas.',
-      estado: negocio.metaAbierto === false ? 'proximo' : !plan.competencia ? 'bloqueado' : competidores ? 'hecho' : 'pendiente',
-      requierePlan: negocio.metaAbierto === false ? 'Próximamente' : plan.competencia ? null : 'Estudio',
-      prioridad: 9,
-      accion: { tipo: 'vista', vista: 'resultados', tab: 'competencia' },
-      boton: 'Agregar competidores',
-      botonHecho: 'Ver comparación',
     },
   ];
 
@@ -257,7 +235,7 @@ function calcular(input) {
   const etapas = [
     { id: 'configura', titulo: 'Configura', cuando: 'Una vez', resumen: 'Tu negocio, tu objetivo y tus cuentas.', pasos: configura },
     { id: 'crea', titulo: 'Crea', cuando: 'Cada semana', resumen: 'Genera, revisa y aprueba. Se publica solo.', pasos: crea },
-    { id: 'mide', titulo: 'Mide', cuando: 'Automático', resumen: 'Qué funciona, tu publicidad y tu competencia.', pasos: mide },
+    { id: 'mide', titulo: 'Mide', cuando: 'Automático', resumen: 'Qué publicaciones funcionan y a qué hora.', pasos: mide },
     { id: 'mejora', titulo: 'Mejora', cuando: 'Cada mes', resumen: 'Lee tu informe y ajusta la estrategia.', pasos: mejora },
   ];
   for (const e of etapas) {

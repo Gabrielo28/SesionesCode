@@ -10,26 +10,16 @@
 
   const AYUDA = {
     // ---------- Inicio ----------
-    'inicio': { t: 'Inicio', d: 'Tu punto de partida: te dice qué te toca hacer hoy y en qué parte de la ruta vas.',
-      p: ['Mira "Qué hacer ahora": son las 3 tareas más urgentes, en orden.', 'Pulsa el botón de cada tarea para ir directo a donde se hace.', 'Revisa "Tu ruta" para ver lo que falta en cada etapa.'] },
-    'que-hacer': { t: 'Qué hacer ahora', d: 'Las 3 tareas más importantes según el estado real de tu cuenta.',
-      p: ['Empieza por la tarjeta 1 (la rosada): es la más urgente.', 'Pulsa su botón y completa la tarea.', 'Vuelve a Inicio: la lista se actualiza sola.'], n: 'Primero aparece lo que puede hacer que algo no se publique: publicaciones fallidas, Instagram desconectado o contenido que sale pronto sin aprobar.' },
-    'logros': { t: 'Lo que lograste este mes', d: 'Cuántas publicaciones salieron, a cuánta gente llegaron y las horas que no pasaste escribiendo (a 20 minutos por publicación).',
-      p: ['La racha cuenta semanas seguidas con al menos una publicación en Instagram. A las 4 y a las 12 semanas te regalamos créditos ⚡.', 'Si conoces otro negocio al que le serviría Rubrofy, con tu enlace ustedes dos ganan créditos cuando se suscribe.'] },
-    'ruta': { t: 'Tu ruta en Rubrofy', d: 'Cuatro etapas para aprovechar todo Rubrofy: Configura (una vez), Crea (cada semana), Mide (automático) y Mejora (cada mes).',
-      p: ['Toca una etapa para ver sus pasos.', 'Los pasos con ✓ están hechos; los de círculo, pendientes.', 'Los que tienen candado son de otro plan: su botón te lleva a Plan y pago.'] },
+    'inicio': { t: 'Inicio', d: 'Una sola tarea a la vez: lo más importante que te toca ahora, y debajo lo próximo que se publica.',
+      p: ['Toca el botón de la tarea: te lleva directo a donde se hace.', 'En "Próximas" ves lo que ya aprobaste, con su fecha. Toca una para abrirla.', '"Tu avance" muestra todos los pasos, por si quieres adelantar alguno.'] },
     'proximas': { t: 'Próximas publicaciones', d: 'Lo que ya aprobaste y va a salir en Instagram, ordenado por fecha.',
-      p: ['Revisa que las fechas te sirvan.', 'Para mover una, ábrela en Por aprobar o en el Calendario y cambia su fecha.'], n: 'Si Instagram no está conectado, lo aprobado queda guardado pero no se publica.' },
-    'plan-inicio': { t: 'Tu plan de contenido', d: 'Resumen de tu objetivo, tu tono y cuántas publicaciones quieres por semana.',
-      p: ['Pulsa "Cambiar" para editarlo en Estrategia.'] },
-    'contadores': { t: 'Pendientes, aprobados y en cola', d: 'Pendientes: esperan tu revisión. Aprobados: ya tienen tu OK y se publicarán en su fecha. En cola: el total de publicaciones que tienes.',
-      p: ['Pulsa "Por aprobar" en el menú para revisar las pendientes.'] },
+      p: ['Revisa que las fechas te sirvan.', 'Para mover una, tócala y cambia su fecha, o muévela en el Calendario.'], n: 'Si Instagram no está conectado, lo aprobado queda guardado pero no se publica.' },
     'brief': { t: 'El brief de la semana', d: 'Lo que le dices a Rubrofy antes de generar: qué pasa esta semana, qué publicaciones no pueden faltar, cuántas quieres de cada tipo y qué evitar. Rubrofy lo ordena y te muestra cómo lo entendió antes de escribir.',
       p: ['Puedes pegar un texto largo (hasta 5.000 caracteres): una campaña, una lista de publicaciones, el tono de la semana.', 'Si dices "3 reels y 2 historias", esa semana sale así aunque tu plan diga otra cosa.', 'Con un plan de marketing guardado en Estrategia, "Proponer desde mi plan" te sugiere el brief de la semana.', 'En Por aprobar ves el brief y puedes rehacer las publicaciones pendientes si lo cambias.'] },
     'plan-marketing': { t: 'Plan de marketing', d: 'Tu estrategia completa: promesa de marca, cómo hablas, campañas con fechas, pilares de contenido. Rubrofy la resume en una ficha y la sigue cada semana.',
       p: ['Pega el texto o sube un .docx, .pdf o .txt (hasta 20.000 caracteres).', 'Las campañas con fechas se activan solas: en esas semanas el contenido gira en torno a ellas.', 'El brief de cada semana manda si se contradice con el plan.', 'Vuelve a subirlo cuando cambie tu estrategia.'] },
     'generar-semana': { t: 'Generar semana', d: 'Crea las publicaciones de la próxima semana con la mezcla de tu plan (cuántos posts, carruseles, reels e historias).',
-      p: ['Pulsa "+ Generar semana".', 'Revisa cuántas se van a crear y pulsa "Generar".', 'Llegan a Por aprobar con fecha, después de lo que ya tienes programado.'], n: 'Se crean hasta 12 por vez. Para cambiar la mezcla, usa "Cambiar mi plan".' },
+      p: ['Toca "Crear" y elige "Generar mi semana".', 'Revisa cuántas se van a crear y pulsa "Generar".', 'Llegan a Publicaciones → Por aprobar con fecha, después de lo que ya tienes programado.'], n: 'Se crean hasta 12 por vez. Para cambiar la mezcla, usa "Cambiar mi plan".' },
 
     // ---------- Estrategia ----------
     'estrategia': { t: 'Estrategia', d: 'Todo lo que Rubrofy usa para escribir por ti: qué quieres lograr, cómo suenas, de qué hablas y cuánto publicas.',
@@ -44,10 +34,10 @@
       p: ['Elige un ritmo sugerido (Básico, Recomendado o Intensivo) o ajusta con − y +.', 'Elige la hora de los posts (las historias salen a las 18:30).', 'Pulsa "Guardar plan". "Generar semana" usará esta mezcla.'] },
 
     // ---------- Por aprobar ----------
-    'cola': { t: 'Por aprobar', d: 'Aquí revisas cada publicación antes de que salga. Nada se publica sin tu aprobación.',
-      p: ['Lee el texto y la idea de qué foto o video usar.', 'Si está bien, pulsa "Aprobar": queda programada en su fecha (lo que estabas editando se guarda solo).', 'Si no, pulsa "Otra versión" o "Editar" para cambiar el texto y los hashtags.', 'Arriba eliges qué ver: Por aprobar, Aprobadas (todo lo aprobado, con el texto y los hashtags que se publican y si son de la IA o tuyos), Rechazadas o Todas.', 'Una aprobada se puede seguir editando con "Editar texto" hasta que se publique.', 'Si te equivocaste, "Deshacer" la devuelve a pendiente.'] },
-    'pieza-acciones': { t: 'Qué hace cada botón', d: '',
-      p: ['Aprobar: queda programada y se publica sola en su fecha.', 'Otra versión: la IA escribe un texto distinto con el mismo enfoque.', 'Pedir cambio: le dices a la IA qué cambiar ("más corto", "menciona el despacho") y escribe otra versión.', 'Editar: cambias el texto y los hashtags a mano (Rubrofy aprende de tus cambios). Si apruebas sin pulsar "Guardar", se guarda igual.', 'Generar foto con IA: crea una imagen si no tienes foto (plan Estudio).', 'Publicar ahora: la saca de inmediato, sin esperar su fecha.', 'Deshacer: vuelve a pendiente mientras no se haya publicado.', '×: la rechazas y no se publicará.', 'Reintentar: si falló, la vuelve a intentar después de corregir lo que faltaba.'] },
+    'cola': { t: 'Publicaciones', d: 'Todo lo que Rubrofy preparó: lo que espera tu aprobación, lo programado y lo ya publicado. Nada sale sin tu visto bueno.',
+      p: ['En "Por aprobar", lee el texto (tócalo para verlo completo) y toca Aprobar: queda programada para su fecha.', 'El lápiz edita el texto. El botón "⋯" tiene lo demás: cambiar la foto, otra versión, pedir un cambio, la fecha o el formato.', 'En un carrusel, "⋯" → "Elegir las fotos del carrusel" te deja marcar varias fotos y ordenarlas.'] },
+    'pieza-acciones': { t: 'Qué hace cada botón', d: 'Aprobar deja la publicación programada. El lápiz edita el texto. "⋯" abre el resto de las opciones.',
+      p: ['Otra versión del texto: la IA lo escribe de nuevo.', 'Pedirle un cambio a la IA: le dices qué cambiar ("más corto", "menciona el despacho").', 'Cambiar la foto o elegir las fotos del carrusel.', 'Descartar: la saca de tu semana. Queda en "Descartadas" por si la quieres recuperar.'] },
     'pieza-formato': { t: 'Formato, imagen o video y fecha', d: 'Cada pieza es un post, carrusel, reel o historia, con imagen o video, y su fecha y hora.',
       p: ['Cambia el formato con el selector.', 'Elige 🖼 Imagen o 🎬 Video al lado. En una historia eliges libremente; un post con video pasa a Reel y un Reel con imagen pasa a Post (te lo preguntamos antes).', 'Para cambiar el día o la hora, pulsa la fecha de la tarjeta, elige otra y guarda.', 'Video (reel o historia): súbelo vertical 9:16, MP4, o créalo con IA (plan Estudio).', 'Imagen: usa una foto de tu galería, súbela o créala con IA.', 'Carrusel: necesita al menos 2 fotos en su categoría.'] },
     'pieza-fecha': { t: 'Cambiar la fecha', d: 'Cada pieza tiene fecha y hora de publicación.',
@@ -87,12 +77,6 @@
     'informe': { t: 'Informe mensual', d: 'Un resumen del mes con resultados, qué funcionó y una conclusión escrita, listo para imprimir o compartir.',
       p: ['Elige el mes.', 'Pulsa "Generar conclusión" si aún no la tiene.', 'Imprímelo o guárdalo en PDF, o copia el enlace para compartirlo.'] },
 
-    // ---------- Publicidad y competencia ----------
-    'publicidad': { t: 'Publicidad', d: 'Tus campañas de Meta Ads (Instagram y Facebook): cuánto inviertes, qué obtienes y cuánto cuesta cada resultado.',
-      p: ['Conecta tu cuenta publicitaria en Conexiones y ajustes (plan Estudio).', 'Elige la pestaña Meta Ads.', 'Mira los totales y la tabla de campañas.'] },
-    'ads-numeros': { t: 'Los números de publicidad', d: 'Inversión: lo que gastaste. Resultados: el objetivo de la campaña (mensajes, compras, clics…). Costo por resultado: inversión ÷ resultados, mientras más bajo mejor. CTR: porcentaje de gente que hizo clic. CPC: costo por clic. ROAS: ventas atribuidas ÷ inversión.' },
-    'campanas': { t: 'Campañas', d: 'Cada campaña con su inversión, resultados y costo por resultado.',
-      p: ['Compara el costo por resultado entre campañas.', 'Pasa más presupuesto a la que consigue resultados más baratos.'] },
     'adm-respaldo': { t: 'Respaldo externo', d: 'Una copia de Rubrofy fuera de Railway, en un bucket de Cloudflare R2 (o S3): la base de datos una vez al día y las fotos y videos nuevos.',
       p: ['Se hace solo cada día, desde las 4:00 (hora de Chile).', 'La base se guarda comprimida y, con RESPALDO_CLAVE, cifrada: 7 copias diarias que se van renovando y una por mes.', 'Las fotos y videos se suben una sola vez; después solo lo nuevo o cambiado.', 'Pulsa "Respaldar ahora" antes de un cambio grande.'], n: 'Para restaurar: descarga el archivo desde el bucket y usa scripts/restaurar-respaldo.js (pasos en DEPLOY-RAILWAY.md). Si un respaldo falla, te llega una alerta por correo.' },
     'adm-soporte': { t: 'Soporte', d: 'Las solicitudes que los clientes envían desde "Ayuda y soporte": problemas, consultas, pagos y sugerencias.',
@@ -126,7 +110,7 @@
     'voz-como': { t: 'Cómo habla', d: 'Las reglas que la IA respeta y que se revisan en cada texto: tú o usted, qué español, emojis, largo, palabras propias y prohibidas.',
       p: ['Palabras propias: expresiones que te identifican.', 'Palabras que nunca usa: muletillas o términos que no van con tu marca.', 'Prohibido: promesas que no puedes cumplir o temas delicados.'] },
     'voz-ejemplos': { t: 'Textos que sí suenan a ti', d: 'La forma más rápida de enseñarle tu voz a la IA: textos reales que te encantaron. Imita el estilo sin copiarlos.' },
-    'voz-redactor': { t: 'Escribir con mi voz', d: 'Anuncios, correos, mensajes de WhatsApp, fichas de producto, textos para la web o tu bio, siempre con tu voz.',
+    'voz-redactor': { t: 'Escribir con mi voz', d: 'Correos, mensajes de WhatsApp, fichas de producto, textos para la web o tu bio, siempre con tu voz.',
       p: ['Elige qué necesitas.', 'Cuenta de qué trata, con los datos reales (precio, fecha).', 'Pulsa "Escribir 3 versiones".', 'Copia la que más te guste. Si una suena perfecta, pulsa "Así sí suena" para que la IA aprenda.'], n: 'Cada pedido usa 1 texto con IA de tu plan.' },
     'voz-probar': { t: 'Probar un texto', d: 'Pega cualquier texto y mira qué tan fiel es a tu ficha, con los motivos. Sirve para revisar textos de tu equipo o de otra herramienta. No usa IA.' },
     'voz-puntaje': { t: 'Puntaje de voz', d: 'Qué tan fiel es el texto a tu ficha de voz (0 a 100). Pasa el mouse sobre el número para ver los motivos.',
@@ -140,38 +124,11 @@
     'indicacion': { t: 'Indicaciones para esta tanda', d: 'Algo puntual para las piezas que vas a generar ahora, sin cambiar tu estrategia. Ej: "esta semana es el aniversario" o "enfócate en las tortas".' },
     'video-ia': { t: 'Video con IA', d: 'Genera un video corto para el Reel o la historia. Si la pieza tiene foto, la anima; si no, lo crea desde la idea de la pieza.',
       p: ['Pulsa "Crear video con IA".', 'Elige la calidad (Rápida, Recomendada o Premium) y la duración (5, 10 o 15 segundos). Ves cuántos créditos ⚡ usa antes de crearlo.', 'Espera 1 a 3 minutos: la tarjeta se actualiza sola.', 'Revísalo con "Ver" antes de aprobar.'], n: 'Se paga con créditos ⚡. Si el video no llega, te devolvemos los créditos.' },
-    'diagnostico': { t: 'Diagnóstico', d: 'Rubrofy revisa tus campañas y te dice en palabras simples qué está funcionando, qué está gastando de más y qué hacer.',
-      p: ['Parte por los puntos con "!": son plata que se está yendo sin resultados.', 'Los "→" son oportunidades: mover presupuesto, cambiar el anuncio o apuntar a otro público.', 'Toca "Hacer este cambio en Meta": se abre el lugar exacto en el Administrador de anuncios y lo haces tú.', 'Rubrofy detecta solo el cambio (o márcalo con "Ya lo hice") y mide si funcionó. Si una recomendación no te sirve, márcala y no la verás por 30 días.'], n: 'Las flechas de los números comparan con el período anterior del mismo largo. Lo que te funciona sube en la lista; si algo no funcionó, la próxima vez te propone otra cosa.' },
-    'ads-cambios': { t: 'Tus cambios', d: 'Los cambios que hiciste en Meta a partir de las recomendaciones y si funcionaron: Rubrofy compara los 7 días antes del cambio con los 7 días después.',
-      p: ['"Funcionó": el número que importaba mejoró al menos 10 %.', '"No mejoró": empeoró al menos 10 %. La próxima vez te propone otra cosa.', '"Sin cambio claro": se movió menos de 10 %.', 'Si abriste uno en Meta y no lo hiciste, márcalo con "No me sirve".'], n: 'Rubrofy se da cuenta solo cuando apagas un anuncio o una campaña, mueves presupuesto o creas un anuncio nuevo.' },
-    'ads-aprendido': { t: 'Lo que Rubrofy aprendió de tus anuncios', d: 'Qué texto, formato, ubicación y público consiguen resultados más baratos en tus anuncios de los últimos 60 días.',
-      p: ['La IA usa esto al escribir tus publicaciones: tus anuncios le enseñan qué funciona con tu público.', 'Solo aparece algo cuando hay al menos 3 resultados y una diferencia clara (20 % o más).'] },
-    'ads-anuncios': { t: 'Tus anuncios', d: 'Cada anuncio con su imagen, lo que gastó y lo que consiguió. El borde verde marca el más rentable y el rojo los que gastan sin resultados.',
-      p: ['Apaga los anuncios en rojo si ya llevan varios días así.', 'Haz variantes del anuncio en verde: misma idea, otra foto o texto.'] },
-    'ads-publico': { t: 'Edad y sexo', d: 'Cuánto te cuesta cada resultado según quién vio el anuncio. Más claro = más barato. Los cuadros vacíos gastaron sin resultados.',
-      p: ['Busca el cuadro más claro: es tu público más rentable.', 'En Meta Ads, crea un conjunto de anuncios enfocado en ese grupo.'] },
-    'ads-ubicacion': { t: 'Ubicación', d: 'Dónde se mostró tu anuncio (Feed, Historias, Reels, Facebook…) y cuánto costó cada resultado ahí.',
-      p: ['Si Reels o Historias salen más baratos, haz piezas verticales pensadas para ese lugar.', 'Puedes excluir ubicaciones caras en la configuración del conjunto de anuncios.'] },
-    'comp-conclusiones': { t: 'Lo que hace tu competencia', d: 'Conclusiones automáticas al comparar tu cuenta con las que sigues: formatos, frecuencia, horarios, crecimiento y hashtags.',
-      p: ['Lee cada punto y su "Qué hacer".', 'Los cambios de formato y frecuencia se aplican en Estrategia → Tu plan de contenido.'] },
-    'comp-tasa': { t: 'Tasa de interacción', d: 'Me gusta + comentarios por publicación dividido por los seguidores. Sirve para comparar una cuenta chica con una grande: mide qué tanto le importa el contenido a su gente.' },
-    'comp-crecimiento': { t: 'Crecimiento de seguidores', d: 'Cuánto subió o bajó cada cuenta en los últimos 30 días, en porcentaje. Al empezar a seguir una cuenta se cuenta desde ese día.' },
-    'comp-formatos': { t: 'Qué publica cada uno', d: 'La mezcla de videos y reels, carruseles y fotos de sus últimas publicaciones. Pasa el mouse sobre cada tramo para ver la interacción de ese formato.' },
-    'comp-top': { t: 'Lo que mejor le funciona a tu competencia', d: 'Sus publicaciones recientes con más interacción por seguidor.',
-      p: ['Ábrelas y fíjate en el primer segundo o la primera línea.', 'Mira qué piden al final (comentar, guardar, escribir).', 'Adapta la idea a tu negocio; no copies el texto.'] },
-    'comp-hashtags': { t: 'Hashtags', d: 'Los hashtags que más repite cada competidor en sus publicaciones recientes.' },
-    'competencia': { t: 'Competencia', d: 'Compara tu Instagram con hasta 5 cuentas: seguidores, frecuencia de publicación e interacción.',
-      p: ['Conecta Meta en Conexiones y ajustes, eligiendo tu cuenta de Instagram (plan Estudio).', 'Escribe el @usuario de un competidor y pulsa "Seguir".', 'Para dejar de seguir una cuenta, pulsa "Quitar".', 'Se actualiza solo cada 12 horas.'], n: 'Solo funciona con cuentas profesionales (empresa o creador).' },
-
-    // ---------- Conexiones y ajustes ----------
-    'config': { t: 'Conexiones y ajustes', d: 'Donde conectas Instagram y tu publicidad, activas los avisos y actualizas los datos del negocio. Tu plan, créditos y pagos están en Mi cuenta.',
-      p: ['Usa los botones de arriba para saltar a cada sección.'] },
+    // ---------- Cuentas conectadas ----------
+    'config': { t: 'Cuentas conectadas', d: 'Donde conectas tu Instagram para que lo aprobado se publique solo. TikTok llegará pronto.',
+      p: ['Toca "Conectar con Instagram" e inicia sesión con tu cuenta profesional.', 'Si Instagram pide reconectar, se hace aquí mismo: lo programado espera y sale al reconectar.'], n: 'Los datos de tu negocio están en Tu marca, y tus avisos en Mi cuenta.' },
     'instagram': { t: 'Conectar Instagram', d: 'Con Instagram conectado, lo que apruebas se publica solo, en su fecha y hora.',
       p: ['Tu cuenta debe ser profesional (empresa o creador): Instagram → Configuración → Tipo de cuenta.', 'Pulsa "Conectar con Instagram".', 'Inicia sesión en Instagram y acepta los permisos.', 'Vuelves a Rubrofy ya conectado.'], n: 'Si no ves el botón, conecta pegando el ID y el token (hay una guía en la misma tarjeta).' },
-    'meta': { t: 'Conectar Meta (Ads y competencia)', d: 'Lee tus campañas de Meta Ads y, con tu cuenta de Instagram, compara tu competencia (plan Estudio).',
-      p: ['Pulsa "Conectar con Facebook".', 'Entra con la cuenta de Facebook que administra tus anuncios y la página de tu negocio, y acepta los permisos.', 'Si administras varias cuentas, elige tu cuenta publicitaria y tu Instagram.'], n: 'Rubrofy solo lee tus anuncios: no crea ni cambia nada. La conexión dura unos 60 días; antes de que venza, vuelve a pulsar "Conectar con Facebook". También puedes conectar pegando un token (opción avanzada).' },
-    'google': { t: 'Conectar Google Ads', d: 'Lee tus campañas de Google Ads junto a tu Instagram (plan Estudio).',
-      p: ['Pulsa "Conectar con Google".', 'Inicia sesión con la cuenta que administra tus anuncios y acepta.', 'Si tienes varias cuentas, elige cuál usar.'] },
     'avisos': { t: 'Resumen semanal por correo', d: 'Cada lunes en la mañana te llega un correo con lo que te toca esa semana y lo que se publica en los próximos 7 días.',
       p: ['Marca o desmarca la casilla para activarlo o apagarlo.', 'Pulsa "Enviarme uno ahora" para ver cómo llega.'], n: 'También recibes un aviso si Instagram se desconecta.' },
     'datos': { t: 'Datos del negocio', d: 'Nombre, precios, promoción y producto destacado. Se usan tal cual en tus publicaciones.',
@@ -201,7 +158,6 @@
     'adm-etapas': { t: 'Etapa de la ruta', d: 'En qué etapa está hoy cada negocio según su Inicio. Muchos en Configura = les cuesta arrancar.' },
     'adm-planes': { t: 'Planes', d: 'Cuántos negocios hay en cada plan hoy. Los de pago suman el ingreso mensual (MRR) de arriba.' },
     'adm-ia': { t: 'Uso de IA este mes', d: 'Cuántos textos y fotos se generaron con IA este mes entre todos los negocios. Sirve para estimar el costo de Anthropic y OpenAI.' },
-    'adm-publicidad': { t: 'Recomendaciones de publicidad', d: 'Cuántas recomendaciones del diagnóstico de Meta Ads abrieron los clientes, cuántas hicieron y cuántas funcionaron (7 días antes contra 7 después). Sirve para ajustar las reglas: una regla que casi nunca funciona hay que cambiarla.' },
     'adm-referentes': { t: 'De dónde llegan', d: 'Desde qué sitios llegan las visitas a la portada (solo el dominio; sin cookies ni IP).' },
     'adm-riesgo': { t: 'En riesgo', d: 'Negocios con plan que llevan 10 días o más sin entrar al panel: los que más probablemente cancelen.',
       p: ['A los 10 días, si tienen publicaciones esperando, reciben un correo con "Aprobar todo" (se aprueba sin entrar).', 'A los 25 días reciben un correo personal del equipo; si responden, llega a tu correo de contacto (CONTACTO_EMAIL).', 'Lo mejor que puedes hacer con esta lista: llamarlos.'] },
@@ -213,8 +169,8 @@
     // ---------- Sitio ----------
     'reg-rubro': { t: 'Rubro', d: 'A qué se dedica tu negocio, con tus palabras. Con esto Rubrofy arma tu tono, tus temas y las categorías de tus fotos.',
       p: ['Escribe qué haces y qué vendes, en una o dos frases.', 'Ejemplo: "panadería artesanal de barrio, pan de masa madre y pasteles".'] },
-    'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, fotos y videos con IA, Meta Ads y competencia.',
-      p: ['Si vas a hacer publicidad o quieres fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta (Flow) o con Mercado Pago, en una página segura de pago; cambias de plan, de medio de pago o cancelas desde tu panel cuando quieras.'] },
+    'precios-comparar': { t: 'Cómo elegir plan', d: 'Pro: estrategia, publicaciones completas (gancho, texto con llamado a la acción y hashtags) que aprenden de ti, resultados e informe mensual. Estudio: todo lo de Pro, con el doble de publicaciones, más reels editados y más créditos ⚡ para fotos y videos con IA.',
+      p: ['Si publicas mucho o haces muchos reels, fotos y videos con IA, elige Estudio. Si no, Pro.', 'Pagas con tarjeta (Flow) o con Mercado Pago, en una página segura de pago; cambias de plan, de medio de pago o cancelas desde tu panel cuando quieras.'] },
   };
 
   const CSS = `
@@ -249,11 +205,12 @@
   let fijo = false;  // abierto con clic/toque (no se cierra al salir el mouse)
   let timer = null;
 
+  const st = document.createElement('style');
+  st.textContent = CSS;
+  document.head.appendChild(st);
+
   function asegurarPop() {
     if (pop) return;
-    const st = document.createElement('style');
-    st.textContent = CSS;
-    document.head.appendChild(st);
     pop = document.createElement('div');
     pop.className = 'ay-pop';
     pop.id = 'ay-pop';

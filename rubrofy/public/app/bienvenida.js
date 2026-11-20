@@ -257,16 +257,15 @@
         const conectado = !!n.instagramConectado;
         return {
           titulo: 'Conecta tu Instagram',
-          lead: 'Para publicar solo lo que apruebes, en su fecha y hora. Puedes hacerlo ahora o después desde Conexiones y ajustes.',
+          lead: 'Para publicar solo lo que apruebes, en su fecha y hora. Puedes hacerlo ahora o después, en Más → Cuentas conectadas.',
           cuerpo: `<div class="bv2-cuentas">
               <div class="bv2-cuenta"><i class="c-ig" aria-hidden="true"></i><div><b>Instagram${r.perfil.instagram ? ` @${esc(r.perfil.instagram)}` : ''}</b><span>Publica lo que apruebes.</span></div>
                 ${conectado ? '<em class="bv2-ok">Conectado</em>' : n.instagramLoginDisponible ? '<button type="button" class="bv2-ig" data-bv="conectar-ig">Conectar</button>' : '<em>Después</em>'}</div>
-              ${!conectado && n.instagramEnRevision ? '<p class="bv2-nota-ig">¿Instagram te muestra "Rol de desarrollador insuficiente"? Estamos terminando la aprobación de Rubrofy en Meta: sigue sin conectar y escríbenos tu usuario en <b>Ayuda y soporte</b>; te habilitamos el mismo día.</p>' : ''}
-              <div class="bv2-cuenta"><i class="c-meta" aria-hidden="true"></i><div><b>Meta Ads</b><span>Tu publicidad en Facebook e Instagram. Plan Estudio.</span></div>
-                ${n.metaAbierto === false ? '<em class="bv2-pronto">Próximamente</em>' : n.metaConexion ? '<em class="bv2-ok">Conectado</em>' : '<em>Opcional</em>'}</div>
+              ${!conectado && n.instagramEnRevision ? '<p class="bv2-nota-ig">¿Instagram te muestra "Rol de desarrollador insuficiente"? Estamos terminando la aprobación de Rubrofy en Meta: sigue sin conectar y escríbenos tu usuario en <b>Más → Ayuda</b>; te habilitamos el mismo día.</p>' : ''}
+              <div class="bv2-cuenta"><i class="c-tt" aria-hidden="true"></i><div><b>TikTok</b><span>Estamos preparando la publicación en TikTok.</span></div><em class="bv2-pronto">Próximamente</em></div>
             </div>
             <p class="bv2-final">${sinPlan ? 'Después: eliges tu plan (o tu prueba gratis) y creamos tu primera semana.'
-              : `Tu primera semana: ${P().textoTotal(r.plan.semanal || {})}. Llegan a <b>Por aprobar</b>; nada se publica hasta que tú lo apruebes.`}</p>`,
+              : `Tu primera semana: ${P().textoTotal(r.plan.semanal || {})}. Llegan a <b>Publicaciones</b>; nada se publica hasta que tú lo apruebes.`}</p>`,
           boton: sinPlan ? 'Continuar' : 'Crear mi primera semana',
         };
       }
@@ -274,7 +273,7 @@
         const fmt = (x) => '$' + Number(x).toLocaleString('es-CL');
         const DETALLE = {
           pro: ['Publicaciones completas: gancho, texto y hashtags', 'La IA escribe con tu voz y aprende de tus resultados', 'Resultados de Instagram e informe mensual'],
-          estudio: ['Todo lo de Pro', 'Más fotos y videos con IA', n.metaAbierto === false ? 'Meta Ads y competencia (próximamente)' : 'Meta Ads y competencia'],
+          estudio: ['Todo lo de Pro', 'El doble de publicaciones y el triple de reels editados', 'Más créditos ⚡ para fotos y videos con IA'],
         };
         const nombre = (pid) => ((ctx.planes || []).find((x) => x.id === pid) || {}).nombre || pid;
         const prueba = catPrueba ? `<div class="bv2-prueba" data-bv-prueba>
@@ -405,7 +404,7 @@
       }, 9000);
       try {
         await ctx.generarSemana();
-      } catch (err) { /* se genera después con el botón "Generar semana" */ }
+      } catch (err) { /* se genera después desde "Crear" */ }
       clearTimeout(t);
       capa.querySelectorAll('.bv2-pasos li').forEach((li) => { li.className = 'ok'; });
       await new Promise((ok) => setTimeout(ok, 700));

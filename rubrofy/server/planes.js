@@ -4,9 +4,7 @@
 // variable de entorno porque se crea en la cuenta de Stripe de cada
 // despliegue (ver scripts/setup-stripe.js) — nunca se hardcodea acá.
 
-// analitica: Resultados e informe mensual. ads / competencia: Meta Ads,
-// Google Ads y seguimiento de competidores (pensados para un futuro plan
-// Agencia; mientras no exista, van en Estudio).
+// analitica: Resultados e informe mensual.
 // Fotos y videos con IA no van acá: se pagan con créditos ⚡ y los créditos
 // que trae cada plan al mes se ajustan en /admin (server/creditos.js).
 // cuotaReelsEditados: reels que Rubrofy edita por mes a partir del video del
@@ -28,8 +26,6 @@ const PLANES = {
     cuotaTextosIA: 0,
     cuotaReelsEditados: 0,
     analitica: false,
-    ads: false,
-    competencia: false,
     stripePriceEnv: null,
   },
   pro: {
@@ -40,8 +36,6 @@ const PLANES = {
     cuotaTextosIA: 150,
     cuotaReelsEditados: 10,
     analitica: true,
-    ads: false,
-    competencia: false,
     stripePriceEnv: 'STRIPE_PRICE_PRO',
   },
   estudio: {
@@ -52,8 +46,6 @@ const PLANES = {
     cuotaTextosIA: 300,
     cuotaReelsEditados: 30,
     analitica: true,
-    ads: true,
-    competencia: true,
     stripePriceEnv: 'STRIPE_PRICE_ESTUDIO',
   },
 };
@@ -85,12 +77,6 @@ function listPlanesPublico() {
     creditosMes: require('./creditos').config().planes[p.id] || 0,
     cuotaReelsEditados: p.cuotaReelsEditados,
     analitica: p.analitica,
-    ads: p.ads,
-    // Meta Ads y Competencia esperan la aprobación de Meta: el sitio los
-    // muestra como "Próximamente" (ver abiertoPara en meta.js).
-    adsProximamente: !!p.ads && process.env.META_LOGIN_PUBLICO !== '1',
-    competenciaProximamente: !!p.competencia && process.env.META_LOGIN_PUBLICO !== '1',
-    competencia: p.competencia,
     // Con Flow los planes se crean solos en Flow; con Stripe hay que dar el precio.
     disponible: require('./flow').configurado() || require('./mercadopago').configurado() || !!(process.env.STRIPE_SECRET_KEY && p.stripePriceEnv && process.env[p.stripePriceEnv]),
   }));

@@ -46,7 +46,7 @@
       return;
     }
     if (!negocio.instagramConectado) {
-      cont.innerHTML = aviso('Conecta Instagram en Conexiones y ajustes para empezar a medir tus resultados. <button class="btn-approve" data-res="config">Conectar</button>');
+      cont.innerHTML = aviso('Conecta Instagram para empezar a medir tus resultados. <button class="btn-approve" data-res="config">Conectar</button>');
       cont.querySelector('[data-res="config"]').addEventListener('click', () => irA('config'));
       return;
     }
@@ -206,10 +206,10 @@
         : (lista.length ? `<div class="rp-lista">${lista.map((c) => `<div class="rp-item">
           <div class="rp-cifras"><b>${String(c.factor).replace('.', ',')}×</b><span>${c.vistas != null ? g.numero(c.vistas) + ' vistas' : g.numero(c.alcance) + ' de alcance'}</span></div>
           <div class="rp-texto"><span class="tabla-sub">${fecha(c.publicadoEl)}${c.permalink ? ` · <a href="${e(c.permalink)}" target="_blank" rel="noopener">Ver en Instagram</a>` : ''}</span><p>${e(c.caption || '(sin texto)')}</p></div>
-          ${c.enviado ? '<span class="rp-enviado">En Por aprobar</span>' : `<button class="btn-approve estilo-btn" data-rp="${e(c.mediaId)}">Enviar a Reel de prueba</button>`}
+          ${c.enviado ? '<span class="rp-enviado">En Publicaciones</span>' : `<button class="btn-approve estilo-btn" data-rp="${e(c.mediaId)}">Enviar a Reel de prueba</button>`}
         </div>`).join('')}</div>` : '<p class="sub vacio">Por ahora ningún Reel reciente destaca claramente sobre los demás.</p>')}
       <div class="rp-ajustes">
-        <label class="rp-auto"><input type="checkbox" data-rp-auto ${d.auto ? 'checked' : ''}> Enviar solo el Reel más destacado a Por aprobar (máximo uno por semana)</label>
+        <label class="rp-auto"><input type="checkbox" data-rp-auto ${d.auto ? 'checked' : ''}> Enviar solo el Reel más destacado a Publicaciones, para que lo apruebes (máximo uno por semana)</label>
         <label class="estilo-campo">Si le va bien al Reel de prueba
           <select data-rp-grad>${Object.entries(d.graduaciones).map(([k, v]) => `<option value="${k}" ${k === d.graduacion ? 'selected' : ''}>${e(v)}</option>`).join('')}</select>
         </label>
@@ -231,8 +231,8 @@
       b.textContent = 'Preparando…';
       try {
         await ctx.api(`/api/negocios/${ctx.negocio.id}/reels-prueba`, { method: 'POST', body: JSON.stringify({ mediaId: b.dataset.rp, graduacion: caja.querySelector('[data-rp-grad]').value }) });
-        b.outerHTML = '<span class="rp-enviado">En Por aprobar</span>';
-        msg.innerHTML = 'Listo: revisa el texto y apruébalo en <b>Por aprobar</b>.';
+        b.outerHTML = '<span class="rp-enviado">En Publicaciones</span>';
+        msg.innerHTML = 'Listo: revisa el texto y apruébalo en <b>Publicaciones</b>.';
         if (ctx.recargarContenido) ctx.recargarContenido();
       } catch (err) {
         msg.textContent = err.mensaje || 'No se pudo preparar el Reel de prueba.';

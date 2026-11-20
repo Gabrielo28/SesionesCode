@@ -8,7 +8,7 @@
 //     del negocio (estrategia, plan, "Mi estilo", lo aprobado);
 //   - puntaje de fidelidad: qué tan fiel es un texto a la ficha, con reglas
 //     explicables (sin IA, instantáneo, en todos los planes);
-//   - redactor: escribe cualquier texto con la voz (anuncios, correos,
+//   - redactor: escribe cualquier texto con la voz (correos,
 //     WhatsApp, fichas de producto, web, bio), en 3 versiones puntuadas.
 
 const claude = require('./claude');
@@ -26,13 +26,12 @@ const EMOJIS = { ninguno: 'Sin emojis', pocos: 'Pocos emojis (1 o 2)', varios: '
 const LARGOS = { corto: 'Textos cortos', medio: 'Largo medio', largo: 'Textos largos y detallados' };
 
 const TIPOS_REDACCION = {
-  anuncio: { nombre: 'Anuncio (Meta Ads)', pide: 'un anuncio para Meta Ads: "titulo" de máximo 40 caracteres y "texto" principal de máximo 250 caracteres con un llamado a la acción claro' },
   correo: { nombre: 'Correo', pide: 'un correo a clientes: "titulo" es el asunto (máximo 60 caracteres) y "texto" el cuerpo (máximo 900 caracteres, con saludo y cierre)' },
   whatsapp: { nombre: 'Mensaje de WhatsApp', pide: 'un mensaje de WhatsApp: "texto" de máximo 400 caracteres, natural, que se pueda enviar tal cual; "titulo" vacío' },
   producto: { nombre: 'Descripción de producto o servicio', pide: 'una descripción de producto o servicio para web o catálogo: "titulo" con el nombre y "texto" de máximo 600 caracteres' },
   web: { nombre: 'Texto para la web', pide: 'un bloque de texto para su sitio web: "titulo" como título de sección y "texto" de máximo 700 caracteres' },
   bio: { nombre: 'Bio de Instagram', pide: 'la bio de Instagram: "texto" de máximo 150 caracteres; "titulo" vacío' },
-  post: { nombre: 'Publicación para redes', pide: 'una publicación para Instagram o Facebook: "titulo" como titular de máximo 5 palabras y "texto" de máximo 300 caracteres' },
+  post: { nombre: 'Publicación para redes', pide: 'una publicación para Instagram o TikTok: "titulo" como titular de máximo 5 palabras y "texto" de máximo 300 caracteres' },
   otro: { nombre: 'Otro texto', pide: 'el texto que se describe en el tema: "titulo" si corresponde y "texto" con el contenido' },
 };
 
