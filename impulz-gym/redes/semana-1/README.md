@@ -11,12 +11,12 @@ Regla de cuentas (la acordada):
 
 | Día | Cuenta | Archivo | Hora sugerida |
 |---|---|---|---|
-| Lun | Impulz | lun-reel-impulz-a-toda-hora.mp4 (15 s) | 19:30 |
-| Mar | Coach | mar-reel-coach-3-errores-prensa.mp4 (18 s) | 20:00 |
+| Lun | Impulz | lun-reel-impulz-a-toda-hora.mp4 (20 s) | 19:30 |
+| Mar | Coach | mar-reel-coach-3-errores-prensa.mp4 (23 s) | 20:00 |
 | Mié | Impulz | mie-carrusel-1…6.png | 13:00 |
 | Jue | Coach | jue-reel-coach-generador-rutina.mp4 (24 s) | 20:00 |
-| Vie | Impulz | vie-reel-impulz-abrimos-5am.mp4 (16 s) | 07:00 |
-| Sáb | Coach | sab-reel-coach-mejor-hora.mp4 (15 s) | 11:00 |
+| Vie | Impulz | vie-reel-impulz-abrimos-5am.mp4 (13 s) | 07:00 |
+| Sáb | Coach | sab-reel-coach-mejor-hora.mp4 (17 s) | 11:00 |
 
 ---
 
@@ -78,12 +78,12 @@ Link en mi perfil para tu rutina gratis.
 ---
 
 ## Cómo se hizo (para repetirlo)
-- Clips generados con IA en ElevenLabs (kling-2.5-turbo):
-  - letrero de noche encendiéndose;
-  - letrero al amanecer;
-  - recorrido por la sala;
-  - prensa de piernas con técnica correcta.
-- Imágenes de la sala al atardecer y de noche editadas desde `ia-sala.jpg`.
+- 11 clips de video generados con IA en ElevenLabs (kling-2.5-turbo), ninguno se repite entre reels:
+  - lunes: letrero de día, al atardecer, de noche y remo en polea;
+  - martes: prensa de piernas (se muestra hacia adelante y al revés) y entrenador corrigiendo press con mancuernas;
+  - viernes: fachada de noche y ciclista al amanecer;
+  - sábado: sala de mañana, al atardecer y de noche.
+- El jueves es la grabación de pantalla del generador.
 - `plantillas/reels.html` tiene los textos en pantalla y `node plantillas/render-reels.js <capas>` los pasa a PNG.
 - `plantillas/grabar-generador.js` graba el generador de entrenachile.cl sin enviar reservas.
 - `plantillas/armar-reels.sh <clips> <capas> <grabación.webm> <salida>` arma los 5 reels con ffmpeg.
