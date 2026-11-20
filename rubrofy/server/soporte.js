@@ -1,4 +1,4 @@
-// Soporte: las solicitudes que un negocio envía desde "Ayuda y soporte"
+// Soporte: las solicitudes que un negocio envía desde "Ayuda"
 // (algo no funciona, una consulta, pagos o una sugerencia) y que el equipo
 // responde desde /admin. Es lo único del negocio que el equipo lee, porque
 // el cliente lo escribe para el equipo: no incluye sus publicaciones ni sus
@@ -203,7 +203,7 @@ function obtener(solicitudId) {
 }
 
 // Las solicitudes del negocio (las más recientes primero). marcarLeidas: al
-// abrir "Ayuda y soporte" se dan por vistas las respuestas.
+// abrir "Ayuda" se dan por vistas las respuestas.
 function delNegocio(negocioId, { marcarLeidas = false } = {}) {
   const lista = sql.delNegocio.all(negocioId).map((f) => publica(f));
   if (marcarLeidas) sql.leidoNegocio.run(negocioId);

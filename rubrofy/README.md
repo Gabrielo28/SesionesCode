@@ -526,7 +526,7 @@ Las fotos que se suben se preparan antes en el navegador (`imagen.js`):
 JPEG de hasta 2048 px y derecha (las del iPhone vienen en HEIC). El
 servidor revisa los bytes y rechaza HEIC o lo que no sea JPG, PNG o WebP.
 
-## Ayuda y soporte (server/soporte.js, public/app/soporte.js)
+## Ayuda (server/soporte.js, public/app/soporte.js)
 
 Pantalla "Ayuda" del panel (en Más, con aviso cuando hay una respuesta
 nueva):

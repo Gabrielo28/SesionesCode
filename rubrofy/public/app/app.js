@@ -57,7 +57,7 @@
       err.mensaje = mensaje;
       err.campo = campo;
       err.recargar = recargar;
-      // Queda registrado por si el cliente reporta un problema (Ayuda y soporte).
+      // Queda registrado por si el cliente reporta un problema (Ayuda).
       if (window.RubrofySoporte && negocioActual) window.RubrofySoporte.registrar({ que: `${opts.method || 'GET'} ${path}`, estado: res.status, mensaje });
       // La sesión se cerró (cambio de clave o "cerrar en todos lados" desde
       // otro dispositivo): de vuelta a la pantalla para entrar.

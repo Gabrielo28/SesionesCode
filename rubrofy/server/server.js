@@ -624,10 +624,10 @@ function avisarSoporteCliente(negocio, sol, req, que) {
   const { html, texto } = avisos.plantilla({
     titulo: recibida ? 'Recibimos tu solicitud' : 'Te respondimos',
     parrafos: recibida
-      ? [`Gracias por escribirnos sobre "${sol.asunto}". La revisamos y te respondemos lo antes posible (días hábiles).`, 'Te avisamos por correo cuando respondamos. También la ves en Rubrofy → Ayuda y soporte.']
+      ? [`Gracias por escribirnos sobre "${sol.asunto}". La revisamos y te respondemos lo antes posible (días hábiles).`, 'Te avisamos por correo cuando respondamos. También la ves en Rubrofy → Más → Ayuda.']
       : [`Sobre "${sol.asunto}":`, ...ultimo.texto.split(/\n+/), sol.estado === 'cerrada'
         ? 'Dimos tu solicitud por resuelta. Si necesitas algo más, respóndenos desde Rubrofy y la abrimos de nuevo.'
-        : 'Si necesitas algo más, respóndenos desde Rubrofy → Ayuda y soporte.'],
+        : 'Si necesitas algo más, respóndenos desde Rubrofy → Más → Ayuda.'],
     boton: { texto: 'Ver en Rubrofy', url: `${urlPublica(req)}/app#soporte` },
     pie: 'Recibes este correo porque escribiste a soporte de Rubrofy.',
   });
@@ -2162,7 +2162,7 @@ const server = http.createServer(async (req, res) => {
             paquetes: recargas.catalogo().paquetes.filter((p) => p.tipo === 'creditos'),
           }));
         }
-        // Ayuda y soporte (server/soporte.js, public/app/soporte.js):
+        // Ayuda (server/soporte.js, public/app/soporte.js):
         //   GET  /api/negocios/:id/soporte                      sus solicitudes (y quedan leídas)
         //   POST /api/negocios/:id/soporte                      { tipo, asunto, texto, contexto?, adjunto? }
         //   POST /api/negocios/:id/soporte/:sid/mensajes        { texto, adjunto? }

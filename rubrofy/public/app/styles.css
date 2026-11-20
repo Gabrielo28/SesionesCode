@@ -1096,7 +1096,7 @@ label.btn-approve, label.btn-ghost, a.btn-ghost, a.btn-approve { display: inline
 .gl-visor-rota { color: rgba(255, 255, 255, .75); font-size: 14px; text-align: center; max-width: 320px; }
 .gl-subir.subiendo { opacity: .7; pointer-events: none; }
 
-/* Ayuda y soporte */
+/* Ayuda */
 #soporte { display: flex; flex-direction: column; gap: 14px; }
 #soporte .cfg-titulo { margin-bottom: -4px; }
 #soporte .ig-card { margin-bottom: 0; }

@@ -657,7 +657,7 @@
     if (ancla) $('#adm').insertBefore(sec, ancla); else $('#adm').appendChild(sec);
   }
 
-  // Soporte: lo que los clientes escriben desde "Ayuda y soporte". Es lo
+  // Soporte: lo que los clientes escriben desde "Ayuda". Es lo
   // único de cada negocio que se lee aquí, porque te lo mandan a ti.
   let sopEstado = 'abiertas';
   let sopSel = null;
@@ -678,7 +678,7 @@
     const c = d.conteo;
     sec.innerHTML = `
       <div class="adm-bloque-cab"><h2>Soporte${AY('adm-soporte')}</h2>
-        <p class="sub">Lo que los clientes te escriben desde "Ayuda y soporte". Solo ves lo que ellos te mandaron.</p></div>
+        <p class="sub">Lo que los clientes te escriben desde "Ayuda". Solo ves lo que ellos te mandaron.</p></div>
       <div class="adm-sop-barra">
         <div class="pestanas"><button type="button" data-sop-estado="abiertas" class="${sopEstado === 'abiertas' ? 'activa' : ''}">Por responder (${num(c.abiertas)})</button><button type="button" data-sop-estado="todas" class="${sopEstado === 'todas' ? 'activa' : ''}">Todas</button></div>
         ${c.nuevas ? `<span class="adm-sop-nuevas">${num(c.nuevas)} sin leer</span>` : ''}

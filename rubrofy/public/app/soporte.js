@@ -1,4 +1,4 @@
-// Ayuda y soporte: buscador (ayudas de cada pantalla y preguntas
+// Ayuda: buscador (ayudas de cada pantalla y preguntas
 // frecuentes), revisión rápida de la cuenta, formulario para escribirle al
 // equipo (con captura y detalles técnicos opcionales) y "Mis solicitudes"
 // con las respuestas. Ver server/soporte.js y /api/negocios/:id/soporte.
@@ -322,7 +322,7 @@
   }
 
   // Otra pantalla deja la solicitud escrita (ej: "Habilitar mi Instagram");
-  // se completa al abrir Ayuda y soporte y el dueño solo la revisa y envía.
+  // se completa al abrir Ayuda y el dueño solo la revisa y envía.
   function escribir(b) {
     borrador = b;
     if (b && b.tipo) tipoElegido = b.tipo;

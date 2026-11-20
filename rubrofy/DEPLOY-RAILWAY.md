@@ -138,7 +138,7 @@ Una vez que `https://rubrofy.com` funcione:
   4. Mientras la app esté en modo desarrollo, solo pueden conectarse las
      cuentas de Instagram agregadas como evaluadoras (el panel lo explica
      junto al botón y deja escrita la solicitud "Habilitar mi Instagram en
-     Rubrofy" en Ayuda y soporte; cuando Meta apruebe, pon
+     Rubrofy" en Más → Ayuda; cuando Meta apruebe, pon
      `INSTAGRAM_APP_APROBADA=1` para quitar ese aviso) (Roles de la app →
      Evaluadores de Instagram, y aceptar la invitación en Instagram →
      Configuración → Apps y sitios web). Para abrirlo a todos los clientes,

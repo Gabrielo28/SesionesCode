@@ -227,7 +227,7 @@ function correoRecibo({ negocio, urlPanel, montoClp, detalle, periodo, fecha }) 
   const { html, texto } = plantilla({
     titulo: 'Recibimos tu pago',
     parrafos: [`Gracias. Recibimos ${clp(montoClp)} (IVA incluido) de ${negocio.nombre}.`, `Detalle: ${detalle}${periodo ? `, del ${fechaLarga(periodo.desde)} al ${fechaLarga(periodo.hasta)}` : ''}. Fecha: ${fechaLarga(fecha || new Date().toISOString())}.`,
-      'La boleta electrónica te llega aparte, por correo desde Flow. Ves todos tus pagos en Mi cuenta → Pagos y facturación; si necesitas factura, escríbenos desde Ayuda y soporte.'],
+      'La boleta electrónica te llega aparte, por correo desde Flow. Ves todos tus pagos en Mi cuenta → Pagos y facturación; si necesitas factura, escríbenos desde Más → Ayuda.'],
     boton: boton('Ver mis pagos', urlPanel),
     pie: 'Este correo es un comprobante de pago; la boleta electrónica la envía Flow.',
   });
